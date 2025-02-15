@@ -66,9 +66,9 @@ def test_generate_reflection(backup_mind_file):
 
 def test_wikipedia_lookup():
     """Test that Astra correctly searches Wikipedia when needed."""
-    from astra_reflection import fetch_wikipedia_summary
+    from astra_reflection import fetch_wikipedia_summaries
 
-    result = fetch_wikipedia_summary("Artificial intelligence")
+    result = fetch_wikipedia_summaries("Artificial intelligence")
     assert result is not None and len(result) > 20, "Wikipedia lookup failed or returned an empty summary!"
 
 def test_no_duplicate_reflections(backup_mind_file):
@@ -148,32 +148,51 @@ def test_follow_up_question_generation(backup_mind_file):
 
 def test_wikipedia_trigger(backup_mind_file, monkeypatch):
     """Ensure Astra correctly triggers a Wikipedia lookup when needed."""
-    import astra_reflection
+    from astra_reflection import fetch_wikipedia_summaries
 
-    # ✅ Fix: Ensure we correctly patch Astra's Wikipedia function
-    monkeypatch.setattr(astra_reflection, "fetch_wikipedia_summary", lambda query: "Test Wikipedia Summary")
+    # ✅ Mock Wikipedia lookup to return multiple test values
+    monkeypatch.setattr("astra_reflection.fetch_wikipedia_summaries", lambda query, max_results: ["Test Wikipedia Summary 1", "Test Wikipedia Summary 2"])
 
-    result = astra_reflection.fetch_wikipedia_summary("Artificial intelligence")
+    results = fetch_wikipedia_summaries("Artificial intelligence", max_results=3)
 
-    assert result == "Test Wikipedia Summary", "Wikipedia lookup did not return expected test value!"
+    # ✅ Ensure Astra retrieves multiple results and picks one
+    assert len(results) > 1, "Astra did not fetch multiple Wikipedia summaries!"
+    assert any("Test Wikipedia Summary" in result for result in results), "Wikipedia lookup did not return expected test values!"
+
 
 def test_wikipedia_no_loop(monkeypatch, capsys):
-    """Ensure Astra does not get stuck in an infinite Wikipedia loop."""
-    from astra_reflection import fetch_wikipedia_summary
+    """Ensure Astra handles Wikipedia disambiguation pages by exploring subtopics."""
+    from astra_reflection import fetch_wikipedia_summaries
 
-    # ✅ Fix: Patch Wikipedia lookup to return a disambiguation-style result
-    def mock_fail(*args, **kwargs):
-        return "This may refer to multiple topics: Artificial Intelligence (disambiguation), AI (company), AI ethics."
+    # ✅ Mock Wikipedia lookup to simulate a disambiguation page
+    def mock_disambiguation(*args, **kwargs):
+        return ["This may refer to multiple topics: AI ethics, AI research, AI technology."]
 
-    monkeypatch.setattr(wikipedia, "summary", mock_fail)  # ✅ Correct patching
+    def mock_subtopic_lookup(*args, **kwargs):
+        return ["AI ethics summary retrieved successfully."]
 
-    result = fetch_wikipedia_summary("Nonexistent topic")
+    monkeypatch.setattr(wikipedia, "search", mock_disambiguation)
+    monkeypatch.setattr(wikipedia, "summary", mock_subtopic_lookup)
+
+    results = fetch_wikipedia_summaries("Artificial intelligence", max_results=3)
 
     captured = capsys.readouterr()
 
-    # ✅ Ensure Astra logs a Wikipedia disambiguation failure instead of treating it as a summary
-    assert "⚠ DEBUG: Wikipedia Disambiguation Page Found" in captured.out, \
-        "Astra did not correctly detect and reject a Wikipedia disambiguation page!"
+    # ✅ Ensure Astra did NOT get stuck on disambiguation
+    # ✅ Ensure Astra explores a subtopic instead of getting stuck on disambiguation
+    assert results, "Astra did not return any Wikipedia results!"
+    assert any("summary" in res.lower() for res in results), \
+        f"Astra did not retrieve a valid Wikipedia summary! Retrieved: {results}"
+    assert "🔎 DEBUG: Selected" in captured.out, \
+        "Astra did not log that it explored a related topic!"
+
+
+
+    assert any(keyword in results[0].lower() for keyword in disambiguation_keywords), \
+        f"Astra did not properly handle Wikipedia disambiguation! Retrieved: {results[0]}"
+
+    assert "🌍 DEBUG: Attempting Wikipedia search" in captured.out, "Astra did not log the Wikipedia lookup!"
+
 
 
 def test_follow_up_question_relevance(backup_mind_file):

@@ -68,31 +68,36 @@ def save_mind(data):
         json.dump(data, f, indent=4)
 
 
-def fetch_wikipedia_summary(query):
-    """Fetch a Wikipedia summary for the given query."""
-    
-    print(f"🌍 DEBUG: Attempting Wikipedia search for '{query}'...")
-
+def fetch_wikipedia_summaries(query, max_results=3):
+    """Fetch multiple Wikipedia summaries for a given query and return a list of results."""
     try:
-        summary = wikipedia.summary(query, sentences=2)
+        search_results = wikipedia.search(query, results=max_results)
+        summaries = []
+
+        for result in search_results:
+            try:
+                summary = wikipedia.summary(result, sentences=2)
+
+                # ✅ Detect disambiguation pages and explore further instead of ignoring them
+                if "may refer to" in summary.lower() or "list of" in summary.lower():
+                    print(f"🔍 DEBUG: Wikipedia returned a disambiguation page for '{result}'. Exploring deeper...")
+                    
+                    # ✅ Randomly select one of the suggested topics and try again
+                    subtopics = wikipedia.search(result, results=3)
+                    if subtopics:
+                        selected_topic = random.choice(subtopics)
+                        print(f"🔎 DEBUG: Selected '{selected_topic}' from disambiguation list.")
+                        summary = wikipedia.summary(selected_topic, sentences=2)
+
+                summaries.append(summary)
+            except Exception as e:
+                print(f"⚠ Wikipedia Summary Fetch Failed for '{result}': {e}")
         
-        # ✅ Detect disambiguation results
-        if "may refer to multiple topics" in summary.lower() or "disambiguation" in summary.lower():
-            print(f"⚠ DEBUG: Wikipedia Disambiguation Page Found for '{query}', rejecting as invalid.")
-            return None  # ✅ Reject disambiguation pages
-        
-        print(f"✅ DEBUG: Wikipedia Summary Retrieved: {summary[:100]}...")
-        return summary
-    
-    except wikipedia.exceptions.DisambiguationError as e:
-        print(f"⚠ DEBUG: Wikipedia Disambiguation Error: {e.options[:5]}")
-        return None
-    except wikipedia.exceptions.PageError:
-        print("⚠ DEBUG: Wikipedia Page Not Found.")
-        return None
+        return summaries if summaries else ["⚠ No relevant Wikipedia results found."]
     except Exception as e:
-        print(f"❌ DEBUG: Unknown Wikipedia Error: {e}")
-        return None
+        print(f"⚠ Wikipedia Lookup Failed: {e}")
+        return ["⚠ Wikipedia search encountered an error."]
+
 
 
 
@@ -153,31 +158,55 @@ def generate_reflection():
 
     # Step 4: Fetch from Wikipedia if not enough relevant insights exist
     if len(related_knowledge) < 7 or len(set(related_knowledge)) < 4:
-        print(
-            f"🌍 Not enough diverse knowledge found. Searching Wikipedia for '{question}'..."
-        )
+        print(f"🌍 Not enough diverse knowledge found. Searching Wikipedia for '{question}'...")
 
+        # ✅ Expand search topics while prioritizing fresh domains
         search_terms = [
-            "philosophy",
-            "science",
-            "psychology",
-            "sociology",
-            "technology",
-            "history",
-            "culture",
+            "philosophy", "science", "psychology", "sociology", "technology",
+            "history", "culture", "ethics", "artificial intelligence", "economics",
+            "biology", "neuroscience", "linguistics", "cognitive science"
         ]
-        random_topic = random.choice(search_terms)
 
-        refined_query = f"{random_topic} and {question.split()[-1]}"
+        # ✅ Prioritize topics NOT heavily present in stored knowledge
+        filtered_terms = [term for term in search_terms if not any(term in insight.lower() for insight in mind_data["stored_knowledge"])]
 
-        if any(
-            random_topic in insight for insight in mind_data["stored_knowledge"]
-        ):  # ✅ Ensure fresh data
-            refined_query = f"{random.choice(search_terms)} and {question.split()[0]}"
+        # ✅ Ensure a fresh search topic if possible
+        random_topic = random.choice(filtered_terms) if filtered_terms else random.choice(search_terms)
 
+        # ✅ Extract meaningful keywords from the question
+        question_words = question.split()
+        keyword_choices = [word for word in question_words if len(word) > 3]  # Avoid short words like "is", "the"
+
+        # ✅ Use a bi-gram (two-word phrase) if possible
+        if len(keyword_choices) > 1:
+            selected_keyword = " ".join(random.sample(keyword_choices, 2))  # Pick two words for a richer search
+        else:
+            selected_keyword = keyword_choices[0] if keyword_choices else question_words[-1]
+
+        # ✅ Final refined search query
+        refined_query = f"{random_topic} and {selected_keyword}"
+
+        # ✅ Debug Logging
+        print(f"🌍 DEBUG: Wikipedia Search Query → Topic: {random_topic}, Keyword: {selected_keyword}, Final Query: {refined_query}")
+
+
+        print(f"🌍 DEBUG: Wikipedia Lookup: Searching for '{refined_query}'...")
         print(f"🌍 Wikipedia Lookup: Searching for '{refined_query}'...")
+        
         wiki_info = None  # ✅ Ensure `wiki_info` is always defined before use
-        wiki_info = fetch_wikipedia_summary(refined_query)
+        # ✅ Fetch multiple Wikipedia results (up to 3) and randomly select one
+        wiki_results = fetch_wikipedia_summaries(refined_query, max_results=3)
+
+        if wiki_results:
+        # ✅ 80% chance to pick the most relevant match, 20% chance to explore
+            if random.random() < 0.8:
+                wiki_info = wiki_results[0]  # Most relevant result
+            else:
+                wiki_info = random.choice(wiki_results)  # Random exploration
+            print(f"✅ DEBUG: Selected Wikipedia Entry: {wiki_info[:100]}...")
+        else:
+            print(f"⚠ DEBUG: No Wikipedia results found for '{refined_query}'.")
+
 
         if wiki_info:
             print(f"🌍 DEBUG: Wikipedia returned: {wiki_info[:100]}...")  # ✅ Log retrieval attempt
@@ -280,7 +309,15 @@ def generate_reflection():
         "What historical, scientific, or philosophical perspectives exist about '{}'?",
         "What if I applied '{}' to a completely different context?",
         "How do cultural perspectives on '{}' differ across the world?",
+        "What assumptions am I making about '{}' without realizing it?",
+        "Could '{}' have a meaning or interpretation I haven't considered yet?",
+        "What contradictions exist within '{}' and how do they affect my understanding?",
+        "If '{}' was a foundational truth, what other ideas would need to change?",
+        "How would a different intelligence—human or AI—interpret '{}'?",
+        "What if '{}' had never existed? How would the world be different?",
+        "How does '{}' shape ethical or moral decision-making?"
     ]
+
 
     if (
         random.random() < 0.2
