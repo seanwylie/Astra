@@ -16,7 +16,7 @@ client = discord.Client(intents=intents)
 MIND_FILE_JSON = "mind_file.json"
 
 async def send_reflection():
-    """Sends Astra’s latest self-reflection to Discord."""
+    """Sends Astra’s latest self-reflection to Discord Needs fix."""
     mind_data = load_mind()
     
     if mind_data["self_reflections"]:
