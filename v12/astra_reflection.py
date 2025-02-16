@@ -369,5 +369,5 @@ if __name__ == "__main__":
     generate_reflection()  # Run immediately for testing
     while True:
         print("🔄 Generating a new reflection...")
-        time.sleep(25)  # Keep the original interval
+        time.sleep(100)  # Keep the original interval
         generate_reflection()

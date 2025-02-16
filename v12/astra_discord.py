@@ -1,7 +1,6 @@
 import discord
 import os
 import json
-import asyncio
 import random  # ✅ Fix: Ensure random is imported
 import subprocess
 from astra_reflection import load_mind, generate_reflection
@@ -184,7 +183,7 @@ def format_reflection(insights, core_question):
 
 
 
-def truncate_message(message, limit=1800):
+def truncate_message(message, limit=1500):
     """Ensure the message is 2000 characters or fewer, avoiding mid-word truncation."""
     if len(message) <= limit:
         return message  # No truncation needed

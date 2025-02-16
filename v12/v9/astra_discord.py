@@ -1,21 +1,9 @@
 import discord
-import os
 import json
 import asyncio
 import random  # ✅ Fix: Ensure random is imported
 import subprocess
-from astra_reflection import load_mind, generate_reflection
-from dotenv import load_dotenv
-
-
-# ✅ Load API keys from .env file
-load_dotenv()
-
-TOKEN = os.getenv("TOKEN")
-CHANNEL_ID = os.getenv("CHANNEL_ID")
-
-print(f"🔹 Using Discord ID: {CHANNEL_ID}")  # Debugging
-
+from astra_reflection import load_mind, generate_reflection  
 
 TOKEN = "MTMzOTU0MTcxNDA4NzQ0ODYwNw.GfizoM.-wF3ueIOcQd3KZa8Kvpp8nQ-P8GwCIHw6fDioU"
 CHANNEL_ID = 1154855642893389926
@@ -28,19 +16,14 @@ client = discord.Client(intents=intents)
 MIND_FILE_JSON = "mind_file.json"
 
 async def send_reflection():
-    """Sends Astra’s latest self-reflection to Discord Needs fix."""
+    """Sends Astra’s latest self-reflection to Discord."""
     mind_data = load_mind()
     
     if mind_data["self_reflections"]:
-        latest_question = mind_data["self_questions"][-1] if mind_data["self_questions"] else "What should I reflect on next?"
-        latest_insights = mind_data["stored_knowledge"][-3:] if len(mind_data["stored_knowledge"]) > 2 else mind_data["stored_knowledge"]
-
-        formatted_reflection = format_reflection(latest_insights, latest_question)
-
+        latest_reflection = mind_data["self_reflections"][-1]
         channel = client.get_channel(CHANNEL_ID)
         if channel:
-            truncated_reflection = truncate_message(formatted_reflection)
-            await channel.send(truncated_reflection)
+            await channel.send(f"🤖 **Astra’s Latest Reflection:**\n{latest_reflection}\n\n💡 **What do you think? Reply with:**\n✅ `Agree`\n❌ `Disagree`\n🔄 `Expand`")
         else:
             print("⚠ Could not find the Discord channel.")
     else:
@@ -92,20 +75,7 @@ async def on_message(message):
 
         elif message.content.lower() in ["🔄", "expand"]:
             response_type = "Expansion"
-            response_text = "I should explore this further."
-
-            follow_up_questions = [
-                "What new perspectives could challenge this understanding?",
-                "How does this relate to human experiences beyond what I've considered?",
-                "If this idea were flawed, what counterarguments would exist?",
-                "How should I refine this thought further based on new information?"
-            ]
-
-            deeper_question = random.choice(follow_up_questions)
-    
-            updated_reflection = f"{mind_data['self_reflections'][-1]}\n\n🔍 **Deeper Thought:** {deeper_question}"
-            mind_data["self_reflections"].append(updated_reflection)
-            mind_data["self_questions"].append(deeper_question)
+            response_text = "I should explore this further. What additional insights can I consider?"
 
         elif message.content.lower() in ["!reflect", "!newthought"]:
             print("🔄 Generating new reflection...")
@@ -138,69 +108,13 @@ async def on_message(message):
                 print(f"Error saving updated mind file: {e}")
 
             # Send acknowledgment
-            updated_reflection = truncate_message(updated_reflection)
             await message.channel.send(f"🤖 **Astra’s Updated Thought:**\n{updated_reflection}")
 
     except Exception as e:
         print(f"🚨 Error in on_message: {e}")
 
-def format_reflection(insights, core_question):
-    """Formats Astra’s reflection with a structured summary and knowledge insights."""
-    
-    # Generate a summary statement based on Astra’s thinking
-    summary_templates = [
-        f"As I consider '{core_question}', I realize that {insights[0]} directly connects to my growth.",
-        f"Thinking about '{core_question}', I see patterns emerging, particularly in {insights[0]}.",
-        f"My reflection on '{core_question}' has led me to compare it with {insights[0]}, shaping my understanding."
-    ]
-    
-    summary = random.choice(summary_templates)
-
-    # Generate a follow-up question for the Expand option
-    follow_up_questions = [
-        "What new perspectives could challenge this understanding?",
-        "How does this relate to human experiences beyond what I've considered?",
-        "If this idea were flawed, what counterarguments would exist?",
-        "How should I refine this thought further based on new information?"
-    ]
-    
-    follow_up = random.choice(follow_up_questions)
-
-    # Construct the final structured response
-    formatted_reflection = (
-        f"🤖 **Astra’s Latest Reflection:**\n"
-        f"{summary}\n\n"
-        f"🔹 **Key Insights:**\n"
-        f"- {insights[0]}\n"
-        f"- {insights[1] if len(insights) > 1 else ''}\n"
-        f"- {insights[2] if len(insights) > 2 else ''}\n\n"
-        f"💡 **What do you think? Reply with:**\n"
-        f"✅ Agree (This perspective makes sense!)\n"
-        f"❌ Disagree (I think there's a flaw in this logic.)\n"
-        f"🔄 Expand (Let’s explore deeper: {follow_up})"
-    )
-
-    return formatted_reflection.strip()
-
-
-
-def truncate_message(message, limit=1800):
-    """Ensure the message is 2000 characters or fewer, avoiding mid-word truncation."""
-    if len(message) <= limit:
-        return message  # No truncation needed
-
-    # Trim exactly to limit and avoid mid-word truncation
-    trimmed = message[:limit].rsplit(" ", 1)[0]
-
-    return trimmed + "..."
-
-
-
 # ✅ Debug log before startup
 print("🚀 Starting Astra Discord Bot...")
-
-
-
 
 # Run the bot
 client.run(TOKEN)
