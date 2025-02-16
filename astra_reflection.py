@@ -3,6 +3,7 @@ import random
 import time
 import wikipedia
 import sys
+from astra_vision import fetch_google_image, analyze_image
 
 MIND_FILE_JSON = "mind_file.json"
 MIND_FILE_ORIG = "mind_file_sean.json"
@@ -99,9 +100,6 @@ def fetch_wikipedia_summaries(query, max_results=3):
         return ["⚠ Wikipedia search encountered an error."]
 
 
-
-
-
 def generate_reflection():
     """Generates a new structured self-reflection."""
 
@@ -115,6 +113,22 @@ def generate_reflection():
 
     question = random.choice(mind_data["self_questions"])
 
+
+    visual_keywords = ["object", "animal", "place", "diagram", "symbol", "representation", "look", "see"]
+    should_use_vision = any(word in question.lower() for word in visual_keywords)
+    
+    if should_use_vision:
+        print(f"👀 Astra wants to see something related to: {question}")
+        image_url = fetch_google_image(question)
+        if image_url:
+            image_description = analyze_image(image_url)
+            print(f"📸 Astra sees: {image_description}")
+            vision_reflection = f"Thinking about '{question}', I saw: {image_description}."
+            mind_data["self_reflections"].append(vision_reflection)
+        else:
+            print(f"⚠ No relevant images found for '{question}'.")
+    else:
+        print(f"⚠ No image keywords found for '{question}'.")
     # Step 2: Assign relevance scores & filter out low-relevance insights
     scored_knowledge = []
     for insight in mind_data["stored_knowledge"]:

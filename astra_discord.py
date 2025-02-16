@@ -1,9 +1,21 @@
 import discord
+import os
 import json
 import asyncio
 import random  # ✅ Fix: Ensure random is imported
 import subprocess
-from astra_reflection import load_mind, generate_reflection  
+from astra_reflection import load_mind, generate_reflection
+from dotenv import load_dotenv
+
+
+# ✅ Load API keys from .env file
+load_dotenv()
+
+TOKEN = os.getenv("TOKEN")
+CHANNEL_ID = os.getenv("CHANNEL_ID")
+
+print(f"🔹 Using Discord ID: {CHANNEL_ID}")  # Debugging
+
 
 TOKEN = "MTMzOTU0MTcxNDA4NzQ0ODYwNw.GfizoM.-wF3ueIOcQd3KZa8Kvpp8nQ-P8GwCIHw6fDioU"
 CHANNEL_ID = 1154855642893389926
