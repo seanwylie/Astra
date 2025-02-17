@@ -1,23 +1,27 @@
+import random
+import os
+import sys
+
+# ✅ Ensure Python knows where to find `astra_schedule`
+sys.path.append(os.path.dirname(os.path.abspath(__file__)))
+
 from astra_core.reflection import generate_reflection
-from astra_core.expansion import refine_knowledge, deepen_reflection
+from astra_core.expansion import refine_knowledge
 from astra_interfaces.influence import load_mind, save_mind
 from astra_core.knowledge import retrieve_external_knowledge, extract_unknown_terms
-
-import random
-
 
 def process_reflection():
     """Generate, refine, and deepen Astra's reflections while preventing duplicate deeper thoughts."""
     mind_data = load_mind()
 
     print(f"🔍 Debug: Type of `mind_data`: {type(mind_data)}")
-    print(f"🔍 Debug: Raw `mind_data`: {mind_data}")
+    # print(f"🔍 Debug: Raw `mind_data`: {mind_data}")
     print(f"🔍 Debug: Type of `self_reflections` after load: {type(mind_data['self_reflections'])}")
 
 
     if "self_reflections" in mind_data:
         print(f"🔍 Debug: Type of `mind_data['self_reflections']`: {type(mind_data['self_reflections'])}")
-        print(f"🔍 Debug: Content of `mind_data['self_reflections']`: {mind_data['self_reflections']}")
+        # (f"🔍 Debug: Content of `mind_data['self_reflections']`: {mind_data['self_reflections']}")
         print(f"🔍 Debug: Type of `self_reflections` after load: {type(mind_data['self_reflections'])}")
 
     else:
@@ -81,7 +85,7 @@ def process_reflection():
     track_mind_data_changes("loading from file", mind_data)
 
     print(f"🔍 Debug: Type of `mind_data['self_reflections']`: {type(mind_data['self_reflections'])}")
-    print(f"🔍 Debug: Content of `mind_data['self_reflections']`: {mind_data['self_reflections']}")
+    # print(f"🔍 Debug: Content of `mind_data['self_reflections']`: {mind_data['self_reflections']}")
 
     # ✅ Prevent duplicate reflections before adding
     # ✅ Prevent duplicate reflections before adding
@@ -154,6 +158,8 @@ def track_mind_data_changes(operation, mind_data):
 
 
 
+# ✅ Import `astra_schedule` only when running as main script
 if __name__ == "__main__":
     print("🧠 Astra is thinking...")
-    process_reflection()
+    from astra_core.astra_schedule.schedule import astra_schedule  # ✅ Import late to avoid early execution issues
+    astra_schedule()

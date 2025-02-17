@@ -60,8 +60,8 @@ def load_mind():
         print(f"⚠ Error loading structured mind file: {e}")
 
     print(f"🔍 After merging structured knowledge: {len(mind_data['stored_knowledge'])} items.")
-    print(f"🔍 Debug: Type of `mind_data`: {type(mind_data)}")
-    print(f"🔍 Debug: Raw `mind_data`: {mind_data}")
+    # print(f"🔍 Debug: Type of `mind_data`: {type(mind_data)}")
+    # print(f"🔍 Debug: Raw `mind_data`: {mind_data}")
     save_mind(mind_data)
     return mind_data
 
