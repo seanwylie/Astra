@@ -1,4 +1,7 @@
 {
+    "mind_file_path": "mind_file.json",
+    "mind_file_sean_path": "mind_file_sean.json",
+    "log_file": "astra_logs.json",
     "reflection_interval": 300,
     "max_stored_knowledge": 1000,
     "min_knowledge_to_merge": 2,
