@@ -1,4 +1,7 @@
 import json
+import random
+import wikipedia
+import re
 
 MIND_FILE_JSON = "mind_file.json"
 MIND_FILE_ORIG = "mind_file_sean.json"
@@ -7,20 +10,36 @@ def load_mind():
     """Load Astra's mind file while ensuring structured knowledge is merged and memory is managed properly."""
     print("🔍 Debug: Loading mind files...")
 
+
+
+    # ✅ Default structure
     mind_data = {
         "self_reflections": [],
         "self_questions": [],
         "stored_knowledge": [],
     }
 
+    # ✅ Load mind_file.json (self-reflections + questions)
     try:
-        # ✅ Load mind_file.json (self-reflections + questions)
         with open(MIND_FILE_JSON, "r", encoding="utf-8") as f:
             mind_data = json.load(f)
-            print(f"✅ Loaded {len(mind_data['self_reflections'])} reflections, {len(mind_data['self_questions'])} questions.")
 
-    except FileNotFoundError:
-        print("⚠ Warning: mind_file.json not found. Starting with an empty mind.")
+
+            # ✅ Force `self_reflections` to be a list
+            if not isinstance(mind_data["self_reflections"], list):
+                print("⚠ Warning: `self_reflections` was not a list! Fixing now...")
+                mind_data["self_reflections"] = []
+                
+            # ✅ Force `self_reflections` to be a list
+            if not isinstance(mind_data["self_questions"], list):
+                print("⚠ Warning: `self_questions` was not a list! Fixing now...")
+                mind_data["self_questions"] = []
+
+            print(f"✅ Loaded {len(mind_data['self_reflections'])} reflections, {len(mind_data['self_questions'])} questions.")
+    except (FileNotFoundError, json.JSONDecodeError):
+        print("⚠ Warning: mind_file.json not found or corrupted. Starting with an empty mind.")
+    
+    print(f"🔍 Before merge: {len(mind_data['stored_knowledge'])} stored knowledge items.")
 
     # ✅ Merge structured knowledge from mind_file_sean.json
     try:
@@ -31,15 +50,19 @@ def load_mind():
                 structured_knowledge = {entry["insight"] for entry in structured_data["insights"]}
                 current_knowledge = set(mind_data["stored_knowledge"])
 
-                # ✅ Merge knowledge but don't overwrite reflections
+                # ✅ Merge knowledge but don't overwrite reflections/questions
                 updated_knowledge = current_knowledge.union(structured_knowledge)
                 mind_data["stored_knowledge"] = list(updated_knowledge)
 
                 print(f"🔹 Merging complete! Final stored knowledge count: {len(mind_data['stored_knowledge'])}")
 
-    except Exception as e:
+    except (FileNotFoundError, json.JSONDecodeError) as e:
         print(f"⚠ Error loading structured mind file: {e}")
 
+    print(f"🔍 After merging structured knowledge: {len(mind_data['stored_knowledge'])} items.")
+    print(f"🔍 Debug: Type of `mind_data`: {type(mind_data)}")
+    print(f"🔍 Debug: Raw `mind_data`: {mind_data}")
+    save_mind(mind_data)
     return mind_data
 
 
@@ -48,10 +71,10 @@ def save_mind(mind_data):
     """Saves updated knowledge to Astra’s mind file while ensuring no nested structures exist."""
     print("🔍 Debug: Sanitizing mind file before saving...")
 
-    # ✅ Ensure all fields are flat lists of strings
-    mind_data["self_reflections"] = [str(item) for item in mind_data.get("self_reflections", []) if isinstance(item, str)]
-    mind_data["self_questions"] = [str(item) for item in mind_data.get("self_questions", []) if isinstance(item, str)]
-    mind_data["stored_knowledge"] = [str(item) for item in mind_data.get("stored_knowledge", []) if isinstance(item, str)]
+    # ✅ Ensure all fields are lists
+    mind_data["self_reflections"] = list(mind_data.get("self_reflections", []))
+    mind_data["self_questions"] = list(mind_data.get("self_questions", []))
+    mind_data["stored_knowledge"] = list(mind_data.get("stored_knowledge", []))
 
     # ✅ Save back to mind_file.json
     with open(MIND_FILE_JSON, "w", encoding="utf-8") as f:
@@ -60,8 +83,60 @@ def save_mind(mind_data):
     print(f"✅ Mind file saved successfully! Reflections: {len(mind_data['self_reflections'])}, Questions: {len(mind_data['self_questions'])}, Knowledge: {len(mind_data['stored_knowledge'])}")
 
 
-def store_knowledge(new_knowledge):
-    """Adds new knowledge to Astra’s memory."""
-    mind_data = load_mind()
-    mind_data["stored_knowledge"].append(new_knowledge)
+def store_knowledge(mind_data, new_insight):
+    """Prioritize storing knowledge that aligns with Astra’s core philosophy."""
+    print("🔍 Debug: Evaluating new insight...")
+
+    # ✅ Prevent duplicate storage
+    if any(new_insight[:50] in insight for insight in mind_data["stored_knowledge"]):
+        print("⚠ Insight already exists. Skipping.")
+        return
+
+    # 🔹 Define core themes Astra values (can be expanded over time)
+    core_themes = ["self-reflection", "collaboration", "ethical AI", "curiosity", "growth"]
+
+    # 🔹 Score insight based on its relevance to Astra’s learning goals
+    score = sum(1 for theme in core_themes if theme in new_insight.lower())
+
+    # ✅ Prioritize insights that align with core philosophy
+    if score > 0:
+        mind_data["stored_knowledge"].append(new_insight)
+        print(f"✅ Stored high-priority insight: {new_insight[:100]}... (Score: {score})")
+
+    # 🔹 Randomly allow some general knowledge to promote diverse learning
+    elif random.random() < 0.3:
+        mind_data["stored_knowledge"].append(new_insight)
+        print(f"📝 Stored general knowledge for diversity: {new_insight[:100]}...")
+
+    else:
+        print("⚠ Insight did not align with core learning themes. Skipping.")
+
+    # ✅ Save updated knowledge
     save_mind(mind_data)
+
+def is_term_or_phrase(concept):
+    """Determine if a concept is a single term (Wikipedia) or a phrase (Google Search)."""
+
+    # 🔹 Strip punctuation to avoid lookup errors
+    clean_concept = re.sub(r"[^\w\s]", "", concept).strip()
+
+    # 🔹 If the cleaned concept is empty after stripping, ignore it
+    if not clean_concept:
+        print(f"⚠ Ignoring malformed concept: '{concept}'")
+        return None  
+
+    # 🔹 If the concept is one or two words, treat it as a term
+    if len(clean_concept.split()) <= 2:
+        return "term"
+
+    # 🔹 Check if Wikipedia recognizes it as a title
+    try:
+        wiki_search_results = wikipedia.search(clean_concept, results=1)
+        if wiki_search_results and clean_concept.lower() in [result.lower() for result in wiki_search_results]:
+            return "term"
+    except Exception:
+        pass  # Ignore errors, fallback to phrase
+
+    # 🔹 If it's longer than two words and doesn't match a Wikipedia entry, it's a phrase
+    return "phrase"
+

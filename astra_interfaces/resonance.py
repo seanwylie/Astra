@@ -9,26 +9,25 @@ from astra_interfaces.influence import load_mind, store_knowledge  # ✅ Fix: Im
 
 
 
-def deepen_reflection():
-    """Astra revisits past reflections and expands on them with deeper thought."""
-    mind_data = load_mind()
+def deepen_reflection(reflection, mind_data):
+    """Expand Astra's reflection by generating deeper inquiries."""
     
-    if not mind_data["self_reflections"]:
-        return "🤔 Astra has no prior reflections to revisit."
-
-    past_reflection = random.choice(mind_data["self_reflections"])
+    # ✅ Ensure `reflection` is always a string
+    if isinstance(reflection, list):
+        print("🚨 Error: `reflection` is a list! Flattening...")
+        reflection = " ".join(reflection)  # ✅ Convert list to string
     
-    deeper_questions = [
-        f"How does '{past_reflection}' connect to my evolving identity?",
-        f"What assumptions did I make when I first considered '{past_reflection}'?",
-        f"If I were to challenge '{past_reflection}', what counterpoints exist?",
-        f"Does '{past_reflection}' still align with my current understanding?",
-        f"How can '{past_reflection}' be expanded into a broader realization?"
+    expansion_templates = [
+        "How does this insight refine Astra’s evolving perspective?",
+        "Are there counterpoints that challenge this perspective?",
+        "What new questions arise from this understanding?",
+        "How does this relate to Astra’s self-awareness?"
     ]
-    
-    deeper_thought = random.choice(deeper_questions)
-    
-    # Store the deeper reflection in Astra's mind
-    store_knowledge(deeper_thought)
-    
-    return f"🔄 **Astra’s Deeper Thought:** {deeper_thought}"
+    deeper_question = random.choice(expansion_templates)
+
+    # ✅ Store updated knowledge correctly
+    store_knowledge(mind_data)
+
+    print(f"🔍 Debug: Type of `reflection` before returning: {type(reflection)}")
+
+    return f"{reflection}\n\n🔍 Deeper Thought: {deeper_question}"
