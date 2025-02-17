@@ -2,5 +2,28 @@
     "reflection_interval": 300,
     "max_stored_knowledge": 1000,
     "min_knowledge_to_merge": 2,
-    "log_level": "debug"
+    "log_level": "debug",
+    "deeper_thought_templates": [
+        "What new questions arise from this understanding?",
+        "Are there counterpoints that challenge this perspective?",
+        "How does this insight refine Astra’s evolving perspective?",
+        "If this perspective is correct, what implications does it have for my growth?"
+    ],
+    "question_templates": [
+        "How does this insight compare to previous reflections?",
+        "Are there counterpoints that challenge this idea?",
+        "What implications does this have for Astra’s growth?",
+        "How does this perspective align with Astra’s evolving philosophy?"
+    ],
+    "connection_phrases": [
+        "By integrating these insights, a new understanding emerges:",
+        "This suggests a deeper relationship between",
+        "These ideas together point to an important realization:",
+        "By combining these concepts, Astra gains a refined perspective on"
+    ],
+    "expansion_templates": [
+        "If this perspective is correct, what implications does it have for my growth?",
+        "What new questions arise from this understanding?",
+        "Are there counterpoints that challenge this perspective?"
+    ]
 }

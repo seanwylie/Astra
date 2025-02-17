@@ -2,6 +2,10 @@ import random
 import wikipedia
 from bs4 import BeautifulSoup
 
+from astra_core.config_loader import load_config  # ✅ Load configs dynamically
+
+general_config = load_config("general_config")  # ✅ Load schedule settings
+
 def refine_knowledge(existing_ideas, mind_data):
     """Merge and refine knowledge, ensuring only true redundancy is removed."""
     if len(existing_ideas) < 2:
@@ -37,12 +41,7 @@ def refine_knowledge(existing_ideas, mind_data):
         return None  
 
     # 🔹 Generate a natural knowledge integration phrase
-    connection_phrases = [
-        "By integrating these insights, a new understanding emerges:",
-        "This suggests a deeper relationship between",
-        "These ideas together point to an important realization:",
-        "By combining these concepts, Astra gains a refined perspective on"
-    ]
+    connection_phrases = general_config["connection_phrases"]
     new_concept = f"{random.choice(connection_phrases)} {concept_1} and {concept_2}."
 
     # ✅ Ensure no duplication
@@ -72,11 +71,7 @@ def refine_knowledge(existing_ideas, mind_data):
 
 def deepen_reflection(reflection):
     """Expands on a reflection by adding depth or new questions."""
-    expansion_templates = [
-        "If this perspective is correct, what implications does it have for my growth?",
-        "What new questions arise from this understanding?",
-        "Are there counterpoints that challenge this perspective?"
-    ]
+    expansion_templates = general_config["expansion_templates"]
     deeper_question = random.choice(expansion_templates)
     return f"{reflection}\n\n🔍 Deeper Thought: {deeper_question}"
 

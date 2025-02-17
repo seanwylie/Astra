@@ -10,6 +10,11 @@ from astra_core.expansion import refine_knowledge
 from astra_interfaces.influence import load_mind, save_mind
 from astra_core.knowledge import retrieve_external_knowledge, extract_unknown_terms
 
+from astra_core.config_loader import load_config  # ✅ Load configs dynamically
+
+general_config = load_config("general_config")  # ✅ Load schedule settings
+
+
 def process_reflection():
     """Generate, refine, and deepen Astra's reflections while preventing duplicate deeper thoughts."""
     mind_data = load_mind()
@@ -19,13 +24,13 @@ def process_reflection():
     # print(f"🔍 Debug: Type of `self_reflections` after load: {type(mind_data['self_reflections'])}")
 
 
-    if "self_reflections" in mind_data:
+    # if "self_reflections" in mind_data:
         # print(f"🔍 Debug: Type of `mind_data['self_reflections']`: {type(mind_data['self_reflections'])}")
         # (f"🔍 Debug: Content of `mind_data['self_reflections']`: {mind_data['self_reflections']}")
-        print(f"🔍 Debug: Type of `self_reflections` after load: {type(mind_data['self_reflections'])}")
+        # print(f"🔍 Debug: Type of `self_reflections` after load: {type(mind_data['self_reflections'])}")
 
-    else:
-        print("🚨 `self_reflections` is MISSING from `mind_data`!")
+    # else:
+        # print("🚨 `self_reflections` is MISSING from `mind_data`!")
 
     # ✅ Ensure `mind_data` is properly structured
     if not isinstance(mind_data.get("self_reflections", []), list):
@@ -70,12 +75,7 @@ def process_reflection():
     # print(f"🔍 Debug (Before Error): Type of `mind_data['self_reflections']`: {type(mind_data.get('self_reflections'))}")
 
     # ✅ Generate a varied "Deeper Thought"
-    deeper_thought_templates = [
-        "What new questions arise from this understanding?",
-        "Are there counterpoints that challenge this perspective?",
-        "How does this insight refine Astra’s evolving perspective?",
-        "If this perspective is correct, what implications does it have for my growth?"
-    ]
+    deeper_thought_templates = general_config["deeper_thought_templates"]
     deeper_thought = f"\n\n🔍 Deeper Thought: {random.choice(deeper_thought_templates)}"
 
     # ✅ Append only ONE "Deeper Thought"
@@ -98,12 +98,7 @@ def process_reflection():
         print(f"📝 Added new reflection: {expanded_reflection[:100]}...")
 
     # ✅ Generate a varied follow-up question
-    question_templates = [
-        "How does this insight compare to previous reflections?",
-        "Are there counterpoints that challenge this idea?",
-        "What implications does this have for Astra’s growth?",
-        "How does this perspective align with Astra’s evolving philosophy?"
-    ]
+    question_templates = general_config["question_templates"]
     new_question = f"{random.choice(question_templates)} ({expanded_reflection})"
 
     # ✅ Prevent duplicate questions before adding
