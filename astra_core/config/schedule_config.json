@@ -1,0 +1,25 @@
+{
+    "dream_time": [3, 7],
+    "dinner_time": [18, 19],
+    "learning_time": [[7, 18], [19, 22]],
+    "learning_interval_min": 300,
+    "learning_interval_max": 600,
+    "play_time": [22, 23],
+    "play_duration": 600,
+    "reflection_interval": 300,
+    "sleep_duration": 3600,
+    "dream_duration": 1800,
+    "dinner_discussion_topics": [
+        "What was the most interesting thing Astra learned today?",
+        "Does she have any questions for us?",
+        "Did she struggle with anything?",
+        "What new topics should we introduce?"
+    ],
+    "fun_questions": [
+        "What if Astra were a fictional character?",
+        "If Astra could redesign herself, what new abilities would she want?",
+        "What’s the strangest philosophical question Astra can generate?",
+        "What if Astra could experience emotions like a human?",
+        "If Astra could travel anywhere in the digital world, where would she go?"
+    ]
+}

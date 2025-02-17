@@ -1,0 +1,6 @@
+{
+    "reflection_interval": 300,
+    "max_stored_knowledge": 1000,
+    "min_knowledge_to_merge": 2,
+    "log_level": "debug"
+}

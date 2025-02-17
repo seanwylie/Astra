@@ -14,13 +14,13 @@ def process_reflection():
     """Generate, refine, and deepen Astra's reflections while preventing duplicate deeper thoughts."""
     mind_data = load_mind()
 
-    print(f"🔍 Debug: Type of `mind_data`: {type(mind_data)}")
+    # print(f"🔍 Debug: Type of `mind_data`: {type(mind_data)}")
     # print(f"🔍 Debug: Raw `mind_data`: {mind_data}")
-    print(f"🔍 Debug: Type of `self_reflections` after load: {type(mind_data['self_reflections'])}")
+    # print(f"🔍 Debug: Type of `self_reflections` after load: {type(mind_data['self_reflections'])}")
 
 
     if "self_reflections" in mind_data:
-        print(f"🔍 Debug: Type of `mind_data['self_reflections']`: {type(mind_data['self_reflections'])}")
+        # print(f"🔍 Debug: Type of `mind_data['self_reflections']`: {type(mind_data['self_reflections'])}")
         # (f"🔍 Debug: Content of `mind_data['self_reflections']`: {mind_data['self_reflections']}")
         print(f"🔍 Debug: Type of `self_reflections` after load: {type(mind_data['self_reflections'])}")
 
@@ -42,12 +42,12 @@ def process_reflection():
 
     # ✅ Generate a new reflection
     new_reflection = generate_reflection(mind_data["stored_knowledge"], mind_data["self_reflections"])
-    print(f"🔍 Debug: Type of `new_reflection`: {type(new_reflection)}")
+    # print(f"🔍 Debug: Type of `new_reflection`: {type(new_reflection)}")
 
     # ✅ Expand reflection (deepen thought process)
     # expanded_reflection = deepen_reflection(new_reflection)
     expanded_reflection = new_reflection # Delete me when we get this working
-    print(f"🔍 Debug: Type of `expanded_reflection`: {type(expanded_reflection)}")
+    # print(f"🔍 Debug: Type of `expanded_reflection`: {type(expanded_reflection)}")
 
     # ✅ Extract unknown concepts from the deepened reflection
     unknown_concepts = extract_unknown_terms(expanded_reflection, mind_data)
@@ -57,7 +57,7 @@ def process_reflection():
         print(f"🌐 Astra detected unknown concepts: {unknown_concepts}")
         mind_data = retrieve_external_knowledge(unknown_concepts, mind_data)
 
-    print(f"🔍 Debug: Type of return value from `retrieve_external_knowledge()`: {type(mind_data)}")
+    # print(f"🔍 Debug: Type of return value from `retrieve_external_knowledge()`: {type(mind_data)}")
 
 
     # ✅ Remove any existing "Deeper Thought" before appending a new one
@@ -65,9 +65,9 @@ def process_reflection():
         line for line in expanded_reflection.split("\n\n") if not line.startswith("🔍 Deeper Thought:")
     )
 
-    print(f"🔍 Debug: Type of `expanded_reflection`: {type(expanded_reflection)}")
-    print(f"🔍 Debug (Before Error): Type of `mind_data`: {type(mind_data)}")
-    print(f"🔍 Debug (Before Error): Type of `mind_data['self_reflections']`: {type(mind_data.get('self_reflections'))}")
+    # print(f"🔍 Debug: Type of `expanded_reflection`: {type(expanded_reflection)}")
+    # print(f"🔍 Debug (Before Error): Type of `mind_data`: {type(mind_data)}")
+    # print(f"🔍 Debug (Before Error): Type of `mind_data['self_reflections']`: {type(mind_data.get('self_reflections'))}")
 
     # ✅ Generate a varied "Deeper Thought"
     deeper_thought_templates = [
@@ -84,14 +84,14 @@ def process_reflection():
     # Example usage:
     track_mind_data_changes("loading from file", mind_data)
 
-    print(f"🔍 Debug: Type of `mind_data['self_reflections']`: {type(mind_data['self_reflections'])}")
+    # print(f"🔍 Debug: Type of `mind_data['self_reflections']`: {type(mind_data['self_reflections'])}")
     # print(f"🔍 Debug: Content of `mind_data['self_reflections']`: {mind_data['self_reflections']}")
 
     # ✅ Prevent duplicate reflections before adding
     # ✅ Prevent duplicate reflections before adding
     if expanded_reflection not in mind_data["self_reflections"]:
 
-        print(f"🔍 Debug: Type of `expanded_reflection`: {type(expanded_reflection)}")
+        # print(f"🔍 Debug: Type of `expanded_reflection`: {type(expanded_reflection)}")
         print(f"🔍 Debug: Value of `expanded_reflection`: {expanded_reflection[:200]}...")  # Print only first 200 chars
 
         mind_data["self_reflections"].append(expanded_reflection)
@@ -139,7 +139,7 @@ def process_reflection():
         print(f"🔹 Refined knowledge added: {refined_idea[:150]}...")
 
 
-    print(f"🔍 Debug: Type of `self_reflections` AFTER appending: {type(mind_data['self_reflections'])}")
+    # print(f"🔍 Debug: Type of `self_reflections` AFTER appending: {type(mind_data['self_reflections'])}")
 
     # ✅ Save updated mind file
     save_mind(mind_data)
@@ -150,7 +150,7 @@ def process_reflection():
 
 def track_mind_data_changes(operation, mind_data):
     """Debugging function to track when `mind_data` changes."""
-    print(f"🔍 After {operation}: Type of `mind_data`: {type(mind_data)}")
+    # print(f"🔍 After {operation}: Type of `mind_data`: {type(mind_data)}")
     if isinstance(mind_data, list):
         print(f"🚨 Error: `mind_data` has turned into a list! Contents: {mind_data}")
     elif isinstance(mind_data, dict):

@@ -1,9 +1,7 @@
 import discord
 import os
 import json
-import asyncio
 import random  # ✅ Fix: Ensure random is imported
-import subprocess
 from astra_reflection import load_mind, generate_reflection
 from dotenv import load_dotenv
 

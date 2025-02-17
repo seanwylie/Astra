@@ -1,0 +1,5 @@
+{
+    "prioritize_dictionary": true,
+    "dictionary_api_url": "https://api.dictionaryapi.dev/api/v2/entries/en/",
+    "wikipedia_sentences": 2
+}

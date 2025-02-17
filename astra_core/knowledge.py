@@ -1,4 +1,10 @@
+import requests
+import re
 from astra_core.expansion import is_term_or_phrase, fetch_wikipedia_summary
+from config_loader import load_config
+
+lookup_config = load_config("lookup_config")
+
 
 disambiguation_keywords = ["disambiguation", "may refer to", "multiple meanings"]
 
@@ -27,21 +33,9 @@ def should_lookup_concept(concept, mind_data):
 
 
 
-def detect_conflict(concept, new_definitions, mind_data):
-    """Detect contradictions between new definitions and stored knowledge."""
-    conflicting = []
-    
-    for definition in new_definitions:
-        for existing_knowledge in mind_data["stored_knowledge"]:
-            if concept.lower() in existing_knowledge.lower():
-                if definition.lower() not in existing_knowledge.lower():
-                    conflicting.append((definition, existing_knowledge))
-
-    return conflicting
-
 def retrieve_external_knowledge(search_terms, mind_data):
     """Fetch knowledge from external sources and update stored knowledge."""
-    print(f"🔍 Debug: Type of `mind_data` BEFORE lookup: {type(mind_data)}")
+    # print(f"🔍 Debug: Type of `mind_data` BEFORE lookup: {type(mind_data)}")
 
     # ✅ Ensure `mind_data` is always a dictionary
     if not isinstance(mind_data, dict):
@@ -66,19 +60,22 @@ def retrieve_external_knowledge(search_terms, mind_data):
         print(f"🌐 Determining best lookup method for: {concept} → {lookup_type.upper()}")
 
         if lookup_type == "term":
+            # ✅ Try Dictionary API first
+            dictionary_info = lookup_dictionary_definition(concept)  # ✅ Calls the dictionary API
+            if dictionary_info:
+                print(f"📖 Dictionary API returned: {dictionary_info[:100]}...")
+                if dictionary_info not in mind_data["stored_knowledge"]:
+                    new_knowledge.append(dictionary_info)
+                    print(f"✅ Added new dictionary definition: {dictionary_info[:100]}...")
+                continue  # ✅ Skip Wikipedia if dictionary API succeeded
+
+            # ✅ If Dictionary API fails, fallback to Wikipedia
             wiki_info = fetch_wikipedia_summary(concept)
-
-            # 🚨 DEBUG: Show what Wikipedia is returning
-            print(f"🔍 Wikipedia lookup result type: {type(wiki_info)}")
-            print(f"📄 Wikipedia lookup content preview: {wiki_info[:100]}..." if wiki_info else "⚠ Wikipedia lookup returned NOTHING!")
-
             if wiki_info:
-                if isinstance(wiki_info, list):  # 🚨 Flatten lists just in case
-                    wiki_info = " ".join(wiki_info)
-
+                print(f"📄 Wikipedia returned: {wiki_info[:100]}...")
                 if wiki_info not in mind_data["stored_knowledge"]:
                     new_knowledge.append(wiki_info)
-                    print(f"✅ New Wikipedia knowledge added: {wiki_info[:100]}...")
+                    print(f"✅ Added new Wikipedia knowledge: {wiki_info[:100]}...")
 
         elif lookup_type == "phrase":
             print(f"🔍 (Placeholder) Would search Google for: {concept}")
@@ -87,10 +84,8 @@ def retrieve_external_knowledge(search_terms, mind_data):
     if new_knowledge:
         mind_data["stored_knowledge"].extend(new_knowledge)
 
-    print(f"🔍 Debug: Type of `mind_data` AFTER lookup: {type(mind_data)}")
+    # print(f"🔍 Debug: Type of `mind_data` AFTER lookup: {type(mind_data)}")
     return mind_data  # ✅ Always return a dictionary
-
-
 
 def seek_external_knowledge(unknown_concepts, mind_data):
     """Determine which unknown concepts need lookup and retrieve knowledge."""
@@ -135,4 +130,24 @@ def extract_unknown_terms(reflection, mind_data):
 
     print(f"🔍 Final unknown concepts after filtering: {unknown_terms}")
     return unknown_terms
+
+def lookup_dictionary_definition(word):
+    """Fetch definitions for rare words using an online dictionary API."""
+    # ✅ Clean up the word to remove punctuation
+    clean_word = re.sub(r'[^\w\s]', '', word).strip()
+    
+    try:
+        print(f"📖 Dictionary lookup for '{clean_word}'")
+        response = requests.get(f"https://api.dictionaryapi.dev/api/v2/entries/en/{clean_word}")
+
+        if response.status_code == 200:
+            data = response.json()
+            definitions = [entry["meanings"][0]["definitions"][0]["definition"] for entry in data]
+            return f"🔹 {clean_word}: {definitions[0]}"
+        else:
+            print(f"⚠ Dictionary API returned status {response.status_code} for '{clean_word}'")
+            return None
+    except Exception as e:
+        print(f"⚠ Dictionary lookup failed for '{clean_word}': {e}")
+        return None
 

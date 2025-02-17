@@ -1,5 +1,4 @@
 import random
-import requests
 import wikipedia
 from bs4 import BeautifulSoup
 
@@ -96,7 +95,7 @@ def fetch_wikipedia_summary(query):
         soup = BeautifulSoup(summary, "html.parser")
         summary = soup.get_text()
 
-        print(f"✅ Wikipedia returned: {type(summary)}")
+        # print(f"✅ Wikipedia returned: {type(summary)}")
         print(f"📄 Wikipedia content preview: {summary[:100]}..." if summary else "⚠ Wikipedia returned NOTHING!")
 
         return summary
@@ -150,17 +149,3 @@ def is_related(concept_1, concept_2):
     return len(common_words) > 2  # ✅ Consider related if at least 2 words overlap
 
 
-def lookup_dictionary_definition(word):
-    """Fetch definitions for rare words using an online dictionary API."""
-    try:
-        response = requests.get(f"https://api.dictionaryapi.dev/api/v2/entries/en/{word}")
-        print(f"⚠ Dictionary lookup for '{word}'")
-        if response.status_code == 200:
-            data = response.json()
-            definitions = [entry["meanings"][0]["definitions"][0]["definition"] for entry in data]
-            return f"🔹 {word}: {definitions[0]}"
-        else:
-            return None
-    except Exception as e:
-        print(f"⚠ Dictionary lookup failed for '{word}'")
-        return None

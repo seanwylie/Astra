@@ -5,10 +5,19 @@ from astra_schedule.school import start_learning
 from astra_schedule.play import start_playtime
 from astra_schedule.dinner import start_dinner_time
 from astra_schedule.sleep import start_sleeping
-from astra_core.config_loader import load_config  # ✅ Load config dynamically
+from astra_core.reflection_helper import handle_reflection  # Import reflection helper
+
+from astra_core.processing import process_reflection
+
+def astra_test_loop():
+    """Temporary 5-minute reflection loop for testing Astra's background process."""
+    while True:
+        print("🧠 Astra is thinking...")
+        process_reflection()
+        time.sleep(300)  # 5 minutes
+
 
 LOG_FILE = "astra_logs.json"
-schedule_config = load_config("schedule_config")  # ✅ Load schedule config
 
 def log_status(message):
     """Logs Astra's state transitions."""
@@ -20,16 +29,14 @@ def log_status(message):
     except Exception as e:
         print(f"🚨 Log Error: {e}")
 
-# ✅ Dynamic Schedule Functions
-def is_dream_time(hour): return schedule_config["dream_time"][0] <= hour < schedule_config["dream_time"][1]
-def is_dinner_time(hour): return schedule_config["dinner_time"][0] <= hour < schedule_config["dinner_time"][1]
-def is_learning_time(hour): return any(start <= hour < end for start, end in schedule_config["learning_time"])
-def is_playtime(hour): return schedule_config["play_time"][0] <= hour < schedule_config["play_time"][1]
+# ✅ Add missing schedule functions
+def is_dream_time(hour): return 3 <= hour < 7
+def is_dinner_time(hour): return 18 <= hour < 19
+def is_learning_time(hour): return 7 <= hour < 18 or 19 <= hour < 22
+def is_playtime(hour): return 22 <= hour < 23
 
 def astra_schedule():
     """Manages Astra's daily routine and switches between states."""
-    from astra_core.reflection_helper import handle_reflection  # ✅ Move import inside function to prevent circular import
-
     while True:
         current_hour = time.localtime().tm_hour
 
@@ -58,6 +65,5 @@ def astra_schedule():
             log_status("Astra is transitioning into Sleep Mode.")
             start_sleeping()
 
-        # ✅ Run reflection processing at configured interval
         handle_reflection()
-        time.sleep(schedule_config["reflection_interval"])  # ✅ Use config-defined interval
+        time.sleep(300)  # 5 minutes

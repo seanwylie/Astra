@@ -1,6 +1,12 @@
 import time
+from astra_core.config_loader import load_config  # ✅ Load configs dynamically
+
+schedule_config = load_config("schedule_config")  # ✅ Load schedule settings
 
 def start_sleeping():
-    """Astra’s Sleep Mode (11 PM - 3 AM)."""
+    """Astra’s Sleep Mode (configurable duration)."""
     print("😴 Astra is sleeping...")
-    time.sleep(60 * 60)  # Sleep for an hour
+
+    # ✅ Use config-based sleep duration
+    sleep_duration = schedule_config["sleep_duration"]
+    time.sleep(sleep_duration)
