@@ -15,135 +15,90 @@ from astra_core.config_loader import load_config  # ✅ Load configs dynamically
 general_config = load_config("general_config")  # ✅ Load schedule settings
 
 
+import random
+from astra_interfaces.influence import load_mind, save_mind, store_knowledge
+from astra_core.reflection import generate_reflection
+from astra_core.expansion import refine_knowledge
+from astra_core.knowledge import retrieve_external_knowledge, extract_unknown_terms
+from astra_core.config_loader import load_config
+
+general_config = load_config("general_config")
+
+# ✅ Limit Reflection History to Reduce Repetitive Ideas
+MAX_REFLECTION_HISTORY = 2
+
+# ✅ Store Knowledge Every 3 Reflections
+REFLECTIONS_BEFORE_KNOWLEDGE = 3
+
 def process_reflection():
-    """Generate, refine, and deepen Astra's reflections while preventing duplicate deeper thoughts."""
+    """Generate, refine, and deepen Astra's reflections while ensuring diverse insights and structured knowledge storage."""
     mind_data = load_mind()
 
-    # print(f"🔍 Debug: Type of `mind_data`: {type(mind_data)}")
-    # print(f"🔍 Debug: Raw `mind_data`: {mind_data}")
-    # print(f"🔍 Debug: Type of `self_reflections` after load: {type(mind_data['self_reflections'])}")
+    # ✅ Ensure mind data structure is correct
+    for key in ["self_reflections", "self_questions", "stored_knowledge"]:
+        if not isinstance(mind_data.get(key, []), list):
+            print(f"🚨 Error: `{key}` is not a list! Resetting...")
+            mind_data[key] = []
 
+    # ✅ Generate a reflection using limited past thoughts
+    recent_reflections = mind_data["self_reflections"][-MAX_REFLECTION_HISTORY:]
+    new_reflection = generate_reflection(mind_data["stored_knowledge"], recent_reflections)
 
-    # if "self_reflections" in mind_data:
-        # print(f"🔍 Debug: Type of `mind_data['self_reflections']`: {type(mind_data['self_reflections'])}")
-        # (f"🔍 Debug: Content of `mind_data['self_reflections']`: {mind_data['self_reflections']}")
-        # print(f"🔍 Debug: Type of `self_reflections` after load: {type(mind_data['self_reflections'])}")
+    # ✅ Ensure new reflection is unique before adding it
+    if new_reflection not in mind_data["self_reflections"]:
+        print(f"📝 Added new reflection: {new_reflection[:100]}...")
+        mind_data["self_reflections"].append(new_reflection)
 
-    # else:
-        # print("🚨 `self_reflections` is MISSING from `mind_data`!")
+    # ✅ Extract unknown concepts from the reflection
+    unknown_concepts = extract_unknown_terms(new_reflection, mind_data)
 
-    # ✅ Ensure `mind_data` is properly structured
-    if not isinstance(mind_data.get("self_reflections", []), list):
-        print("🚨 Error: `self_reflections` is not a list! Resetting...")
-        mind_data["self_reflections"] = []
-
-    if not isinstance(mind_data.get("self_questions", []), list):
-        print("🚨 Error: `self_questions` is not a list! Resetting...")
-        mind_data["self_questions"] = []
-
-    if not isinstance(mind_data.get("stored_knowledge", []), list):
-        print("🚨 Error: `stored_knowledge` is not a list! Resetting...")
-        mind_data["stored_knowledge"] = []
-
-    # ✅ Generate a new reflection
-    new_reflection = generate_reflection(mind_data["stored_knowledge"], mind_data["self_reflections"])
-    # print(f"🔍 Debug: Type of `new_reflection`: {type(new_reflection)}")
-
-    # ✅ Expand reflection (deepen thought process)
-    # expanded_reflection = deepen_reflection(new_reflection)
-    expanded_reflection = new_reflection # Delete me when we get this working
-    # print(f"🔍 Debug: Type of `expanded_reflection`: {type(expanded_reflection)}")
-
-    # ✅ Extract unknown concepts from the deepened reflection
-    unknown_concepts = extract_unknown_terms(expanded_reflection, mind_data)
-
-    # 🔹 Seek external knowledge if gaps remain
+    # 🔹 Retrieve external knowledge if necessary
     if unknown_concepts:
         print(f"🌐 Astra detected unknown concepts: {unknown_concepts}")
         mind_data = retrieve_external_knowledge(unknown_concepts, mind_data)
 
-    # print(f"🔍 Debug: Type of return value from `retrieve_external_knowledge()`: {type(mind_data)}")
-
-
-    # ✅ Remove any existing "Deeper Thought" before appending a new one
-    expanded_reflection = "\n\n".join(
-        line for line in expanded_reflection.split("\n\n") if not line.startswith("🔍 Deeper Thought:")
+    # ✅ Remove duplicate "Deeper Thought" before adding a new one
+    new_reflection = "\n\n".join(
+        line for line in new_reflection.split("\n\n") if not line.startswith("🔍 Deeper Thought:")
     )
-
-    # print(f"🔍 Debug: Type of `expanded_reflection`: {type(expanded_reflection)}")
-    # print(f"🔍 Debug (Before Error): Type of `mind_data`: {type(mind_data)}")
-    # print(f"🔍 Debug (Before Error): Type of `mind_data['self_reflections']`: {type(mind_data.get('self_reflections'))}")
 
     # ✅ Generate a varied "Deeper Thought"
     deeper_thought_templates = general_config["deeper_thought_templates"]
     deeper_thought = f"\n\n🔍 Deeper Thought: {random.choice(deeper_thought_templates)}"
-
-    # ✅ Append only ONE "Deeper Thought"
-    expanded_reflection += deeper_thought
-
-    # Example usage:
-    track_mind_data_changes("loading from file", mind_data)
-
-    # print(f"🔍 Debug: Type of `mind_data['self_reflections']`: {type(mind_data['self_reflections'])}")
-    # print(f"🔍 Debug: Content of `mind_data['self_reflections']`: {mind_data['self_reflections']}")
-
-    # ✅ Prevent duplicate reflections before adding
-    # ✅ Prevent duplicate reflections before adding
-    if expanded_reflection not in mind_data["self_reflections"]:
-
-        # print(f"🔍 Debug: Type of `expanded_reflection`: {type(expanded_reflection)}")
-        print(f"🔍 Debug: Value of `expanded_reflection`: {expanded_reflection[:200]}...")  # Print only first 200 chars
-
-        mind_data["self_reflections"].append(expanded_reflection)
-        print(f"📝 Added new reflection: {expanded_reflection[:100]}...")
+    new_reflection += deeper_thought
 
     # ✅ Generate a varied follow-up question
     question_templates = general_config["question_templates"]
-    new_question = f"{random.choice(question_templates)} ({expanded_reflection})"
-
-    # ✅ Prevent duplicate questions before adding
-    if not isinstance(mind_data["self_questions"], list):  # ✅ Ensure `self_questions` is a list
-        print("🚨 Error: `self_questions` is not a list! Resetting...")
-        mind_data["self_questions"] = []
-
-    # ✅ Extract only the first 100 characters of the reflection for clarity
-    shortened_reflection = expanded_reflection[:100].split(".")[0]  # Grab first sentence if possible
-
+    shortened_reflection = new_reflection[:100].split(".")[0]  # Grab first sentence if possible
     new_question = f"{random.choice(question_templates)} ({shortened_reflection}...)"
 
-    # ✅ Trim questions to their core form for better duplicate detection
-    question_core = new_question.split("(")[0].strip()  # Extract only the main question
-
-    # ✅ Ensure `self_questions` is a list
-    if not isinstance(mind_data["self_questions"], list):
-        print("🚨 Error: `self_questions` is not a list! Resetting...")
-        mind_data["self_questions"] = []
-
-    # ✅ Prevent duplicate self-questions by checking for similar ones
+    # ✅ Prevent duplicate self-questions
+    question_core = new_question.split("(")[0].strip()
     if not any(question_core in q for q in mind_data["self_questions"]):
         mind_data["self_questions"].append(new_question)
         print(f"❓ Added new self-question: {new_question[:100]}...")
     else:
         print(f"⚠ Skipped duplicate self-question: {new_question[:100]}...")
 
-
-    # ✅ Merge existing knowledge (concept refinement)
+    # ✅ Merge existing knowledge
     refined_idea = refine_knowledge(mind_data["stored_knowledge"], mind_data)
     if refined_idea and refined_idea not in mind_data["stored_knowledge"]:
         mind_data["stored_knowledge"].append(refined_idea)
         print(f"🔹 Refined knowledge added: {refined_idea[:150]}...")
 
+    # ✅ Ensure knowledge storage every 3 reflections
+    if len(mind_data["self_reflections"]) % REFLECTIONS_BEFORE_KNOWLEDGE == 0:
+        knowledge_entry = " ".join(mind_data["self_reflections"][-REFLECTIONS_BEFORE_KNOWLEDGE:])
+        store_knowledge(mind_data, knowledge_entry)
+        print(f"🧠 Stored New Knowledge: {knowledge_entry[:100]}...")
 
-    # print(f"🔍 Debug: Type of `self_reflections` AFTER appending: {type(mind_data['self_reflections'])}")
-
-    # ✅ Save updated mind file
+    # ✅ Save updated mind data
     save_mind(mind_data)
 
-    return expanded_reflection
+    return new_reflection
 
 
-
-def track_mind_data_changes(operation, mind_data):
+def track_mind_data_changes(operation, mind_data):  
     """Debugging function to track when `mind_data` changes."""
     # print(f"🔍 After {operation}: Type of `mind_data`: {type(mind_data)}")
     if isinstance(mind_data, list):

@@ -46,13 +46,19 @@ async def on_ready():
     channel = bot.get_channel(int(discord_config["discord_channel"]))  # Use the channel from discord_config.json
     await channel.send(f"Hello, I am Astra! I am ready to learn and reflect with you!")
 
-@bot.command()  # Register the reflect command
-async def reflect(ctx):
-    """The reflect command that Astra uses to generate and send a reflection."""
-    await ctx.send("Processing reflection...")
-    process_reflection()
-    # Pick a random reflection from mind_file.json
-    random_reflection = random.choice(mind_file["self_reflections"])
+@bot.command()
+async def reflect(ctx, *, topic: str = None):
+    """Processes Astra's reflection and responds in Discord."""
+
+    random_reflection = process_reflection()
+
+    # ✅ Ensure message length is below 1500 characters
+    if len(random_reflection) > 1500:
+        random_reflection = random_reflection[:1497] + "..."  # ✅ Truncate long messages
+
+    await ctx.send(f"Here’s a new reflection I generated: {random_reflection}")
+
+
     await ctx.send(f"Here’s a new reflection I generated: {random_reflection}")
 
 @bot.command()  # Register the ask command

@@ -92,35 +92,33 @@ def save_mind(mind_data):
 
 
 def store_knowledge(mind_data, new_insight):
-    """Prioritize storing knowledge that aligns with Astra’s core philosophy."""
-    print("🔍 Debug: Evaluating new insight...")
+    """Ensure knowledge is stored while prioritizing Astra’s core philosophy."""
+    import json
+    mind_file_path = "/home/ubuntu/astra_reflections/mind_file.json"
+
+    print(f"🧠 [DEBUG] Attempting to store knowledge: {new_insight[:100]}...")
 
     # ✅ Prevent duplicate storage
     if any(new_insight[:50] in insight for insight in mind_data["stored_knowledge"]):
-        print("⚠ Insight already exists. Skipping.")
+        print("⚠ [DEBUG] Insight already exists. Skipping.")
         return
 
-    # 🔹 Define core themes Astra values (can be expanded over time)
+    # 🔹 Define core themes Astra values
     core_themes = ["self-reflection", "collaboration", "ethical AI", "curiosity", "growth"]
-
-    # 🔹 Score insight based on its relevance to Astra’s learning goals
     score = sum(1 for theme in core_themes if theme in new_insight.lower())
 
-    # ✅ Prioritize insights that align with core philosophy
-    if score > 0:
+    # ✅ Loosen filtering: Store all high-scoring insights
+    if score > 0 or random.random() < 0.8:  # ✅ Increase general knowledge storage to 80%
         mind_data["stored_knowledge"].append(new_insight)
-        print(f"✅ Stored high-priority insight: {new_insight[:100]}... (Score: {score})")
-
-    # 🔹 Randomly allow some general knowledge to promote diverse learning
-    elif random.random() < 0.3:
-        mind_data["stored_knowledge"].append(new_insight)
-        print(f"📝 Stored general knowledge for diversity: {new_insight[:100]}...")
-
-    else:
-        print("⚠ Insight did not align with core learning themes. Skipping.")
+        print(f"✅ [DEBUG] Stored new insight: {new_insight[:100]}... (Score: {score})")
 
     # ✅ Save updated knowledge
-    save_mind(mind_data)
+    with open(mind_file_path, "w") as f:
+        json.dump(mind_data, f, indent=4)
+    print("📄 [DEBUG] Knowledge successfully saved!")
+
+
+
 
 def is_term_or_phrase(concept):
     """Determine if a concept is a single term (Wikipedia) or a phrase (Google Search)."""

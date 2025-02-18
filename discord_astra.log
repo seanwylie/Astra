@@ -1,0 +1,22 @@
+[2025-02-18 18:43:48] [INFO    ] discord.client: logging in using static token
+[2025-02-18 18:43:48] [INFO    ] discord.gateway: Shard ID None has connected to Gateway (Session ID: 0e8f391ef340b38f47ab43059ec98f7f).
+[2025-02-18 18:50:53] [ERROR   ] discord.ext.commands.bot: Ignoring exception in command reflect
+Traceback (most recent call last):
+  File "/home/ubuntu/.local/lib/python3.10/site-packages/discord/ext/commands/core.py", line 235, in wrapped
+    ret = await coro(*args, **kwargs)
+  File "/home/ubuntu/astra_reflections/astra_core/discord_astra.py", line 53, in reflect
+    process_reflection()
+  File "/home/ubuntu/astra_reflections/astra_core/processing.py", line 74, in process_reflection
+    # print(f"🔍 Debug (Before Error): Type of `mind_data`: {type(mind_data)}")
+NameError: name 'store_knowledge' is not defined
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/home/ubuntu/.local/lib/python3.10/site-packages/discord/ext/commands/bot.py", line 1366, in invoke
+    await ctx.command.invoke(ctx)
+  File "/home/ubuntu/.local/lib/python3.10/site-packages/discord/ext/commands/core.py", line 1029, in invoke
+    await injected(*ctx.args, **ctx.kwargs)  # type: ignore
+  File "/home/ubuntu/.local/lib/python3.10/site-packages/discord/ext/commands/core.py", line 244, in wrapped
+    raise CommandInvokeError(exc) from exc
+discord.ext.commands.errors.CommandInvokeError: Command raised an exception: NameError: name 'store_knowledge' is not defined

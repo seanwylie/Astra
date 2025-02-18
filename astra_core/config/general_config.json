@@ -4,7 +4,7 @@
     "log_file": "astra_logs.json",
     "reflection_interval": 300,
     "max_stored_knowledge": 1000,
-    "min_knowledge_to_merge": 2,
+    "min_knowledge_to_merge": 1,
     "log_level": "debug",
     "deeper_thought_templates": [
         "What new questions arise from this understanding?",

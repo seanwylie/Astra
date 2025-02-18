@@ -1,26 +1,31 @@
 import random
 
-def generate_reflection(stored_knowledge, past_reflections):
-    """Generate a structured self-reflection that avoids excessive self-referencing."""
-    print("🔍 Debug: Generating a new reflection...")
+def generate_reflection(knowledge, recent_reflections):
+    """Generate a reflection while keeping it clear, concise, and novel."""
 
-    if not stored_knowledge:
-        return "I need more knowledge to reflect on."
+    if not knowledge:
+        return "Astra is still learning, but she has no stored knowledge yet."
 
-    # ✅ Sample a subset of knowledge
-    sampled_knowledge = random.sample(stored_knowledge, min(5, len(stored_knowledge)))
+    base_idea = random.choice(knowledge)
 
-    # ✅ Choose a primary thought
-    thought = random.choice(sampled_knowledge)
+    reflection_templates = [
+        "Exploring a new perspective, I consider that {}",
+        "A challenging idea emerges: {}",
+        "By looking deeper, I see that {}",
+        "A thought-provoking realization: {}"
+    ]
 
-    # ✅ Find a related past reflection *only if it's unique*
-    related_reflections = [r for r in past_reflections if thought[:50] not in r and len(r) < 500]
-    related_reflection = random.choice(related_reflections) if related_reflections else "a previous thought I had"
+    # ✅ Ensure reflection is unique
+    for _ in range(5):  # Try multiple times for a unique reflection
+        new_reflection = random.choice(reflection_templates).format(base_idea)
 
-    # ✅ Ensure function always returns a string, never a list
-    reflection = f"Considering {thought}, and reflecting on {related_reflection}"
-    
-    print(f"✅ Generated reflection: {reflection[:100]}...")
-    print(f"🔍 Debug: Type of `reflection`: {type(reflection)}")  # ✅ Ensure it's a string
+        # ✅ Prevent reflections from repeating too often
+        if new_reflection not in recent_reflections:
+            break
 
-    return str(reflection)  # ✅ Explicitly return a string
+    # ✅ Ensure reflection isn't overly long
+    if len(new_reflection) > 500:
+        new_reflection = new_reflection[:497] + "..."
+
+    return new_reflection
+

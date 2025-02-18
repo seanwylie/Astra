@@ -1,0 +1,7 @@
+{
+    "good_day_curiosity_factor": 1.2,
+    "bad_day_curiosity_factor": 0.6,
+    "neutral_day_curiosity_factor": 1.0,
+    "default_mood": "neutral",
+    "bad_day_threshold": 0.3
+}
