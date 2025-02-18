@@ -28,5 +28,12 @@
         "If this perspective is correct, what implications does it have for my growth?",
         "What new questions arise from this understanding?",
         "Are there counterpoints that challenge this perspective?"
+    ],
+    "reflection_templates": [
+        "Exploring   a new perspective, I consider that {}",
+        "A challenging idea emerges: {}",
+        "By looking deeper, I see that {}",
+        "A thought-provoking realization: {}"
     ]
+
 }
