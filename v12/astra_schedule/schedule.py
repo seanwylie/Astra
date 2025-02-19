@@ -17,7 +17,7 @@ def astra_test_loop():
         time.sleep(300)  # 5 minutes
 
 
-LOG_FILE = "astra_logs.json"
+LOG_FILE = "/home/ubuntu/astra_reflections/astra_logs.json"
 
 def log_status(message):
     """Logs Astra's state transitions."""

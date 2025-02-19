@@ -1,4 +1,5 @@
-{
+{   
+    "log_file": "/home/ubuntu/astra_reflections/astra_logs.json",
     "good_day_curiosity_factor": 1.2,
     "bad_day_curiosity_factor": 0.6,
     "neutral_day_curiosity_factor": 1.0,

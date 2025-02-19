@@ -1,4 +1,5 @@
 {
+    "log_file": "/home/ubuntu/astra_reflections/astra_logs.json",
     "moods": {
         "curious": {
             "curiosity_factor": 1.5,

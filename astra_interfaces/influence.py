@@ -7,8 +7,6 @@ from astra_core.config_loader import load_config  # ✅ Load configs dynamically
 
 general_config = load_config("general_config")  # ✅ Load schedule settings
 
-# Get mind file path from config
-MIND_FILE_JSON = general_config["mind_file_path"]
 
 
 MIND_FILE_JSON = "mind_file.json"

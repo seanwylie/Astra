@@ -66,7 +66,6 @@ def astra_schedule():
         current_mode = get_current_mode()  # Get the current mode (school, dinner, sleep, etc.)
         curiosity_level = set_curiosity_level(current_mode)  # Get her curiosity level for the current mode
 
-        # Log status and switch between modes based on the current time of day
         if is_dream_time(current_hour):
             print("🌙 Astra is in Dream Mode.")
             log_status("Astra is transitioning into Dream Mode.")
@@ -88,11 +87,14 @@ def astra_schedule():
             start_playtime()
 
         else:
-            print("😴 Astra is in Sleep Mode.")
-            log_status("Astra is transitioning into Sleep Mode.")
+            print("😴 Astra is in Sleep Mode. No active schedule detected.")
+            log_status("Astra is transitioning into Sleep Mode due to no matching schedule.")
             start_sleeping()
 
-        curiosity_level = curiosity_level  # Make sure it's fetched
+        # ✅ Ensure curiosity level is updated based on the actual running mode
+        curiosity_level = set_curiosity_level(get_current_mode())
+        print(f"🔍 Astra Curiosity Level: {curiosity_level} in {get_current_mode()} mode")
+
         # ✅ Run reflection processing at configured interval with curiosity adjustment
         print(f"🔍 Astra Curiosity Level: {curiosity_level} in {current_mode} mode")
         handle_reflection(curiosity_level)
