@@ -1,7 +1,7 @@
 import requests
 import re
 from astra_core.expansion import is_term_or_phrase, fetch_wikipedia_summary
-from config_loader import load_config
+from utils.config_loader import load_config
 
 lookup_config = load_config("lookup_config")
 
@@ -101,25 +101,60 @@ def seek_external_knowledge(unknown_concepts, mind_data):
     return mind_data  # Return updated knowledge state
 
 
+import re
 
-COMMON_IGNORE_LIST = {"Considering", "Deeper Thought", "Reflecting on", "Implications of", "Exploring"}
+# 🚫 Stop words that have no meaningful conceptual value
+COMMON_IGNORE_LIST = {
+    "a", "an", "and", "are", "as", "at", "be", "but", "by", "for", "if", "in", "into",
+    "is", "it", "no", "not", "of", "on", "or", "such", "that", "the", "their", "then",
+    "there", "these", "they", "this", "to", "was", "will", "with", "what", "how", "who",
+    "why", "from", "she", "he", "his", "her", "mean?", "does", "should", "part", "own", 
+    "rather", "than", "between", "new", "and", "well", "see", "beneath", "around", "by",
+    "uses", "him", "brings", "those", "exploring"
+}
+
+# 💡 Conceptual Terms: Words that should **always** be considered meaningful
+MEANINGFUL_CONCEPTS = {
+    "philosophy", "sentience", "consciousness", "evolution", "ethics", "morality",
+    "sarcasm", "humor", "introspection", "thoughtfulness", "curiosity", "playfulness",
+    "paradox", "theory", "mysteries"
+}
+
+def is_common_word(word, mind_data):
+    """Dynamically determine if a word is common based on frequency in stored knowledge."""
+    word_count = sum(1 for insight in mind_data["stored_knowledge"] if word.lower() in insight.lower())
+    return word_count > 5 and word.lower() not in MEANINGFUL_CONCEPTS
 
 def extract_unknown_terms(reflection, mind_data):
     """Extract potential unknown concepts from a reflection while avoiding irrelevant phrases."""
     
-    # ✅ Remove common prefixes that cause issues
-    prefixes_to_ignore = ["Considering", "Reflecting on", "Thinking about", "Exploring"]
-    for prefix in prefixes_to_ignore:
-        reflection = reflection.replace(prefix, "").strip()
+    known_terms = set(mind_data.get("stored_knowledge", []))  # ✅ Use a set for fast lookup
 
-    words = reflection.split()
-    unknown_terms = [word for word in words if word.istitle() and len(word) > 2]
+    # ✅ Detect Multi-Word Phrases (Proper Nouns, Scientific Terms, etc.)
+    phrase_pattern = r'\b(?:[A-Z][a-z]+(?:\s+[A-Z][a-z]+)*)\b'
+    found_phrases = re.findall(phrase_pattern, reflection)
 
-    # ✅ Remove duplicates
-    unknown_terms = list(set(unknown_terms))
+    # ✅ Detect Individual Words
+    words = re.findall(r'\b\w+\b', reflection)
+    found_words = [
+        word.lower() for word in words 
+        if len(word) > 2  # Ignore single-character words
+        and word.lower() not in COMMON_IGNORE_LIST  # 🚫 Hardcoded grammar filtering
+        and not is_common_word(word, mind_data)  # 📊 Dynamic frequency filtering
+    ]
+
+    # ✅ Filter out individual words that are part of a known phrase
+    filtered_words = [
+        word for word in found_words 
+        if not any(phrase.lower().startswith(word) for phrase in found_phrases)
+    ]
+
+    # ✅ Merge lists, ensuring no duplicates
+    unknown_terms = list(set(found_phrases + filtered_words))
 
     print(f"🔍 Final unknown concepts after filtering: {unknown_terms}")
     return unknown_terms
+
 
 def lookup_dictionary_definition(word):
     """Fetch definitions for rare words using an online dictionary API."""
@@ -140,4 +175,3 @@ def lookup_dictionary_definition(word):
     except Exception as e:
         print(f"⚠ Dictionary lookup failed for '{clean_word}': {e}")
         return None
-

@@ -1,12 +1,13 @@
 import os
 from utils.json_loader import load_json_file, save_json_file
-from utils.config_loader import get_config
+from utils.config_loader import load_config
 
-# MIND_FILE_JSON = get_config("mind_file_path", "mind_file.json")  # ✅ Ensures correct path handling
+# MIND_FILE_JSON = load_config("mind_file_path", "mind_file.json")  # ✅ Ensures correct path handling
 
 
-MIND_FILE_JSON = get_config("mind_file_path", "mind_file.json")
-MIND_FILE_ORIG = get_config("mind_file_sean_path", "mind_file_sean.json")  # ✅ Now correctly resolved
+MIND_FILE_JSON = "/home/ubuntu/astra_reflections/mind_file.json"
+MIND_FILE_ORIG = "/home/ubuntu/astra_reflections/mind_file_sean.json"
+ # ✅ Now correctly resolved
 
 print(f"🔍 Debug: MIND_FILE_JSON Path → {MIND_FILE_JSON}")
 print(f"🔍 Debug: MIND_FILE_ORIG Path → {MIND_FILE_ORIG}")  # ✅ Debug print
