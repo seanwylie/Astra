@@ -1,6 +1,7 @@
 import random
 from astra_interfaces.influence import load_mind, save_mind
 from astra_core.config_loader import load_config  # ✅ Load reflection templates dynamically
+from astra_core.mood.mood_manager import mood_manager
 
 
 def generate_reflection(knowledge, recent_reflections):
@@ -16,7 +17,20 @@ def generate_reflection(knowledge, recent_reflections):
     
         # ✅ Load reflection templates from general_config.json
         general_config = load_config("general_config")
+
+        # Load Astra's mood and adjust reflection style
+        mood_config = load_config("mood_config")
+        mood = mood_manager.current_mood
+        reflection_style = mood_config["moods"].get(mood, {}).get("reflection_style", "balanced")
+
+        # Select templates based on mood-driven style
         reflection_templates = general_config.get("reflection_templates", [])
+        if reflection_style == "questioning":
+            reflection_templates = [t + " What does this mean?" for t in reflection_templates]
+        elif reflection_style == "skeptical":
+            reflection_templates = [t + " But is this really true?" for t in reflection_templates]
+        elif reflection_style == "expansive":
+            reflection_templates = [t + " How does this connect to larger ideas?" for t in reflection_templates]
 
         # ✅ Debugging: Ensure templates are loading correctly
         if not reflection_templates:

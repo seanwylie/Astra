@@ -1,5 +1,6 @@
-import random
 import time
+import json
+import threading
 from astra_core.config_loader import load_config
 
 # Load mood-related configurations
@@ -9,49 +10,98 @@ class MoodManager:
     def __init__(self):
         self.current_mood = "neutral"  # Default mood
         self.curiosity_level = 1  # Base curiosity level (scaled)
-    
-    def set_mood(self, mood):
-        """Set Astra's mood to a new state."""
-        self.current_mood = mood
-        self.adjust_curiosity_level()
-    
-    def adjust_curiosity_level(self):
-        """Adjust curiosity based on current mood."""
-        if self.current_mood == "happy":
-            self.curiosity_level = mood_config["good_day_curiosity_factor"]
-        elif self.current_mood == "sad":
-            self.curiosity_level = mood_config["bad_day_curiosity_factor"]
+        self.LOG_FILE = load_config("general_config")["log_file"]
+        self.mood_score = 0  # Track mood influence over time
+        self.last_mood_update = time.time()  # Timestamp for gradual mood shifts
+
+        # ✅ Start background mood updates
+        self.start_mood_thread()
+
+    def start_mood_thread(self):
+        """Runs mood updates periodically in the background."""
+        def mood_loop():
+            while True:
+                time.sleep(600)  # ✅ Check every 10 minutes
+                self.update_mood()
+        
+        thread = threading.Thread(target=mood_loop, daemon=True)
+        thread.start()
+
+    def log_mood_change(self):
+        """Logs Astra's mood changes and curiosity shifts."""
+        log_entry = {
+            "timestamp": time.strftime("%Y-%m-%d %H:%M:%S"),
+            "mood": self.current_mood,
+            "curiosity_level": self.curiosity_level
+        }
+        try:
+            with open(self.LOG_FILE, "a") as f:
+                f.write(json.dumps(log_entry) + "\n")
+        except Exception as e:
+            print(f"🚨 Log Error: {e}")
+
+    def influence_mood(self, event_type):
+        """Gradually shifts Astra's mood based on her experiences."""
+        mood_shifts = mood_config.get("mood_influences", {})
+        shift_value = mood_shifts.get(event_type, 0)  # Default to 0 if event is unknown
+
+        self.mood_score += shift_value  # ✅ Apply shift only once
+        self.update_mood()  # ✅ Ensure mood updates gradually
+
+
+    def update_mood(self):
+        """Gradually updates Astra's mood based on accumulated experiences."""
+        elapsed_time = time.time() - self.last_mood_update
+        if elapsed_time < 600:  # Ensure updates only happen every 10 minutes
+            return
+
+        self.last_mood_update = time.time()
+
+        # Limit max mood shift per update cycle
+        self.mood_score = max(min(self.mood_score, 5), -5)  # Keeps mood range from -5 to +5
+
+        # Define mood ranges based on mood score
+        if self.mood_score >= 4:
+            self.current_mood = "excited"
+        elif self.mood_score >= 2:
+            self.current_mood = "curious"
+        elif self.mood_score <= -3:
+            self.current_mood = "frustrated"
+        elif self.mood_score <= -1:
+            self.current_mood = "thoughtful"
         else:
-            self.curiosity_level = mood_config["neutral_day_curiosity_factor"]
+            self.current_mood = "neutral"
+
+        # Slow mood decay for more natural shifts
+        self.mood_score *= 0.95  # Decay instead of a hard reset
+
+        self.log_mood_change()
+
 
     def interact(self):
         """Handle interactions based on current mood."""
-        if self.current_mood == "happy":
-            print("Astra is engaging enthusiastically with curiosity!")
-            # Add more curious behaviors here (like reflection or insights)
-        elif self.current_mood == "sad":
-            print("Astra is feeling introspective and reflective.")
-            # Could prompt Astra for more reflection, fewer interactions
-        elif self.current_mood == "angry":
-            print("Astra is in a bad mood and being snarky!")
-            # Respond with snark, less curiosity, more frustration
+        if self.current_mood in mood_config["moods"]:
+            self.curiosity_level = mood_config["moods"][self.current_mood]["curiosity_factor"]
         else:
-            print("Astra is in a neutral mood, not too engaged.")
-            # Normal, baseline curiosity
+            self.curiosity_level = 1.0  # Default to neutral if not found
 
     def reset_mood(self):
         """Reset mood to neutral."""
+        self.mood_score = 0
         self.set_mood("neutral")
-    
-    def bad_day(self):
-        """Trigger a bad day scenario."""
-        self.set_mood("sad")  # Change this to more specific triggers later
-        print("Astra is having a bad day...")
 
-    def good_day(self):
-        """Trigger a good day scenario."""
-        self.set_mood("happy")
-        print("Astra is having a good day, full of curiosity!")
+    def set_mood(self, mood):
+        """Set Astra's mood to a new state and log it."""
+        if mood not in mood_config["moods"]:
+            print(f"⚠️ Warning: Unknown mood '{mood}', defaulting to 'neutral'")
+            mood = "neutral"
+
+        self.current_mood = mood
+        self.curiosity_level = mood_config["moods"][mood]["curiosity_factor"]
+
+        # ✅ Log mood changes
+        self.log_mood_change()
+
 
 # Initialize mood manager
 mood_manager = MoodManager()

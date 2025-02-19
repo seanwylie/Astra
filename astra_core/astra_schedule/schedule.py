@@ -6,6 +6,8 @@ from astra_schedule.play import start_playtime
 from astra_schedule.dinner import start_dinner_time
 from astra_schedule.sleep import start_sleeping
 from astra_core.config_loader import load_config  # ✅ Load config dynamically
+from astra_core.mood.mood_manager import mood_manager
+
 
 general_config = load_config("general_config")  # ✅ Load schedule config
 schedule_config = load_config("schedule_config")  # ✅ Load schedule config
@@ -45,17 +47,15 @@ def get_current_mode():
         return "sleep"
 
 def set_curiosity_level(mode):
-    """Set Astra's curiosity level based on the current mode."""
-    if mode == "school":
-        return curiosity_config["school"]  # High curiosity during school time
-    elif mode == "play":
-        return curiosity_config["play"]  # Playtime curiosity is high, but exploratory
-    elif mode == "dinner":
-        return curiosity_config["dinner"]  # Dinner time, more about sharing reflections
-    elif mode == "dream":
-        return curiosity_config["dream"]  # Dream mode, low curiosity but reflective
-    else:
-        return curiosity_config["sleep"]  # No curiosity during sleep
+
+    """Set Astra's curiosity level based on both mode and mood."""
+    base_curiosity = curiosity_config.get(mode, 1.0)  # Default to 1.0 if mode not found
+    mood_factor = mood_manager.curiosity_level  # Get mood-adjusted curiosity factor
+
+    # Adjust curiosity dynamically
+    adjusted_curiosity = base_curiosity * mood_factor
+    return round(adjusted_curiosity, 2)  # Keep values readable
+
 
 def astra_schedule():
     """Manages Astra's daily routine and switches between states."""
