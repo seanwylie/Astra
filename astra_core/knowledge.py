@@ -20,7 +20,7 @@ def should_lookup_concept(concept, mind_data):
     concept_count = sum(1 for insight in mind_data["stored_knowledge"] if concept.lower() in insight.lower())
 
     # ✅ Allow lookup if Astra has fewer than 3 stored insights on the concept
-    if concept_count >= 3:
+    if concept_count >= 3 and any(concept.lower() in insight.lower() for insight in mind_data["stored_knowledge"]):
         print(f"🔹 SKIPPING: Astra already has {concept_count} insights on '{concept}'")
         return False
 
@@ -124,9 +124,9 @@ def is_common_word(word, mind_data):
 
 def extract_unknown_terms(reflection, mind_data):
     """Extract potential unknown concepts from a reflection while avoiding irrelevant phrases."""
-    
-    known_terms = set(mind_data.get("stored_knowledge", []))  # ✅ Use a set for fast lookup
-
+    """Extract terms from the reflection that are not in Astra's stored knowledge."""
+    known_terms = set(mind_data.get("stored_knowledge", []))  # Use a set for fast lookup
+  
     # ✅ Detect Multi-Word Phrases (Proper Nouns, Scientific Terms, etc.)
     phrase_pattern = r'\b(?:[A-Z][a-z]+(?:\s+[A-Z][a-z]+)*)\b'
     found_phrases = re.findall(phrase_pattern, reflection)
@@ -146,9 +146,16 @@ def extract_unknown_terms(reflection, mind_data):
         if not any(phrase.lower().startswith(word) for phrase in found_phrases)
     ]
 
-    # ✅ Merge lists, ensuring no duplicates
-    unknown_terms = list(set(found_phrases + filtered_words))
+    known_terms = set(mind_data.get("stored_knowledge", []))  # ✅ Use a set for fast lookup
+    all_terms = set(found_phrases + filtered_words)
 
+  # ... [code to extract found_phrases and filtered_words] ...
+    all_terms = set(found_phrases + filtered_words)
+    unknown_terms = list(all_terms - known_terms)  # Keep only terms not 
+    # 🔍 Only keep terms that Astra *doesn't* already know
+    unknown_terms = list(all_terms - known_terms)  
+
+    # 🚀 No need to overwrite `unknown_terms` again
     print(f"🔍 Final unknown concepts after filtering: {unknown_terms}")
     return unknown_terms
 

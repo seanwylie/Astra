@@ -1,4 +1,5 @@
 import os
+import json
 from utils.json_loader import load_json_file, save_json_file
 from utils.config_loader import load_config
 
@@ -35,24 +36,52 @@ def load_mind():
     mind_data = validate_mind_data(mind_data)
     return mind_data
 
+
+# Define the path to the mind file
+MIND_FILE_JSON = "/home/ubuntu/astra_reflections/mind_file.json"
+
+def validate_mind_data(mind_data):
+    """
+    Validate the mind data to ensure it meets the required structure.
+    This function should be implemented based on your specific validation logic.
+    """
+    # Placeholder for validation logic
+    return mind_data
+
+def save_json_file(file_path, data):
+    """
+    Save the given data to a JSON file at the specified path.
+    """
+    with open(file_path, 'w') as json_file:
+        json.dump(data, json_file, indent=4)
+
 def save_mind(mind_data):
-    """Save Astra's mind safely, preventing corruption."""
+    """
+    Save Astra's mind safely, preventing corruption.
+    """
+    # Validate the mind data
     mind_data = validate_mind_data(mind_data)
+    
+    # Define the path for the temporary backup
     temp_backup = MIND_FILE_JSON + ".backup"
 
     try:
-        # Backup the previous mind file before saving a new one
+        # Backup the existing mind file
         if os.path.exists(MIND_FILE_JSON):
             os.rename(MIND_FILE_JSON, temp_backup)
         
+        # Save the new mind data
         save_json_file(MIND_FILE_JSON, mind_data)
         print("✅ Mind file saved successfully!")
 
-        # Remove backup if new save was successful
+        # Remove the backup if save was successful
         if os.path.exists(temp_backup):
             os.remove(temp_backup)
-    
     except Exception as e:
-        print(f"❌ Error: Mind file save failed! Restoring backup... ({e})")
+        print(f"❌ Error saving mind file: {e}")
+        # Restore from backup in case of error
         if os.path.exists(temp_backup):
-            os.rename(temp_backup, MIND_FILE_JSON)  # Restore backup
+            os.rename(temp_backup, MIND_FILE_JSON)
+        print("🔄 Restored the previous mind file from backup.")
+
+
