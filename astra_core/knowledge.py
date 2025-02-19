@@ -100,9 +100,6 @@ def seek_external_knowledge(unknown_concepts, mind_data):
 
     return mind_data  # Return updated knowledge state
 
-
-import re
-
 # 🚫 Stop words that have no meaningful conceptual value
 COMMON_IGNORE_LIST = {
     "a", "an", "and", "are", "as", "at", "be", "but", "by", "for", "if", "in", "into",

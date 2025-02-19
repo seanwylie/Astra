@@ -14,25 +14,23 @@ mood_config = load_config("mood_config")  # Load mood and emotional settings
 
 class MoodManager:
     def __init__(self):
-        # Debugging: Print whether mood_config is loading
         print("🔍 Debug: Attempting to load mood_config.json...")
         mood_config = load_config("mood_config")
         print("🔍 Debug: mood_config Loaded →", mood_config)
+
         self.LOG_FILE = load_config("general_config").get("log_file", "/home/ubuntu/astra_reflections/astra_logs.json")
 
         mind_data = load_mind()  # ✅ Load Astra's previous mind state
 
-        # ✅ Restore mood from memory, default to neutral if missing
+        # ✅ Restore mood & curiosity level from memory
         self.current_mood = mind_data.get("last_mood", "neutral")
         self.mood_score = mind_data.get("mood_score", 0)
-        self.curiosity_level = 1  # Default curiosity
+        self.curiosity_level = mind_data.get("curiosity_level", 1.0)  # ✅ Load actual curiosity level
 
-        # ✅ Ensure `last_mood_update` is initialized
         self.last_mood_update = time.time()
 
-        print(f"🔍 Loaded mood from memory: {self.current_mood}, Score: {self.mood_score}")
+        print(f"🔍 Loaded mood from memory: {self.current_mood}, Score: {self.mood_score}, Curiosity: {self.curiosity_level}")
 
-        # ✅ Start background mood updates
         self.start_mood_thread()
 
 
@@ -83,6 +81,7 @@ class MoodManager:
         elapsed_time = time.time() - self.last_mood_update
         if elapsed_time < 600:  # Ensure updates only happen every 10 minutes
             return
+
         # Ensure mood score stays within a natural range
         self.mood_score = max(min(self.mood_score, 5), -5)
 
@@ -93,7 +92,6 @@ class MoodManager:
 
         print(f"🔍 Updating mood... Current: {self.current_mood}, Score: {self.mood_score}")
 
-        # ✅ Ensure mood does not reset unless explicitly neutral
         if self.mood_score >= 3:
             self.current_mood = "excited"
         elif self.mood_score >= 1:
@@ -103,17 +101,19 @@ class MoodManager:
         elif self.mood_score <= 0:
             self.current_mood = "thoughtful"
 
+        # ✅ Update curiosity based on new mood
+        mind_data = load_mind()
+        mind_data["curiosity_level"] = mood_config["moods"].get(self.current_mood, {}).get("curiosity_factor", 1.0)
+        save_mind(mind_data)  # ✅ Persist changes
 
-        if abs(self.mood_score) >= 5:  # Extreme moods trigger naps
+        print(f"🔍 New curiosity level: {mind_data['curiosity_level']}")
+
+        if abs(self.mood_score) >= 5:
             print("💤 Astra is taking a nap to reset emotions...")
-            self.mood_score *= 0.5  # Reduce emotional intensity
+            self.mood_score *= 0.5
             self.current_mood = "neutral"
-            self.log_mood_change()
 
-
-        # ✅ Save mood after each update
         self.save_mood_state()
-
         self.log_mood_change()
 
 
@@ -130,16 +130,24 @@ class MoodManager:
         self.set_mood("neutral")
 
     def set_mood(self, mood):
-        """Set Astra's mood to a new state and log it."""
+        """Set Astra's mood to a new state and log it persistently."""
         if mood not in mood_config["moods"]:
             print(f"⚠️ Warning: Unknown mood '{mood}', defaulting to 'neutral'")
             mood = "neutral"
 
         self.current_mood = mood
-        self.curiosity_level = mood_config["moods"][mood]["curiosity_factor"]
+
+        # ✅ Load and update stored curiosity level
+        mind_data = load_mind()
+        mind_data["curiosity_level"] = mood_config["moods"].get(mood, {}).get("curiosity_factor", 1.0)
+        mind_data["last_mood"] = mood  # ✅ Persist mood
+        save_mind(mind_data)  # ✅ Ensure Astra remembers after restart
+
+        print(f"✅ Mood set to: {self.current_mood}, Curiosity: {mind_data['curiosity_level']}")
 
         # ✅ Log mood changes
         self.log_mood_change()
+
 
 
 # Initialize mood manager
