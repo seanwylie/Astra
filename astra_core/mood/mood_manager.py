@@ -18,6 +18,7 @@ class MoodManager:
         mood_config = load_config("mood_config")
         print("🔍 Debug: mood_config Loaded →", mood_config)
 
+
         self.LOG_FILE = load_config("general_config").get("log_file", "/home/ubuntu/astra_reflections/astra_logs.json")
 
         mind_data = load_mind()  # ✅ Load Astra's previous mind state
@@ -165,6 +166,10 @@ class MoodManager:
     def get_current_mood(self):
         """Retrieve Astra’s current mood state."""
         return self.current_mood
+
+    def get_curiosity(self):
+        """Retrieve Astra's current curiosity level, defaulting to neutral if missing."""
+        return self.curiosity_level  # Default to 1.0 if missing
 
 
 # ✅ Initialize mood manager

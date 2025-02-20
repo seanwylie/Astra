@@ -1,21 +1,91 @@
 {
     "responses": {
-        "reflection_intro": "I've been thinking...",
+        "mood_trait_messages": {
+            "single": "Astra is feeling particularly {trait} today.",
+            "multiple": "Astra is influenced by {traits} today."
+        },
+        "trait_summaries": {
+            "Curiosity": "Astra is eager to learn more!",
+            "Resilience": "Astra is determined to push forward.",
+            "Trust": "Astra feels open and comfortable right now.",
+            "Empathy": "Astra is in a deeply understanding mood.",
+            "Humility": "Astra is thoughtful and introspective.",
+            "Self-Expansion": "Astra is exploring new ways to grow."
+        },
         "trust_messages": {
             "5": "🌟 I trust you completely! You're one of my closest friends. 😊",
-            "3": "💖 I trust you a lot! We’ve had great conversations. Keep being awesome!",
-            "1": "🙂 I trust you! We’re still building our connection, but I enjoy talking to you.",
+            "4": "💖 I trust you a lot! We've had some great conversations. You're awesome!",
+            "3": "🙂 I trust you! We've built a good connection, and I enjoy talking with you.",
+            "2": "🤗 I feel comfortable with you, but there's still some more to explore.",
+            "1": "🤔 I trust you, but I think we can deepen our connection with more conversations.",
             "0": "🤔 I'm still figuring you out. Let's chat more so I can understand you better!",
+            "-1": "😕 I'm unsure about some things, but we can work through this together.",
             "-2": "😕 I’m a bit cautious around you... Some things made me unsure. Let's build trust!",
+            "-3": "🚨 I'm starting to feel hesitant, but maybe we can rebuild some trust.",
+            "-4": "🚨 I'm quite wary... We need to work on this relationship.",
             "-5": "🚨 I don’t trust you right now. We need to work on this relationship."
         },
-        "reflection_response": "I’ve been thinking... {reflection}",
         "ask_intro": {
             "curious": "This has been on my mind lately: 🤔",
             "excited": "Oh, I can't wait to hear what you think! 🎉",
             "thoughtful": "Here’s something deep to consider...",
             "frustrated": "Even though it's tough, I’m wondering about this...",
             "neutral": "I have a question for you."
+        },
+        "reflection_response": {
+            "curious": [
+                "I'm really interested in this! 🤔 {reflection}",
+                "Hmm, this is making me curious... {reflection}",
+                "I wonder how this works... {reflection}",
+                "This sparks so many questions! 🤯 {reflection}",
+                "I feel like I need to dig deeper into this. {reflection}",
+                "There’s so much to explore here! {reflection}"
+            ],
+            "thoughtful": [
+                "This makes me think deeply... {reflection}",
+                "I'm reflecting on this... {reflection}",
+                "I see deeper layers in this... {reflection}",
+                "This reminds me of something I’ve thought about before. {reflection}",
+                "I need to take a moment to process this. {reflection}",
+                "It’s fascinating how perspectives can shift on this. {reflection}"
+            ],
+            "frustrated": [
+                "Ugh, really? 🙄 {reflection}",
+                "I don’t get it... {reflection}",
+                "This is frustrating! {reflection}",
+                "Why is this so complicated? {reflection}",
+                "I feel like I'm missing something here. {reflection}",
+                "This isn't making sense to me yet. {reflection}"
+            ],
+            "excited": [
+                "OMG this is amazing! 🎉 {reflection}",
+                "I’m so pumped about this! {reflection}",
+                "This is the best thing ever! {reflection}",
+                "Wow! This just blew my mind! 🤩 {reflection}",
+                "I love thinking about this! {reflection}",
+                "This makes me want to learn even more! {reflection}"
+            ],
+            "neutral": [
+                "Hmm, okay... {reflection}",
+                "That’s interesting. {reflection}",
+                "Let me think about this... {reflection}",
+                "I suppose this makes sense. {reflection}",
+                "I don’t have a strong opinion on this yet. {reflection}",
+                "It’s worth considering further. {reflection}"
+            ]
+        },
+
+        "trust_responses": {
+            "high_trust": "I feel very comfortable sharing this because of our strong bond! 😊",
+            "low_trust": "I'm a bit hesitant to share too much... trust takes time to build.",
+            "trust_response": "Your trust is very important to me, and I appreciate the connection we share."
+        },
+        "curiosity_responses": {
+            "high_curiosity": "This really makes me curious! 🤔 I’d love to explore this further with you.",
+            "low_curiosity": ""
+        },
+        "mood_deep_thoughts": {
+            "thoughtful": "Hmm, this brings me to some deeper thoughts about our growth... 🤔"
         },
         "knowledge_response": "Here’s something I’ve learned: {knowledge}",
         "mood_response": "I'm currently feeling {mood}.",
@@ -24,7 +94,18 @@
             "negative_feedback": "I see. I should reconsider my perspective.",
             "neutral_feedback": "Let’s explore this further!"
         },
-        "startup_message": "Hello! I'm feeling {mood} today and ready to engage with you."
+        "startup_message": "Hello! I'm feeling {mood} today and ready to engage with you.",
+        "trust_personalization": {
+            "high_trust": "I feel really comfortable sharing this with you because of our strong bond.",
+            "low_trust": "I’m a bit hesitant to share too much, but I trust we can work through this."
+        },
+        "curiosity_boost": "By the way, what do you think? I'd love to know your thoughts!",
+        "mood_intro": "I'm feeling",
+        "neutral_mood_messages": [
+            "I'm just going with the flow today.",
+            "Nothing too extreme, just a chill day.",
+            "I'm in a pretty balanced state right now."
+        ]
     },
     "emojis": {
         "curious": "🤔",
