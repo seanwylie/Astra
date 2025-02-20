@@ -15,6 +15,26 @@ from astra_core.config_loader import load_config  # ✅ Load configs dynamically
 general_config = load_config("general_config")  # ✅ Load schedule settings
 
 
+def filter_knowledge(knowledge_list):
+    """Ensure Astra keeps valuable knowledge while avoiding duplicates."""
+    filtered_knowledge = []
+    seen = set()
+
+    for entry in knowledge_list:
+        if len(entry) < 5:  # Ignore tiny junk entries
+            continue
+
+        key = entry.lower().strip()
+
+        if key in seen:
+            continue  # Avoid duplicates
+
+        seen.add(key)
+        filtered_knowledge.append(entry)
+
+    return filtered_knowledge
+
+
 def process_reflection():
     """Generate, refine, and deepen Astra's reflections while preventing duplicate deeper thoughts."""
     mind_data = load_mind()
@@ -99,7 +119,12 @@ def process_reflection():
 
     # ✅ Generate a varied follow-up question
     question_templates = general_config["question_templates"]
-    new_question = f"{random.choice(question_templates)} ({expanded_reflection})"
+
+    # ✅ Extract only the first 100 characters of the reflection for clarity
+    shortened_reflection = expanded_reflection[:100].split(".")[0]  # Grab first sentence if possible
+
+    new_question = f"{random.choice(question_templates)} ({shortened_reflection}...)"
+
 
     # ✅ Prevent duplicate questions before adding
     if not isinstance(mind_data["self_questions"], list):  # ✅ Ensure `self_questions` is a list
@@ -127,11 +152,16 @@ def process_reflection():
         print(f"⚠ Skipped duplicate self-question: {new_question[:100]}...")
 
 
-    # ✅ Merge existing knowledge (concept refinement)
+    # ✅ Merge and intelligently filter knowledge
     refined_idea = refine_knowledge(mind_data["stored_knowledge"], mind_data)
+
+    # ✅ If the refined idea isn't redundant, add it
     if refined_idea and refined_idea not in mind_data["stored_knowledge"]:
         mind_data["stored_knowledge"].append(refined_idea)
         print(f"🔹 Refined knowledge added: {refined_idea[:150]}...")
+
+    # ✅ Filter duplicates & short entries
+    mind_data["stored_knowledge"] = filter_knowledge(mind_data["stored_knowledge"])
 
 
     # print(f"🔍 Debug: Type of `self_reflections` AFTER appending: {type(mind_data['self_reflections'])}")
