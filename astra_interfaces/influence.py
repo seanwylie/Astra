@@ -2,12 +2,11 @@ import json
 import random
 import wikipedia
 import re
+import os
 
 from astra_core.config_loader import load_config  # ✅ Load configs dynamically
 
 general_config = load_config("general_config")  # ✅ Load schedule settings
-
-
 
 MIND_FILE_JSON = "mind_file.json"
 MIND_FILE_ORIG = "mind_file_sean.json"
@@ -16,35 +15,35 @@ def load_mind():
     """Load Astra's mind file while ensuring structured knowledge is merged and memory is managed properly."""
     print("🔍 Debug: Loading mind files...")
 
-
-
-    # ✅ Default structure
-    mind_data = {
-        "self_reflections": [],
-        "self_questions": [],
-        "stored_knowledge": [],
-    }
+    mind_data = None  # ✅ Default to None to detect failures
 
     # ✅ Load mind_file.json (self-reflections + questions)
     try:
         with open(MIND_FILE_JSON, "r", encoding="utf-8") as f:
             mind_data = json.load(f)
 
-
-            # ✅ Force `self_reflections` to be a list
-            if not isinstance(mind_data["self_reflections"], list):
+            # ✅ Ensure structure integrity
+            if not isinstance(mind_data.get("self_reflections", []), list):
                 print("⚠ Warning: `self_reflections` was not a list! Fixing now...")
                 mind_data["self_reflections"] = []
                 
-            # ✅ Force `self_reflections` to be a list
-            if not isinstance(mind_data["self_questions"], list):
+            if not isinstance(mind_data.get("self_questions", []), list):
                 print("⚠ Warning: `self_questions` was not a list! Fixing now...")
                 mind_data["self_questions"] = []
 
-            print(f"✅ Loaded {len(mind_data['self_reflections'])} reflections, {len(mind_data['self_questions'])} questions.")
-    except (FileNotFoundError, json.JSONDecodeError):
-        print("⚠ Warning: mind_file.json not found or corrupted. Starting with an empty mind.")
-    
+            if not isinstance(mind_data.get("stored_knowledge", []), list):
+                print("⚠ Warning: `stored_knowledge` was not a list! Fixing now...")
+                mind_data["stored_knowledge"] = []
+
+            print(f"✅ Loaded {len(mind_data['self_reflections'])} reflections, {len(mind_data['self_questions'])} questions, {len(mind_data['stored_knowledge'])} knowledge items.")
+
+    except (FileNotFoundError, json.JSONDecodeError) as e:
+        print(f"⚠ Warning: mind_file.json not found or corrupted: {e}. Retrying next time without resetting.")
+
+    # ✅ If loading failed, return None so Astra doesn't overwrite her memory
+    if mind_data is None:
+        return None
+
     print(f"🔍 Before merge: {len(mind_data['stored_knowledge'])} stored knowledge items.")
 
     # ✅ Merge structured knowledge from mind_file_sean.json
@@ -66,15 +65,16 @@ def load_mind():
         print(f"⚠ Error loading structured mind file: {e}")
 
     print(f"🔍 After merging structured knowledge: {len(mind_data['stored_knowledge'])} items.")
-    # print(f"🔍 Debug: Type of `mind_data`: {type(mind_data)}")
-    # print(f"🔍 Debug: Raw `mind_data`: {mind_data}")
-    save_mind(mind_data)
+    
+    save_mind(mind_data)  # ✅ Save after merging
     return mind_data
-
-
 
 def save_mind(mind_data):
     """Saves updated knowledge to Astra’s mind file while ensuring no nested structures exist."""
+    if mind_data is None:
+        print("🚨 [ERROR] Attempted to save `None` as mind file! Prevented overwrite.")
+        return  # ✅ Prevents accidental data loss
+
     print("🔍 Debug: Sanitizing mind file before saving...")
 
     # ✅ Ensure all fields are lists
@@ -83,16 +83,20 @@ def save_mind(mind_data):
     mind_data["stored_knowledge"] = list(mind_data.get("stored_knowledge", []))
 
     # ✅ Save back to mind_file.json
-    with open(MIND_FILE_JSON, "w", encoding="utf-8") as f:
-        json.dump(mind_data, f, indent=4)
-
-    print(f"✅ Mind file saved successfully! Reflections: {len(mind_data['self_reflections'])}, Questions: {len(mind_data['self_questions'])}, Knowledge: {len(mind_data['stored_knowledge'])}")
-
+    try:
+        with open(MIND_FILE_JSON, "w", encoding="utf-8") as f:
+            json.dump(mind_data, f, indent=4)
+        print(f"✅ Mind file saved successfully! Reflections: {len(mind_data['self_reflections'])}, Questions: {len(mind_data['self_questions'])}, Knowledge: {len(mind_data['stored_knowledge'])}")
+    except Exception as e:
+        print(f"🚨 [ERROR] Failed to save mind_file.json: {e}")
 
 def store_knowledge(mind_data, new_insight):
     """Ensure knowledge is stored while prioritizing Astra’s core philosophy."""
-    import json
     mind_file_path = "/home/ubuntu/astra_reflections/mind_file.json"
+
+    if mind_data is None:
+        print("🚨 [ERROR] Astra's memory is unavailable. Skipping knowledge storage.")
+        return  # ✅ Prevents writing to a non-existent memory
 
     print(f"🧠 [DEBUG] Attempting to store knowledge: {new_insight[:100]}...")
 
@@ -111,12 +115,8 @@ def store_knowledge(mind_data, new_insight):
         print(f"✅ [DEBUG] Stored new insight: {new_insight[:100]}... (Score: {score})")
 
     # ✅ Save updated knowledge
-    with open(mind_file_path, "w") as f:
-        json.dump(mind_data, f, indent=4)
+    save_mind(mind_data)
     print("📄 [DEBUG] Knowledge successfully saved!")
-
-
-
 
 def is_term_or_phrase(concept):
     """Determine if a concept is a single term (Wikipedia) or a phrase (Google Search)."""
@@ -143,4 +143,3 @@ def is_term_or_phrase(concept):
 
     # 🔹 If it's longer than two words and doesn't match a Wikipedia entry, it's a phrase
     return "phrase"
-
