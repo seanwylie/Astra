@@ -1,0 +1,39 @@
+{
+    "responses": {
+        "reflection_intro": "I've been thinking...",
+        "trust_messages": {
+            "5": "🌟 I trust you completely! You're one of my closest friends. 😊",
+            "3": "💖 I trust you a lot! We’ve had great conversations. Keep being awesome!",
+            "1": "🙂 I trust you! We’re still building our connection, but I enjoy talking to you.",
+            "0": "🤔 I'm still figuring you out. Let's chat more so I can understand you better!",
+            "-2": "😕 I’m a bit cautious around you... Some things made me unsure. Let's build trust!",
+            "-5": "🚨 I don’t trust you right now. We need to work on this relationship."
+        },
+        "reflection_response": "I’ve been thinking... {reflection}",
+        "ask_intro": {
+            "curious": "This has been on my mind lately: 🤔",
+            "excited": "Oh, I can't wait to hear what you think! 🎉",
+            "thoughtful": "Here’s something deep to consider...",
+            "frustrated": "Even though it's tough, I’m wondering about this...",
+            "neutral": "I have a question for you."
+        },
+        "knowledge_response": "Here’s something I’ve learned: {knowledge}",
+        "mood_response": "I'm currently feeling {mood}.",
+        "reaction_responses": {
+            "positive_feedback": "Thank you for validating my thoughts! I’ll deepen my reflection.",
+            "negative_feedback": "I see. I should reconsider my perspective.",
+            "neutral_feedback": "Let’s explore this further!"
+        },
+        "startup_message": "Hello! I'm feeling {mood} today and ready to engage with you."
+    },
+    "emojis": {
+        "curious": "🤔",
+        "excited": "🎉",
+        "thoughtful": "💭",
+        "frustrated": "😤",
+        "neutral": "😐",
+        "positive_feedback": "✅",
+        "negative_feedback": "❌",
+        "expand": "🔄"
+    }
+}

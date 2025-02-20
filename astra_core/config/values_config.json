@@ -1,0 +1,29 @@
+{
+    "values": {
+        "command_prefix": "!",
+        "max_trust": 5,
+        "min_trust": -5,
+        "max_trust_gain": 1,
+        "trust_loss_multiplier": 2,
+        "max_trust_boost": 0.3,
+        "trust_engagement_multiplier": 0.1,
+        "default_engagement_chance": 0.3,
+        "engagement_cooldown": 30,
+        "engagement_chance": {
+            "curious": 0.9,
+            "excited": 0.8,
+            "thoughtful": 0.5,
+            "neutral": 0.3,
+            "frustrated": 0.2
+        },
+        "trust_factor": {
+            "5": 1.2,
+            "3": 1.1,
+            "1": 1.0,
+            "0": 0.8,
+            "-2": 0.6,
+            "-5": 0.3
+        },
+        "default_trust_factor": 0.8
+    }
+}

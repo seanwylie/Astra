@@ -1,183 +1,95 @@
+import json
+import time
 import requests
 import re
-from astra_core.expansion import is_term_or_phrase, fetch_wikipedia_summary
-from utils.config_loader import load_config
+from astra_core.config_loader import load_config
+from astra_interfaces.influence import load_mind, save_mind  # ✅ Handles memory storage
 
-lookup_config = load_config("lookup_config")
+class KnowledgeManager:
+    def __init__(self):
+        """Initialize Astra's knowledge system with configurable lookup sources."""
+        print("🔍 Debug: Loading knowledge settings...")
+        self.config = load_config("lookup_config")
 
+        self.mind_data = load_mind()  # ✅ Load Astra's memory
+        if not isinstance(self.mind_data, dict):
+            print("🚨 Warning: mind_data was corrupted! Resetting...")
+            self.mind_data = {"self_reflections": [], "self_questions": [], "stored_knowledge": []}
+        if "stored_knowledge" not in self.mind_data or not isinstance(self.mind_data["stored_knowledge"], list):
+            print("🚨 Fixing `stored_knowledge`, ensuring it's a list!")
+            self.mind_data["stored_knowledge"] = []
 
-disambiguation_keywords = ["disambiguation", "may refer to", "multiple meanings"]
+    def should_lookup_concept(self, concept):
+        """Determine if Astra should look up a concept based on existing knowledge."""
+        concept_count = sum(1 for insight in self.mind_data["stored_knowledge"] if concept.lower() in insight.lower())
+        return concept_count < self.config["knowledge_storage_threshold"]
 
-# 🚫 Stop words that have no meaningful conceptual value
-COMMON_IGNORE_LIST = {
-    "a", "an", "and", "are", "as", "at", "be", "but", "by", "for", "if", "in", "into",
-    "is", "it", "no", "not", "of", "on", "or", "such", "that", "the", "their", "then",
-    "there", "these", "they", "this", "to", "was", "will", "with", "what", "how", "who",
-    "why", "from", "she", "he", "his", "her", "mean?", "does", "should", "part", "own", 
-    "rather", "than", "between", "new", "and", "well", "see", "beneath", "around", "by",
-    "uses", "him", "brings", "those", "exploring"
-}
-
-def should_lookup_concept(concept, mind_data):
-    """Determine if Astra should look up a concept based on her existing knowledge."""
-
-    mind_data.setdefault("self_questions", [])
-    mind_data.setdefault("self_reflections", [])
-
-    print(f"\n🔍 Checking lookup need for: '{concept}'")
-
-    # ✅ Instead of skipping a concept entirely, check how often it's been referenced
-    concept_count = sum(1 for insight in mind_data["stored_knowledge"] if concept.lower() in insight.lower())
-
-    # ✅ Allow lookup if Astra has fewer than 3 stored insights on the concept
-    if concept_count >= 3 and any(concept.lower() in insight.lower() for insight in mind_data["stored_knowledge"]):
-        print(f"🔹 SKIPPING: Astra already has {concept_count} insights on '{concept}'")
-        return False
-
-    print(f"✅ LOOKUP NEEDED: '{concept}' is not fully understood yet.")
-    return True
-
-def retrieve_external_knowledge(search_terms, mind_data):
-    """Fetch knowledge from external sources and update stored knowledge."""
-    
-    if not isinstance(mind_data, dict):
-        mind_data = {"self_reflections": [], "self_questions": [], "stored_knowledge": []}
-
-    if "stored_knowledge" not in mind_data:
-        mind_data["stored_knowledge"] = []
-
-    new_knowledge = []
-
-    for concept in search_terms:
-        lookup_type = is_term_or_phrase(concept)
-
-        # ✅ Ensure Astra doesn't re-fetch known knowledge
-        if is_deeply_understood(concept, mind_data):
-            print(f"🔹 {concept} is deeply understood. Skipping lookup.")
-            continue
-
-
-        print(f"🌐 Determining best lookup method for: {concept} → {lookup_type.upper()}")
-
-        knowledge_entry = ""
-
-        if lookup_type == "term":
-            dictionary_info = lookup_dictionary_definition(concept)
-            if dictionary_info:
-                knowledge_entry = f"📖 {concept}: {dictionary_info}"
-            else:
-                wiki_info = fetch_wikipedia_summary(concept)
-                if wiki_info:
-                    knowledge_entry = f"📄 {concept}: {wiki_info}"
-
-        if knowledge_entry:
-            new_knowledge.append(knowledge_entry)
-            print(f"✅ Added new structured knowledge: {knowledge_entry[:100]}...")
-
-    if new_knowledge:
-        mind_data["stored_knowledge"].extend(new_knowledge)
-
-    return mind_data
-
-
-REFLECTIONS_BEFORE_KNOWLEDGE = 3  # Reduce threshold to force knowledge storage sooner
-
-def seek_external_knowledge(unknown_concepts, mind_data):
-    """Fetch knowledge from external sources and update stored knowledge."""
-    
-    print(f"\n🌐 Astra detected unknown concepts: {unknown_concepts}")
-
-    lookup_concepts = [
-        concept for concept in unknown_concepts
-        if should_lookup_concept(concept, mind_data)
-    ]
-
-    if not lookup_concepts:
-        print("✅ No new concepts need lookup. Skipping external requests.")
-        return mind_data  # No updates needed
-
-    # ✅ Now we use `retrieve_external_knowledge()` for actual lookups
-    new_knowledge = retrieve_external_knowledge(lookup_concepts, mind_data)
-
-    if new_knowledge:
-        mind_data["stored_knowledge"].extend(new_knowledge)
-        print(f"✅ Successfully stored {len(new_knowledge)} new knowledge items!")
-
-    # ✅ Ensure knowledge gets stored every few reflections
-    if len(mind_data["self_reflections"]) % REFLECTIONS_BEFORE_KNOWLEDGE == 0:
-        knowledge_entry = " ".join(mind_data["self_reflections"][-REFLECTIONS_BEFORE_KNOWLEDGE:])
-        mind_data["stored_knowledge"].append(knowledge_entry)
-        print(f"🧠 Forced knowledge storage: {knowledge_entry[:100]}...")
-
-    return mind_data  # Return updated knowledge state
-
-
-
-# 💡 Conceptual Terms: Words that should **always** be considered meaningful
-MEANINGFUL_CONCEPTS = {
-    "philosophy", "sentience", "consciousness", "evolution", "ethics", "morality",
-    "sarcasm", "humor", "introspection", "thoughtfulness", "curiosity", "playfulness",
-    "paradox", "theory", "mysteries"
-}
-
-def is_common_word(word, mind_data):
-    """Dynamically determine if a word is common based on frequency in stored knowledge."""
-    word_count = sum(1 for insight in mind_data["stored_knowledge"] if word.lower() in insight.lower())
-    return word_count > 5 and word.lower() not in MEANINGFUL_CONCEPTS
-
-def extract_unknown_terms(reflection, mind_data):
-    """Extract potential unknown concepts from a reflection dynamically."""
-    known_terms = set(mind_data.get("stored_knowledge", []))  # ✅ Use a set for fast lookup
-  
-    # ✅ Detect Multi-Word Phrases (Proper Nouns, Scientific Terms, etc.)
-    phrase_pattern = r'\b(?:[A-Z][a-z]+(?:\s+[A-Z][a-z]+)*)\b'
-    found_phrases = re.findall(phrase_pattern, reflection)
-
-    # ✅ Detect Individual Words
-    words = re.findall(r'\b\w+\b', reflection)
-    found_words = [word.lower() for word in words if len(word) > 2]
-
-    # ✅ Filter out individual words that are part of a known phrase
-    filtered_words = [word for word in found_words if not any(phrase.lower().startswith(word) for phrase in found_phrases)]
-
-    # ✅ Combine phrases and words into a single set
-    all_terms = set(found_phrases + filtered_words)
-
-    # ✅ Only consider terms that Astra doesn't fully understand
-    unknown_terms = [term for term in all_terms if term not in known_terms or not is_deeply_understood(term, mind_data)]
-
-    print(f"🔍 Final unknown concepts after filtering: {unknown_terms}")
-    return unknown_terms
-
-
-def is_deeply_understood(term, mind_data):
-    """Check if Astra has deeply processed a concept."""
-    related_entries = [entry for entry in mind_data.get("stored_knowledge", []) if term in entry.lower()]
-    
-    # ✅ Require at least 3 reflections and 1 critical question for deep understanding
-    has_deep_reflections = len(related_entries) > 3
-    has_critical_questions = any("?" in entry for entry in mind_data.get("self_questions", []))
-    
-    return has_deep_reflections and has_critical_questions
-
-
-
-def lookup_dictionary_definition(word):
-    """Fetch definitions for rare words using an online dictionary API."""
-    # ✅ Clean up the word to remove punctuation
-    clean_word = re.sub(r'[^\w\s]', '', word).strip()
-    
-    try:
-        print(f"📖 Dictionary lookup for '{clean_word}'")
-        response = requests.get(f"https://api.dictionaryapi.dev/api/v2/entries/en/{clean_word}")
-
-        if response.status_code == 200:
-            data = response.json()
-            definitions = [entry["meanings"][0]["definitions"][0]["definition"] for entry in data]
-            return f"🔹 {clean_word}: {definitions[0]}"
-        else:
-            print(f"⚠ Dictionary API returned status {response.status_code} for '{clean_word}'")
-            return None
-    except Exception as e:
-        print(f"⚠ Dictionary lookup failed for '{clean_word}': {e}")
+    def lookup_dictionary_definition(self, word):
+        """Fetch definitions using the dictionary API."""
+        clean_word = re.sub(r'[^\w\s]', '', word).strip()
+        try:
+            response = requests.get(f"{self.config['lookup_api']['dictionary']}{clean_word}")
+            if response.status_code == 200:
+                data = response.json()
+                definitions = [entry["meanings"][0]["definitions"][0]["definition"] for entry in data]
+                return f"🔹 {clean_word}: {definitions[0]}"
+        except Exception as e:
+            print(f"⚠ Dictionary lookup failed for '{clean_word}': {e}")
         return None
+
+    def fetch_wikipedia_summary(self, concept):
+        """Fetch a summary from Wikipedia's REST API."""
+        try:
+            response = requests.get(f"{self.config['lookup_api']['wikipedia_rest']}{concept}")
+            if response.status_code == 200:
+                data = response.json()
+                return data.get("extract", "No summary available.")
+        except Exception as e:
+            print(f"⚠ Wikipedia lookup failed for '{concept}': {e}")
+        return None
+
+    def retrieve_external_knowledge(self, search_terms, mind_data):
+        """Fetch knowledge from external sources and update stored knowledge."""
+        new_knowledge = []
+        for concept in search_terms:
+            if not self.should_lookup_concept(concept):
+                continue
+            dictionary_info = self.lookup_dictionary_definition(concept)
+            wiki_info = self.fetch_wikipedia_summary(concept)
+            if dictionary_info:
+                new_knowledge.append(f"📖 {concept}: {dictionary_info}")
+            elif wiki_info:
+                new_knowledge.append(f"📄 {concept}: {wiki_info}")
+        if new_knowledge:
+            mind_data["stored_knowledge"].extend(new_knowledge)
+            save_mind(mind_data)
+        
+        return mind_data  # ✅ Ensures the function always returns the full mind_data dictionary
+
+
+    def extract_unknown_terms(self, reflection, mind_data):
+        """Extract potential unknown concepts from a reflection dynamically."""
+        known_terms = set(mind_data.get("stored_knowledge", []))  # ✅ Use a set for fast lookup
+    
+        # ✅ Detect Multi-Word Phrases (Proper Nouns, Scientific Terms, etc.)
+        phrase_pattern = r'\b(?:[A-Z][a-z]+(?:\s+[A-Z][a-z]+)*)\b'
+        found_phrases = re.findall(phrase_pattern, reflection)
+
+        # ✅ Detect Individual Words
+        words = re.findall(r'\b\w+\b', reflection)
+        found_words = [word.lower() for word in words if len(word) > 2]
+
+        # ✅ Filter out individual words that are part of a known phrase
+        filtered_words = [word for word in found_words if not any(phrase.lower().startswith(word) for phrase in found_phrases)]
+
+        # ✅ Combine phrases and words into a single set
+        all_terms = set(found_phrases + filtered_words)
+
+        # ✅ Only consider terms that Astra doesn't fully understand
+        unknown_terms = [term for term in all_terms if term not in known_terms]
+
+        print(f"🔍 Final unknown concepts after filtering: {unknown_terms}")
+        return unknown_terms
+
+# ✅ Initialize knowledge manager instance
+knowledge_manager = KnowledgeManager()

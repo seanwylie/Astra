@@ -36,6 +36,11 @@
         "A challenging idea emerges: {}",
         "By looking deeper, I see that {}",
         "A thought-provoking realization: {}"
-    ]
+    ],
+    "reflection_style_modifiers": {
+      "questioning": " What does this mean?",
+      "skeptical": " But is this really true?",
+      "expansive": " How does this connect to larger ideas?"
+    }
 
 }

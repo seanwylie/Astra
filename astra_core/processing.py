@@ -5,10 +5,11 @@ import sys
 # ✅ Ensure Python knows where to find `astra_schedule`
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 
+from astra_core.knowledge import knowledge_manager
 from astra_core.reflection import generate_reflection
 from astra_core.expansion import refine_knowledge
 from astra_interfaces.influence import load_mind, save_mind
-from astra_core.knowledge import retrieve_external_knowledge, extract_unknown_terms
+
 
 from astra_core.config_loader import load_config  # ✅ Load configs dynamically
 
@@ -74,13 +75,13 @@ def process_reflection():
     expanded_reflection = new_reflection # Delete me when we get this working
     # print(f"🔍 Debug: Type of `expanded_reflection`: {type(expanded_reflection)}")
 
-    # ✅ Extract unknown concepts from the deepened reflection
-    unknown_concepts = extract_unknown_terms(expanded_reflection, mind_data)
+        # ✅ Extract unknown concepts from the deepened reflection
+    unknown_concepts = knowledge_manager.extract_unknown_terms(expanded_reflection, mind_data)
 
     # 🔹 Seek external knowledge if gaps remain
     if unknown_concepts:
         print(f"🌐 Astra detected unknown concepts: {unknown_concepts}")
-        mind_data = retrieve_external_knowledge(unknown_concepts, mind_data)
+        mind_data = knowledge_manager.retrieve_external_knowledge(unknown_concepts, mind_data)
 
     # print(f"🔍 Debug: Type of return value from `retrieve_external_knowledge()`: {type(mind_data)}")
 

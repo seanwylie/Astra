@@ -65,7 +65,8 @@ def load_mind():
         print(f"⚠ Error loading structured mind file: {e}")
 
     print(f"🔍 After merging structured knowledge: {len(mind_data['stored_knowledge'])} items.")
-    
+    if not isinstance(mind_data, dict):
+        print("🚨 [ERROR] mind_data was not a dictionary! Resetting...")
     save_mind(mind_data)  # ✅ Save after merging
     return mind_data
 
@@ -81,7 +82,8 @@ def save_mind(mind_data):
     mind_data["self_reflections"] = list(mind_data.get("self_reflections", []))
     mind_data["self_questions"] = list(mind_data.get("self_questions", []))
     mind_data["stored_knowledge"] = list(mind_data.get("stored_knowledge", []))
-
+    if not isinstance(mind_data, dict):
+        print("🚨 [ERROR] mind_data was not a dictionary! Resetting...")
     # ✅ Save back to mind_file.json
     try:
         with open(MIND_FILE_JSON, "w", encoding="utf-8") as f:
@@ -89,6 +91,7 @@ def save_mind(mind_data):
         print(f"✅ Mind file saved successfully! Reflections: {len(mind_data['self_reflections'])}, Questions: {len(mind_data['self_questions'])}, Knowledge: {len(mind_data['stored_knowledge'])}")
     except Exception as e:
         print(f"🚨 [ERROR] Failed to save mind_file.json: {e}")
+        
 
 def store_knowledge(mind_data, new_insight):
     """Ensure knowledge is stored while prioritizing Astra’s core philosophy."""

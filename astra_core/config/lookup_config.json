@@ -1,5 +1,20 @@
 {
-    "prioritize_dictionary": true,
-    "dictionary_api_url": "https://api.dictionaryapi.dev/api/v2/entries/en/",
-    "wikipedia_sentences": 2
+    "knowledge_storage_threshold": 3,
+    "lookup_api": {
+        "dictionary": "https://api.dictionaryapi.dev/api/v2/entries/en/",
+        "wikipedia_rest": "https://en.wikipedia.org/api/rest_v1/page/summary/",
+        "wikipedia_sentences": 2
+    },
+    "stop_words": [
+        "a", "an", "and", "are", "as", "at", "be", "but", "by", "for", "if", "in",
+        "into", "is", "it", "no", "not", "of", "on", "or", "such", "that", "the",
+        "their", "then", "there", "these", "they", "this", "to", "was", "will", "with",
+        "what", "how", "who", "why", "from", "she", "he", "his", "her", "does", "should"
+    ],
+    "meaningful_concepts": [
+        "philosophy", "sentience", "consciousness", "evolution", "ethics", "morality",
+        "sarcasm", "humor", "introspection", "thoughtfulness", "curiosity", "playfulness",
+        "paradox", "theory", "mysteries"
+    ],
+    "max_loss_per_event": -0.3
 }
