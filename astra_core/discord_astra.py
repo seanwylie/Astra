@@ -227,7 +227,7 @@ async def knowledge(ctx):
     """Displays Astra's stored knowledge."""
     if mind_data["stored_knowledge"]:
         sample_insights = "\n".join(random.sample(mind_data["stored_knowledge"], min(3, len(mind_data["stored_knowledge"]))))
-        await ctx.send(f"{responses['knowledge_intro']}\n{sample_insights}")
+        await ctx.send(responses["knowledge_response"].format(knowledge=sample_insights))
     else:
         await ctx.send(responses["knowledge_empty"])
 
