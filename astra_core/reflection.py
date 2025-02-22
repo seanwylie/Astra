@@ -3,13 +3,19 @@ from astra_interfaces.influence import load_mind
 from astra_core.config_loader import load_config
 from astra_core.mood.mood_manager import mood_manager
 
-def generate_reflection(knowledge, recent_reflections):
+def generate_reflection(knowledge=None, recent_reflections=None):
     """Generate a reflection dynamically using config-driven templates and mood-based modifiers."""
-
+    
+    mind_data = load_mind()
+    
+    # Use stored knowledge if none is passed
+    if knowledge is None:
+        knowledge = mind_data.get("stored_knowledge", [])
     if not knowledge:
         return "Astra is still learning and has no stored knowledge yet."
 
-    mind_data = load_mind()
+    if recent_reflections is None:
+        recent_reflections = mind_data.get("self_reflections", [])
     
     # ✅ Load configs
     general_config = load_config("general_config")
@@ -21,7 +27,6 @@ def generate_reflection(knowledge, recent_reflections):
 
     # ✅ Fetch reflection templates
     reflection_templates = general_config["reflection_templates"]
-    expansion_templates = general_config["expansion_templates"]
     deeper_thought_templates = general_config["deeper_thought_templates"]
 
     # ✅ Select a mood-driven reflection template
@@ -34,10 +39,8 @@ def generate_reflection(knowledge, recent_reflections):
     # ✅ Apply reflection template
     new_reflection = selected_template.format(base_idea)
 
-    # ✅ Apply deeper thought expansion
-    # ✅ Prevent duplicate deeper thoughts
+    # ✅ Apply deeper thought expansion (Prevent duplicates)
     deeper_thought = random.choice([t for t in deeper_thought_templates if t not in new_reflection])
-
     new_reflection = f"{new_reflection}\n\n🔍 {deeper_thought}"
 
     # ✅ Ensure reflection isn't overly long
@@ -45,7 +48,7 @@ def generate_reflection(knowledge, recent_reflections):
         new_reflection = new_reflection[:497] + "..."
 
     # ✅ Ensure the new reflection is unique
-    if any(new_reflection in past for past in recent_reflections):
+    if new_reflection in recent_reflections:
         return generate_reflection(knowledge, recent_reflections)  # Retry with a different idea
 
     return new_reflection

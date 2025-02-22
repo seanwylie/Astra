@@ -15,17 +15,17 @@ mood_config = load_config("mood_config")  # Load mood and emotional settings
 class MoodManager:
     def __init__(self):
         print("🔍 Debug: Attempting to load mood_config.json...")
-        mood_config = load_config("mood_config")
-        print("🔍 Debug: mood_config Loaded →", mood_config)
+        self.mood_config = load_config("mood_config")
+        print("🔍 Debug: mood_config Loaded →", self.mood_config)
 
-
-        self.LOG_FILE = load_config("general_config").get("log_file", "/home/ubuntu/astra_reflections/astra_logs.json")
+        self.LOG_FILE = load_config("general_config").get("log_file", "/home/ubuntu/astra_logs.json")
 
         mind_data = load_mind()  # ✅ Load Astra's previous mind state
 
         # ✅ Restore mood & curiosity level from memory
         self.current_mood = mind_data.get("last_mood", "neutral")
-        self.mood_score = mind_data.get("mood_score", 0)
+        self.mood_score = float(mind_data.get("mood_score", 0))  # Ensure mood score is a float
+
         self.curiosity_level = mind_data.get("curiosity_level", 1.0)  # ✅ Load actual curiosity level
 
         self.last_mood_update = time.time()
@@ -76,34 +76,70 @@ class MoodManager:
     def influence_mood(self, event_type, amount=None):
         """Gradually shifts Astra's mood based on her experiences."""
 
-        # ✅ Allow specific adjustments (e.g., encouragement boosts)
+        # Allow specific adjustments (e.g., encouragement boosts)
         if amount is not None:
-            shift_value = amount
+            shift_value = float(amount)  # Ensure the shift value is a float
+            print(f"🔍 Debug: Direct amount provided, shift_value set to {shift_value}")
         else:
-            mood_shifts = mood_config.get("mood_influences", {})
+            # Retrieve the mood shift value from the configuration
+            mood_shifts = self.mood_config.get("mood_influences", {})
             shift_value = mood_shifts.get(event_type, 0)
+            print(f"🔍 Debug: shift_value retrieved from config: {shift_value} for event {event_type}")
 
-        # ✅ Mood scaling: Diminishing returns as mood nears max
+            # If no shift value is found, assign a default value (e.g., 0.2 for positive feedback)
+            if shift_value == 0:
+                if event_type == "positive_feedback":
+                    shift_value = 0.2  # Assign a default positive feedback shift
+                    print(f"🔍 Debug: Default shift_value applied: {shift_value} for positive_feedback")
+
+        # Adjust diminishing returns logic for testing to make feedback impact more noticeable
         if self.mood_score >= 0.9 and shift_value > 0:
-            shift_value *= (1.0 - self.mood_score)  # Slows growth near max
+            shift_value *= 0.1  # Reduce diminishing returns for testing purposes (90% reduction)
+            print(f"🔍 Debug: Diminishing returns applied, new shift_value: {shift_value}")
 
-        # ✅ Stronger hit on negative mood shifts
+        # Handle feedback logic
         if event_type == "positive_feedback":
-            shift_value *= 1.2  # Slight boost to positive influence
+            shift_value *= 1.5  # Increase positive feedback influence, but more controlled
+            print(f"🔍 Debug: Positive feedback, multiplied shift_value by 1.5, new value: {shift_value}")
         elif event_type == "negative_feedback":
-            shift_value *= 2.5  # Hits **harder** on negatives
+            # For negative feedback, we want to **reduce the mood score** more strongly
+            print(f"🔍 Debug: Negative feedback, keeping shift_value negative, new value: {shift_value}")
+
+        # Handle the case where mood_score is exactly 0
+        if self.mood_score == 0:
+            # We allow a more subtle decrease or increase from neutral
+            if shift_value < 0:
+                shift_value *= 0.5  # Reduce the impact of negative feedback at neutral mood
+                print(f"🔍 Debug: mood_score is 0 (neutral), reducing impact of negative feedback, new shift_value: {shift_value}")
+
+        # If the mood is already at max (1), limit the shift to avoid overshooting
+        if self.mood_score >= 1:
+            shift_value *= 0.2  # Apply a much smaller shift if the score is too high
+            print(f"🔍 Debug: Mood score is high, limited shift_value to: {shift_value}")
+
+        # Apply the mood change
+        previous_mood_score = self.mood_score  # Save previous mood score for logging
 
         self.mood_score += shift_value
-        self.mood_score = max(-1, min(1, self.mood_score))  # ✅ Keep in range
+        print(f"🔍 Debug: mood_score updated to {self.mood_score}")
 
-        print(f"🔍 Mood influenced by {event_type}: Score now {self.mood_score}")
+        # We also adjust the limit to make sure no score goes over the max of 1 or below the min of -1
+        if self.mood_score > 1:
+            self.mood_score = 1
+        elif self.mood_score < -1:
+            self.mood_score = -1
+        
+        print(f"🔍 Debug: mood_score clamped to {self.mood_score}")
 
-        self.update_mood()  # ✅ Ensure mood updates immediately
+        # Log mood change details
+        print(f"🔍 Mood influenced by {event_type}: Previous Score: {previous_mood_score}, New Score: {self.mood_score}")
+    
+        self.update_mood()  # Ensure mood updates immediately
 
     def update_mood(self):
         """Updates Astra's mood based on accumulated experiences, ensuring proper mood shifts."""
         elapsed_time = time.time() - self.last_mood_update
-        if elapsed_time < 600:  # Only update every 10 minutes
+        if elapsed_time < 5:  # Only update every 10 minutes
             return
 
         previous_mood = self.current_mood
@@ -136,17 +172,16 @@ class MoodManager:
 
         # ✅ Update curiosity based on new mood
         mind_data = load_mind()
-        mind_data["curiosity_level"] = mood_config["moods"].get(self.current_mood, {}).get("curiosity_factor", 1.0)
+        mind_data["curiosity_level"] = self.mood_config["moods"].get(self.current_mood, {}).get("curiosity_factor", 1.0)
         save_mind(mind_data)  # **Persist changes**
     
         print(f"🔍 New curiosity level: {mind_data['curiosity_level']}")
 
         self.log_mood_change()
 
-
     def set_mood(self, mood):
         """Set Astra's mood to a new state and log it persistently."""
-        if mood not in mood_config["moods"]:
+        if mood not in self.mood_config["moods"]:
             print(f"⚠️ Warning: Unknown mood '{mood}', defaulting to 'neutral'")
             mood = "neutral"
 
@@ -154,7 +189,7 @@ class MoodManager:
 
         # ✅ Load and update stored curiosity level
         mind_data = load_mind()
-        mind_data["curiosity_level"] = mood_config["moods"].get(mood, {}).get("curiosity_factor", 1.0)
+        mind_data["curiosity_level"] = self.mood_config["moods"].get(mood, {}).get("curiosity_factor", 1.0)
         mind_data["last_mood"] = mood  # ✅ Persist mood
         save_mind(mind_data)  # ✅ Ensure Astra remembers after restart
 
@@ -164,13 +199,12 @@ class MoodManager:
         self.log_mood_change()
 
     def get_current_mood(self):
-        """Retrieve Astra’s current mood state."""
+        """Retrieve Astra’s current mood state.""" 
         return self.current_mood
 
     def get_curiosity(self):
-        """Retrieve Astra's current curiosity level, defaulting to neutral if missing."""
+        """Retrieve Astra's current curiosity level, defaulting to neutral if missing.""" 
         return self.curiosity_level  # Default to 1.0 if missing
-
 
 # ✅ Initialize mood manager
 mood_manager = MoodManager()

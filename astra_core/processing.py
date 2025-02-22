@@ -121,36 +121,31 @@ def process_reflection():
     # ✅ Generate a varied follow-up question
     question_templates = general_config["question_templates"]
 
-    # ✅ Extract only the first 100 characters of the reflection for clarity
-    shortened_reflection = expanded_reflection[:100].split(".")[0]  # Grab first sentence if possible
+    # ✅ Extract a meaningful portion of the reflection for context
+    shortened_reflection = expanded_reflection[:150].split(".")[0]  # Grab first sentence if possible
 
-    new_question = f"{random.choice(question_templates)} ({shortened_reflection}...)"
+    num_questions = random.randint(1, 3)  # Generate 1-3 questions per cycle
+    for _ in range(num_questions):
+        new_question = f"{random.choice(question_templates)} ({shortened_reflection}...)"
 
-
-    # ✅ Prevent duplicate questions before adding
-    if not isinstance(mind_data["self_questions"], list):  # ✅ Ensure `self_questions` is a list
-        print("🚨 Error: `self_questions` is not a list! Resetting...")
-        mind_data["self_questions"] = []
-
-    # ✅ Extract only the first 100 characters of the reflection for clarity
-    shortened_reflection = expanded_reflection[:100].split(".")[0]  # Grab first sentence if possible
-
-    new_question = f"{random.choice(question_templates)} ({shortened_reflection}...)"
-
-    # ✅ Trim questions to their core form for better duplicate detection
-    question_core = new_question.split("(")[0].strip()  # Extract only the main question
 
     # ✅ Ensure `self_questions` is a list
     if not isinstance(mind_data["self_questions"], list):
         print("🚨 Error: `self_questions` is not a list! Resetting...")
         mind_data["self_questions"] = []
 
-    # ✅ Prevent duplicate self-questions by checking for similar ones
-    if not any(question_core in q for q in mind_data["self_questions"]):
+    # ✅ Debug print to see generated questions
+    print(f"🧐 DEBUG: Generated new question → {new_question}")
+
+# ✅ Extract core question phrase for better duplicate detection
+    question_core = new_question.split("(")[0].strip().lower()
+
+# ✅ Prevent duplicate self-questions based on core meaning
+    if not any(question_core in q.lower() for q in mind_data["self_questions"]):
         mind_data["self_questions"].append(new_question)
-        print(f"❓ Added new self-question: {new_question[:100]}...")
+        print(f"✅ DEBUG: Successfully added question → {new_question[:100]}...")
     else:
-        print(f"⚠ Skipped duplicate self-question: {new_question[:100]}...")
+        print(f"⚠ DEBUG: Skipped duplicate question → {new_question[:100]}...")
 
 
     # ✅ Merge and intelligently filter knowledge

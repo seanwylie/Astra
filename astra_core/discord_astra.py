@@ -39,13 +39,15 @@ bot = commands.Bot(command_prefix=values["command_prefix"], intents=intents)
 # Initialize MoodManager
 mood_manager = MoodManager()
 
-
 def load_mind_file():
     """Load the mind file and ensure all required keys exist."""
+    print("🔍 Debug: Loading mind file...")
     try:
         with open(MIND_FILE_PATH, 'r') as f:
             mind_data = json.load(f)
-    except (FileNotFoundError, json.JSONDecodeError):
+            print(f"🔍 Debug: Mind file loaded successfully. Contents: {mind_data}")
+    except (FileNotFoundError, json.JSONDecodeError) as e:
+        print(f"🚨 Error loading mind file: {e}")
         mind_data = {}
 
     mind_data.setdefault("self_reflections", [])
@@ -55,27 +57,27 @@ def load_mind_file():
 
     return mind_data
 
-
 def save_mind_file(data):
     """Ensure all key fields exist and save Astra's mind file."""
+    print(f"🔍 Debug: Saving mind file with data: {data}")
     data.setdefault("trust_levels", {})
     try:
         with open(MIND_FILE_PATH, 'w') as f:
             json.dump(data, f, indent=4)
+            print(f"🔍 Debug: Mind file saved successfully.")
     except Exception as e:
         print(f"🚨 Error saving mind file: {e}")
 
-
 # Load mind data initially
 mind_data = load_mind_file()
-
 
 def get_trust_level(user_id):
     """Retrieve Astra's trust level for a given user."""
     mind_data = load_mind_file()
     trust_levels = mind_data.get("trust_levels", {})
-    return max(min(trust_levels.get(user_id, 0), values["max_trust"]), values["min_trust"])
-
+    trust_level = trust_levels.get(user_id, 0)
+    print(f"🔍 Debug: Trust level for user {user_id}: {trust_level}")
+    return max(min(trust_level, values["max_trust"]), values["min_trust"])
 
 def update_trust(user_id, change):
     """Modify Astra's trust in a user and persist it."""
@@ -85,24 +87,24 @@ def update_trust(user_id, change):
     adjusted_change = min(change, values["max_trust_gain"]) if change > 0 else change * values["trust_loss_multiplier"]
     new_trust = max(min(trust_levels.get(user_id, 0) + adjusted_change, values["max_trust"]), values["min_trust"])
 
+    print(f"🔍 Debug: Trust updated for user {user_id}: {new_trust} (Change: {change})")
+
     if new_trust != trust_levels.get(user_id, 0):
         trust_levels[user_id] = new_trust
         save_mind_file(mind_data)
 
-
-
-
 async def send_message_to_discord(channel_id, message):
     """Astra sends a message to the specified Discord channel."""
+    print(f"🔍 Debug: Sending message to Discord channel {channel_id}: {message}")
     channel = bot.get_channel(channel_id)
     if channel:
         await channel.send(message)
-
 
 def should_engage(mood, recent_activity, trust_level, curiosity_level):
     """Decides if Astra should engage in a conversation, incorporating trust, mood, and curiosity."""
     
     if recent_activity < values["engagement_cooldown"]:
+        print("🔍 Debug: Recent activity too low. Engagement skipped.")
         return False  # Avoid spamming messages
 
     # Mood-based engagement probability
@@ -120,11 +122,9 @@ def should_engage(mood, recent_activity, trust_level, curiosity_level):
     print(f"🔍 Engagement Chance: {final_engagement_chance:.2f} (Mood: {mood}, Trust: {trust_level}, Curiosity: {curiosity_level})")
     return random.random() < final_engagement_chance
 
-
-
 def generate_dynamic_response(mood, context, mind_data, trust_level, curiosity_level, reflection):
     """Astra generates a unique response based on her mood, trust, curiosity, and reflection."""
-
+    
     # Base response tone based on mood
     mood_tone = responses["reflection_response"].get(mood, responses["reflection_response"]["neutral"])
 
@@ -147,10 +147,17 @@ def generate_dynamic_response(mood, context, mind_data, trust_level, curiosity_l
     if curiosity_response:
         response += f" {curiosity_response}"  # Append curiosity response without a newline
 
-    # Add mood-based deeper thoughts
-    mood_deep_thoughts = responses["mood_deep_thoughts"].get(mood, "")
-    if mood_deep_thoughts:
-        response += f" {mood_deep_thoughts}"  # Append mood-based deep thoughts without a newline
+    # If Astra has high curiosity, ask a reflective question or delve into deeper thoughts
+    if curiosity_level > values["curiosity_threshold"]:
+        # If Astra has high curiosity, ask a self-reflective question
+        question = random.choice(mind_data.get("self_questions", []))
+        if question:
+            response += f" Hmm... that makes me wonder: {question}"
+
+        # Add mood-based deeper thoughts
+        mood_deep_thoughts = responses.get("mood_deep_thoughts", {}).get(mood, "")
+        if mood_deep_thoughts:
+            response += f" {mood_deep_thoughts}"  # Append deeper thoughts if available
 
     # Finalize the response by trimming any unnecessary whitespace
     return response.strip()  # Remove leading/trailing spaces for cleaner output
@@ -166,8 +173,6 @@ async def trust(ctx):
     trust_message = responses["trust_messages"].get(str(trust_level), "🤷 I'm not sure how I feel about you yet.")
 
     await ctx.send(trust_message)
-
-
 
 @bot.command()
 async def reflect(ctx):
@@ -185,7 +190,6 @@ async def reflect(ctx):
     
     await ctx.send(response)
 
-
 @bot.command()
 async def personality(ctx):
     """Displays Astra's current personality traits."""
@@ -202,9 +206,6 @@ async def personality(ctx):
 
     await ctx.send(f"🧠 **Astra's Personality State:**\n{formatted_traits}")
 
-
-
-
 @bot.command()
 async def ask(ctx):
     """Astra asks a self-reflective question based on her current mood."""
@@ -220,16 +221,12 @@ async def ask(ctx):
     else:
         await ctx.send(responses.get("ask_empty", "I don't have a question right now. Ask me to reflect!"))
 
-
-
 @bot.command()
 async def knowledge(ctx):
     """Displays Astra's stored knowledge."""
     if mind_data["stored_knowledge"]:
-        sample_insights = "\n".join(random.sample(mind_data["stored_knowledge"], min(3, len(mind_data["stored_knowledge"]))))
+        sample_insights = "\n".join(random.sample(mind_data["stored_knowledge"], min(3, len(mind_data["stored_knowledge"])))) 
         await ctx.send(responses["knowledge_response"].format(knowledge=sample_insights))
-    else:
-        await ctx.send(responses["knowledge_empty"])
 
 @bot.command()
 async def mood(ctx):
@@ -270,10 +267,6 @@ async def mood(ctx):
     
     await ctx.send(mood_message)
 
-
-
-
-
 @bot.event
 async def on_reaction_add(reaction, user):
     """Handles reactions to Astra’s messages, adjusting trust and mood accordingly."""
@@ -289,19 +282,21 @@ async def on_reaction_add(reaction, user):
 
     # Check for reaction type and adjust accordingly
     if reaction.emoji == emojis["positive_feedback"]:
-        mood_manager.influence_mood("positive_feedback")
-        update_trust(user_id, trust_gain)
+        mood_manager.influence_mood("positive_feedback")  # Trigger mood change
+        update_trust(user_id, trust_gain)  # Adjust trust
         await reaction.message.channel.send(responses["reaction_responses"]["positive_feedback"])
-
+        print(f"🔍 Positive feedback received. Astra's mood updated to {mood_manager.current_mood}.")
+        
     elif reaction.emoji == emojis["negative_feedback"]:
-        mood_manager.influence_mood("negative_feedback")
-        update_trust(user_id, trust_loss)
+        mood_manager.influence_mood("negative_feedback")  # Trigger mood change
+        update_trust(user_id, trust_loss)  # Adjust trust
         await reaction.message.channel.send(responses["reaction_responses"]["negative_feedback"])
-
+        print(f"🔍 Negative feedback received. Astra's mood updated to {mood_manager.current_mood}.")
+        
     elif reaction.emoji == emojis["expand"]:
-        mood_manager.influence_mood("neutral_feedback")
+        mood_manager.influence_mood("neutral_feedback")  # Neutral reaction
         await reaction.message.channel.send(responses["reaction_responses"]["neutral_feedback"])
-
+        print(f"🔍 Neutral feedback received. Astra's mood remains {mood_manager.current_mood}.")
 
 @bot.event
 async def on_message(message):
@@ -330,8 +325,6 @@ async def on_message(message):
         last_astra_message_time = time.time()
 
     await bot.process_commands(message)
-
-
 
 @bot.event
 async def on_ready():

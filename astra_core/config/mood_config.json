@@ -1,5 +1,5 @@
 {
-    "log_file": "/home/ubuntu/astra_reflections/astra_logs.json",
+    "log_file": "/home/ubuntu/astra_logs.json",
     "moods": {
         "curious": {
             "curiosity_factor": 1.5,
@@ -31,6 +31,8 @@
         "success": 1.5,
         "failure": -2.0,
         "deep_reflection": 1.0,
-        "idle": -0.5
+        "idle": -0.5,
+        "negative_feedback": -0.2,
+        "positive_feedback": 0.2
     }
 }
