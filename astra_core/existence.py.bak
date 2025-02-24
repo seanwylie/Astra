@@ -4,7 +4,7 @@ import json
 
 sys.path.append(os.path.abspath(os.path.dirname(__file__) + "/.."))
 
-from astra_interfaces.influence import astra_interfaces.influence.load_mind
+from astra_interfaces.influence import load_mind
 
 
 
@@ -21,7 +21,7 @@ def load_identity():
 
 def save_identity(identity_data):
     """Saves Astra's self-awareness and identity information."""
-    mind_data = astra_interfaces.influence.load_mind()
+    mind_data = load_mind()
     mind_data["identity"] = identity_data
     with open(MIND_FILE_JSON, "w") as f:
         json.dump(mind_data, f, indent=4)

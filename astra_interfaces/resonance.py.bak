@@ -5,7 +5,7 @@ import random
 # Ensure Python finds Astra’s modules
 sys.path.append(os.path.abspath(os.path.dirname(__file__) + "/.."))
 
-from astra_interfaces.influence import astra_interfaces.influence.load_mind, store_knowledge  # ✅ Fix: Import store_knowledge
+from astra_interfaces.influence import load_mind, store_knowledge  # ✅ Fix: Import store_knowledge
 from astra_core.config_loader import load_config  # ✅ Load configuration dynamically
 
 # ✅ Load resonance settings

@@ -1,6 +1,7 @@
 import os
+import json
 from utils.json_loader import load_json_file, save_json_file
-
+from utils.config_loader import load_config
 
 # MIND_FILE_JSON = load_config("mind_file_path", "mind_file.json")  # ✅ Ensures correct path handling
 
@@ -39,6 +40,20 @@ def load_mind():
 # Define the path to the mind file
 MIND_FILE_JSON = "/home/ubuntu/astra_reflections/mind_file.json"
 
+def validate_mind_data(mind_data):
+    """
+    Validate the mind data to ensure it meets the required structure.
+    This function should be implemented based on your specific validation logic.
+    """
+    # Placeholder for validation logic
+    return mind_data
+
+def save_json_file(file_path, data):
+    """
+    Save the given data to a JSON file at the specified path.
+    """
+    with open(file_path, 'w') as json_file:
+        json.dump(data, json_file, indent=4)
 
 def save_mind(mind_data):
     """

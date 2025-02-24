@@ -74,7 +74,7 @@ def load_mind():
     print(f"🔍 After merging structured knowledge: {len(mind_data['stored_knowledge'])} items.")
     if not isinstance(mind_data, dict):
         print("🚨 [ERROR] mind_data was not a dictionary! Resetting...")
-        save_mind(mind_data)  # ✅ Save after merging
+    save_mind(mind_data)  # ✅ Save after merging
     return mind_data
 
 def save_mind(mind_data):

@@ -1,22 +1,12 @@
 import json
 import os
-from datetime import datetime, timedelta
+from datetime import datetime
+from astra_interfaces.influence import load_mind, save_mind
 
 # File paths
-MIND_FILE_PATH = "mind_file.json"  # Ensure this points to Astra's mind file
 LOG_FILE_PATH = "astra_logs.json"  # Ensure this points to Astra's log file
 SNAPSHOT_DIR = "snapshots/"  # Directory for saving snapshots
 MAX_SNAPSHOT_AGE_DAYS = 7  # Define the maximum age of snapshots (in days)
-
-def load_mind_file():
-    """Load the mind file and return the data."""
-    try:
-        with open(MIND_FILE_PATH, 'r') as f:
-            mind_data = json.load(f)
-        return mind_data
-    except (FileNotFoundError, json.JSONDecodeError):
-        print("🚨 Error: mind file not found or corrupt.")
-        return {}
 
 def load_logs():
     """Load the log file and return the latest logs."""
@@ -123,13 +113,12 @@ def clean_old_snapshots():
 def check_up():
     """Performs a checkup on Astra’s state and prints a report."""
     # Load Astra's mind data and logs
-    mind_data = load_mind_file()
+    mind_data = load_mind()
     logs = load_logs()
 
     # Generate the health check report
     generate_health_report(mind_data, logs)
     
-
 # Run the checkup
 if __name__ == "__main__":
     check_up()
