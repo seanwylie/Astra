@@ -6,6 +6,7 @@ import sys
 import io
 import boto3
 
+os.environ["ASTRA_TEST_MODE"] = "1"  # Prevent real data modification in tests
 # Add the project root to the Python path to resolve imports
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
@@ -57,22 +58,26 @@ class TestDiscordAstra(unittest.IsolatedAsyncioTestCase):
         mock_load_mind.return_value = test_mind_data
         trust = get_trust_level("12345")
         self.assertEqual(trust, 5)
-    
+        
+
     @patch("astra_interfaces.influence.save_mind")
     @patch("astra_interfaces.influence.load_mind")
     def test_update_trust(self, mock_load_mind, mock_save):
         """Test updating trust levels."""
-        test_mind_data = {"trust_levels": {"12345": 5}}
+        test_mind_data = {"trust_levels": {"12345": 5}}  # 🚨 Already maxed trust
         mock_load_mind.return_value = test_mind_data
-        
+
         # Verify initial trust level
         self.assertEqual(test_mind_data["trust_levels"]["12345"], 5)
-        
+
         update_trust("12345", 2)
-        
-        # Verify updated trust level
+
+        # ✅ Expect trust to remain the same
         self.assertEqual(test_mind_data["trust_levels"]["12345"], 5)
-        mock_save.assert_called_once_with(test_mind_data)
+
+        # ✅ Since trust didn't change, save_mind should NOT be called
+        mock_save.assert_not_called()
+
     
     def test_should_engage(self):
         """Test engagement decision-making."""

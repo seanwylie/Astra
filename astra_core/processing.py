@@ -159,7 +159,10 @@ def process_reflection():
     # ✅ Filter duplicates & short entries
     mind_data["stored_knowledge"] = filter_knowledge(mind_data["stored_knowledge"])
 
-
+    # 🚨 CRITICAL CHECK: Ensure `mind_data` is not empty
+    if not mind_data or not isinstance(mind_data, dict):
+        print("🚨 [CRITICAL ERROR] processing.py detected an EMPTY mind file before saving!")
+    
     # print(f"🔍 Debug: Type of `self_reflections` AFTER appending: {type(mind_data['self_reflections'])}")
 
     # ✅ Save updated mind file

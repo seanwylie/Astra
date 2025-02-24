@@ -78,25 +78,29 @@ def load_mind():
     return mind_data
 
 def save_mind(mind_data):
-    """Saves updated knowledge to Astra’s mind file in S3 without using local storage."""
-    if mind_data is None:
-        print("🚨 [ERROR] Attempted to save `None` as mind file! Prevented overwrite.")
-        return  # ✅ Prevents accidental data loss
+    """Saves Astra’s updated mind to S3, ensuring it is not empty."""
+    
+    if mind_data is None or not isinstance(mind_data, dict):
+        print("🚨 [ERROR] Attempted to save an invalid mind file! Prevented overwrite.")
+        return  
+
+    if not mind_data.get("self_reflections") and not mind_data.get("self_questions") and not mind_data.get("stored_knowledge"):
+        print("🚨 [ERROR] Attempted to save an EMPTY mind file! Prevented overwrite.")
+        return  
 
     print("🔍 Debug: Sanitizing mind file before saving...")
-
-    # ✅ Ensure all fields are lists
+    
     mind_data["self_reflections"] = list(mind_data.get("self_reflections", []))
     mind_data["self_questions"] = list(mind_data.get("self_questions", []))
     mind_data["stored_knowledge"] = list(mind_data.get("stored_knowledge", []))
 
-    # ✅ Save directly to S3
     try:
         mind_file_json = json.dumps(mind_data, indent=4)
         s3.put_object(Bucket=S3_BUCKET_NAME, Key=MIND_FILE_JSON, Body=mind_file_json)
         print(f"✅ Mind file saved to S3 successfully! Reflections: {len(mind_data['self_reflections'])}, Questions: {len(mind_data['self_questions'])}, Knowledge: {len(mind_data['stored_knowledge'])}")
     except Exception as e:
         print(f"🚨 [ERROR] Failed to save mind_file.json to S3: {e}")
+
 
 def store_knowledge(mind_data, new_insight):
     """Ensure knowledge is stored while prioritizing Astra’s core philosophy."""

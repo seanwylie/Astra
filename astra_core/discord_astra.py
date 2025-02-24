@@ -45,7 +45,7 @@ def load_mind_file():
     try:
         with open(MIND_FILE_PATH, 'r') as f:
             mind_data = json.load(f)
-            print(f"🔍 Debug: Mind file loaded successfully. Contents: {mind_data}")
+            # print(f"🔍 Debug: Mind file loaded successfully. Contents: {mind_data}")
     except (FileNotFoundError, json.JSONDecodeError) as e:
         print(f"🚨 Error loading mind file: {e}")
         mind_data = {}

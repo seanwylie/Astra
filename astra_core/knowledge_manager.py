@@ -1,5 +1,5 @@
 from utils.json_loader import load_json_file
-from astra_core.mind_manager import load_mind, save_mind
+from astra_interfaces.influence import load_mind, save_mind
 
 MIND_FILE_ORIG = "mind_file_sean.json"
 
