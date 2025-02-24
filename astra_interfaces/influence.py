@@ -50,7 +50,6 @@ def load_mind():
 
     print(f"🔍 Before merge: {len(mind_data['stored_knowledge'])} stored knowledge items.")
 
-    # ✅ Merge structured knowledge from mind_file_sean.json in S3
     try:
         response = s3.get_object(Bucket=S3_BUCKET_NAME, Key=MIND_FILE_ORIG)
         structured_data = json.load(io.BytesIO(response["Body"].read()))
@@ -65,8 +64,12 @@ def load_mind():
 
             print(f"🔹 Merging complete! Final stored knowledge count: {len(mind_data['stored_knowledge'])}")
 
-    except (s3.exceptions.NoSuchKey, json.JSONDecodeError) as e:
-        print(f"⚠ Error loading structured mind file from S3: {e}")
+    except s3.exceptions.NoSuchKey:
+        print(f"⚠ Warning: {MIND_FILE_ORIG} not found in S3. Skipping structured knowledge merge.")
+
+    except json.JSONDecodeError:
+        print(f"⚠ Warning: {MIND_FILE_ORIG} is corrupted. Skipping structured knowledge merge.")
+
 
     print(f"🔍 After merging structured knowledge: {len(mind_data['stored_knowledge'])} items.")
     if not isinstance(mind_data, dict):

@@ -9,14 +9,11 @@ sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 from astra_core.config_loader import load_config
 from astra_interfaces.influence import load_mind, save_mind  # ✅ Handles memory storage
 
-# Load mood-related configurations
-mood_config = load_config("mood_config")  # Load mood and emotional settings
-
 class MoodManager:
     def __init__(self):
         print("🔍 Debug: Attempting to load mood_config.json...")
-        self.mood_config = load_config("mood_config")
-        print("🔍 Debug: mood_config Loaded →", self.mood_config)
+        self.mood_config = self.load_mood_config()  # ✅ Now loads and merges stored values
+        print("🔍 Debug: Merged mood_config →", self.mood_config)
 
         self.LOG_FILE = load_config("general_config").get("log_file", "/home/ubuntu/astra_logs.json")
 
@@ -34,12 +31,24 @@ class MoodManager:
 
         self.start_mood_thread()
 
+    def load_mood_config(self):
+        """Ensure mood influences persist across restarts."""
+        mood_config = load_config("mood_config")  # Load default settings
+        mind_data = load_mind()  # Load stored influences from S3
+
+        if "mood_influences" in mind_data:
+            mood_config["mood_influences"].update(mind_data["mood_influences"])  # Merge stored values
+            print(f"🔄 Merged mood influences from mind file: {mood_config['mood_influences']}")
+
+        return mood_config
+
     def save_mood_state(self):
         """Save Astra's mood, mood score, and mood history to memory."""
         mind_data = load_mind()
         mind_data["last_mood"] = self.current_mood
         mind_data["mood_score"] = self.mood_score
         mind_data["mood_history"] = self.mood_history  # ✅ Save mood tracking history
+        mind_data["mood_influences"] = self.mood_config["mood_influences"]  # ✅ Persist mood influences
         save_mind(mind_data)
 
     def start_mood_thread(self):
@@ -70,13 +79,22 @@ class MoodManager:
         self.update_mood()
 
     def modify_mood_influence(self, event_type, new_value):
-        """Allows Astra to modify her mood influences within safe limits."""
+        """Allows Astra to modify her mood influences within safe limits and persist them."""
         safe_limits = self.mood_config.get("mood_influence_limits", {"min": -2.0, "max": 2.0})
         new_value = max(min(new_value, safe_limits["max"]), safe_limits["min"])
         
         if event_type in self.mood_config.get("mood_influences", {}):
             self.mood_config["mood_influences"][event_type] = new_value
             print(f"🔍 Modified mood influence: {event_type} → {new_value}")
+
+            # ✅ Load mind file from S3
+            mind_data = load_mind()
+
+            # ✅ Save updated mood influences
+            mind_data["mood_influences"] = self.mood_config["mood_influences"]
+            save_mind(mind_data)  # ✅ Ensure Astra remembers after restart
+
+            print("✅ Mood influences saved and will persist across restarts!")
         else:
             print(f"⚠️ Warning: Unknown mood influence '{event_type}', modification skipped.")
 
