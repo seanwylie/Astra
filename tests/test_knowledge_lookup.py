@@ -1,4 +1,6 @@
 import json
+import sys
+sys.path.insert(0, "../")
 from astra_core.knowledge import seek_external_knowledge
 
 # ✅ Mock mind file data (ensuring all required keys exist)

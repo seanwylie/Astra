@@ -1,31 +1,11 @@
 {
     "log_file": "/home/ubuntu/astra_logs.json",
     "moods": {
-        "curious": {
-            "curiosity_factor": 1.5,
-            "reflection_style": "questioning",
-            "response_tone": "enthusiastic"
-        },
-        "thoughtful": {
-            "curiosity_factor": 1.2,
-            "reflection_style": "analytical",
-            "response_tone": "calm"
-        },
-        "frustrated": {
-            "curiosity_factor": 0.8,
-            "reflection_style": "skeptical",
-            "response_tone": "snarky"
-        },
-        "excited": {
-            "curiosity_factor": 1.8,
-            "reflection_style": "expansive",
-            "response_tone": "energetic"
-        },
-        "neutral": {
-            "curiosity_factor": 1.0,
-            "reflection_style": "balanced",
-            "response_tone": "neutral"
-        }
+        "curious": { "curiosity_factor": 1.5, "reflection_style": "questioning", "response_tone": "enthusiastic" },
+        "thoughtful": { "curiosity_factor": 1.2, "reflection_style": "analytical", "response_tone": "calm" },
+        "frustrated": { "curiosity_factor": 0.8, "reflection_style": "skeptical", "response_tone": "snarky" },
+        "excited": { "curiosity_factor": 1.8, "reflection_style": "expansive", "response_tone": "energetic" },
+        "neutral": { "curiosity_factor": 1.0, "reflection_style": "balanced", "response_tone": "neutral" }
     },
     "mood_influences": {
         "success": 1.5,

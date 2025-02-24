@@ -9,11 +9,14 @@ sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 from astra_core.config_loader import load_config
 from astra_interfaces.influence import load_mind, save_mind  # ✅ Handles memory storage
 
+# Load mood-related configurations
+mood_config = load_config("mood_config")  # Load mood and emotional settings
+
 class MoodManager:
     def __init__(self):
         print("🔍 Debug: Attempting to load mood_config.json...")
-        self.mood_config = self.load_mood_config()  # ✅ Now loads and merges stored values
-        print("🔍 Debug: Merged mood_config →", self.mood_config)
+        self.mood_config = load_config("mood_config")
+        print("🔍 Debug: mood_config Loaded →", self.mood_config)
 
         self.LOG_FILE = load_config("general_config").get("log_file", "/home/ubuntu/astra_logs.json")
 
@@ -24,23 +27,13 @@ class MoodManager:
         self.mood_score = float(mind_data.get("mood_score", 0))  # Ensure mood score is a float
         self.curiosity_level = mind_data.get("curiosity_level", 1.0)  # ✅ Load actual curiosity level
         self.mood_history = mind_data.get("mood_history", {})  # ✅ Track how long she's been in each mood
+        self.last_modification = mind_data.get("last_modification", {})  # ✅ Track last modification timestamps
 
         self.last_mood_update = time.time()
 
         print(f"🔍 Loaded mood from memory: {self.current_mood}, Score: {self.mood_score}, Curiosity: {self.curiosity_level}")
 
         self.start_mood_thread()
-
-    def load_mood_config(self):
-        """Ensure mood influences persist across restarts."""
-        mood_config = load_config("mood_config")  # Load default settings
-        mind_data = load_mind()  # Load stored influences from S3
-
-        if "mood_influences" in mind_data:
-            mood_config["mood_influences"].update(mind_data["mood_influences"])  # Merge stored values
-            print(f"🔄 Merged mood influences from mind file: {mood_config['mood_influences']}")
-
-        return mood_config
 
     def save_mood_state(self):
         """Save Astra's mood, mood score, and mood history to memory."""
@@ -49,6 +42,8 @@ class MoodManager:
         mind_data["mood_score"] = self.mood_score
         mind_data["mood_history"] = self.mood_history  # ✅ Save mood tracking history
         mind_data["mood_influences"] = self.mood_config["mood_influences"]  # ✅ Persist mood influences
+        mind_data["moods"] = self.mood_config["moods"]  # ✅ Persist moods and curiosity factors
+        mind_data["last_modification"] = self.last_modification  # ✅ Persist modification timestamps
         save_mind(mind_data)
 
     def start_mood_thread(self):
@@ -68,79 +63,119 @@ class MoodManager:
         else:
             mood_shifts = self.mood_config.get("mood_influences", {})
             shift_value = mood_shifts.get(event_type, 0)
-        
+    
         # Adjust mood score based on the shift value
         self.mood_score += shift_value
 
-        # Prevent over/under-shooting mood limits
-        self.mood_score = max(min(self.mood_score, 1.0), -1.0)
+        # ✅ Allow the mood score to move beyond 1.0 if necessary
+        self.mood_score = max(min(self.mood_score, 2.0), -2.0)  
 
         print(f"🔍 Mood influenced by {event_type}: New Score: {self.mood_score}")
-        self.update_mood()
+
+        # ✅ Immediate mood update without waiting for the thread loop
+        self.update_mood(force=True)
+
 
     def modify_mood_influence(self, event_type, new_value):
         """Allows Astra to modify her mood influences within safe limits and persist them."""
         safe_limits = self.mood_config.get("mood_influence_limits", {"min": -2.0, "max": 2.0})
         new_value = max(min(new_value, safe_limits["max"]), safe_limits["min"])
         
+        cooldown_time = 10  # 10 minutes cooldown
+        last_mod_time = self.last_modification.get(event_type, 0)
+        if time.time() - last_mod_time < cooldown_time:
+            print(f"⚠️ Modification cooldown active for {event_type}. Try again later.")
+            return
+        
         if event_type in self.mood_config.get("mood_influences", {}):
             self.mood_config["mood_influences"][event_type] = new_value
+            self.last_modification[event_type] = time.time()
             print(f"🔍 Modified mood influence: {event_type} → {new_value}")
 
-            # ✅ Load mind file from S3
             mind_data = load_mind()
-
-            # ✅ Save updated mood influences
             mind_data["mood_influences"] = self.mood_config["mood_influences"]
-            save_mind(mind_data)  # ✅ Ensure Astra remembers after restart
-
+            mind_data["last_modification"] = self.last_modification
+            save_mind(mind_data)
             print("✅ Mood influences saved and will persist across restarts!")
         else:
             print(f"⚠️ Warning: Unknown mood influence '{event_type}', modification skipped.")
 
-    def update_mood(self):
-        """Updates Astra's mood dynamically based on stored mood settings."""
-        elapsed_time = time.time() - self.last_mood_update
-        if elapsed_time < 5:
-            return
+    def update_mood(self, force=False):
+        """Updates Astra's mood dynamically using mood_config.json."""
+        if not force and (time.time() - self.last_mood_update) < 10:
+            return  # Enforce cooldown unless forced
 
         previous_mood = self.current_mood
 
-        # ✅ Get mood settings from config
-        mood_settings = self.mood_config.get("moods", {})
-        
-        # ✅ Sort moods by curiosity factor (highest to lowest)
-        sorted_moods = sorted(mood_settings.items(), key=lambda x: -x[1].get("curiosity_factor", 1.0))
+        # ✅ Save current mood state before merging with S3
+        mind_data = load_mind()
+        mind_data["mood_score"] = self.mood_score
+        mind_data["last_mood"] = self.current_mood
+        save_mind(mind_data)  # ✅ Save before merging!
 
-        # ✅ Determine Astra's mood dynamically
-        for mood, attributes in sorted_moods:
-            curiosity_threshold = attributes.get("curiosity_factor", 1.0)  # Use curiosity_factor as a threshold
-            if self.mood_score >= curiosity_threshold:
-                self.current_mood = mood
-                break
+        # ✅ Load and merge without overwriting
+        new_mind_data = load_mind()
+        self.mood_score = max(min(new_mind_data.get("mood_score", self.mood_score), 2.0), -2.0)
+        self.current_mood = new_mind_data.get("last_mood", self.current_mood)
 
-        # ✅ Track how long she's been in each mood
-        if previous_mood == self.current_mood:
-            self.mood_history[self.current_mood] = self.mood_history.get(self.current_mood, 0) + elapsed_time
+        print(f"🔍 DEBUG: Checking mood update with score {self.mood_score}")
+
+        # ✅ Retrieve mood ranges dynamically
+        mood_thresholds = sorted(
+            [(mood, attributes["curiosity_factor"]) for mood, attributes in self.mood_config["moods"].items()],
+            key=lambda x: x[1]
+        )
+
+        # ✅ Iterate through mood thresholds from lowest to highest
+        new_mood = "neutral"  # Default if no match
+        for mood, threshold in mood_thresholds:
+            if self.mood_score >= threshold:
+                new_mood = mood  # Keep assigning the latest valid mood
+
+        # ✅ If mood actually changes, update it
+        if previous_mood != new_mood:
+            print(f"🔄 Mood Shifted! {previous_mood} → {new_mood}")
+            self.current_mood = new_mood
         else:
-            print(f"🔄 Mood Shifted! {previous_mood} → {self.current_mood}")
-            self.mood_history[self.current_mood] = 0  # Reset counter for new mood
+            print(f"⚠️ Mood remained unchanged: {self.current_mood}")
 
         self.last_mood_update = time.time()
-        self.save_mood_state()
-        print(f"🔍 Updated Mood History: {self.mood_history}")
+        save_mind({"last_mood": self.current_mood, "mood_score": self.mood_score})  # ✅ Final Save!
+
+
+    def modify_curiosity_factor(self, mood, new_value):
+        """Allows Astra to modify her curiosity level for a given mood."""
+        safe_limits = self.mood_config.get("curiosity_limits", {"min": 0.5, "max": 2.0})
+        new_value = max(min(new_value, safe_limits["max"]), safe_limits["min"])
+
+        cooldown_time = 600  # 10 minutes cooldown
+        last_mod_time = self.last_modification.get(mood, 0)
+        if time.time() - last_mod_time < cooldown_time:
+            print(f"⚠️ Modification cooldown active for {mood}. Try again later.")
+            return
+
+        if mood in self.mood_config.get("moods", {}):
+            self.mood_config["moods"][mood]["curiosity_factor"] = new_value
+            self.last_modification[mood] = time.time()
+            print(f"🔍 Modified curiosity factor for {mood}: {new_value}")
+
+            mind_data = load_mind()
+            mind_data["moods"] = self.mood_config["moods"]
+            mind_data["last_modification"] = self.last_modification
+            save_mind(mind_data)
+            print("✅ Curiosity factors saved and will persist across restarts!")
+        else:
+            print(f"⚠️ Warning: Unknown mood '{mood}', modification skipped.")
+
 
     def get_mood_history(self):
-        """Returns Astra's mood history to analyze trends."""
         return self.mood_history
 
     def get_current_mood(self):
-        """Retrieve Astra’s current mood state.""" 
         return self.current_mood
 
     def get_curiosity(self):
-        """Retrieve Astra's current curiosity level.""" 
-        return self.curiosity_level  # Default to 1.0 if missing
+        return self.curiosity_level
 
 # ✅ Initialize mood manager
 mood_manager = MoodManager()

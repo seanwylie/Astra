@@ -128,6 +128,7 @@ def check_up():
 
     # Generate the health check report
     generate_health_report(mind_data, logs)
+    
 
 # Run the checkup
 if __name__ == "__main__":
