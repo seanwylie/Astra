@@ -107,11 +107,14 @@ class MoodManager:
 
         previous_mood = self.current_mood
 
-        # ✅ Save current mood state before merging with S3
+        # ✅ Load Astra's full memory before modifying mood
         mind_data = load_mind()
+
+        # ✅ Preserve existing data while updating mood-related values
         mind_data["mood_score"] = self.mood_score
         mind_data["last_mood"] = self.current_mood
-        save_mind(mind_data)  # ✅ Save before merging!
+
+        save_mind(mind_data)  # ✅ Save without wiping data!
 
         # ✅ Load and merge without overwriting
         new_mind_data = load_mind()
@@ -140,7 +143,10 @@ class MoodManager:
             print(f"⚠️ Mood remained unchanged: {self.current_mood}")
 
         self.last_mood_update = time.time()
-        save_mind({"last_mood": self.current_mood, "mood_score": self.mood_score})  # ✅ Final Save!
+
+        # ✅ Save full mind file again to ensure no data loss
+        save_mind(mind_data)
+
 
 
     def modify_curiosity_factor(self, mood, new_value, force_override=False):

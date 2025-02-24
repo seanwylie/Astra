@@ -2,5 +2,5 @@ venv/
 __pycache__/
 nohup.out
 mind_file.json
-mind_file_sean.json
+mind_file_parents.json
 .env  # Future: Store API keys/config here

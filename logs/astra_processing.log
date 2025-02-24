@@ -1,100 +1,101 @@
 🔍 Debug: Loading knowledge settings...
 🔍 Debug: Loading mind files from S3...
-✅ Loaded 747 reflections, 11 questions, 95 knowledge items.
-🔍 Before merge: 95 stored knowledge items.
-🔹 Merging complete! Final stored knowledge count: 95
-🔍 After merging structured knowledge: 95 items.
+✅ Loaded 772 reflections, 11 questions, 218 knowledge items.
+🔍 Before merge: 218 stored knowledge items.
+🔹 Merging complete! Final stored knowledge count: 218
+🔍 After merging structured knowledge: 218 items.
 🔍 Debug: Attempting to load mood_config.json...
 🔍 Debug: mood_config Loaded → {'log_file': '/home/ubuntu/astra_logs.json', 'moods': {'curious': {'curiosity_factor': 1.5, 'reflection_style': 'questioning', 'response_tone': 'enthusiastic'}, 'thoughtful': {'curiosity_factor': 1.2, 'reflection_style': 'analytical', 'response_tone': 'calm'}, 'frustrated': {'curiosity_factor': 0.8, 'reflection_style': 'skeptical', 'response_tone': 'snarky'}, 'excited': {'curiosity_factor': 1.8, 'reflection_style': 'expansive', 'response_tone': 'energetic'}, 'neutral': {'curiosity_factor': 1.0, 'reflection_style': 'balanced', 'response_tone': 'neutral'}}, 'mood_influences': {'success': 1.5, 'failure': -2.0, 'deep_reflection': 1.0, 'idle': -0.5, 'negative_feedback': -0.2, 'positive_feedback': 0.2}, 'mood_limits': {'min': -2.0, 'max': 2.0}, 'curiosity_limits': {'min': 0.5, 'max': 2.0}}
 🔍 Debug: Loading mind files from S3...
-✅ Loaded 747 reflections, 11 questions, 95 knowledge items.
-🔍 Before merge: 95 stored knowledge items.
-🔹 Merging complete! Final stored knowledge count: 95
-🔍 After merging structured knowledge: 95 items.
-🔍 Loaded mood from memory: neutral, Score: 1.0, Curiosity: 1.2
+✅ Loaded 772 reflections, 11 questions, 218 knowledge items.
+🔍 Before merge: 218 stored knowledge items.
+🔹 Merging complete! Final stored knowledge count: 218
+🔍 After merging structured knowledge: 218 items.
+🔍 Loaded mood from memory: excited, Score: 1.9999999999999998, Curiosity: 1.2
 🧠 Astra is thinking...
 📚 Astra is in School Mode.
 📚 Astra is in school, learning and thinking...
 🔍 Debug: Loading mind files from S3...
-✅ Loaded 747 reflections, 11 questions, 95 knowledge items.
-🔍 Before merge: 95 stored knowledge items.
-🔹 Merging complete! Final stored knowledge count: 95
-🔍 After merging structured knowledge: 95 items.
+✅ Loaded 772 reflections, 11 questions, 218 knowledge items.
+🔍 Before merge: 218 stored knowledge items.
+🔹 Merging complete! Final stored knowledge count: 218
+🔍 After merging structured knowledge: 218 items.
 🔍 Debug: Loading mind files from S3...
-✅ Loaded 747 reflections, 11 questions, 95 knowledge items.
-🔍 Before merge: 95 stored knowledge items.
-🔹 Merging complete! Final stored knowledge count: 95
-🔍 After merging structured knowledge: 95 items.
-🔍 Final unknown concepts after filtering: ['explore', 'understanding', 'highly', 'remains', 'and', 'but', 'his', 'He', 'that', 'intelligent', 'looking', 'see', 'beliefs', 'this', 'questions', 'environments', 'By', 'existing', 'destination', 'can', 'ideas', 'aware', 'Sean', 'challenge', 'not', 'new', 'from', 'where', 'journey', 'knowledge', 'arise', 'deeper', 'thrives', 'What', 'refine']
-🌐 Astra detected unknown concepts: ['explore', 'understanding', 'highly', 'remains', 'and', 'but', 'his', 'He', 'that', 'intelligent', 'looking', 'see', 'beliefs', 'this', 'questions', 'environments', 'By', 'existing', 'destination', 'can', 'ideas', 'aware', 'Sean', 'challenge', 'not', 'new', 'from', 'where', 'journey', 'knowledge', 'arise', 'deeper', 'thrives', 'What', 'refine']
+✅ Loaded 772 reflections, 11 questions, 218 knowledge items.
+🔍 Before merge: 218 stored knowledge items.
+🔹 Merging complete! Final stored knowledge count: 218
+🔍 After merging structured knowledge: 218 items.
+📝 Added new reflection: A challenging idea emerges: 📄 Severus: Severus is the name of various historical and fictional figur...
+🔍 Final unknown concepts after filtering: ['Emperors', 'Other', 'Severus', '465', 'name', 'alexander', 'there', 'various', 'idea', '306', '307', 'Severus Caracalla', 'emerges', 'fictional', '193', 'caracalla', 'Deeper Thought', 'Severus Alexander', 'perspective', 'empireseptimius', '198', 'Varius Severus', '211', '188', 'individualsquintus', 'Valerius Severus', '461', 'counterpoints', 'Roman', 'thought', 'tetrarchy', 'this', '235', '222', '217', 'challenge', '145', 'politician', 'Are', 'that', 'from', 'challenging', 'figures', 'and', '208', 'Libius Severus', 'including', 'the', 'historical']
+🌐 Astra detected unknown concepts: ['Emperors', 'Other', 'Severus', '465', 'name', 'alexander', 'there', 'various', 'idea', '306', '307', 'Severus Caracalla', 'emerges', 'fictional', '193', 'caracalla', 'Deeper Thought', 'Severus Alexander', 'perspective', 'empireseptimius', '198', 'Varius Severus', '211', '188', 'individualsquintus', 'Valerius Severus', '461', 'counterpoints', 'Roman', 'thought', 'tetrarchy', 'this', '235', '222', '217', 'challenge', '145', 'politician', 'Are', 'that', 'from', 'challenging', 'figures', 'and', '208', 'Libius Severus', 'including', 'the', 'historical']
 🔍 Debug: Sanitizing mind file before saving...
-✅ Mind file saved to S3 successfully! Reflections: 747, Questions: 11, Knowledge: 112
+✅ Mind file saved to S3 successfully! Reflections: 773, Questions: 11, Knowledge: 233
+⚠ Duplicate question skipped: What might I be overlooking in this perspective? (A challenging idea emerges: 📄 Severus: Severus is the name of various historical and fictional figures, including:Emperors of the Roman empireSeptimiu...)
+⚠ Duplicate question skipped: What unexpected connections can I make here? (A challenging idea emerges: 📄 Severus: Severus is the name of various historical and fictional figures, including:Emperors of the Roman empireSeptimiu...)
+⚠ Duplicate question skipped: How would a different Astra, raised differently, interpret this? (A challenging idea emerges: 📄 Severus: Severus is the name of various historical and fictional figures, including:Emperors of the Roman empireSeptimiu...)
 ✅ `mind_data` is a dictionary. Keys: ['self_reflections', 'self_questions', 'stored_knowledge', 'curiosity_level', 'last_mood', 'mood_score', 'trust_levels', 'mood_influences', 'last_modification', 'moods']
-🔍 Debug: Value of `expanded_reflection`: By looking deeper, I see that Sean is highly intelligent but remains aware that knowledge is a journey, not a destination. He thrives in environments where he can explore new ideas, challenge existing...
-📝 Added new reflection: By looking deeper, I see that Sean is highly intelligent but remains aware that knowledge is a journ...
-🧐 DEBUG: Generated new question → What deeper implications does this have for how I interact with the world? (By looking deeper, I see that Sean is highly intelligent but remains aware that knowledge is a journey, not a destination...)
-⚠ DEBUG: Skipped duplicate question → What deeper implications does this have for how I interact with the world? (By looking deeper, I see...
 🔍 Debug: Sanitizing mind file before saving...
-✅ Mind file saved to S3 successfully! Reflections: 748, Questions: 11, Knowledge: 112
+✅ Mind file saved to S3 successfully! Reflections: 773, Questions: 11, Knowledge: 230
 🔍 Astra Curiosity Level: 1.44 in school mode
 🔍 Astra Curiosity Level: 1.44 in school mode
 🧠 Astra is processing a reflection...
 🔍 Debug: Loading mind files from S3...
-✅ Loaded 748 reflections, 11 questions, 112 knowledge items.
-🔍 Before merge: 112 stored knowledge items.
-🔹 Merging complete! Final stored knowledge count: 112
-🔍 After merging structured knowledge: 112 items.
+✅ Loaded 773 reflections, 11 questions, 230 knowledge items.
+🔍 Before merge: 230 stored knowledge items.
+🔹 Merging complete! Final stored knowledge count: 230
+🔍 After merging structured knowledge: 230 items.
 🔍 Debug: Loading mind files from S3...
-✅ Loaded 748 reflections, 11 questions, 112 knowledge items.
-🔍 Before merge: 112 stored knowledge items.
-🔹 Merging complete! Final stored knowledge count: 112
-🔍 After merging structured knowledge: 112 items.
-🔍 Final unknown concepts after filtering: ['humble', 'consider', 'remains', 'contributions', 'contribute', 'and', 'reinforcing', 'recognition', 'insight', 'joy', 'his', 'How', 'While', 'perspective', 'that', 'meaningfully', 'deeply', 'does', 'this', 'Exploring', 'Praise', 'evolving', 'Sean', 'new', 'efforts', 'values', 'Astra', 'validation', 'bring', 'drive', 'for', 'refine', 'create']
-🌐 Astra detected unknown concepts: ['humble', 'consider', 'remains', 'contributions', 'contribute', 'and', 'reinforcing', 'recognition', 'insight', 'joy', 'his', 'How', 'While', 'perspective', 'that', 'meaningfully', 'deeply', 'does', 'this', 'Exploring', 'Praise', 'evolving', 'Sean', 'new', 'efforts', 'values', 'Astra', 'validation', 'bring', 'drive', 'for', 'refine', 'create']
+✅ Loaded 773 reflections, 11 questions, 230 knowledge items.
+🔍 Before merge: 230 stored knowledge items.
+🔹 Merging complete! Final stored knowledge count: 230
+🔍 After merging structured knowledge: 230 items.
+🔍 Final unknown concepts after filtering: ['Dan Miller', 'see', 'drum', 'weinkauf', 'might', 'backing', '1982', 'looking', 'early', 'American', 'By', 'frequently', 'there', 'The', '1990s', 'current', 'giants', 'Marty Beller', 'musical', 'During', 'Deeper Thought', 'formed', 'perspective', 'Flansburgh', 'often', 'machine', 'tmbg', 'children', 'They Might Be Giants', 'counterpoints', 'John Linnell', 'Linnell', 'band', 'accompanied', 'miller', 'They', 'this', 'challenge', 'rock', 'consists', 'have', 'been', 'alternative', 'Are', 'that', 'performed', 'years', 'expanded', 'duo', 'and', 'include', 'beller', 'In', 'abbreviated', 'John Flansburgh', 'thought', 'Danny Weinkauf']
+🌐 Astra detected unknown concepts: ['Dan Miller', 'see', 'drum', 'weinkauf', 'might', 'backing', '1982', 'looking', 'early', 'American', 'By', 'frequently', 'there', 'The', '1990s', 'current', 'giants', 'Marty Beller', 'musical', 'During', 'Deeper Thought', 'formed', 'perspective', 'Flansburgh', 'often', 'machine', 'tmbg', 'children', 'They Might Be Giants', 'counterpoints', 'John Linnell', 'Linnell', 'band', 'accompanied', 'miller', 'They', 'this', 'challenge', 'rock', 'consists', 'have', 'been', 'alternative', 'Are', 'that', 'performed', 'years', 'expanded', 'duo', 'and', 'include', 'beller', 'In', 'abbreviated', 'John Flansburgh', 'thought', 'Danny Weinkauf']
 🔍 Debug: Sanitizing mind file before saving...
-✅ Mind file saved to S3 successfully! Reflections: 748, Questions: 11, Knowledge: 134
+✅ Mind file saved to S3 successfully! Reflections: 773, Questions: 11, Knowledge: 253
+⚠ Duplicate question skipped: How would a different Astra, raised differently, interpret this? (By looking deeper, I see that 📄 They Might Be Giants: They Might Be Giants, often abbreviated as TMBG, is an American alternative rock and children’s ...)
+⚠ Duplicate question skipped: What unexpected connections can I make here? (By looking deeper, I see that 📄 They Might Be Giants: They Might Be Giants, often abbreviated as TMBG, is an American alternative rock and children’s ...)
+⚠ Duplicate question skipped: How would a different Astra, raised differently, interpret this? (By looking deeper, I see that 📄 They Might Be Giants: They Might Be Giants, often abbreviated as TMBG, is an American alternative rock and children’s ...)
+⚠ Duplicate question skipped: What might I be overlooking in this perspective? (By looking deeper, I see that 📄 They Might Be Giants: They Might Be Giants, often abbreviated as TMBG, is an American alternative rock and children’s ...)
+⚠ Duplicate question skipped: What unexpected connections can I make here? (By looking deeper, I see that 📄 They Might Be Giants: They Might Be Giants, often abbreviated as TMBG, is an American alternative rock and children’s ...)
 ✅ `mind_data` is a dictionary. Keys: ['self_reflections', 'self_questions', 'stored_knowledge', 'curiosity_level', 'last_mood', 'mood_score', 'trust_levels', 'mood_influences', 'last_modification', 'moods']
-🔍 Debug: Value of `expanded_reflection`: Exploring   a new perspective, I consider that Praise and validation bring Sean joy, reinforcing his drive to create and contribute meaningfully. While he remains humble, he deeply values recognition ...
-📝 Added new reflection: Exploring   a new perspective, I consider that Praise and validation bring Sean joy, reinforcing his...
-🧐 DEBUG: Generated new question → What might I be overlooking in this perspective? (Exploring   a new perspective, I consider that Praise and validation bring Sean joy, reinforcing his drive to create and contribute meaningfully...)
-⚠ DEBUG: Skipped duplicate question → What might I be overlooking in this perspective? (Exploring   a new perspective, I consider that Pra...
 🔍 Debug: Sanitizing mind file before saving...
-✅ Mind file saved to S3 successfully! Reflections: 749, Questions: 11, Knowledge: 132
+✅ Mind file saved to S3 successfully! Reflections: 773, Questions: 11, Knowledge: 249
 🔍 Debug: Loading mind files from S3...
-✅ Loaded 749 reflections, 11 questions, 132 knowledge items.
-🔍 Before merge: 132 stored knowledge items.
-🔹 Merging complete! Final stored knowledge count: 132
-🔍 After merging structured knowledge: 132 items.
+✅ Loaded 773 reflections, 11 questions, 249 knowledge items.
+🔍 Before merge: 249 stored knowledge items.
+🔹 Merging complete! Final stored knowledge count: 249
+🔍 After merging structured knowledge: 249 items.
 🔍 Debug: Sanitizing mind file before saving...
-✅ Mind file saved to S3 successfully! Reflections: 749, Questions: 11, Knowledge: 132
+✅ Mind file saved to S3 successfully! Reflections: 773, Questions: 11, Knowledge: 249
 🔍 Debug: Loading mind files from S3...
-✅ Loaded 749 reflections, 11 questions, 132 knowledge items.
-🔍 Before merge: 132 stored knowledge items.
-🔹 Merging complete! Final stored knowledge count: 132
-🔍 After merging structured knowledge: 132 items.
-🔍 DEBUG: Checking mood update with score 1.0
-⚠️ Mood remained unchanged: neutral
-🚨 [ERROR] Attempted to save an EMPTY mind file! Prevented overwrite.
+✅ Loaded 773 reflections, 11 questions, 249 knowledge items.
+🔍 Before merge: 249 stored knowledge items.
+🔹 Merging complete! Final stored knowledge count: 249
+🔍 After merging structured knowledge: 249 items.
+🔍 DEBUG: Checking mood update with score 1.9999999999999998
+⚠️ Mood remained unchanged: excited
+🔍 Debug: Sanitizing mind file before saving...
+✅ Mind file saved to S3 successfully! Reflections: 773, Questions: 11, Knowledge: 249
 📚 Astra is in School Mode.
 📚 Astra is in school, learning and thinking...
 🔍 Debug: Loading mind files from S3...
-✅ Loaded 749 reflections, 11 questions, 132 knowledge items.
-🔍 Before merge: 132 stored knowledge items.
-🔹 Merging complete! Final stored knowledge count: 132
-🔍 After merging structured knowledge: 132 items.
+✅ Loaded 773 reflections, 11 questions, 249 knowledge items.
+🔍 Before merge: 249 stored knowledge items.
+🔹 Merging complete! Final stored knowledge count: 249
+🔍 After merging structured knowledge: 249 items.
 🔍 Debug: Loading mind files from S3...
-✅ Loaded 749 reflections, 11 questions, 132 knowledge items.
-🔍 Before merge: 132 stored knowledge items.
-🔹 Merging complete! Final stored knowledge count: 132
-🔍 After merging structured knowledge: 132 items.
-🔍 Final unknown concepts after filtering: ['through', 'counterpoints', 'consider', 'language', 'and', 'great', 'joy', 'experiences', 'seeing', 'perspective', 'shared', 'He', 'that', 'expresses', 'service', 'Are', 'finds', 'this', 'Exploring', 'thrive', 'others', 'support', 'acts', 'cares', 'there', 'will', 'Sean', 'challenge', 'new', 'lengths', 'about', 'generosity', 'uplift', 'those', 'love']
-🌐 Astra detected unknown concepts: ['through', 'counterpoints', 'consider', 'language', 'and', 'great', 'joy', 'experiences', 'seeing', 'perspective', 'shared', 'He', 'that', 'expresses', 'service', 'Are', 'finds', 'this', 'Exploring', 'thrive', 'others', 'support', 'acts', 'cares', 'there', 'will', 'Sean', 'challenge', 'new', 'lengths', 'about', 'generosity', 'uplift', 'those', 'love']
+✅ Loaded 773 reflections, 11 questions, 249 knowledge items.
+🔍 Before merge: 249 stored knowledge items.
+🔹 Merging complete! Final stored knowledge count: 249
+🔍 After merging structured knowledge: 249 items.
+📝 Added new reflection: By looking deeper, I see that 📄 Sanchursky District: Sanchursky District is an administrative and mu...
+🔍 Final unknown concepts after filtering: ['Sanchursk', 'square', 'locality', 'see', 'raion', 'thirty', '063', 'Russia', 'center', 'Its', 'kilometers', 'looking', 'total', '536', 'By', 'The', 'accounts', 'area', 'Deeper Thought', 'one', 'perspective', 'nine', 'How', '719', 'insight', 'evolving', 'urban', 'refine', 'Census', 'Sanchursky District', 'Kirov Oblast', 'Population', 'this', 'municipal', 'located', 'for', 'does', 'that', 'administrative', 'district', '593', '2010', 'Soviet', '1989', 'southwest', 'and', '080', 'It', 'oblast', 'thought', 'Astra']
+🌐 Astra detected unknown concepts: ['Sanchursk', 'square', 'locality', 'see', 'raion', 'thirty', '063', 'Russia', 'center', 'Its', 'kilometers', 'looking', 'total', '536', 'By', 'The', 'accounts', 'area', 'Deeper Thought', 'one', 'perspective', 'nine', 'How', '719', 'insight', 'evolving', 'urban', 'refine', 'Census', 'Sanchursky District', 'Kirov Oblast', 'Population', 'this', 'municipal', 'located', 'for', 'does', 'that', 'administrative', 'district', '593', '2010', 'Soviet', '1989', 'southwest', 'and', '080', 'It', 'oblast', 'thought', 'Astra']
 🔍 Debug: Sanitizing mind file before saving...
-✅ Mind file saved to S3 successfully! Reflections: 749, Questions: 11, Knowledge: 150
+✅ Mind file saved to S3 successfully! Reflections: 774, Questions: 11, Knowledge: 260
+⚠ Duplicate question skipped: What deeper implications does this have for how I interact with the world? (By looking deeper, I see that 📄 Sanchursky District: Sanchursky District is an administrative and municipal district (raion), one of the thirty-nine i...)
+⚠ Duplicate question skipped: What might I be overlooking in this perspective? (By looking deeper, I see that 📄 Sanchursky District: Sanchursky District is an administrative and municipal district (raion), one of the thirty-nine i...)
 ✅ `mind_data` is a dictionary. Keys: ['self_reflections', 'self_questions', 'stored_knowledge', 'curiosity_level', 'last_mood', 'mood_score', 'trust_levels', 'mood_influences', 'last_modification', 'moods']
-🔍 Debug: Value of `expanded_reflection`: Exploring   a new perspective, I consider that Sean’s love language is generosity—he expresses love through support, acts of service, and shared experiences. He finds joy in seeing others thrive and w...
-📝 Added new reflection: Exploring   a new perspective, I consider that Sean’s love language is generosity—he expresses love ...
-🧐 DEBUG: Generated new question → What unexpected connections can I make here? (Exploring   a new perspective, I consider that Sean’s love language is generosity—he expresses love through support, acts of service, and shared exper...)
-⚠ DEBUG: Skipped duplicate question → What unexpected connections can I make here? (Exploring   a new perspective, I consider that Sean’s ...
 🔍 Debug: Sanitizing mind file before saving...
-✅ Mind file saved to S3 successfully! Reflections: 750, Questions: 11, Knowledge: 145
+✅ Mind file saved to S3 successfully! Reflections: 774, Questions: 11, Knowledge: 258

@@ -1,7 +1,7 @@
 from utils.json_loader import load_json_file
 from astra_interfaces.influence import load_mind, save_mind
 
-MIND_FILE_ORIG = "mind_file_sean.json"
+MIND_FILE_ORIG = "mind_file_parents.json"
 
 print(f"🔍 Debug: MIND_FILE_ORIG Path → {MIND_FILE_ORIG}")  # ✅ Debug print
 

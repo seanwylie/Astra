@@ -9,9 +9,9 @@ from astra_core.config_loader import load_config  # ✅ Load configs dynamically
 
 general_config = load_config("general_config")  # ✅ Load schedule settings
 
-S3_BUCKET_NAME = "swylie-astra"
-MIND_FILE_JSON = "mind_file.json"
-MIND_FILE_ORIG = "mind_file_sean.json"
+S3_BUCKET_NAME = general_config.get("s3_bucket", "swylie-astra")
+MIND_FILE_JSON = general_config.get("mind_file", "mind_file.json")
+MIND_FILE_ORIG = general_config.get("structured_mind_file", "mind_file_parents.json")
 
 s3 = boto3.client("s3")
 
@@ -103,30 +103,30 @@ def save_mind(mind_data):
 
 
 def store_knowledge(mind_data, new_insight):
-    """Ensure knowledge is stored while prioritizing Astra’s core philosophy."""
+    """Ensure knowledge is stored while prioritizing Astra’s core philosophy and marking questions as answered."""
     if mind_data is None:
         print("🚨 [ERROR] Astra's memory is unavailable. Skipping knowledge storage.")
-        return  # ✅ Prevents writing to a non-existent memory
+        return  
 
     print(f"🧠 [DEBUG] Attempting to store knowledge: {new_insight[:100]}...")
+
+    # ✅ Check if knowledge answers any existing questions
+    answered_questions = [q for q in mind_data["self_questions"] if q.split("(")[0].strip().lower() in new_insight.lower()]
+    if answered_questions:
+        print(f"✅ Answering {len(answered_questions)} questions with new knowledge!")
+        mind_data["self_questions"] = [q for q in mind_data["self_questions"] if q not in answered_questions]
 
     # ✅ Prevent duplicate storage
     if any(new_insight[:50] in insight for insight in mind_data["stored_knowledge"]):
         print("⚠ [DEBUG] Insight already exists. Skipping.")
         return
 
-    # 🔹 Define core themes Astra values
-    core_themes = ["self-reflection", "collaboration", "ethical AI", "curiosity", "growth"]
-    score = sum(1 for theme in core_themes if theme in new_insight.lower())
+    mind_data["stored_knowledge"].append(new_insight)
+    print(f"✅ [DEBUG] Stored new insight: {new_insight[:100]}...")
 
-    # ✅ Loosen filtering: Store all high-scoring insights
-    if score > 0 or random.random() < 0.8:  # ✅ Increase general knowledge storage to 80%
-        mind_data["stored_knowledge"].append(new_insight)
-        print(f"✅ [DEBUG] Stored new insight: {new_insight[:100]}... (Score: {score})")
-
-    # ✅ Save updated knowledge to S3
     save_mind(mind_data)
     print("📄 [DEBUG] Knowledge successfully saved to S3!")
+
 
 def is_term_or_phrase(concept):
     """Determine if a concept is a single term (Wikipedia) or a phrase (Google Search)."""
