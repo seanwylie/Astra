@@ -6,7 +6,8 @@ try:
 except ImportError:
     print("⚠ FuzzyWuzzy module not found, falling back to exact matching.")
     fuzzy_available = False
-
+    
+from astra_core.questions.question_answerer import self_answer_question
 from astra_interfaces.influence import load_mind, save_mind
 from astra_core.knowledge import knowledge_manager
 from astra_core.config_loader import load_config
