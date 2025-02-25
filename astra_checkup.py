@@ -67,15 +67,24 @@ def delete_old_snapshots_from_s3():
     for snapshot_key in snapshots:
         try:
             snapshot_filename = snapshot_key.split("/")[-1]  # Extract just the filename
-            timestamp_str = snapshot_filename.split("_")[1]  # Extract timestamp from filename
-            snapshot_time = datetime.strptime(timestamp_str, "%Y-%m-%d")
+            # Skip the latest_snapshot.json file as it doesn't contain a timestamp
+            if snapshot_filename == "latest_snapshot.json":
+                continue
 
-            if (now - snapshot_time).days > MAX_SNAPSHOT_AGE_DAYS:
-                s3_client.delete_object(Bucket=S3_BUCKET_NAME, Key=snapshot_key)
-                print(f"🗑 Deleted old snapshot from S3: {snapshot_filename}")
+            # Extract timestamp from the filename
+            timestamp_str = snapshot_filename.split("_")[1] if len(snapshot_filename.split("_")) > 1 else None
+
+            if timestamp_str:
+                snapshot_time = datetime.strptime(timestamp_str, "%Y-%m-%d")
+                if (now - snapshot_time).days > MAX_SNAPSHOT_AGE_DAYS:
+                    s3_client.delete_object(Bucket=S3_BUCKET_NAME, Key=snapshot_key)
+                    print(f"🗑 Deleted old snapshot from S3: {snapshot_filename}")
+            else:
+                print(f"⚠ Snapshot {snapshot_filename} does not have a valid timestamp for deletion.")
 
         except Exception as e:
             print(f"🚨 Error processing snapshot {snapshot_key}: {e}")
+
 
 def clean_text(text):
     """Decodes unicode escape sequences for better readability."""
@@ -84,7 +93,7 @@ def clean_text(text):
 def generate_health_report(mind_data, logs):
     """Generate and upload Astra's checkup report to S3."""
     print("🔍 Generating Astra's Checkup Report...")
-    
+
     # Collect health indicators
     health = check_health(mind_data)
 
@@ -97,11 +106,27 @@ def generate_health_report(mind_data, logs):
         "reflections_count": len(mind_data.get("self_reflections", [])),
         "questions_count": len(mind_data.get("self_questions", [])),
         "stored_knowledge_count": len(mind_data.get("stored_knowledge", [])),
-        "recent_reflections": [clean_text(r) for r in mind_data.get("self_reflections", [])[-5:]],
-        "recent_questions": [clean_text(q) for q in mind_data.get("self_questions", [])[-5:]],
-        "recent_knowledge": [clean_text(k) for k in mind_data.get("stored_knowledge", [])[-5:]],
+        
+        # Add timestamps to the reflections for better context
+        "recent_reflections": [
+            {"timestamp": datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S'), "reflection": clean_text(r)}
+            for r in mind_data.get("self_reflections", [])[-5:]
+        ],
+        
+        # Add timestamps to the questions for better context
+        "recent_questions": [
+            {"timestamp": datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S'), "question": clean_text(q["question"])}
+            for q in mind_data.get("self_questions", [])[-5:]
+        ],
+        
+        # Add some recent knowledge
+        "recent_knowledge": [
+            {"timestamp": datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S'), "knowledge": clean_text(k)}
+            for k in mind_data.get("stored_knowledge", [])[-5:]
+        ],
+        
         "health_indicators": health,
-        "logs": logs[-5:]
+        "logs": logs[-5:]  # Include the last 5 logs for context
     }
 
     # Snapshot filename
@@ -114,6 +139,7 @@ def generate_health_report(mind_data, logs):
     delete_old_snapshots_from_s3()
 
     print(f"✅ Snapshot saved and old snapshots removed from S3.")
+
 
 def check_health(mind_data):
     """Assess Astra's health based on emotional, cognitive, and ethical indicators."""
@@ -135,7 +161,12 @@ def check_health(mind_data):
     # Self-Reflection & Introspection
     health['self_reflection'] = "Adequate" if len(mind_data.get('self_reflections', [])) > 10 else "Needs more reflection"
 
+    # More information for debugging
+    if health['mood_stability'] == "Unknown":
+        print("⚠ Warning: Mood stability is unknown. Consider investigating mood settings.")
+
     return health
+
 
 def check_up():
     """Runs Astra’s checkup and uploads a snapshot."""
