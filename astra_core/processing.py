@@ -26,27 +26,31 @@ def filter_unanswered_questions(mind_data, questions):
     """Checks if questions can be answered from stored knowledge before saving them."""
     unanswered_questions = []
 
-    for question in questions:
-        question_core = question.strip().lower()
+    for question_entry in questions:
+        if isinstance(question_entry, dict) and "question" in question_entry:
+            question_core = question_entry["question"].strip().lower()  # ✅ Extract question text properly
+        else:
+            print(f"⚠ Unexpected question format: {question_entry}")
+            continue  # Skip invalid entries
 
         # ✅ Ensure proper question comparison, not just category names
         if any(question_core == knowledge.lower() for knowledge in mind_data["stored_knowledge"]):
-            print(f"✅ Answer found! Archiving question: {question}")
+            print(f"✅ Answer found! Archiving question: {question_core}")
             continue  
 
         # ✅ Prevent full duplicates, but allow similar phrasing
-        if any(question.lower().strip() == q.lower().strip() for q in mind_data["self_questions"]):
-            print(f"⚠ Duplicate question skipped: {question}")
+        if any(question_core == q["question"].strip().lower() for q in mind_data["self_questions"] if isinstance(q, dict)):
+            print(f"⚠ Duplicate question skipped: {question_core}")
             continue 
 
-        unanswered_questions.append(question)
-        print(f"🧐 New Question Added: {question}")
+        unanswered_questions.append(question_entry)
+        print(f"🧐 New Question Added: {question_core}")
 
     return unanswered_questions
 
 
 
-# ✅ Function: Process Reflection
+
 def process_reflection():
     """Generate, refine, and deepen Astra's reflections while ensuring questions are generated & answered."""
     mind_data = load_mind()
@@ -68,16 +72,23 @@ def process_reflection():
         mind_data = knowledge_manager.retrieve_external_knowledge(unknown_concepts, mind_data)
 
     # ✅ Generate new questions using Astra's enhanced system
-    new_questions = generate_questions(expanded_reflection, mind_data)
+    categorized_questions, category_counts = generate_questions(expanded_reflection, mind_data)
+
+    # ✅ Extract only valid question objects
+    new_questions = []
+    for category, questions in categorized_questions.items():
+        if isinstance(questions, list):
+            new_questions.extend(questions)
 
     # ✅ Answer check: Filter out questions Astra already knows the answer to
     unanswered_questions = filter_unanswered_questions(mind_data, new_questions)
     mind_data["self_questions"].extend(unanswered_questions)
 
+    # ✅ Store category tracking for Dinner Time discussions
+    mind_data["self_question_categories"] = category_counts
+
     # ✅ Analyze question patterns for self-reflection tracking
     track_question_patterns(mind_data)
-
-
 
     # ✅ Merge knowledge & filter
     refined_idea = refine_knowledge(mind_data["stored_knowledge"], mind_data)
@@ -96,7 +107,6 @@ def process_reflection():
     return expanded_reflection
 
 
-# ✅ Function: Expand Reflection
 def expand_reflection(reflection):
     """Deepens thoughts and ensures unique reflections."""
     expanded_reflection = reflection
