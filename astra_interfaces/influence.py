@@ -77,8 +77,9 @@ def load_mind():
         save_mind(mind_data)  # ✅ Save after merging
     return mind_data
 
+# ✅ Lazy import to avoid circular dependency
 def save_mind(mind_data):
-    """Saves Astra’s updated mind to S3, ensuring it is not empty."""
+    """Saves Astra’s updated mind to S3, ensuring it is not empty and tracking self-questioning patterns."""
     
     if mind_data is None or not isinstance(mind_data, dict):
         print("🚨 [ERROR] Attempted to save an invalid mind file! Prevented overwrite.")
@@ -87,6 +88,12 @@ def save_mind(mind_data):
     if not mind_data.get("self_reflections") and not mind_data.get("self_questions") and not mind_data.get("stored_knowledge"):
         print("🚨 [ERROR] Attempted to save an EMPTY mind file! Prevented overwrite.")
         return  
+
+    print("🔍 Debug: Tracking self-questioning patterns before saving...")
+    
+    # ✅ Import here to avoid circular dependency
+    from astra_core.questions.question_manager import track_question_patterns
+    track_question_patterns(mind_data)
 
     print("🔍 Debug: Sanitizing mind file before saving...")
     
@@ -102,6 +109,7 @@ def save_mind(mind_data):
         print(f"🚨 [ERROR] Failed to save mind_file.json to S3: {e}")
 
 
+
 def store_knowledge(mind_data, new_insight):
     """Ensure knowledge is stored while prioritizing Astra’s core philosophy and marking questions as answered."""
     if mind_data is None:
@@ -110,8 +118,9 @@ def store_knowledge(mind_data, new_insight):
 
     print(f"🧠 [DEBUG] Attempting to store knowledge: {new_insight[:100]}...")
 
-    # ✅ Check if knowledge answers any existing questions
-    answered_questions = [q for q in mind_data["self_questions"] if q.split("(")[0].strip().lower() in new_insight.lower()]
+    # ✅ Check if knowledge answers any existing questions (ensuring strict but fair filtering)
+    answered_questions = [q for q in mind_data["self_questions"] if any(word in new_insight.lower() for word in q.split())]
+
     if answered_questions:
         print(f"✅ Answering {len(answered_questions)} questions with new knowledge!")
         mind_data["self_questions"] = [q for q in mind_data["self_questions"] if q not in answered_questions]

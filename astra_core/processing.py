@@ -7,24 +7,43 @@ sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 
 from astra_core.knowledge import knowledge_manager
 from astra_core.reflection import generate_reflection
+from astra_core.questions.question_manager import generate_questions, track_question_patterns
 from astra_core.expansion import refine_knowledge
 from astra_interfaces.influence import load_mind, save_mind
 from astra_core.config_loader import load_config  # ✅ Load configs dynamically
 
-general_config = load_config("general_config")  # ✅ Load schedule settings
+general_config = load_config("general_config")  # ✅ Load general settings
 
 
 # ✅ Function: Ensure Mind Structure
 def validate_mind_structure(mind_data):
     """Ensure `mind_data` has the correct structure."""
-    if not isinstance(mind_data.get("self_reflections", []), list):
-        mind_data["self_reflections"] = []
+    mind_data.setdefault("self_reflections", [])
+    mind_data.setdefault("self_questions", [])
+    mind_data.setdefault("stored_knowledge", [])
 
-    if not isinstance(mind_data.get("self_questions", []), list):
-        mind_data["self_questions"] = []
+def filter_unanswered_questions(mind_data, questions):
+    """Checks if questions can be answered from stored knowledge before saving them."""
+    unanswered_questions = []
 
-    if not isinstance(mind_data.get("stored_knowledge", []), list):
-        mind_data["stored_knowledge"] = []
+    for question in questions:
+        question_core = question.strip().lower()
+
+        # ✅ Ensure proper question comparison, not just category names
+        if any(question_core == knowledge.lower() for knowledge in mind_data["stored_knowledge"]):
+            print(f"✅ Answer found! Archiving question: {question}")
+            continue  
+
+        # ✅ Prevent full duplicates, but allow similar phrasing
+        if any(question.lower().strip() == q.lower().strip() for q in mind_data["self_questions"]):
+            print(f"⚠ Duplicate question skipped: {question}")
+            continue 
+
+        unanswered_questions.append(question)
+        print(f"🧐 New Question Added: {question}")
+
+    return unanswered_questions
+
 
 
 # ✅ Function: Process Reflection
@@ -48,10 +67,17 @@ def process_reflection():
         print(f"🌐 Astra detected unknown concepts: {unknown_concepts}")
         mind_data = knowledge_manager.retrieve_external_knowledge(unknown_concepts, mind_data)
 
-    # ✅ Generate & answer questions
-    new_questions = generate_questions(expanded_reflection)
-    unanswered_questions = answer_questions(mind_data, new_questions)
+    # ✅ Generate new questions using Astra's enhanced system
+    new_questions = generate_questions(expanded_reflection, mind_data)
+
+    # ✅ Answer check: Filter out questions Astra already knows the answer to
+    unanswered_questions = filter_unanswered_questions(mind_data, new_questions)
     mind_data["self_questions"].extend(unanswered_questions)
+
+    # ✅ Analyze question patterns for self-reflection tracking
+    track_question_patterns(mind_data)
+
+
 
     # ✅ Merge knowledge & filter
     refined_idea = refine_knowledge(mind_data["stored_knowledge"], mind_data)
@@ -85,42 +111,6 @@ def expand_reflection(reflection):
     expanded_reflection += deeper_thought
 
     return expanded_reflection
-
-
-# ✅ Function: Generate More Questions
-def generate_questions(reflection):
-    """Generates multiple unique questions based on the given reflection."""
-    question_templates = general_config["question_templates"]
-    num_questions = random.randint(2, 5)  # ✅ Increase question output
-
-    shortened_reflection = reflection[:150].split(".")[0]  # Extract key idea
-    new_questions = [f"{random.choice(question_templates)} ({shortened_reflection}...)" for _ in range(num_questions)]
-
-    return new_questions
-
-
-# ✅ Function: Answer Questions Before Storing Them
-def answer_questions(mind_data, questions):
-    """Checks if questions can be answered from stored knowledge before saving them."""
-    unanswered_questions = []
-
-    for question in questions:
-        question_core = question.split("(")[0].strip().lower()
-
-        # ✅ If answer exists, archive the question instead of saving it
-        if any(question_core in knowledge.lower() for knowledge in mind_data["stored_knowledge"]):
-            print(f"✅ Answer found! Archiving question: {question}")
-            continue  
-
-        # ✅ Prevent duplicates
-        if any(question_core in q.lower() for q in mind_data["self_questions"]):
-            print(f"⚠ Duplicate question skipped: {question}")
-            continue 
-
-        unanswered_questions.append(question)
-        print(f"🧐 New Question Added: {question}")
-
-    return unanswered_questions
 
 
 # ✅ Function: Filter Knowledge & Remove Duplicates

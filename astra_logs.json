@@ -1,14 +1,42 @@
-{"timestamp": "2025-02-24 13:08:52", "status": "Astra is transitioning into School Mode."}
-{"timestamp": "2025-02-24 13:17:48", "status": "Astra is transitioning into School Mode."}
-{"timestamp": "2025-02-24 13:27:14", "status": "Astra is transitioning into School Mode."}
-{"timestamp": "2025-02-24 13:36:52", "status": "Astra is transitioning into School Mode."}
-{"timestamp": "2025-02-24 13:37:04", "status": "Astra is transitioning into School Mode."}
-{"timestamp": "2025-02-24 13:49:53", "status": "Astra is transitioning into School Mode."}
-{"timestamp": "2025-02-24 14:01:41", "status": "Astra is transitioning into School Mode."}
-{"timestamp": "2025-02-24 14:05:24", "status": "Astra is transitioning into School Mode."}
-{"timestamp": "2025-02-24 14:15:32", "status": "Astra is transitioning into School Mode."}
-{"timestamp": "2025-02-24 14:23:46", "status": "Astra is transitioning into School Mode."}
-{"timestamp": "2025-02-24 14:32:30", "status": "Astra is transitioning into School Mode."}
-{"timestamp": "2025-02-24 14:41:37", "status": "Astra is transitioning into School Mode."}
-{"timestamp": "2025-02-24 14:46:43", "status": "Astra is transitioning into School Mode."}
-{"timestamp": "2025-02-24 14:57:23", "status": "Astra is transitioning into School Mode."}
+{
+    "timestamp": "2025-02-24 22:03:02",
+    "status": "Astra is transitioning into School Mode."
+}
+{
+    "timestamp": "2025-02-24 22:16:04",
+    "status": "Astra is transitioning into School Mode."
+}
+{
+    "timestamp": "2025-02-24 22:29:35",
+    "status": "Astra is transitioning into School Mode."
+}
+{
+    "timestamp": "2025-02-24 22:37:59",
+    "status": "Astra is transitioning into School Mode."
+}
+{
+    "timestamp": "2025-02-24 22:49:07",
+    "status": "Astra is transitioning into School Mode."
+}
+{
+    "timestamp": "2025-02-24 22:57:55",
+    "status": "Astra is transitioning into School Mode."
+}
+{
+    "timestamp": "2025-02-24 23:07:34",
+    "status": "Astra is transitioning into Sleep Mode due to no matching schedule."
+}
+{
+    "timestamp": "2025-02-24 23:46:49",
+    "status": "Astra is transitioning into Sleep Mode due to no matching schedule."
+}
+{
+    "timestamp": "2025-02-24 23:52:03",
+    "status": "Astra is transitioning into Sleep Mode due to no matching schedule."
+}{"timestamp": "2025-02-25 00:09:41", "status": "Astra is transitioning into Sleep Mode due to no matching schedule."}
+{"timestamp": "2025-02-25 00:14:26", "status": "Astra is transitioning into Sleep Mode due to no matching schedule."}
+{"timestamp": "2025-02-25 00:19:02", "status": "Astra is transitioning into Sleep Mode due to no matching schedule."}
+{"timestamp": "2025-02-25 00:20:57", "status": "Astra is transitioning into Sleep Mode due to no matching schedule."}
+{"timestamp": "2025-02-25 00:24:13", "status": "Astra is transitioning into Sleep Mode due to no matching schedule."}
+{"timestamp": "2025-02-25 00:26:06", "status": "Astra is transitioning into Sleep Mode due to no matching schedule."}
+{"timestamp": "2025-02-25 00:27:29", "status": "Astra is transitioning into Sleep Mode due to no matching schedule."}
