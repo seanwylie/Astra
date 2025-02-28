@@ -83,6 +83,8 @@ def categorize_question(questions, category_embeddings):
 
 
 
+from fuzzywuzzy import fuzz
+
 def filter_questions(mind_data, new_questions):
     """Filters out duplicate, near-duplicate, or answered questions before storing."""
 
@@ -95,7 +97,7 @@ def filter_questions(mind_data, new_questions):
     filtered_questions = []
     stored_knowledge = [k.lower() for k in mind_data.get("stored_knowledge", [])]
 
-    # ✅ Store existing questions with their metadata for smarter deduplication
+    # ✅ Store existing questions with precomputed lowercase versions
     existing_questions = [
         (q["question"].strip().lower(), q.get("source", "").strip().lower(),
          q.get("context_summary", "").strip().lower(), q.get("related_knowledge", "").strip().lower())
@@ -125,18 +127,17 @@ def filter_questions(mind_data, new_questions):
 
         is_duplicate = False
         for existing_text, existing_source, existing_context, existing_related in existing_questions:
-            similarity_score = fuzz.ratio(question_text_lower, existing_text) if fuzzy_available else 0
+            similarity_score = fuzz.ratio(question_text_lower, existing_text)
 
             print(f"⚖ Checking against: {existing_text} (Score: {similarity_score})")
 
-            # 🔥 Lower threshold from 85 → **65** (Allows variations)
-            # 🔥 Now only requires **one field to be different** instead of all
-            if similarity_score > 65 and (
-                existing_source == question_source or 
-                existing_context == question_context or 
-                existing_related == question_related
+            # 🔥 Updated comparison logic: Allow minor variations
+            if similarity_score > 70 and (
+                question_source == existing_source or 
+                question_context == existing_context or 
+                question_related == existing_related
             ):
-                print(f"⚠ Near-exact duplicate found but allowing variation: {question_text}")
+                print(f"⚠ Near-exact duplicate found. Skipping: {question_text}")
                 is_duplicate = True
                 break
 
