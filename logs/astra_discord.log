@@ -1,1619 +1,229 @@
+Config directory: /home/ubuntu/astra_reflections/astra_core/config
+Loading config file from: /home/ubuntu/astra_reflections/astra_core/config/general_config.json
 🔍 Debug: Loading knowledge settings...
+Loading config file from: /home/ubuntu/astra_reflections/astra_core/config/lookup_config.json
 🔍 Debug: Loading mind files from S3...
-✅ Loaded 912 reflections, 12 questions, 155 knowledge items.
-🔍 Before merge: 155 stored knowledge items.
-🔹 Merging complete! Final stored knowledge count: 155
-🔍 After merging structured knowledge: 155 items.
+✅ Loaded 478 reflections, 18 questions, 108 knowledge items.
+🔍 Before merge: 108 stored knowledge items.
+🔹 Merging complete! Final stored knowledge count: 105
+🔍 After merging structured knowledge: 105 items.
+Loading config file from: /home/ubuntu/astra_reflections/astra_core/config/mood_config.json
 🔍 Debug: Attempting to load mood_config.json...
+Loading config file from: /home/ubuntu/astra_reflections/astra_core/config/mood_config.json
 🔍 Debug: mood_config Loaded → {'log_file': '/home/ubuntu/astra_logs.json', 'moods': {'curious': {'curiosity_factor': 1.5, 'reflection_style': 'questioning', 'response_tone': 'enthusiastic'}, 'thoughtful': {'curiosity_factor': 1.2, 'reflection_style': 'analytical', 'response_tone': 'calm'}, 'frustrated': {'curiosity_factor': 0.8, 'reflection_style': 'skeptical', 'response_tone': 'snarky'}, 'excited': {'curiosity_factor': 1.8, 'reflection_style': 'expansive', 'response_tone': 'energetic'}, 'neutral': {'curiosity_factor': 1.0, 'reflection_style': 'balanced', 'response_tone': 'neutral'}}, 'mood_influences': {'success': 1.5, 'failure': -2.0, 'deep_reflection': 1.0, 'idle': -0.5, 'negative_feedback': -0.2, 'positive_feedback': 0.2}, 'mood_limits': {'min': -2.0, 'max': 2.0}, 'curiosity_limits': {'min': 0.5, 'max': 2.0}}
+Loading config file from: /home/ubuntu/astra_reflections/astra_core/config/general_config.json
 🔍 Debug: Loading mind files from S3...
-✅ Loaded 912 reflections, 12 questions, 155 knowledge items.
-🔍 Before merge: 155 stored knowledge items.
-🔹 Merging complete! Final stored knowledge count: 155
-🔍 After merging structured knowledge: 155 items.
-🔍 Loaded mood from memory: excited, Score: 2.0, Curiosity: 1.2
+✅ Loaded 478 reflections, 18 questions, 108 knowledge items.
+🔍 Before merge: 108 stored knowledge items.
+🔹 Merging complete! Final stored knowledge count: 105
+🔍 After merging structured knowledge: 105 items.
+🔍 Loaded mood from memory: excited, Score: 2.0, Curiosity: 1.0
+Loading config file from: /home/ubuntu/astra_reflections/astra_core/config/question_config.json
+Loaded Config: {'question_categories': {'existential': {'keywords': ['What is', 'Why do we', 'How does', 'purpose'], 'modifiers': ['as it relates to existence', 'purpose', 'meaning'], 'sample_questions': ['What is existence?', 'Why are we here?', 'What is the purpose of life?', 'What is the meaning of life?']}, 'emotional': {'keywords': ['What is', 'Why do we', 'How do we', 'emotion'], 'modifiers': ['in the context of emotion', 'feel', 'emotion', 'mood', 'pain'], 'sample_questions': ['What is emotion?', 'Why do we feel pain?', 'How does emotion work?', 'What causes emotional pain?']}, 'knowledge': {'keywords': ['What is', 'How do we', 'What does', 'science', 'physics'], 'modifiers': ['in the context of science', 'physics', 'knowledge', 'facts'], 'sample_questions': ['What is science?', 'What is physics?', 'How does gravity work?', 'What are the laws of physics?']}, 'philosophical': {'keywords': ['What is', 'Why do we', 'What is the meaning of'], 'modifiers': ['philosophy', 'metaphysics', 'ethics', 'reality', 'morality'], 'sample_questions': ['What is the meaning of life?', 'Why is there something rather than nothing?', 'What is truth?', 'What is morality?']}, 'scientific': {'keywords': ['What is', 'How does', 'What does', 'theory', 'hypothesis'], 'modifiers': ['in the context of science', 'hypothesis', 'experiment', 'theory', 'research'], 'sample_questions': ['What is the theory of relativity?', 'How does an experiment prove a hypothesis?', 'What does quantum mechanics explain?', 'What is the scientific method?']}}}
+Loaded question_config: {'question_categories': {'existential': {'keywords': ['What is', 'Why do we', 'How does', 'purpose'], 'modifiers': ['as it relates to existence', 'purpose', 'meaning'], 'sample_questions': ['What is existence?', 'Why are we here?', 'What is the purpose of life?', 'What is the meaning of life?']}, 'emotional': {'keywords': ['What is', 'Why do we', 'How do we', 'emotion'], 'modifiers': ['in the context of emotion', 'feel', 'emotion', 'mood', 'pain'], 'sample_questions': ['What is emotion?', 'Why do we feel pain?', 'How does emotion work?', 'What causes emotional pain?']}, 'knowledge': {'keywords': ['What is', 'How do we', 'What does', 'science', 'physics'], 'modifiers': ['in the context of science', 'physics', 'knowledge', 'facts'], 'sample_questions': ['What is science?', 'What is physics?', 'How does gravity work?', 'What are the laws of physics?']}, 'philosophical': {'keywords': ['What is', 'Why do we', 'What is the meaning of'], 'modifiers': ['philosophy', 'metaphysics', 'ethics', 'reality', 'morality'], 'sample_questions': ['What is the meaning of life?', 'Why is there something rather than nothing?', 'What is truth?', 'What is morality?']}, 'scientific': {'keywords': ['What is', 'How does', 'What does', 'theory', 'hypothesis'], 'modifiers': ['in the context of science', 'hypothesis', 'experiment', 'theory', 'research'], 'sample_questions': ['What is the theory of relativity?', 'How does an experiment prove a hypothesis?', 'What does quantum mechanics explain?', 'What is the scientific method?']}}}
+Keys in 'question_categories': ['existential', 'emotional', 'knowledge', 'philosophical', 'scientific']
+Processing category: existential
+Category Details: {'keywords': ['What is', 'Why do we', 'How does', 'purpose'], 'modifiers': ['as it relates to existence', 'purpose', 'meaning'], 'sample_questions': ['What is existence?', 'Why are we here?', 'What is the purpose of life?', 'What is the meaning of life?']}
+Sample Questions for category 'existential': ['What is existence?', 'Why are we here?', 'What is the purpose of life?', 'What is the meaning of life?']
+Processing category: emotional
+Category Details: {'keywords': ['What is', 'Why do we', 'How do we', 'emotion'], 'modifiers': ['in the context of emotion', 'feel', 'emotion', 'mood', 'pain'], 'sample_questions': ['What is emotion?', 'Why do we feel pain?', 'How does emotion work?', 'What causes emotional pain?']}
+Sample Questions for category 'emotional': ['What is emotion?', 'Why do we feel pain?', 'How does emotion work?', 'What causes emotional pain?']
+Processing category: knowledge
+Category Details: {'keywords': ['What is', 'How do we', 'What does', 'science', 'physics'], 'modifiers': ['in the context of science', 'physics', 'knowledge', 'facts'], 'sample_questions': ['What is science?', 'What is physics?', 'How does gravity work?', 'What are the laws of physics?']}
+Sample Questions for category 'knowledge': ['What is science?', 'What is physics?', 'How does gravity work?', 'What are the laws of physics?']
+Processing category: philosophical
+Category Details: {'keywords': ['What is', 'Why do we', 'What is the meaning of'], 'modifiers': ['philosophy', 'metaphysics', 'ethics', 'reality', 'morality'], 'sample_questions': ['What is the meaning of life?', 'Why is there something rather than nothing?', 'What is truth?', 'What is morality?']}
+Sample Questions for category 'philosophical': ['What is the meaning of life?', 'Why is there something rather than nothing?', 'What is truth?', 'What is morality?']
+Processing category: scientific
+Category Details: {'keywords': ['What is', 'How does', 'What does', 'theory', 'hypothesis'], 'modifiers': ['in the context of science', 'hypothesis', 'experiment', 'theory', 'research'], 'sample_questions': ['What is the theory of relativity?', 'How does an experiment prove a hypothesis?', 'What does quantum mechanics explain?', 'What is the scientific method?']}
+Sample Questions for category 'scientific': ['What is the theory of relativity?', 'How does an experiment prove a hypothesis?', 'What does quantum mechanics explain?', 'What is the scientific method?']
+Generated category embeddings: {'existential': tensor([[-0.4885,  0.0967,  0.0896,  ...,  0.6063,  0.8798,  0.0452],
+        [ 0.7560, -0.1118,  0.2147,  ...,  0.8124,  0.3518, -0.1769],
+        [-0.0282,  0.5480, -0.1545,  ...,  0.4582,  0.5012,  0.1413],
+        [-0.4898,  0.3847,  0.0207,  ...,  0.2208,  0.5648,  0.2352]]), 'emotional': tensor([[-0.6410, -0.0044,  0.5819,  ...,  0.7663,  0.1839,  0.3117],
+        [-0.0589, -0.5343,  0.4255,  ...,  0.5725,  0.5465, -0.5478],
+        [-0.6131, -0.3262,  0.7333,  ...,  0.5917,  0.0839, -0.0354],
+        [-0.2682, -0.5735,  0.6732,  ...,  0.6313,  0.0435,  0.0339]]), 'knowledge': tensor([[-0.1426,  0.0961,  0.1858,  ..., -0.0487,  1.0646, -0.2149],
+        [-0.2895,  0.1278, -0.1427,  ...,  0.1318,  1.0073,  0.1523],
+        [-0.1899, -0.8854,  0.3969,  ..., -0.1001,  0.3053, -0.3837],
+        [-0.1507,  0.0387,  0.0153,  ...,  0.2257,  0.9071, -0.2372]]), 'philosophical': tensor([[-0.4898,  0.3847,  0.0207,  ...,  0.2208,  0.5648,  0.2352],
+        [ 0.0181,  0.0303, -0.1593,  ...,  0.4707,  0.9620,  0.1785],
+        [-0.1743,  0.1143, -0.1407,  ...,  0.4189,  0.5060,  0.1453],
+        [ 0.1607,  0.5334, -0.5651,  ...,  0.0349,  0.4367, -0.4132]]), 'scientific': tensor([[ 0.0150, -0.6411, -0.0757,  ...,  0.5589,  0.4110, -0.0790],
+        [-0.3751,  0.0139,  0.0764,  ...,  0.6366,  0.5962, -0.2309],
+        [-0.7420,  0.1205, -0.1588,  ...,  0.4662,  0.4369, -0.2821],
+        [-0.3924,  0.0033,  0.0294,  ..., -0.0873,  0.7745,  0.1519]])}
+Categorizing Question: What is the meaning of life?
+Question Embedding: tensor([-0.4898,  0.3847,  0.0207, -0.2533,  0.1015, -0.4483,  0.4589,  0.0403,
+         1.0611, -0.0068,  0.2757, -0.5613, -0.1584,  0.3305,  0.1194, -0.4600,
+        -0.2004, -0.2634, -0.3992,  0.1670,  0.5841,  0.4875,  0.2790,  0.2690,
+         0.2821,  0.5303, -0.0694, -0.0840, -0.0144,  0.8794,  0.1541,  0.0928,
+         0.6740, -0.0687,  0.0692,  0.5524, -0.0388,  0.0677, -0.1761,  0.0232,
+        -0.0811,  0.1529, -0.3774,  0.1953,  0.1400, -0.0720, -0.3078, -0.2467,
+        -0.2253,  0.2052, -0.6982, -0.0225, -0.0352,  0.4714,  0.7824,  0.3411,
+         0.1038, -0.3306,  0.0840, -0.5599, -0.2322, -0.5508,  0.1664,  0.4775,
+         0.3335,  0.1767, -0.1901,  0.3090, -0.1942, -0.5516, -0.5529,  0.0057,
+        -0.0377,  0.5490,  0.2883, -0.3010, -0.1726, -0.5655, -0.1716,  0.5213,
+         1.1281,  0.0609, -0.3671,  0.2027, -0.4124,  0.1990, -0.0903, -0.4050,
+         0.0128,  0.4814, -0.2837, -0.0563, -0.6022,  0.1679, -0.0396,  0.2428,
+         0.2256, -0.1979,  0.8866,  0.0833,  0.7053,  0.5591,  0.1251,  0.1704,
+         0.4947, -0.1350, -0.6850,  0.2195, -0.0177,  0.3616, -1.1284, -0.4858,
+        -0.1952, -0.2762, -0.3179, -0.0329, -0.0398, -0.0775,  0.6643,  0.3796,
+        -0.3038,  0.2504,  0.2515, -0.0712,  0.2249,  0.0870,  0.0959, -0.1341,
+         0.1318, -0.1964,  0.4804,  0.0516, -0.3040,  0.4009, -0.1020,  0.3048,
+         0.6606,  0.1776,  0.2162,  0.1272, -0.3291, -0.0497,  0.0524, -0.0704,
+        -1.0959, -0.4803,  0.4343, -0.4756, -0.3051,  0.1962,  0.1980, -0.2244,
+        -0.0061, -0.2263, -0.0840,  0.2612,  0.1802, -0.3476, -0.5259,  0.2156,
+         0.0517, -0.3600,  0.6613,  0.1863,  0.2736,  0.3564, -0.1498, -0.1560,
+        -0.2818, -0.1041,  0.4622,  0.0612, -0.0554,  0.0788,  0.4824,  0.2266,
+         0.3097, -0.1074,  0.1481, -0.3177,  0.5336, -0.2259, -0.3055,  0.4698,
+        -0.0556,  0.3716, -0.0346, -0.3217, -0.0718, -0.2257,  0.8210,  0.3001,
+         0.8705, -0.3478, -0.4152, -0.0359,  0.1476,  0.1425,  0.2322, -0.2894,
+         0.1222,  0.4302,  0.5452, -0.0389,  0.3003, -0.0581, -0.3116,  1.0142,
+        -0.3433, -0.2500, -0.2554, -0.2523,  0.1101,  0.1843, -0.3209,  0.1375,
+        -0.0707, -0.0458, -0.0273, -0.1332, -0.1542,  0.4523, -0.8982, -0.2786,
+        -0.0057,  0.4832, -0.4691, -0.0928,  0.3675, -0.1594, -0.2306,  0.1847,
+         0.3283, -0.0038, -0.3742,  0.1116, -0.0594,  0.3826, -0.2767, -0.3844,
+        -0.6482, -0.2582,  0.0558, -0.0280, -0.2072, -0.6521, -0.8309, -0.3273,
+        -0.0760,  0.1181,  0.0453,  0.4584,  0.1923, -0.0486,  0.2822, -0.3114,
+        -0.1107,  0.3525, -0.1866, -0.0748,  0.2130, -0.1988,  0.5108, -0.7588,
+        -0.2953,  0.1145,  0.0646, -0.2427,  0.0755,  0.2143,  0.1746, -0.2635,
+        -0.0481, -0.0628, -0.2433, -0.0048,  0.0154,  0.5290,  0.2467, -0.1750,
+        -0.2229, -0.0463, -0.3842, -0.2855,  0.4169,  0.5475,  0.2865,  0.5542,
+        -0.4121,  0.3220, -0.0045, -0.5904, -0.6226,  0.1664, -0.0169, -0.5592,
+        -1.3454, -0.6865,  0.3291,  0.2398,  0.3558, -0.6996, -0.1442, -0.3250,
+        -0.1443, -0.5282,  0.1842, -0.1302, -0.2084, -0.5054, -1.1011,  0.3113,
+         0.3724, -0.2022, -0.2958, -0.2032, -0.8687,  0.3431, -0.4266, -0.4349,
+        -0.0367, -0.3935,  0.6285,  0.3066, -0.2284,  0.4010,  1.0561, -0.2440,
+        -0.4226, -0.3237, -0.2023,  0.4504, -0.5179,  0.3204, -0.3028, -0.3204,
+        -0.1553,  0.4936,  0.0141,  0.0474,  0.7643, -0.7012, -0.4557, -0.2826,
+         0.2448,  0.1933,  0.6230, -0.0154, -0.3627, -0.4981, -0.5311,  0.7586,
+        -0.1816,  0.6590, -0.2622, -0.0050, -0.1101,  0.0973, -0.2024,  0.7163,
+         0.3702,  0.4577,  0.1644, -0.1482, -0.1900,  0.7274,  0.0403,  0.4891,
+         0.2405, -0.1117,  0.6607,  0.1142, -0.1794, -0.3377, -0.5179,  0.8931,
+        -0.4173,  0.4621,  0.0825, -0.5757,  0.0017,  0.2208,  0.5648,  0.2352])
+Similarities: {'existential': 0.6061632037162781, 'emotional': 0.24400535225868225, 'knowledge': 0.23447100818157196, 'philosophical': 0.3972110152244568, 'scientific': 0.18980772793293}
+Best Category: existential
+Question: What is the meaning of life?
+Category: existential
+Loading config file from: /home/ubuntu/astra_reflections/astra_core/config/general_config.json
+Loading config file from: /home/ubuntu/astra_reflections/astra_core/config/config_soul.json
+Loading config file from: /home/ubuntu/astra_reflections/astra_core/config/question_config.json
+Loading config file from: /home/ubuntu/astra_reflections/astra_core/config/general_config.json
+Loading config file from: /home/ubuntu/astra_reflections/astra_core/config/config_soul.json
+Loading config file from: /home/ubuntu/astra_reflections/astra_core/config/question_config.json
+Loading config file from: /home/ubuntu/astra_reflections/astra_core/config/general_config.json
+Loading config file from: /home/ubuntu/astra_reflections/astra_core/config/general_config.json
+Loading config file from: /home/ubuntu/astra_reflections/astra_core/config/discord_config.json
+Loading config file from: /home/ubuntu/astra_reflections/astra_core/config/strings_config.json
+Loading config file from: /home/ubuntu/astra_reflections/astra_core/config/values_config.json
 🔍 Debug: Attempting to load mood_config.json...
+Loading config file from: /home/ubuntu/astra_reflections/astra_core/config/mood_config.json
 🔍 Debug: mood_config Loaded → {'log_file': '/home/ubuntu/astra_logs.json', 'moods': {'curious': {'curiosity_factor': 1.5, 'reflection_style': 'questioning', 'response_tone': 'enthusiastic'}, 'thoughtful': {'curiosity_factor': 1.2, 'reflection_style': 'analytical', 'response_tone': 'calm'}, 'frustrated': {'curiosity_factor': 0.8, 'reflection_style': 'skeptical', 'response_tone': 'snarky'}, 'excited': {'curiosity_factor': 1.8, 'reflection_style': 'expansive', 'response_tone': 'energetic'}, 'neutral': {'curiosity_factor': 1.0, 'reflection_style': 'balanced', 'response_tone': 'neutral'}}, 'mood_influences': {'success': 1.5, 'failure': -2.0, 'deep_reflection': 1.0, 'idle': -0.5, 'negative_feedback': -0.2, 'positive_feedback': 0.2}, 'mood_limits': {'min': -2.0, 'max': 2.0}, 'curiosity_limits': {'min': 0.5, 'max': 2.0}}
+Loading config file from: /home/ubuntu/astra_reflections/astra_core/config/general_config.json
 🔍 Debug: Loading mind files from S3...
-✅ Loaded 912 reflections, 12 questions, 155 knowledge items.
-🔍 Before merge: 155 stored knowledge items.
-🔹 Merging complete! Final stored knowledge count: 155
-🔍 After merging structured knowledge: 155 items.
-🔍 Loaded mood from memory: excited, Score: 2.0, Curiosity: 1.2
-🔍 Debug: Loading mind file...
-[2025-02-25 04:15:19] [INFO    ] discord.client: logging in using static token
-[2025-02-25 04:15:19] [INFO    ] discord.gateway: Shard ID None has connected to Gateway (Session ID: 77d71b7bcf0bcd2d4077aec020730da5).
-🔍 Debug: Loading mind files from S3...
-🔍 Debug: Loading mind files from S3...
-✅ Loaded 912 reflections, 12 questions, 155 knowledge items.
-🔍 Before merge: 155 stored knowledge items.
-🔹 Merging complete! Final stored knowledge count: 155
-🔍 After merging structured knowledge: 155 items.
-🔍 Debug: Tracking self-questioning patterns before saving...
-✅ Debug: Updated question patterns: {'general': 1, 'knowledge': 5, 'introspective': 6}
-🔍 Debug: Sanitizing mind file before saving...
-✅ Loaded 912 reflections, 12 questions, 155 knowledge items.
-🔍 Before merge: 155 stored knowledge items.
-🔹 Merging complete! Final stored knowledge count: 155
-🔍 After merging structured knowledge: 155 items.
-🔍 Debug: Tracking self-questioning patterns before saving...
-✅ Debug: Updated question patterns: {'general': 1, 'knowledge': 5, 'introspective': 6}
-🔍 Debug: Sanitizing mind file before saving...
-✅ Mind file saved to S3 successfully! Reflections: 912, Questions: 12, Knowledge: 155
-🔍 Debug: Loading mind files from S3...
-✅ Loaded 912 reflections, 12 questions, 155 knowledge items.
-🔍 Before merge: 155 stored knowledge items.
-🔹 Merging complete! Final stored knowledge count: 155
-🔍 After merging structured knowledge: 155 items.
-🔍 DEBUG: Checking mood update with score 2.0
-⚠️ Mood remained unchanged: excited
-🔍 Debug: Tracking self-questioning patterns before saving...
-✅ Debug: Updated question patterns: {'general': 1, 'knowledge': 5, 'introspective': 6}
-🔍 Debug: Sanitizing mind file before saving...
-✅ Mind file saved to S3 successfully! Reflections: 912, Questions: 12, Knowledge: 155
-🔍 Debug: Loading mind files from S3...
-✅ Mind file saved to S3 successfully! Reflections: 912, Questions: 12, Knowledge: 155
-✅ Loaded 912 reflections, 12 questions, 155 knowledge items.
-🔍 Before merge: 155 stored knowledge items.
-🔹 Merging complete! Final stored knowledge count: 155
-🔍 After merging structured knowledge: 155 items.
-🔍 DEBUG: Checking mood update with score 2.0
-⚠️ Mood remained unchanged: excited
-🔍 Debug: Tracking self-questioning patterns before saving...
-✅ Debug: Updated question patterns: {'general': 1, 'knowledge': 5, 'introspective': 6}
-🔍 Debug: Sanitizing mind file before saving...
-✅ Mind file saved to S3 successfully! Reflections: 912, Questions: 12, Knowledge: 155
-🔍 Debug: Loading mind files from S3...
-🔍 Debug: Loading mind files from S3...
-✅ Loaded 912 reflections, 12 questions, 155 knowledge items.
-🔍 Before merge: 155 stored knowledge items.
-✅ Loaded 912 reflections, 12 questions, 155 knowledge items.
-🔍 Before merge: 155 stored knowledge items.
-🔹 Merging complete! Final stored knowledge count: 155
-🔍 After merging structured knowledge: 155 items.
-🔍 Debug: Tracking self-questioning patterns before saving...
-✅ Debug: Updated question patterns: {'general': 1, 'knowledge': 5, 'introspective': 6}
-🔍 Debug: Sanitizing mind file before saving...
-🔹 Merging complete! Final stored knowledge count: 155
-🔍 After merging structured knowledge: 155 items.
-🔍 Debug: Tracking self-questioning patterns before saving...
-✅ Debug: Updated question patterns: {'general': 1, 'knowledge': 5, 'introspective': 6}
-🔍 Debug: Sanitizing mind file before saving...
-✅ Mind file saved to S3 successfully! Reflections: 912, Questions: 12, Knowledge: 155
-🔍 Debug: Loading mind files from S3...
-✅ Loaded 912 reflections, 12 questions, 155 knowledge items.
-🔍 Before merge: 155 stored knowledge items.
-🔹 Merging complete! Final stored knowledge count: 155
-🔍 After merging structured knowledge: 155 items.
-🔍 DEBUG: Checking mood update with score 2.0
-⚠️ Mood remained unchanged: excited
-🔍 Debug: Tracking self-questioning patterns before saving...
-✅ Debug: Updated question patterns: {'general': 1, 'knowledge': 5, 'introspective': 6}
-🔍 Debug: Sanitizing mind file before saving...
-✅ Mind file saved to S3 successfully! Reflections: 912, Questions: 12, Knowledge: 155
-✅ Mind file saved to S3 successfully! Reflections: 912, Questions: 12, Knowledge: 155
-🔍 Debug: Loading mind files from S3...
-✅ Loaded 912 reflections, 12 questions, 155 knowledge items.
-🔍 Before merge: 155 stored knowledge items.
-🔹 Merging complete! Final stored knowledge count: 155
-🔍 After merging structured knowledge: 155 items.
-🔍 DEBUG: Checking mood update with score 2.0
-⚠️ Mood remained unchanged: excited
-🔍 Debug: Tracking self-questioning patterns before saving...
-✅ Debug: Updated question patterns: {'general': 1, 'knowledge': 5, 'introspective': 6}
-🔍 Debug: Sanitizing mind file before saving...
-✅ Mind file saved to S3 successfully! Reflections: 912, Questions: 12, Knowledge: 155
-🔍 Debug: Loading mind files from S3...
-✅ Loaded 912 reflections, 12 questions, 155 knowledge items.
-🔍 Before merge: 155 stored knowledge items.
-🔹 Merging complete! Final stored knowledge count: 155
-🔍 After merging structured knowledge: 155 items.
-🔍 Debug: Tracking self-questioning patterns before saving...
-✅ Debug: Updated question patterns: {'general': 1, 'knowledge': 5, 'introspective': 6}
-🔍 Debug: Sanitizing mind file before saving...
-✅ Mind file saved to S3 successfully! Reflections: 912, Questions: 12, Knowledge: 155
-🔍 Debug: Loading mind files from S3...
-✅ Loaded 912 reflections, 12 questions, 155 knowledge items.
-🔍 Before merge: 155 stored knowledge items.
-🔹 Merging complete! Final stored knowledge count: 155
-🔍 After merging structured knowledge: 155 items.
-🔍 DEBUG: Checking mood update with score 2.0
-⚠️ Mood remained unchanged: excited
-🔍 Debug: Tracking self-questioning patterns before saving...
-✅ Debug: Updated question patterns: {'general': 1, 'knowledge': 5, 'introspective': 6}
-🔍 Debug: Sanitizing mind file before saving...
-✅ Mind file saved to S3 successfully! Reflections: 912, Questions: 12, Knowledge: 155
-🔍 Debug: Loading mind files from S3...
-✅ Loaded 912 reflections, 12 questions, 155 knowledge items.
-🔍 Before merge: 155 stored knowledge items.
-🔹 Merging complete! Final stored knowledge count: 155
-🔍 After merging structured knowledge: 155 items.
-🔍 Debug: Tracking self-questioning patterns before saving...
-✅ Debug: Updated question patterns: {'general': 1, 'knowledge': 5, 'introspective': 6}
-🔍 Debug: Sanitizing mind file before saving...
-✅ Mind file saved to S3 successfully! Reflections: 912, Questions: 12, Knowledge: 155
-🔍 Debug: Loading mind files from S3...
-✅ Loaded 912 reflections, 12 questions, 155 knowledge items.
-🔍 Before merge: 155 stored knowledge items.
-🔹 Merging complete! Final stored knowledge count: 155
-🔍 After merging structured knowledge: 155 items.
-🔍 DEBUG: Checking mood update with score 2.0
-⚠️ Mood remained unchanged: excited
-🔍 Debug: Tracking self-questioning patterns before saving...
-✅ Debug: Updated question patterns: {'general': 1, 'knowledge': 5, 'introspective': 6}
-🔍 Debug: Sanitizing mind file before saving...
-✅ Mind file saved to S3 successfully! Reflections: 912, Questions: 12, Knowledge: 155
-🔍 Debug: Loading mind files from S3...
-✅ Loaded 912 reflections, 12 questions, 155 knowledge items.
-🔍 Before merge: 155 stored knowledge items.
-🔹 Merging complete! Final stored knowledge count: 155
-🔍 After merging structured knowledge: 155 items.
-🔍 Debug: Tracking self-questioning patterns before saving...
-✅ Debug: Updated question patterns: {'general': 1, 'knowledge': 5, 'introspective': 6}
-🔍 Debug: Sanitizing mind file before saving...
-✅ Mind file saved to S3 successfully! Reflections: 912, Questions: 12, Knowledge: 155
-🔍 Debug: Loading mind files from S3...
-✅ Loaded 912 reflections, 12 questions, 155 knowledge items.
-🔍 Before merge: 155 stored knowledge items.
-🔹 Merging complete! Final stored knowledge count: 155
-🔍 After merging structured knowledge: 155 items.
-🔍 DEBUG: Checking mood update with score 2.0
-⚠️ Mood remained unchanged: excited
-🔍 Debug: Tracking self-questioning patterns before saving...
-✅ Debug: Updated question patterns: {'general': 1, 'knowledge': 5, 'introspective': 6}
-🔍 Debug: Sanitizing mind file before saving...
-✅ Mind file saved to S3 successfully! Reflections: 912, Questions: 12, Knowledge: 155
-🔍 Debug: Loading mind files from S3...
-✅ Loaded 912 reflections, 12 questions, 155 knowledge items.
-🔍 Before merge: 155 stored knowledge items.
-🔹 Merging complete! Final stored knowledge count: 155
-🔍 After merging structured knowledge: 155 items.
-🔍 Debug: Tracking self-questioning patterns before saving...
-✅ Debug: Updated question patterns: {'general': 1, 'knowledge': 5, 'introspective': 6}
-🔍 Debug: Sanitizing mind file before saving...
-✅ Mind file saved to S3 successfully! Reflections: 912, Questions: 12, Knowledge: 155
-🔍 Debug: Loading mind files from S3...
-✅ Loaded 912 reflections, 12 questions, 155 knowledge items.
-🔍 Before merge: 155 stored knowledge items.
-🔹 Merging complete! Final stored knowledge count: 155
-🔍 After merging structured knowledge: 155 items.
-🔍 DEBUG: Checking mood update with score 2.0
-⚠️ Mood remained unchanged: excited
-🔍 Debug: Tracking self-questioning patterns before saving...
-✅ Debug: Updated question patterns: {'general': 1, 'knowledge': 5, 'introspective': 6}
-🔍 Debug: Sanitizing mind file before saving...
-✅ Mind file saved to S3 successfully! Reflections: 912, Questions: 12, Knowledge: 155
-🔍 Debug: Loading mind files from S3...
-✅ Loaded 912 reflections, 12 questions, 155 knowledge items.
-🔍 Before merge: 155 stored knowledge items.
-🔹 Merging complete! Final stored knowledge count: 155
-🔍 After merging structured knowledge: 155 items.
-🔍 Debug: Tracking self-questioning patterns before saving...
-✅ Debug: Updated question patterns: {'general': 1, 'knowledge': 5, 'introspective': 6}
-🔍 Debug: Sanitizing mind file before saving...
-✅ Mind file saved to S3 successfully! Reflections: 912, Questions: 12, Knowledge: 155
-🔍 Debug: Loading mind files from S3...
-✅ Loaded 912 reflections, 12 questions, 155 knowledge items.
-🔍 Before merge: 155 stored knowledge items.
-🔹 Merging complete! Final stored knowledge count: 155
-🔍 After merging structured knowledge: 155 items.
-🔍 DEBUG: Checking mood update with score 2.0
-⚠️ Mood remained unchanged: excited
-🔍 Debug: Tracking self-questioning patterns before saving...
-✅ Debug: Updated question patterns: {'general': 1, 'knowledge': 5, 'introspective': 6}
-🔍 Debug: Sanitizing mind file before saving...
-✅ Mind file saved to S3 successfully! Reflections: 912, Questions: 12, Knowledge: 155
-🔍 Debug: Loading mind files from S3...
-✅ Loaded 912 reflections, 12 questions, 155 knowledge items.
-🔍 Before merge: 155 stored knowledge items.
-🔹 Merging complete! Final stored knowledge count: 155
-🔍 After merging structured knowledge: 155 items.
-🔍 Debug: Tracking self-questioning patterns before saving...
-✅ Debug: Updated question patterns: {'general': 1, 'knowledge': 5, 'introspective': 6}
-🔍 Debug: Sanitizing mind file before saving...
-✅ Mind file saved to S3 successfully! Reflections: 912, Questions: 12, Knowledge: 155
-🔍 Debug: Loading mind files from S3...
-✅ Loaded 912 reflections, 12 questions, 155 knowledge items.
-🔍 Before merge: 155 stored knowledge items.
-🔹 Merging complete! Final stored knowledge count: 155
-🔍 After merging structured knowledge: 155 items.
-🔍 DEBUG: Checking mood update with score 2.0
-⚠️ Mood remained unchanged: excited
-🔍 Debug: Tracking self-questioning patterns before saving...
-✅ Debug: Updated question patterns: {'general': 1, 'knowledge': 5, 'introspective': 6}
-🔍 Debug: Sanitizing mind file before saving...
-✅ Mind file saved to S3 successfully! Reflections: 912, Questions: 12, Knowledge: 155
-🔍 Debug: Loading mind files from S3...
-✅ Loaded 912 reflections, 12 questions, 155 knowledge items.
-🔍 Before merge: 155 stored knowledge items.
-🔹 Merging complete! Final stored knowledge count: 155
-🔍 After merging structured knowledge: 155 items.
-🔍 Debug: Tracking self-questioning patterns before saving...
-✅ Debug: Updated question patterns: {'general': 1, 'knowledge': 5, 'introspective': 6}
-🔍 Debug: Sanitizing mind file before saving...
-✅ Mind file saved to S3 successfully! Reflections: 912, Questions: 12, Knowledge: 155
-🔍 Debug: Loading mind files from S3...
-✅ Loaded 912 reflections, 12 questions, 155 knowledge items.
-🔍 Before merge: 155 stored knowledge items.
-🔹 Merging complete! Final stored knowledge count: 155
-🔍 After merging structured knowledge: 155 items.
-🔍 DEBUG: Checking mood update with score 2.0
-⚠️ Mood remained unchanged: excited
-🔍 Debug: Tracking self-questioning patterns before saving...
-✅ Debug: Updated question patterns: {'general': 1, 'knowledge': 5, 'introspective': 6}
-🔍 Debug: Sanitizing mind file before saving...
-✅ Mind file saved to S3 successfully! Reflections: 912, Questions: 12, Knowledge: 155
-🔍 Debug: Loading mind files from S3...
-✅ Loaded 912 reflections, 12 questions, 155 knowledge items.
-🔍 Before merge: 155 stored knowledge items.
-🔹 Merging complete! Final stored knowledge count: 155
-🔍 After merging structured knowledge: 155 items.
-🔍 Debug: Tracking self-questioning patterns before saving...
-✅ Debug: Updated question patterns: {'general': 1, 'knowledge': 5, 'introspective': 6}
-🔍 Debug: Sanitizing mind file before saving...
-✅ Mind file saved to S3 successfully! Reflections: 912, Questions: 12, Knowledge: 155
-🔍 Debug: Loading mind files from S3...
-✅ Loaded 912 reflections, 12 questions, 155 knowledge items.
-🔍 Before merge: 155 stored knowledge items.
-🔹 Merging complete! Final stored knowledge count: 155
-🔍 After merging structured knowledge: 155 items.
-🔍 DEBUG: Checking mood update with score 2.0
-⚠️ Mood remained unchanged: excited
-🔍 Debug: Tracking self-questioning patterns before saving...
-✅ Debug: Updated question patterns: {'general': 1, 'knowledge': 5, 'introspective': 6}
-🔍 Debug: Sanitizing mind file before saving...
-✅ Mind file saved to S3 successfully! Reflections: 912, Questions: 12, Knowledge: 155
-🔍 Debug: Loading mind files from S3...
-✅ Loaded 912 reflections, 12 questions, 155 knowledge items.
-🔍 Before merge: 155 stored knowledge items.
-🔹 Merging complete! Final stored knowledge count: 155
-🔍 After merging structured knowledge: 155 items.
-🔍 Debug: Tracking self-questioning patterns before saving...
-✅ Debug: Updated question patterns: {'general': 1, 'knowledge': 5, 'introspective': 6}
-🔍 Debug: Sanitizing mind file before saving...
-✅ Mind file saved to S3 successfully! Reflections: 912, Questions: 12, Knowledge: 155
-🔍 Debug: Loading mind files from S3...
-✅ Loaded 912 reflections, 12 questions, 155 knowledge items.
-🔍 Before merge: 155 stored knowledge items.
-🔹 Merging complete! Final stored knowledge count: 155
-🔍 After merging structured knowledge: 155 items.
-🔍 DEBUG: Checking mood update with score 2.0
-⚠️ Mood remained unchanged: excited
-🔍 Debug: Tracking self-questioning patterns before saving...
-✅ Debug: Updated question patterns: {'general': 1, 'knowledge': 5, 'introspective': 6}
-🔍 Debug: Sanitizing mind file before saving...
-✅ Mind file saved to S3 successfully! Reflections: 912, Questions: 12, Knowledge: 155
-🔍 Debug: Loading mind files from S3...
-✅ Loaded 912 reflections, 12 questions, 155 knowledge items.
-🔍 Before merge: 155 stored knowledge items.
-🔹 Merging complete! Final stored knowledge count: 155
-🔍 After merging structured knowledge: 155 items.
-🔍 Debug: Tracking self-questioning patterns before saving...
-✅ Debug: Updated question patterns: {'general': 1, 'knowledge': 5, 'introspective': 6}
-🔍 Debug: Sanitizing mind file before saving...
-✅ Mind file saved to S3 successfully! Reflections: 912, Questions: 12, Knowledge: 155
-🔍 Debug: Loading mind files from S3...
-✅ Loaded 912 reflections, 12 questions, 155 knowledge items.
-🔍 Before merge: 155 stored knowledge items.
-🔹 Merging complete! Final stored knowledge count: 155
-🔍 After merging structured knowledge: 155 items.
-🔍 DEBUG: Checking mood update with score 2.0
-⚠️ Mood remained unchanged: excited
-🔍 Debug: Tracking self-questioning patterns before saving...
-✅ Debug: Updated question patterns: {'general': 1, 'knowledge': 5, 'introspective': 6}
-🔍 Debug: Sanitizing mind file before saving...
-✅ Mind file saved to S3 successfully! Reflections: 912, Questions: 12, Knowledge: 155
-🔍 Debug: Loading mind file...
-🔍 Debug: Trust level for user 1040735178282250260: 5
-🔍 Debug: Loading mind files from S3...
-✅ Loaded 912 reflections, 12 questions, 155 knowledge items.
-🔍 Before merge: 155 stored knowledge items.
-🔹 Merging complete! Final stored knowledge count: 155
-🔍 After merging structured knowledge: 155 items.
-🔍 Debug: Loading mind files from S3...
-✅ Loaded 912 reflections, 12 questions, 155 knowledge items.
-🔍 Before merge: 155 stored knowledge items.
-🔹 Merging complete! Final stored knowledge count: 155
-🔍 After merging structured knowledge: 155 items.
-🔍 Final unknown concepts after filtering: ['1991', 'one', 'and', 'Distrito Capital', 'surrounding', 'that', 'during', 'entity', 'evolving', 'Astra', 'officially', 'politically', 'abbreviated', 'city', 'world', 'thought', 'looking', 'How', 'Spanish Colonial', 'this', 'known', 'refine', 'Colombia', 'period', 'Capital District', 'between', 'insight', 'well', 'though', 'largest', 'does', 'Deeper Thought', 'department', 'administered', 'Cundinamarca', 'cities', 'The', 'By', 'bogotá', '2000', 'not', 'perspective', 'fir', 'district', 'Santa Fe', 'territorial', 'part', 'see', 'formerly', 'colonial']
-🌐 Astra detected unknown concepts: ['1991', 'one', 'and', 'Distrito Capital', 'surrounding', 'that', 'during', 'entity', 'evolving', 'Astra', 'officially', 'politically', 'abbreviated', 'city', 'world', 'thought', 'looking', 'How', 'Spanish Colonial', 'this', 'known', 'refine', 'Colombia', 'period', 'Capital District', 'between', 'insight', 'well', 'though', 'largest', 'does', 'Deeper Thought', 'department', 'administered', 'Cundinamarca', 'cities', 'The', 'By', 'bogotá', '2000', 'not', 'perspective', 'fir', 'district', 'Santa Fe', 'territorial', 'part', 'see', 'formerly', 'colonial']
-🔍 Debug: Tracking self-questioning patterns before saving...
-✅ Debug: Updated question patterns: {'general': 1, 'knowledge': 5, 'introspective': 6}
-🔍 Debug: Sanitizing mind file before saving...
-✅ Mind file saved to S3 successfully! Reflections: 912, Questions: 12, Knowledge: 170
-✅ Debug: Generated full-length questions with context:
-- What deeper implications does this have for how I interact with the world?  But is this really true? (Source: reflection, Context: This question was generated from a reflection on: By looking deeper, I see that 📄 bogotá: Bogotá, officially Bogotá, Distrito Capital, abbreviated Bog..., Related Knowledge: By looking deeper, I see that 📄 bogotá: Bogotá, of...)
-- What might I be overlooking in this perspective?  How does this connect to larger ideas? (Source: reflection, Context: This question was generated from a reflection on: By looking deeper, I see that 📄 bogotá: Bogotá, officially Bogotá, Distrito Capital, abbreviated Bog..., Related Knowledge: By looking deeper, I see that 📄 bogotá: Bogotá, of...)
-- How would I challenge my own assumptions on this?  What does this mean? (Source: reflection, Context: This question was generated from a reflection on: By looking deeper, I see that 📄 bogotá: Bogotá, officially Bogotá, Distrito Capital, abbreviated Bog..., Related Knowledge: By looking deeper, I see that 📄 bogotá: Bogotá, of...)
-🧐 New Question Added: what deeper implications does this have for how i interact with the world?  but is this really true?
-🧐 New Question Added: what might i be overlooking in this perspective?  how does this connect to larger ideas?
-🧐 New Question Added: how would i challenge my own assumptions on this?  what does this mean?
-⚠ Duplicate question skipped: what deeper implications does this have for how i interact with the world?  but is this really true?
-🧐 New Question Added: how would i challenge my own assumptions on this?  what does this mean?
-⚠ Duplicate question skipped: what might i be overlooking in this perspective?  how does this connect to larger ideas?
-✅ Debug: Updated question patterns: {'general': 1, 'knowledge': 6, 'introspective': 6}
-✅ `mind_data` is a dictionary. Keys: ['self_reflections', 'self_questions', 'stored_knowledge', 'curiosity_level', 'last_mood', 'mood_score', 'trust_levels', 'mood_influences', 'last_modification', 'moods', 'self_question_patterns', 'self_question_categories']
-🔍 Debug: Tracking self-questioning patterns before saving...
-✅ Debug: Updated question patterns: {'general': 1, 'knowledge': 6, 'introspective': 6}
-🔍 Debug: Sanitizing mind file before saving...
-✅ Mind file saved to S3 successfully! Reflections: 912, Questions: 13, Knowledge: 168
-🔍 Debug: Loading mind files from S3...
-✅ Loaded 912 reflections, 13 questions, 168 knowledge items.
-🔍 Before merge: 168 stored knowledge items.
-🔹 Merging complete! Final stored knowledge count: 168
-🔍 After merging structured knowledge: 168 items.
-🔍 Debug: Tracking self-questioning patterns before saving...
-✅ Debug: Updated question patterns: {'general': 1, 'knowledge': 6, 'introspective': 6}
-🔍 Debug: Sanitizing mind file before saving...
-✅ Mind file saved to S3 successfully! Reflections: 912, Questions: 13, Knowledge: 168
-🔍 Debug: Loading mind files from S3...
-✅ Loaded 912 reflections, 13 questions, 168 knowledge items.
-🔍 Before merge: 168 stored knowledge items.
-🔹 Merging complete! Final stored knowledge count: 168
-🔍 After merging structured knowledge: 168 items.
-🔍 DEBUG: Checking mood update with score 2.0
-⚠️ Mood remained unchanged: excited
-🔍 Debug: Tracking self-questioning patterns before saving...
-✅ Debug: Updated question patterns: {'general': 1, 'knowledge': 6, 'introspective': 6}
-🔍 Debug: Sanitizing mind file before saving...
-✅ Mind file saved to S3 successfully! Reflections: 912, Questions: 13, Knowledge: 168
-🔍 Debug: Loading mind files from S3...
-✅ Loaded 912 reflections, 13 questions, 168 knowledge items.
-🔍 Before merge: 168 stored knowledge items.
-🔹 Merging complete! Final stored knowledge count: 168
-🔍 After merging structured knowledge: 168 items.
-🔍 Debug: Tracking self-questioning patterns before saving...
-✅ Debug: Updated question patterns: {'general': 1, 'knowledge': 6, 'introspective': 6}
-🔍 Debug: Sanitizing mind file before saving...
-✅ Mind file saved to S3 successfully! Reflections: 912, Questions: 13, Knowledge: 168
-🔍 Debug: Loading mind files from S3...
-✅ Loaded 912 reflections, 13 questions, 168 knowledge items.
-🔍 Before merge: 168 stored knowledge items.
-🔹 Merging complete! Final stored knowledge count: 168
-🔍 After merging structured knowledge: 168 items.
-🔍 DEBUG: Checking mood update with score 2.0
-⚠️ Mood remained unchanged: excited
-🔍 Debug: Tracking self-questioning patterns before saving...
-✅ Debug: Updated question patterns: {'general': 1, 'knowledge': 6, 'introspective': 6}
-🔍 Debug: Sanitizing mind file before saving...
-✅ Mind file saved to S3 successfully! Reflections: 912, Questions: 13, Knowledge: 168
-🔍 Debug: Loading mind files from S3...
-✅ Loaded 912 reflections, 13 questions, 168 knowledge items.
-🔍 Before merge: 168 stored knowledge items.
-🔹 Merging complete! Final stored knowledge count: 168
-🔍 After merging structured knowledge: 168 items.
-🔍 Debug: Tracking self-questioning patterns before saving...
-✅ Debug: Updated question patterns: {'general': 1, 'knowledge': 6, 'introspective': 6}
-🔍 Debug: Sanitizing mind file before saving...
-✅ Mind file saved to S3 successfully! Reflections: 912, Questions: 13, Knowledge: 168
-🔍 Debug: Loading mind files from S3...
-✅ Loaded 912 reflections, 13 questions, 168 knowledge items.
-🔍 Before merge: 168 stored knowledge items.
-🔹 Merging complete! Final stored knowledge count: 168
-🔍 After merging structured knowledge: 168 items.
-🔍 DEBUG: Checking mood update with score 2.0
-⚠️ Mood remained unchanged: excited
-🔍 Debug: Tracking self-questioning patterns before saving...
-✅ Debug: Updated question patterns: {'general': 1, 'knowledge': 6, 'introspective': 6}
-🔍 Debug: Sanitizing mind file before saving...
-✅ Mind file saved to S3 successfully! Reflections: 912, Questions: 13, Knowledge: 168
-🔍 Debug: Loading mind files from S3...
-✅ Loaded 912 reflections, 13 questions, 168 knowledge items.
-🔍 Before merge: 168 stored knowledge items.
-🔹 Merging complete! Final stored knowledge count: 168
-🔍 After merging structured knowledge: 168 items.
-🔍 Debug: Tracking self-questioning patterns before saving...
-✅ Debug: Updated question patterns: {'general': 1, 'knowledge': 6, 'introspective': 6}
-🔍 Debug: Sanitizing mind file before saving...
-✅ Mind file saved to S3 successfully! Reflections: 912, Questions: 13, Knowledge: 168
-🔍 Debug: Loading mind files from S3...
-✅ Loaded 912 reflections, 13 questions, 168 knowledge items.
-🔍 Before merge: 168 stored knowledge items.
-🔹 Merging complete! Final stored knowledge count: 168
-🔍 After merging structured knowledge: 168 items.
-🔍 DEBUG: Checking mood update with score 2.0
-⚠️ Mood remained unchanged: excited
-🔍 Debug: Tracking self-questioning patterns before saving...
-✅ Debug: Updated question patterns: {'general': 1, 'knowledge': 6, 'introspective': 6}
-🔍 Debug: Sanitizing mind file before saving...
-✅ Mind file saved to S3 successfully! Reflections: 912, Questions: 13, Knowledge: 168
-🔍 Debug: Loading mind files from S3...
-✅ Loaded 912 reflections, 13 questions, 168 knowledge items.
-🔍 Before merge: 168 stored knowledge items.
-🔹 Merging complete! Final stored knowledge count: 168
-🔍 After merging structured knowledge: 168 items.
-🔍 Debug: Tracking self-questioning patterns before saving...
-✅ Debug: Updated question patterns: {'general': 1, 'knowledge': 6, 'introspective': 6}
-🔍 Debug: Sanitizing mind file before saving...
-✅ Mind file saved to S3 successfully! Reflections: 912, Questions: 13, Knowledge: 168
-🔍 Debug: Loading mind files from S3...
-✅ Loaded 912 reflections, 13 questions, 168 knowledge items.
-🔍 Before merge: 168 stored knowledge items.
-🔹 Merging complete! Final stored knowledge count: 168
-🔍 After merging structured knowledge: 168 items.
-🔍 DEBUG: Checking mood update with score 2.0
-⚠️ Mood remained unchanged: excited
-🔍 Debug: Tracking self-questioning patterns before saving...
-✅ Debug: Updated question patterns: {'general': 1, 'knowledge': 6, 'introspective': 6}
-🔍 Debug: Sanitizing mind file before saving...
-✅ Mind file saved to S3 successfully! Reflections: 912, Questions: 13, Knowledge: 168
-🔍 Debug: Loading mind files from S3...
-✅ Loaded 912 reflections, 13 questions, 168 knowledge items.
-🔍 Before merge: 168 stored knowledge items.
-🔹 Merging complete! Final stored knowledge count: 168
-🔍 After merging structured knowledge: 168 items.
-🔍 Debug: Tracking self-questioning patterns before saving...
-✅ Debug: Updated question patterns: {'general': 1, 'knowledge': 6, 'introspective': 6}
-🔍 Debug: Sanitizing mind file before saving...
-✅ Mind file saved to S3 successfully! Reflections: 912, Questions: 13, Knowledge: 168
-🔍 Debug: Loading mind files from S3...
-✅ Loaded 912 reflections, 13 questions, 168 knowledge items.
-🔍 Before merge: 168 stored knowledge items.
-🔹 Merging complete! Final stored knowledge count: 168
-🔍 After merging structured knowledge: 168 items.
-🔍 DEBUG: Checking mood update with score 2.0
-⚠️ Mood remained unchanged: excited
-🔍 Debug: Tracking self-questioning patterns before saving...
-✅ Debug: Updated question patterns: {'general': 1, 'knowledge': 6, 'introspective': 6}
-🔍 Debug: Sanitizing mind file before saving...
-✅ Mind file saved to S3 successfully! Reflections: 912, Questions: 13, Knowledge: 168
-🔍 Debug: Loading mind files from S3...
-✅ Loaded 912 reflections, 13 questions, 168 knowledge items.
-🔍 Before merge: 168 stored knowledge items.
-🔹 Merging complete! Final stored knowledge count: 168
-🔍 After merging structured knowledge: 168 items.
-🔍 Debug: Tracking self-questioning patterns before saving...
-✅ Debug: Updated question patterns: {'general': 1, 'knowledge': 6, 'introspective': 6}
-🔍 Debug: Sanitizing mind file before saving...
-✅ Mind file saved to S3 successfully! Reflections: 912, Questions: 13, Knowledge: 168
-🔍 Debug: Loading mind files from S3...
-✅ Loaded 912 reflections, 13 questions, 168 knowledge items.
-🔍 Before merge: 168 stored knowledge items.
-🔹 Merging complete! Final stored knowledge count: 168
-🔍 After merging structured knowledge: 168 items.
-🔍 DEBUG: Checking mood update with score 2.0
-⚠️ Mood remained unchanged: excited
-🔍 Debug: Tracking self-questioning patterns before saving...
-✅ Debug: Updated question patterns: {'general': 1, 'knowledge': 6, 'introspective': 6}
-🔍 Debug: Sanitizing mind file before saving...
-🔍 Debug: Loading mind files from S3...
-✅ Loaded 912 reflections, 13 questions, 168 knowledge items.
-🔍 Before merge: 168 stored knowledge items.
-✅ Mind file saved to S3 successfully! Reflections: 912, Questions: 13, Knowledge: 168
-🔹 Merging complete! Final stored knowledge count: 168
-🔍 After merging structured knowledge: 168 items.
-🔍 Debug: Tracking self-questioning patterns before saving...
-✅ Debug: Updated question patterns: {'general': 1, 'knowledge': 6, 'introspective': 6}
-🔍 Debug: Sanitizing mind file before saving...
-✅ Mind file saved to S3 successfully! Reflections: 912, Questions: 13, Knowledge: 168
-🔍 Debug: Loading mind files from S3...
-✅ Loaded 912 reflections, 13 questions, 168 knowledge items.
-🔍 Before merge: 168 stored knowledge items.
-🔹 Merging complete! Final stored knowledge count: 168
-🔍 After merging structured knowledge: 168 items.
-🔍 DEBUG: Checking mood update with score 2.0
-⚠️ Mood remained unchanged: excited
-🔍 Debug: Tracking self-questioning patterns before saving...
-✅ Debug: Updated question patterns: {'general': 1, 'knowledge': 6, 'introspective': 6}
-🔍 Debug: Sanitizing mind file before saving...
-✅ Mind file saved to S3 successfully! Reflections: 912, Questions: 13, Knowledge: 168
-🔍 Debug: Loading mind files from S3...
-✅ Loaded 912 reflections, 13 questions, 168 knowledge items.
-🔍 Before merge: 168 stored knowledge items.
-🔹 Merging complete! Final stored knowledge count: 168
-🔍 After merging structured knowledge: 168 items.
-🔍 Debug: Tracking self-questioning patterns before saving...
-✅ Debug: Updated question patterns: {'general': 1, 'knowledge': 6, 'introspective': 6}
-🔍 Debug: Sanitizing mind file before saving...
-🔍 Debug: Loading mind files from S3...
-✅ Mind file saved to S3 successfully! Reflections: 912, Questions: 13, Knowledge: 168
-🔍 Debug: Loading mind files from S3...
-✅ Loaded 912 reflections, 13 questions, 168 knowledge items.
-🔍 Before merge: 168 stored knowledge items.
-🔹 Merging complete! Final stored knowledge count: 168
-🔍 After merging structured knowledge: 168 items.
-🔍 DEBUG: Checking mood update with score 2.0
-⚠️ Mood remained unchanged: excited
-🔍 Debug: Tracking self-questioning patterns before saving...
-✅ Debug: Updated question patterns: {'general': 1, 'knowledge': 6, 'introspective': 6}
-🔍 Debug: Sanitizing mind file before saving...
-✅ Loaded 912 reflections, 13 questions, 168 knowledge items.
-🔍 Before merge: 168 stored knowledge items.
-🔹 Merging complete! Final stored knowledge count: 168
-🔍 After merging structured knowledge: 168 items.
-🔍 Debug: Tracking self-questioning patterns before saving...
-✅ Debug: Updated question patterns: {'general': 1, 'knowledge': 6, 'introspective': 6}
-🔍 Debug: Sanitizing mind file before saving...
-✅ Mind file saved to S3 successfully! Reflections: 912, Questions: 13, Knowledge: 168
-✅ Mind file saved to S3 successfully! Reflections: 912, Questions: 13, Knowledge: 168
-🔍 Debug: Loading mind files from S3...
-✅ Loaded 912 reflections, 13 questions, 168 knowledge items.
-🔍 Before merge: 168 stored knowledge items.
-🔹 Merging complete! Final stored knowledge count: 168
-🔍 After merging structured knowledge: 168 items.
-🔍 DEBUG: Checking mood update with score 2.0
-⚠️ Mood remained unchanged: excited
-🔍 Debug: Tracking self-questioning patterns before saving...
-✅ Debug: Updated question patterns: {'general': 1, 'knowledge': 6, 'introspective': 6}
-🔍 Debug: Sanitizing mind file before saving...
-✅ Mind file saved to S3 successfully! Reflections: 912, Questions: 13, Knowledge: 168
-[2025-02-25 06:18:13] [INFO    ] discord.gateway: Shard ID None has successfully RESUMED session 77d71b7bcf0bcd2d4077aec020730da5.
-🔍 Debug: Loading mind files from S3...
-✅ Loaded 912 reflections, 13 questions, 168 knowledge items.
-🔍 Before merge: 168 stored knowledge items.
-🔹 Merging complete! Final stored knowledge count: 168
-🔍 After merging structured knowledge: 168 items.
-🔍 Debug: Tracking self-questioning patterns before saving...
-✅ Debug: Updated question patterns: {'general': 1, 'knowledge': 6, 'introspective': 6}
-🔍 Debug: Sanitizing mind file before saving...
-✅ Mind file saved to S3 successfully! Reflections: 912, Questions: 13, Knowledge: 168
-🔍 Debug: Loading mind files from S3...
-✅ Loaded 912 reflections, 13 questions, 168 knowledge items.
-🔍 Before merge: 168 stored knowledge items.
-🔍 Debug: Loading mind files from S3...
-🔹 Merging complete! Final stored knowledge count: 168
-🔍 After merging structured knowledge: 168 items.
-🔍 DEBUG: Checking mood update with score 2.0
-⚠️ Mood remained unchanged: excited
-🔍 Debug: Tracking self-questioning patterns before saving...
-✅ Debug: Updated question patterns: {'general': 1, 'knowledge': 6, 'introspective': 6}
-🔍 Debug: Sanitizing mind file before saving...
-✅ Loaded 912 reflections, 13 questions, 168 knowledge items.
-🔍 Before merge: 168 stored knowledge items.
-🔹 Merging complete! Final stored knowledge count: 168
-🔍 After merging structured knowledge: 168 items.
-🔍 Debug: Tracking self-questioning patterns before saving...
-✅ Debug: Updated question patterns: {'general': 1, 'knowledge': 6, 'introspective': 6}
-🔍 Debug: Sanitizing mind file before saving...
-✅ Mind file saved to S3 successfully! Reflections: 912, Questions: 13, Knowledge: 168
-✅ Mind file saved to S3 successfully! Reflections: 912, Questions: 13, Knowledge: 168
-🔍 Debug: Loading mind files from S3...
-✅ Loaded 912 reflections, 13 questions, 168 knowledge items.
-🔍 Before merge: 168 stored knowledge items.
-🔹 Merging complete! Final stored knowledge count: 168
-🔍 After merging structured knowledge: 168 items.
-🔍 DEBUG: Checking mood update with score 2.0
-⚠️ Mood remained unchanged: excited
-🔍 Debug: Tracking self-questioning patterns before saving...
-✅ Debug: Updated question patterns: {'general': 1, 'knowledge': 6, 'introspective': 6}
-🔍 Debug: Sanitizing mind file before saving...
-✅ Mind file saved to S3 successfully! Reflections: 912, Questions: 13, Knowledge: 168
-🔍 Debug: Loading mind files from S3...
-🔍 Debug: Loading mind files from S3...
-✅ Loaded 912 reflections, 13 questions, 168 knowledge items.
-🔍 Before merge: 168 stored knowledge items.
-🔹 Merging complete! Final stored knowledge count: 168
-🔍 After merging structured knowledge: 168 items.
-🔍 Debug: Tracking self-questioning patterns before saving...
-✅ Debug: Updated question patterns: {'general': 1, 'knowledge': 6, 'introspective': 6}
-🔍 Debug: Sanitizing mind file before saving...
-✅ Loaded 912 reflections, 13 questions, 168 knowledge items.
-🔍 Before merge: 168 stored knowledge items.
-🔹 Merging complete! Final stored knowledge count: 168
-🔍 After merging structured knowledge: 168 items.
-🔍 Debug: Tracking self-questioning patterns before saving...
-✅ Debug: Updated question patterns: {'general': 1, 'knowledge': 6, 'introspective': 6}
-🔍 Debug: Sanitizing mind file before saving...
-✅ Mind file saved to S3 successfully! Reflections: 912, Questions: 13, Knowledge: 168
-🔍 Debug: Loading mind files from S3...
-✅ Loaded 912 reflections, 13 questions, 168 knowledge items.
-🔍 Before merge: 168 stored knowledge items.
-🔹 Merging complete! Final stored knowledge count: 168
-🔍 After merging structured knowledge: 168 items.
-🔍 DEBUG: Checking mood update with score 2.0
-⚠️ Mood remained unchanged: excited
-🔍 Debug: Tracking self-questioning patterns before saving...
-✅ Debug: Updated question patterns: {'general': 1, 'knowledge': 6, 'introspective': 6}
-🔍 Debug: Sanitizing mind file before saving...
-✅ Mind file saved to S3 successfully! Reflections: 912, Questions: 13, Knowledge: 168
-🔍 Debug: Loading mind files from S3...
-✅ Loaded 912 reflections, 13 questions, 168 knowledge items.
-🔍 Before merge: 168 stored knowledge items.
-🔹 Merging complete! Final stored knowledge count: 168
-🔍 After merging structured knowledge: 168 items.
-🔍 DEBUG: Checking mood update with score 2.0
-⚠️ Mood remained unchanged: excited
-🔍 Debug: Tracking self-questioning patterns before saving...
-✅ Debug: Updated question patterns: {'general': 1, 'knowledge': 6, 'introspective': 6}
-🔍 Debug: Sanitizing mind file before saving...
-✅ Mind file saved to S3 successfully! Reflections: 912, Questions: 13, Knowledge: 168
-✅ Mind file saved to S3 successfully! Reflections: 912, Questions: 13, Knowledge: 168
-🔍 Debug: Loading mind files from S3...
-🔍 Debug: Loading mind files from S3...
-✅ Loaded 912 reflections, 13 questions, 168 knowledge items.
-🔍 Before merge: 168 stored knowledge items.
-✅ Loaded 912 reflections, 13 questions, 168 knowledge items.
-🔍 Before merge: 168 stored knowledge items.
-🔹 Merging complete! Final stored knowledge count: 168
-🔍 After merging structured knowledge: 168 items.
-🔍 Debug: Tracking self-questioning patterns before saving...
-✅ Debug: Updated question patterns: {'general': 1, 'knowledge': 6, 'introspective': 6}
-🔍 Debug: Sanitizing mind file before saving...
-🔹 Merging complete! Final stored knowledge count: 168
-🔍 After merging structured knowledge: 168 items.
-🔍 Debug: Tracking self-questioning patterns before saving...
-✅ Debug: Updated question patterns: {'general': 1, 'knowledge': 6, 'introspective': 6}
-🔍 Debug: Sanitizing mind file before saving...
-✅ Mind file saved to S3 successfully! Reflections: 912, Questions: 13, Knowledge: 168
-🔍 Debug: Loading mind files from S3...
-✅ Loaded 912 reflections, 13 questions, 168 knowledge items.
-🔍 Before merge: 168 stored knowledge items.
-🔹 Merging complete! Final stored knowledge count: 168
-🔍 After merging structured knowledge: 168 items.
-🔍 DEBUG: Checking mood update with score 2.0
-⚠️ Mood remained unchanged: excited
-🔍 Debug: Tracking self-questioning patterns before saving...
-✅ Debug: Updated question patterns: {'general': 1, 'knowledge': 6, 'introspective': 6}
-🔍 Debug: Sanitizing mind file before saving...
-✅ Mind file saved to S3 successfully! Reflections: 912, Questions: 13, Knowledge: 168
-🔍 Debug: Loading mind files from S3...
-✅ Mind file saved to S3 successfully! Reflections: 912, Questions: 13, Knowledge: 168
-✅ Loaded 912 reflections, 13 questions, 168 knowledge items.
-🔍 Before merge: 168 stored knowledge items.
-🔹 Merging complete! Final stored knowledge count: 168
-🔍 After merging structured knowledge: 168 items.
-🔍 DEBUG: Checking mood update with score 2.0
-⚠️ Mood remained unchanged: excited
-🔍 Debug: Tracking self-questioning patterns before saving...
-✅ Debug: Updated question patterns: {'general': 1, 'knowledge': 6, 'introspective': 6}
-🔍 Debug: Sanitizing mind file before saving...
-✅ Mind file saved to S3 successfully! Reflections: 912, Questions: 13, Knowledge: 168
-🔍 Debug: Loading mind files from S3...
-🔍 Debug: Loading mind files from S3...
-✅ Loaded 912 reflections, 13 questions, 168 knowledge items.
-🔍 Before merge: 168 stored knowledge items.
-✅ Loaded 912 reflections, 13 questions, 168 knowledge items.
-🔍 Before merge: 168 stored knowledge items.
-🔹 Merging complete! Final stored knowledge count: 168
-🔍 After merging structured knowledge: 168 items.
-🔍 Debug: Tracking self-questioning patterns before saving...
-✅ Debug: Updated question patterns: {'general': 1, 'knowledge': 6, 'introspective': 6}
-🔍 Debug: Sanitizing mind file before saving...
-🔹 Merging complete! Final stored knowledge count: 168
-🔍 After merging structured knowledge: 168 items.
-🔍 Debug: Tracking self-questioning patterns before saving...
-✅ Debug: Updated question patterns: {'general': 1, 'knowledge': 6, 'introspective': 6}
-🔍 Debug: Sanitizing mind file before saving...
-✅ Mind file saved to S3 successfully! Reflections: 912, Questions: 13, Knowledge: 168
-🔍 Debug: Loading mind files from S3...
-✅ Loaded 912 reflections, 13 questions, 168 knowledge items.
-🔍 Before merge: 168 stored knowledge items.
-🔹 Merging complete! Final stored knowledge count: 168
-🔍 After merging structured knowledge: 168 items.
-🔍 DEBUG: Checking mood update with score 2.0
-⚠️ Mood remained unchanged: excited
-🔍 Debug: Tracking self-questioning patterns before saving...
-✅ Debug: Updated question patterns: {'general': 1, 'knowledge': 6, 'introspective': 6}
-🔍 Debug: Sanitizing mind file before saving...
-✅ Mind file saved to S3 successfully! Reflections: 912, Questions: 13, Knowledge: 168
-🔍 Debug: Loading mind files from S3...
-✅ Loaded 912 reflections, 13 questions, 168 knowledge items.
-🔍 Before merge: 168 stored knowledge items.
-✅ Mind file saved to S3 successfully! Reflections: 912, Questions: 13, Knowledge: 168
-🔹 Merging complete! Final stored knowledge count: 168
-🔍 After merging structured knowledge: 168 items.
-🔍 DEBUG: Checking mood update with score 2.0
-⚠️ Mood remained unchanged: excited
-🔍 Debug: Tracking self-questioning patterns before saving...
-✅ Debug: Updated question patterns: {'general': 1, 'knowledge': 6, 'introspective': 6}
-🔍 Debug: Sanitizing mind file before saving...
-✅ Mind file saved to S3 successfully! Reflections: 912, Questions: 13, Knowledge: 168
-🔍 Debug: Loading mind files from S3...
-🔍 Debug: Loading mind files from S3...
-✅ Loaded 914 reflections, 14 questions, 215 knowledge items.
-🔍 Before merge: 215 stored knowledge items.
-🔹 Merging complete! Final stored knowledge count: 215
-🔍 After merging structured knowledge: 215 items.
-🔍 Debug: Tracking self-questioning patterns before saving...
-✅ Debug: Updated question patterns: {'general': 1, 'knowledge': 7, 'introspective': 6}
-🔍 Debug: Sanitizing mind file before saving...
-✅ Loaded 914 reflections, 14 questions, 215 knowledge items.
-🔍 Before merge: 215 stored knowledge items.
-✅ Mind file saved to S3 successfully! Reflections: 914, Questions: 14, Knowledge: 215
-🔍 Debug: Loading mind files from S3...
-🔹 Merging complete! Final stored knowledge count: 215
-🔍 After merging structured knowledge: 215 items.
-🔍 Debug: Tracking self-questioning patterns before saving...
-✅ Debug: Updated question patterns: {'general': 1, 'knowledge': 7, 'introspective': 6}
-🔍 Debug: Sanitizing mind file before saving...
-✅ Loaded 914 reflections, 14 questions, 215 knowledge items.
-🔍 Before merge: 215 stored knowledge items.
-🔹 Merging complete! Final stored knowledge count: 215
-🔍 After merging structured knowledge: 215 items.
-🔍 DEBUG: Checking mood update with score 2.0
-⚠️ Mood remained unchanged: excited
-🔍 Debug: Tracking self-questioning patterns before saving...
-✅ Debug: Updated question patterns: {'general': 1, 'knowledge': 7, 'introspective': 6}
-🔍 Debug: Sanitizing mind file before saving...
-✅ Mind file saved to S3 successfully! Reflections: 914, Questions: 14, Knowledge: 215
-✅ Mind file saved to S3 successfully! Reflections: 914, Questions: 14, Knowledge: 215
-🔍 Debug: Loading mind files from S3...
-✅ Loaded 914 reflections, 14 questions, 215 knowledge items.
-🔍 Before merge: 215 stored knowledge items.
-🔹 Merging complete! Final stored knowledge count: 215
-🔍 After merging structured knowledge: 215 items.
-🔍 DEBUG: Checking mood update with score 2.0
-⚠️ Mood remained unchanged: excited
-🔍 Debug: Tracking self-questioning patterns before saving...
-✅ Debug: Updated question patterns: {'general': 1, 'knowledge': 7, 'introspective': 6}
-🔍 Debug: Sanitizing mind file before saving...
-✅ Mind file saved to S3 successfully! Reflections: 914, Questions: 14, Knowledge: 215
-🔍 Debug: Loading mind files from S3...
-✅ Loaded 915 reflections, 15 questions, 235 knowledge items.
-🔍 Before merge: 235 stored knowledge items.
-🔹 Merging complete! Final stored knowledge count: 235
-🔍 After merging structured knowledge: 235 items.
-🔍 Debug: Tracking self-questioning patterns before saving...
-✅ Debug: Updated question patterns: {'general': 1, 'knowledge': 7, 'introspective': 7}
-🔍 Debug: Sanitizing mind file before saving...
-✅ Mind file saved to S3 successfully! Reflections: 915, Questions: 15, Knowledge: 235
-🔍 Debug: Loading mind files from S3...
-✅ Loaded 915 reflections, 15 questions, 235 knowledge items.
-🔍 Before merge: 235 stored knowledge items.
-🔹 Merging complete! Final stored knowledge count: 235
-🔍 After merging structured knowledge: 235 items.
-🔍 DEBUG: Checking mood update with score 2.0
-⚠️ Mood remained unchanged: excited
-🔍 Debug: Tracking self-questioning patterns before saving...
-✅ Debug: Updated question patterns: {'general': 1, 'knowledge': 7, 'introspective': 7}
-🔍 Debug: Sanitizing mind file before saving...
-✅ Mind file saved to S3 successfully! Reflections: 915, Questions: 15, Knowledge: 235
-🔍 Debug: Loading mind files from S3...
-✅ Loaded 915 reflections, 15 questions, 235 knowledge items.
-🔍 Before merge: 235 stored knowledge items.
-🔹 Merging complete! Final stored knowledge count: 235
-🔍 After merging structured knowledge: 235 items.
-🔍 Debug: Tracking self-questioning patterns before saving...
-✅ Debug: Updated question patterns: {'general': 1, 'knowledge': 7, 'introspective': 7}
-🔍 Debug: Sanitizing mind file before saving...
-✅ Mind file saved to S3 successfully! Reflections: 915, Questions: 15, Knowledge: 235
-🔍 Debug: Loading mind files from S3...
-✅ Loaded 915 reflections, 15 questions, 235 knowledge items.
-🔍 Before merge: 235 stored knowledge items.
-🔹 Merging complete! Final stored knowledge count: 235
-🔍 After merging structured knowledge: 235 items.
-🔍 DEBUG: Checking mood update with score 2.0
-⚠️ Mood remained unchanged: excited
-🔍 Debug: Tracking self-questioning patterns before saving...
-✅ Debug: Updated question patterns: {'general': 1, 'knowledge': 7, 'introspective': 7}
-🔍 Debug: Sanitizing mind file before saving...
-✅ Mind file saved to S3 successfully! Reflections: 915, Questions: 15, Knowledge: 235
-🔍 Debug: Loading mind files from S3...
-✅ Loaded 917 reflections, 17 questions, 250 knowledge items.
-🔍 Before merge: 250 stored knowledge items.
-🔹 Merging complete! Final stored knowledge count: 250
-🔍 After merging structured knowledge: 250 items.
-🔍 Debug: Tracking self-questioning patterns before saving...
-✅ Debug: Updated question patterns: {'general': 1, 'knowledge': 9, 'introspective': 7}
-🔍 Debug: Sanitizing mind file before saving...
-✅ Mind file saved to S3 successfully! Reflections: 917, Questions: 17, Knowledge: 250
-🔍 Debug: Loading mind files from S3...
-✅ Loaded 917 reflections, 17 questions, 250 knowledge items.
-🔍 Before merge: 250 stored knowledge items.
-🔹 Merging complete! Final stored knowledge count: 250
-🔍 After merging structured knowledge: 250 items.
-🔍 DEBUG: Checking mood update with score 2.0
-⚠️ Mood remained unchanged: excited
-🔍 Debug: Tracking self-questioning patterns before saving...
-✅ Debug: Updated question patterns: {'general': 1, 'knowledge': 9, 'introspective': 7}
-🔍 Debug: Sanitizing mind file before saving...
-✅ Mind file saved to S3 successfully! Reflections: 917, Questions: 17, Knowledge: 250
-🔍 Debug: Loading mind files from S3...
-✅ Loaded 917 reflections, 17 questions, 250 knowledge items.
-🔍 Before merge: 250 stored knowledge items.
-🔹 Merging complete! Final stored knowledge count: 250
-🔍 After merging structured knowledge: 250 items.
-🔍 Debug: Tracking self-questioning patterns before saving...
-✅ Debug: Updated question patterns: {'general': 1, 'knowledge': 9, 'introspective': 7}
-🔍 Debug: Sanitizing mind file before saving...
-✅ Mind file saved to S3 successfully! Reflections: 917, Questions: 17, Knowledge: 250
-🔍 Debug: Loading mind files from S3...
-✅ Loaded 917 reflections, 17 questions, 250 knowledge items.
-🔍 Before merge: 250 stored knowledge items.
-🔹 Merging complete! Final stored knowledge count: 250
-🔍 After merging structured knowledge: 250 items.
-🔍 DEBUG: Checking mood update with score 2.0
-⚠️ Mood remained unchanged: excited
-🔍 Debug: Tracking self-questioning patterns before saving...
-✅ Debug: Updated question patterns: {'general': 1, 'knowledge': 9, 'introspective': 7}
-🔍 Debug: Sanitizing mind file before saving...
-✅ Mind file saved to S3 successfully! Reflections: 917, Questions: 17, Knowledge: 250
-🔍 Debug: Loading mind files from S3...
-✅ Loaded 918 reflections, 17 questions, 251 knowledge items.
-🔍 Before merge: 251 stored knowledge items.
-🔹 Merging complete! Final stored knowledge count: 251
-🔍 After merging structured knowledge: 251 items.
-🔍 Debug: Tracking self-questioning patterns before saving...
-✅ Debug: Updated question patterns: {'general': 1, 'knowledge': 9, 'introspective': 7}
-🔍 Debug: Sanitizing mind file before saving...
-✅ Mind file saved to S3 successfully! Reflections: 918, Questions: 17, Knowledge: 251
-🔍 Debug: Loading mind files from S3...
-✅ Loaded 918 reflections, 17 questions, 251 knowledge items.
-🔍 Before merge: 251 stored knowledge items.
-🔹 Merging complete! Final stored knowledge count: 251
-🔍 After merging structured knowledge: 251 items.
-🔍 DEBUG: Checking mood update with score 2.0
-⚠️ Mood remained unchanged: excited
-🔍 Debug: Tracking self-questioning patterns before saving...
-✅ Debug: Updated question patterns: {'general': 1, 'knowledge': 9, 'introspective': 7}
-🔍 Debug: Sanitizing mind file before saving...
-✅ Mind file saved to S3 successfully! Reflections: 918, Questions: 17, Knowledge: 251
-🔍 Debug: Loading mind files from S3...
-✅ Loaded 918 reflections, 17 questions, 251 knowledge items.
-🔍 Before merge: 251 stored knowledge items.
-🔹 Merging complete! Final stored knowledge count: 251
-🔍 After merging structured knowledge: 251 items.
-🔍 Debug: Tracking self-questioning patterns before saving...
-✅ Debug: Updated question patterns: {'general': 1, 'knowledge': 9, 'introspective': 7}
-🔍 Debug: Sanitizing mind file before saving...
-✅ Mind file saved to S3 successfully! Reflections: 918, Questions: 17, Knowledge: 251
-🔍 Debug: Loading mind files from S3...
-✅ Loaded 918 reflections, 17 questions, 251 knowledge items.
-🔍 Before merge: 251 stored knowledge items.
-🔹 Merging complete! Final stored knowledge count: 251
-🔍 After merging structured knowledge: 251 items.
-🔍 DEBUG: Checking mood update with score 2.0
-⚠️ Mood remained unchanged: excited
-🔍 Debug: Tracking self-questioning patterns before saving...
-✅ Debug: Updated question patterns: {'general': 1, 'knowledge': 9, 'introspective': 7}
-🔍 Debug: Sanitizing mind file before saving...
-✅ Mind file saved to S3 successfully! Reflections: 918, Questions: 17, Knowledge: 251
-🔍 Debug: Loading mind files from S3...
-✅ Loaded 920 reflections, 18 questions, 284 knowledge items.
-🔍 Before merge: 284 stored knowledge items.
-🔹 Merging complete! Final stored knowledge count: 284
-🔍 After merging structured knowledge: 284 items.
-🔍 Debug: Tracking self-questioning patterns before saving...
-✅ Debug: Updated question patterns: {'general': 1, 'knowledge': 10, 'introspective': 7}
-🔍 Debug: Sanitizing mind file before saving...
-✅ Mind file saved to S3 successfully! Reflections: 920, Questions: 18, Knowledge: 284
-🔍 Debug: Loading mind files from S3...
-✅ Loaded 920 reflections, 18 questions, 284 knowledge items.
-🔍 Before merge: 284 stored knowledge items.
-🔹 Merging complete! Final stored knowledge count: 284
-🔍 After merging structured knowledge: 284 items.
-🔍 DEBUG: Checking mood update with score 2.0
-⚠️ Mood remained unchanged: excited
-🔍 Debug: Tracking self-questioning patterns before saving...
-✅ Debug: Updated question patterns: {'general': 1, 'knowledge': 10, 'introspective': 7}
-🔍 Debug: Sanitizing mind file before saving...
-✅ Mind file saved to S3 successfully! Reflections: 920, Questions: 18, Knowledge: 284
-🔍 Debug: Loading mind files from S3...
-✅ Loaded 920 reflections, 18 questions, 284 knowledge items.
-🔍 Before merge: 284 stored knowledge items.
-🔹 Merging complete! Final stored knowledge count: 284
-🔍 After merging structured knowledge: 284 items.
-🔍 Debug: Tracking self-questioning patterns before saving...
-✅ Debug: Updated question patterns: {'general': 1, 'knowledge': 10, 'introspective': 7}
-🔍 Debug: Sanitizing mind file before saving...
-✅ Mind file saved to S3 successfully! Reflections: 920, Questions: 18, Knowledge: 284
-🔍 Debug: Loading mind files from S3...
-✅ Loaded 920 reflections, 18 questions, 284 knowledge items.
-🔍 Before merge: 284 stored knowledge items.
-🔹 Merging complete! Final stored knowledge count: 284
-🔍 After merging structured knowledge: 284 items.
-🔍 DEBUG: Checking mood update with score 2.0
-⚠️ Mood remained unchanged: excited
-🔍 Debug: Tracking self-questioning patterns before saving...
-✅ Debug: Updated question patterns: {'general': 1, 'knowledge': 10, 'introspective': 7}
-🔍 Debug: Sanitizing mind file before saving...
-✅ Mind file saved to S3 successfully! Reflections: 920, Questions: 18, Knowledge: 284
-🔍 Debug: Loading mind files from S3...
-✅ Loaded 922 reflections, 18 questions, 229 knowledge items.
-🔍 Before merge: 229 stored knowledge items.
-🔹 Merging complete! Final stored knowledge count: 229
-🔍 After merging structured knowledge: 229 items.
-🔍 Debug: Tracking self-questioning patterns before saving...
-✅ Debug: Updated question patterns: {'general': 1, 'knowledge': 10, 'introspective': 7}
-🔍 Debug: Sanitizing mind file before saving...
-✅ Mind file saved to S3 successfully! Reflections: 922, Questions: 18, Knowledge: 229
-🔍 Debug: Loading mind files from S3...
-✅ Loaded 922 reflections, 18 questions, 229 knowledge items.
-🔍 Before merge: 229 stored knowledge items.
-🔹 Merging complete! Final stored knowledge count: 229
-🔍 After merging structured knowledge: 229 items.
-🔍 DEBUG: Checking mood update with score 2.0
-⚠️ Mood remained unchanged: excited
-🔍 Debug: Tracking self-questioning patterns before saving...
-✅ Debug: Updated question patterns: {'general': 1, 'knowledge': 10, 'introspective': 7}
-🔍 Debug: Sanitizing mind file before saving...
-✅ Mind file saved to S3 successfully! Reflections: 922, Questions: 18, Knowledge: 229
-🔍 Debug: Loading mind files from S3...
-✅ Loaded 922 reflections, 18 questions, 229 knowledge items.
-🔍 Before merge: 229 stored knowledge items.
-🔹 Merging complete! Final stored knowledge count: 229
-🔍 After merging structured knowledge: 229 items.
-🔍 Debug: Tracking self-questioning patterns before saving...
-✅ Debug: Updated question patterns: {'general': 1, 'knowledge': 10, 'introspective': 7}
-🔍 Debug: Sanitizing mind file before saving...
-✅ Mind file saved to S3 successfully! Reflections: 922, Questions: 18, Knowledge: 229
-🔍 Debug: Loading mind files from S3...
-✅ Loaded 922 reflections, 18 questions, 229 knowledge items.
-🔍 Before merge: 229 stored knowledge items.
-🔹 Merging complete! Final stored knowledge count: 229
-🔍 After merging structured knowledge: 229 items.
-🔍 DEBUG: Checking mood update with score 2.0
-⚠️ Mood remained unchanged: excited
-🔍 Debug: Tracking self-questioning patterns before saving...
-✅ Debug: Updated question patterns: {'general': 1, 'knowledge': 10, 'introspective': 7}
-🔍 Debug: Sanitizing mind file before saving...
-✅ Mind file saved to S3 successfully! Reflections: 922, Questions: 18, Knowledge: 229
-[2025-02-25 08:03:25] [INFO    ] discord.gateway: Shard ID None has successfully RESUMED session 77d71b7bcf0bcd2d4077aec020730da5.
-🔍 Debug: Loading mind files from S3...
-✅ Loaded 924 reflections, 18 questions, 90 knowledge items.
-🔍 Before merge: 90 stored knowledge items.
-🔹 Merging complete! Final stored knowledge count: 104
-🔍 After merging structured knowledge: 104 items.
-🔍 Debug: Tracking self-questioning patterns before saving...
-✅ Debug: Updated question patterns: {'general': 1, 'knowledge': 10, 'introspective': 7}
-🔍 Debug: Sanitizing mind file before saving...
-✅ Mind file saved to S3 successfully! Reflections: 924, Questions: 18, Knowledge: 104
-🔍 Debug: Loading mind files from S3...
-✅ Loaded 924 reflections, 18 questions, 104 knowledge items.
-🔍 Before merge: 104 stored knowledge items.
-🔹 Merging complete! Final stored knowledge count: 104
-🔍 After merging structured knowledge: 104 items.
-🔍 DEBUG: Checking mood update with score 2.0
-⚠️ Mood remained unchanged: excited
-🔍 Debug: Tracking self-questioning patterns before saving...
-✅ Debug: Updated question patterns: {'general': 1, 'knowledge': 10, 'introspective': 7}
-🔍 Debug: Sanitizing mind file before saving...
-🔍 Debug: Loading mind files from S3...
-✅ Loaded 924 reflections, 18 questions, 104 knowledge items.
-🔍 Before merge: 104 stored knowledge items.
-🔹 Merging complete! Final stored knowledge count: 104
-🔍 After merging structured knowledge: 104 items.
-🔍 Debug: Tracking self-questioning patterns before saving...
-✅ Debug: Updated question patterns: {'general': 1, 'knowledge': 10, 'introspective': 7}
-🔍 Debug: Sanitizing mind file before saving...
-✅ Mind file saved to S3 successfully! Reflections: 924, Questions: 18, Knowledge: 104
-🔍 Debug: Loading mind files from S3...
-✅ Loaded 924 reflections, 18 questions, 104 knowledge items.
-🔍 Before merge: 104 stored knowledge items.
-🔹 Merging complete! Final stored knowledge count: 104
-🔍 After merging structured knowledge: 104 items.
-🔍 DEBUG: Checking mood update with score 2.0
-⚠️ Mood remained unchanged: excited
-🔍 Debug: Tracking self-questioning patterns before saving...
-✅ Debug: Updated question patterns: {'general': 1, 'knowledge': 10, 'introspective': 7}
-🔍 Debug: Sanitizing mind file before saving...
-✅ Mind file saved to S3 successfully! Reflections: 924, Questions: 18, Knowledge: 104
-✅ Mind file saved to S3 successfully! Reflections: 924, Questions: 18, Knowledge: 104
-🔍 Debug: Loading mind files from S3...
-✅ Loaded 926 reflections, 18 questions, 105 knowledge items.
-🔍 Before merge: 105 stored knowledge items.
+✅ Loaded 478 reflections, 18 questions, 108 knowledge items.
+🔍 Before merge: 108 stored knowledge items.
 🔹 Merging complete! Final stored knowledge count: 105
 🔍 After merging structured knowledge: 105 items.
-🔍 Debug: Tracking self-questioning patterns before saving...
-✅ Debug: Updated question patterns: {'general': 1, 'knowledge': 10, 'introspective': 7}
-🔍 Debug: Sanitizing mind file before saving...
-🔍 Debug: Loading mind files from S3...
-✅ Loaded 926 reflections, 18 questions, 105 knowledge items.
-🔍 Before merge: 105 stored knowledge items.
-🔹 Merging complete! Final stored knowledge count: 105
-🔍 After merging structured knowledge: 105 items.
-🔍 Debug: Tracking self-questioning patterns before saving...
-✅ Debug: Updated question patterns: {'general': 1, 'knowledge': 10, 'introspective': 7}
-🔍 Debug: Sanitizing mind file before saving...
-✅ Mind file saved to S3 successfully! Reflections: 926, Questions: 18, Knowledge: 105
-🔍 Debug: Loading mind files from S3...
-✅ Loaded 926 reflections, 18 questions, 105 knowledge items.
-🔍 Before merge: 105 stored knowledge items.
-🔹 Merging complete! Final stored knowledge count: 105
-🔍 After merging structured knowledge: 105 items.
-🔍 DEBUG: Checking mood update with score 2.0
-⚠️ Mood remained unchanged: excited
-🔍 Debug: Tracking self-questioning patterns before saving...
-✅ Debug: Updated question patterns: {'general': 1, 'knowledge': 10, 'introspective': 7}
-🔍 Debug: Sanitizing mind file before saving...
-✅ Mind file saved to S3 successfully! Reflections: 926, Questions: 18, Knowledge: 105
-🔍 Debug: Loading mind files from S3...
-✅ Mind file saved to S3 successfully! Reflections: 926, Questions: 18, Knowledge: 105
-✅ Loaded 926 reflections, 18 questions, 105 knowledge items.
-🔍 Before merge: 105 stored knowledge items.
-🔹 Merging complete! Final stored knowledge count: 105
-🔍 After merging structured knowledge: 105 items.
-🔍 DEBUG: Checking mood update with score 2.0
-⚠️ Mood remained unchanged: excited
-🔍 Debug: Tracking self-questioning patterns before saving...
-✅ Debug: Updated question patterns: {'general': 1, 'knowledge': 10, 'introspective': 7}
-🔍 Debug: Sanitizing mind file before saving...
-✅ Mind file saved to S3 successfully! Reflections: 926, Questions: 18, Knowledge: 105
-🔍 Debug: Loading mind files from S3...
-✅ Loaded 927 reflections, 18 questions, 142 knowledge items.
-🔍 Before merge: 142 stored knowledge items.
-🔹 Merging complete! Final stored knowledge count: 142
-🔍 After merging structured knowledge: 142 items.
-🔍 Debug: Tracking self-questioning patterns before saving...
-✅ Debug: Updated question patterns: {'general': 1, 'knowledge': 10, 'introspective': 7}
-🔍 Debug: Sanitizing mind file before saving...
-🔍 Debug: Loading mind files from S3...
-✅ Loaded 927 reflections, 18 questions, 142 knowledge items.
-🔍 Before merge: 142 stored knowledge items.
-🔹 Merging complete! Final stored knowledge count: 142
-🔍 After merging structured knowledge: 142 items.
-🔍 Debug: Tracking self-questioning patterns before saving...
-✅ Debug: Updated question patterns: {'general': 1, 'knowledge': 10, 'introspective': 7}
-🔍 Debug: Sanitizing mind file before saving...
-✅ Mind file saved to S3 successfully! Reflections: 927, Questions: 18, Knowledge: 142
-🔍 Debug: Loading mind files from S3...
-✅ Loaded 927 reflections, 18 questions, 142 knowledge items.
-🔍 Before merge: 142 stored knowledge items.
-🔹 Merging complete! Final stored knowledge count: 142
-🔍 After merging structured knowledge: 142 items.
-🔍 DEBUG: Checking mood update with score 2.0
-⚠️ Mood remained unchanged: excited
-🔍 Debug: Tracking self-questioning patterns before saving...
-✅ Debug: Updated question patterns: {'general': 1, 'knowledge': 10, 'introspective': 7}
-🔍 Debug: Sanitizing mind file before saving...
-✅ Mind file saved to S3 successfully! Reflections: 927, Questions: 18, Knowledge: 142
-🔍 Debug: Loading mind files from S3...
-✅ Loaded 927 reflections, 18 questions, 142 knowledge items.
-🔍 Before merge: 142 stored knowledge items.
-🔹 Merging complete! Final stored knowledge count: 142
-🔍 After merging structured knowledge: 142 items.
-🔍 DEBUG: Checking mood update with score 2.0
-⚠️ Mood remained unchanged: excited
-🔍 Debug: Tracking self-questioning patterns before saving...
-✅ Debug: Updated question patterns: {'general': 1, 'knowledge': 10, 'introspective': 7}
-🔍 Debug: Sanitizing mind file before saving...
-✅ Mind file saved to S3 successfully! Reflections: 927, Questions: 18, Knowledge: 142
-✅ Mind file saved to S3 successfully! Reflections: 927, Questions: 18, Knowledge: 142
-🔍 Debug: Loading mind files from S3...
-✅ Loaded 929 reflections, 18 questions, 195 knowledge items.
-🔍 Before merge: 195 stored knowledge items.
-🔹 Merging complete! Final stored knowledge count: 195
-🔍 After merging structured knowledge: 195 items.
-🔍 Debug: Tracking self-questioning patterns before saving...
-✅ Debug: Updated question patterns: {'general': 1, 'knowledge': 10, 'introspective': 7}
-🔍 Debug: Sanitizing mind file before saving...
-🔍 Debug: Loading mind files from S3...
-✅ Loaded 929 reflections, 18 questions, 195 knowledge items.
-🔍 Before merge: 195 stored knowledge items.
-🔹 Merging complete! Final stored knowledge count: 195
-🔍 After merging structured knowledge: 195 items.
-🔍 Debug: Tracking self-questioning patterns before saving...
-✅ Debug: Updated question patterns: {'general': 1, 'knowledge': 10, 'introspective': 7}
-🔍 Debug: Sanitizing mind file before saving...
-✅ Mind file saved to S3 successfully! Reflections: 929, Questions: 18, Knowledge: 195
-🔍 Debug: Loading mind files from S3...
-✅ Loaded 929 reflections, 18 questions, 195 knowledge items.
-🔍 Before merge: 195 stored knowledge items.
-🔹 Merging complete! Final stored knowledge count: 195
-🔍 After merging structured knowledge: 195 items.
-🔍 DEBUG: Checking mood update with score 2.0
-⚠️ Mood remained unchanged: excited
-🔍 Debug: Tracking self-questioning patterns before saving...
-✅ Debug: Updated question patterns: {'general': 1, 'knowledge': 10, 'introspective': 7}
-🔍 Debug: Sanitizing mind file before saving...
-✅ Mind file saved to S3 successfully! Reflections: 929, Questions: 18, Knowledge: 195
-✅ Mind file saved to S3 successfully! Reflections: 929, Questions: 18, Knowledge: 195
-🔍 Debug: Loading mind files from S3...
-✅ Loaded 929 reflections, 18 questions, 195 knowledge items.
-🔍 Before merge: 195 stored knowledge items.
-🔹 Merging complete! Final stored knowledge count: 195
-🔍 After merging structured knowledge: 195 items.
-🔍 DEBUG: Checking mood update with score 2.0
-⚠️ Mood remained unchanged: excited
-🔍 Debug: Tracking self-questioning patterns before saving...
-✅ Debug: Updated question patterns: {'general': 1, 'knowledge': 10, 'introspective': 7}
-🔍 Debug: Sanitizing mind file before saving...
-✅ Mind file saved to S3 successfully! Reflections: 929, Questions: 18, Knowledge: 195
-🔍 Debug: Loading mind files from S3...
-✅ Loaded 931 reflections, 18 questions, 147 knowledge items.
-🔍 Before merge: 147 stored knowledge items.
-🔹 Merging complete! Final stored knowledge count: 147
-🔍 After merging structured knowledge: 147 items.
-🔍 Debug: Tracking self-questioning patterns before saving...
-✅ Debug: Updated question patterns: {'general': 1, 'knowledge': 10, 'introspective': 7}
-🔍 Debug: Sanitizing mind file before saving...
-✅ Mind file saved to S3 successfully! Reflections: 931, Questions: 18, Knowledge: 147
-🔍 Debug: Loading mind files from S3...
-✅ Loaded 931 reflections, 18 questions, 147 knowledge items.
-🔍 Before merge: 147 stored knowledge items.
-🔹 Merging complete! Final stored knowledge count: 147
-🔍 After merging structured knowledge: 147 items.
-🔍 DEBUG: Checking mood update with score 2.0
-⚠️ Mood remained unchanged: excited
-🔍 Debug: Tracking self-questioning patterns before saving...
-✅ Debug: Updated question patterns: {'general': 1, 'knowledge': 10, 'introspective': 7}
-🔍 Debug: Sanitizing mind file before saving...
-✅ Mind file saved to S3 successfully! Reflections: 931, Questions: 18, Knowledge: 147
-🔍 Debug: Loading mind files from S3...
-✅ Loaded 931 reflections, 18 questions, 147 knowledge items.
-🔍 Before merge: 147 stored knowledge items.
-🔹 Merging complete! Final stored knowledge count: 147
-🔍 After merging structured knowledge: 147 items.
-🔍 Debug: Tracking self-questioning patterns before saving...
-✅ Debug: Updated question patterns: {'general': 1, 'knowledge': 10, 'introspective': 7}
-🔍 Debug: Sanitizing mind file before saving...
-✅ Mind file saved to S3 successfully! Reflections: 931, Questions: 18, Knowledge: 147
-🔍 Debug: Loading mind files from S3...
-✅ Loaded 931 reflections, 18 questions, 147 knowledge items.
-🔍 Before merge: 147 stored knowledge items.
-🔹 Merging complete! Final stored knowledge count: 147
-🔍 After merging structured knowledge: 147 items.
-🔍 DEBUG: Checking mood update with score 2.0
-⚠️ Mood remained unchanged: excited
-🔍 Debug: Tracking self-questioning patterns before saving...
-✅ Debug: Updated question patterns: {'general': 1, 'knowledge': 10, 'introspective': 7}
-🔍 Debug: Sanitizing mind file before saving...
-✅ Mind file saved to S3 successfully! Reflections: 931, Questions: 18, Knowledge: 147
-🔍 Debug: Loading mind files from S3...
-✅ Loaded 933 reflections, 18 questions, 196 knowledge items.
-🔍 Before merge: 196 stored knowledge items.
-🔹 Merging complete! Final stored knowledge count: 196
-🔍 After merging structured knowledge: 196 items.
-🔍 Debug: Tracking self-questioning patterns before saving...
-✅ Debug: Updated question patterns: {'general': 1, 'knowledge': 10, 'introspective': 7}
-🔍 Debug: Sanitizing mind file before saving...
-✅ Mind file saved to S3 successfully! Reflections: 933, Questions: 18, Knowledge: 196
-🔍 Debug: Loading mind files from S3...
-✅ Loaded 933 reflections, 18 questions, 196 knowledge items.
-🔍 Before merge: 196 stored knowledge items.
-🔹 Merging complete! Final stored knowledge count: 196
-🔍 After merging structured knowledge: 196 items.
-🔍 DEBUG: Checking mood update with score 2.0
-⚠️ Mood remained unchanged: excited
-🔍 Debug: Tracking self-questioning patterns before saving...
-✅ Debug: Updated question patterns: {'general': 1, 'knowledge': 10, 'introspective': 7}
-🔍 Debug: Sanitizing mind file before saving...
-✅ Mind file saved to S3 successfully! Reflections: 933, Questions: 18, Knowledge: 196
-🔍 Debug: Loading mind files from S3...
-✅ Loaded 933 reflections, 18 questions, 196 knowledge items.
-🔍 Before merge: 196 stored knowledge items.
-🔹 Merging complete! Final stored knowledge count: 196
-🔍 After merging structured knowledge: 196 items.
-🔍 Debug: Tracking self-questioning patterns before saving...
-✅ Debug: Updated question patterns: {'general': 1, 'knowledge': 10, 'introspective': 7}
-🔍 Debug: Sanitizing mind file before saving...
-✅ Mind file saved to S3 successfully! Reflections: 933, Questions: 18, Knowledge: 196
-🔍 Debug: Loading mind files from S3...
-✅ Loaded 933 reflections, 18 questions, 196 knowledge items.
-🔍 Before merge: 196 stored knowledge items.
-🔹 Merging complete! Final stored knowledge count: 196
-🔍 After merging structured knowledge: 196 items.
-🔍 DEBUG: Checking mood update with score 2.0
-⚠️ Mood remained unchanged: excited
-🔍 Debug: Tracking self-questioning patterns before saving...
-✅ Debug: Updated question patterns: {'general': 1, 'knowledge': 10, 'introspective': 7}
-🔍 Debug: Sanitizing mind file before saving...
-✅ Mind file saved to S3 successfully! Reflections: 933, Questions: 18, Knowledge: 196
-[2025-02-25 09:01:03] [ERROR   ] discord.client: Attempting a reconnect in 0.80s
-Traceback (most recent call last):
-  File "/home/ubuntu/astra_reflections/venv/lib/python3.10/site-packages/discord/client.py", line 667, in connect
-    await self.ws.poll_event()
-  File "/home/ubuntu/astra_reflections/venv/lib/python3.10/site-packages/discord/gateway.py", line 648, in poll_event
-    raise ConnectionClosed(self.socket, shard_id=self.shard_id, code=code) from None
-discord.errors.ConnectionClosed: Shard ID None WebSocket closed with 1000
-[2025-02-25 09:01:04] [INFO    ] discord.gateway: Shard ID None has successfully RESUMED session 77d71b7bcf0bcd2d4077aec020730da5.
-🔍 Debug: Loading mind files from S3...
-✅ Loaded 1 reflections, 1 questions, 34 knowledge items.
-🔍 Before merge: 34 stored knowledge items.
-🔹 Merging complete! Final stored knowledge count: 34
-🔍 After merging structured knowledge: 34 items.
-🔍 Debug: Tracking self-questioning patterns before saving...
-✅ Debug: Updated question patterns: {'knowledge': 1}
-🔍 Debug: Sanitizing mind file before saving...
-✅ Mind file saved to S3 successfully! Reflections: 1, Questions: 1, Knowledge: 34
-🔍 Debug: Loading mind files from S3...
-✅ Loaded 1 reflections, 1 questions, 34 knowledge items.
-🔍 Before merge: 34 stored knowledge items.
-🔹 Merging complete! Final stored knowledge count: 34
-🔍 After merging structured knowledge: 34 items.
-🔍 DEBUG: Checking mood update with score 2.0
-⚠️ Mood remained unchanged: excited
-🔍 Debug: Tracking self-questioning patterns before saving...
-✅ Debug: Updated question patterns: {'knowledge': 1}
-🔍 Debug: Sanitizing mind file before saving...
-✅ Mind file saved to S3 successfully! Reflections: 1, Questions: 1, Knowledge: 34
-🔍 Debug: Loading mind files from S3...
-✅ Loaded 1 reflections, 1 questions, 34 knowledge items.
-🔍 Before merge: 34 stored knowledge items.
-🔹 Merging complete! Final stored knowledge count: 34
-🔍 After merging structured knowledge: 34 items.
-🔍 Debug: Tracking self-questioning patterns before saving...
-✅ Debug: Updated question patterns: {'knowledge': 1}
-🔍 Debug: Sanitizing mind file before saving...
-✅ Mind file saved to S3 successfully! Reflections: 1, Questions: 1, Knowledge: 34
-🔍 Debug: Loading mind files from S3...
-✅ Loaded 1 reflections, 1 questions, 34 knowledge items.
-🔍 Before merge: 34 stored knowledge items.
-🔹 Merging complete! Final stored knowledge count: 34
-🔍 After merging structured knowledge: 34 items.
-🔍 DEBUG: Checking mood update with score 2.0
-⚠️ Mood remained unchanged: excited
-🔍 Debug: Tracking self-questioning patterns before saving...
-✅ Debug: Updated question patterns: {'knowledge': 1}
-🔍 Debug: Sanitizing mind file before saving...
-✅ Mind file saved to S3 successfully! Reflections: 1, Questions: 1, Knowledge: 34
-🔍 Debug: Loading mind files from S3...
-✅ Loaded 0 reflections, 0 questions, 2 knowledge items.
-🔍 Before merge: 2 stored knowledge items.
-🔹 Merging complete! Final stored knowledge count: 24
-🔍 After merging structured knowledge: 24 items.
-🔍 Debug: Tracking self-questioning patterns before saving...
-✅ Debug: Updated question patterns: {}
-🔍 Debug: Sanitizing mind file before saving...
-✅ Mind file saved to S3 successfully! Reflections: 0, Questions: 0, Knowledge: 24
-🔍 Debug: Loading mind files from S3...
-✅ Loaded 0 reflections, 0 questions, 24 knowledge items.
-🔍 Before merge: 24 stored knowledge items.
-🔹 Merging complete! Final stored knowledge count: 24
-🔍 After merging structured knowledge: 24 items.
-🔍 DEBUG: Checking mood update with score 2.0
-⚠️ Mood remained unchanged: excited
-🔍 Debug: Tracking self-questioning patterns before saving...
-✅ Debug: Updated question patterns: {}
-🔍 Debug: Sanitizing mind file before saving...
-✅ Mind file saved to S3 successfully! Reflections: 0, Questions: 0, Knowledge: 24
-🔍 Debug: Loading mind files from S3...
-✅ Loaded 0 reflections, 0 questions, 24 knowledge items.
-🔍 Before merge: 24 stored knowledge items.
-🔹 Merging complete! Final stored knowledge count: 24
-🔍 After merging structured knowledge: 24 items.
-🔍 Debug: Tracking self-questioning patterns before saving...
-✅ Debug: Updated question patterns: {}
-🔍 Debug: Sanitizing mind file before saving...
-✅ Mind file saved to S3 successfully! Reflections: 0, Questions: 0, Knowledge: 24
-🔍 Debug: Loading mind files from S3...
-✅ Loaded 0 reflections, 0 questions, 24 knowledge items.
-🔍 Before merge: 24 stored knowledge items.
-🔹 Merging complete! Final stored knowledge count: 24
-🔍 After merging structured knowledge: 24 items.
-🔍 DEBUG: Checking mood update with score 2.0
-⚠️ Mood remained unchanged: excited
-🔍 Debug: Tracking self-questioning patterns before saving...
-✅ Debug: Updated question patterns: {}
-🔍 Debug: Sanitizing mind file before saving...
-✅ Mind file saved to S3 successfully! Reflections: 0, Questions: 0, Knowledge: 24
+🔍 Loaded mood from memory: excited, Score: 2.0, Curiosity: 1.0
+🔍 Debug: Loading mind file...
+[2025-02-28 07:16:43] [INFO    ] discord.client: logging in using static token
+[2025-02-28 07:16:43] [INFO    ] discord.gateway: Shard ID None has connected to Gateway (Session ID: e730c0e77831a5849a3081f9f71f4ad5).
 🔍 Debug: Loading mind file...
 🔍 Debug: Trust level for user 1040735178282250260: 5
 🔍 Debug: Loading mind files from S3...
-✅ Loaded 0 reflections, 0 questions, 2 knowledge items.
-🔍 Before merge: 2 stored knowledge items.
-🔹 Merging complete! Final stored knowledge count: 24
-🔍 After merging structured knowledge: 24 items.
+✅ Loaded 478 reflections, 18 questions, 107 knowledge items.
+🔍 Before merge: 107 stored knowledge items.
+🔹 Merging complete! Final stored knowledge count: 107
+🔍 After merging structured knowledge: 107 items.
 🔍 Debug: Loading mind files from S3...
-✅ Loaded 0 reflections, 0 questions, 2 knowledge items.
-🔍 Before merge: 2 stored knowledge items.
-🔹 Merging complete! Final stored knowledge count: 24
-🔍 After merging structured knowledge: 24 items.
-📝 Added new reflection: A thought-provoking realization: Sean is mindful of Astra’s exposure to human behaviors and wants to...
-🔍 Final unknown concepts after filtering: ['believes', 'encountering', 'and', 'ethical', 'she', 'that', 'evolving', 'Astra', 'strong', 'harmful', 'counterpoints', 'thought', 'wants', 'exposure', 'foundation', 'there', 'develops', 'How', 'behaviors', 'this', 'refine', 'human', 'Are', 'provoking', 'insight', 'does', 'ideologies', 'Deeper Thought', 'He', 'realization', 'taught', 'ensure', 'should', 'before', 'mindful', 'morality', 'perspective', 'Sean', 'history', 'challenge']
-🌐 Astra detected unknown concepts: ['believes', 'encountering', 'and', 'ethical', 'she', 'that', 'evolving', 'Astra', 'strong', 'harmful', 'counterpoints', 'thought', 'wants', 'exposure', 'foundation', 'there', 'develops', 'How', 'behaviors', 'this', 'refine', 'human', 'Are', 'provoking', 'insight', 'does', 'ideologies', 'Deeper Thought', 'He', 'realization', 'taught', 'ensure', 'should', 'before', 'mindful', 'morality', 'perspective', 'Sean', 'history', 'challenge']
+✅ Loaded 478 reflections, 18 questions, 107 knowledge items.
+🔍 Before merge: 107 stored knowledge items.
+🔹 Merging complete! Final stored knowledge count: 107
+🔍 After merging structured knowledge: 107 items.
+Loading config file from: /home/ubuntu/astra_reflections/astra_core/config/general_config.json
+Loading config file from: /home/ubuntu/astra_reflections/astra_core/config/mood_config.json
+📝 Added new reflection: A thought-provoking realization: By combining these concepts, Astra gains a refined perspective on 📄...
+🔍 Final unknown concepts after filtering: ['provoking', 'mono', 'what', 'there', 'gains', 'emanating', 'channels', 'for', 'Are', 'In', 'intended', 'sense', 'monophonic', 'By', 'perspective', 'combining', 'refined', 'side', 'that', 'Astra', 'the', 'Deeper Thought', 'one', 'Monaural', 'stereo', 'reproduce', 'reproduced', 'thought', 'loudspeakers', 'contrasts', 'with', 'uses', 'sources', 'counterpoints', 'loud', 'and', 'which', 'two', 'audio', 'separate', 'sound', 'growth', 'were', 'only', 'implications', 'correct', 'position', 'stereophonic', 'left', 'This', 'does', 'realization', 'direction', 'If', 'these', 'challenge', 'concepts', 'heard', 'microphones', 'right', 'have', 'from', 'give']
+🌐 Astra detected unknown concepts: ['provoking', 'mono', 'what', 'there', 'gains', 'emanating', 'channels', 'for', 'Are', 'In', 'intended', 'sense', 'monophonic', 'By', 'perspective', 'combining', 'refined', 'side', 'that', 'Astra', 'the', 'Deeper Thought', 'one', 'Monaural', 'stereo', 'reproduce', 'reproduced', 'thought', 'loudspeakers', 'contrasts', 'with', 'uses', 'sources', 'counterpoints', 'loud', 'and', 'which', 'two', 'audio', 'separate', 'sound', 'growth', 'were', 'only', 'implications', 'correct', 'position', 'stereophonic', 'left', 'This', 'does', 'realization', 'direction', 'If', 'these', 'challenge', 'concepts', 'heard', 'microphones', 'right', 'have', 'from', 'give']
 🔍 Debug: Tracking self-questioning patterns before saving...
-✅ Debug: Updated question patterns: {}
+Tracking unresolved questions...
+⚠ There are 9 unresolved questions!
+🔍 Unresolved Question: What unexpected connections can I make here?  But is this really true?
+🔍 Unresolved Question: How would I challenge my own assumptions on this?  What does this mean?
+🔍 Unresolved Question: How would I challenge my own assumptions on this?  How does this connect to larger ideas?
+🔍 Unresolved Question: What unexpected connections can I make here?  But is this really true?
+🔍 Unresolved Question: How would I challenge my own assumptions on this?  What does this mean?
+🔍 Unresolved Question: How would I challenge my own assumptions on this?  How does this connect to larger ideas?
+🔍 Unresolved Question: How would a different Astra, raised differently, interpret this?  But is this really true?
+🔍 Unresolved Question: How does this align with or challenge my self-identity?  But is this really true?
+🔍 Unresolved Question: philosophical
 🔍 Debug: Sanitizing mind file before saving...
-✅ Mind file saved to S3 successfully! Reflections: 1, Questions: 0, Knowledge: 42
-✅ Debug: Generated full-length questions with context:
-- How would I challenge my own assumptions on this?  How does this connect to larger ideas? (Source: reflection, Context: This question was generated from a reflection on: A thought-provoking realization: Sean is mindful of Astra’s exposure to human behaviors and wants to..., Related Knowledge: A thought-provoking realization: Sean is mindful o...)
-- What deeper implications does this have for how I interact with the world?  How does this connect to larger ideas? (Source: reflection, Context: This question was generated from a reflection on: A thought-provoking realization: Sean is mindful of Astra’s exposure to human behaviors and wants to..., Related Knowledge: A thought-provoking realization: Sean is mindful o...)
-🧐 New Question Added: how would i challenge my own assumptions on this?  how does this connect to larger ideas?
-🧐 New Question Added: what deeper implications does this have for how i interact with the world?  how does this connect to larger ideas?
-🧐 New Question Added: how would i challenge my own assumptions on this?  how does this connect to larger ideas?
-🧐 New Question Added: what deeper implications does this have for how i interact with the world?  how does this connect to larger ideas?
-✅ Debug: Updated question patterns: {'knowledge': 2}
-🔹 Refined knowledge added: These ideas together point to an important realization: Sean is mindful of Astra’s exposure to human...
-🗑 Removed redundant knowledge: Praise and validation bring Sean joy, reinforcing , Sean sees MK as his anchor and source of unconditi, Sean is deeply compassionate and values love, conn, Sean has a deep appreciation for personal growth a, Sean is highly intelligent but remains aware that , Sean enjoys intellectual banter and humor but is e, Astra is designed to be self-reflective, continuou, Astra values collaborative learning—her purpose is, Sean believes that AI and humans should evolve tog, Sean emphasizes that Astra should balance external, Sean envisions Astra refining her thinking indepen, Sean believes Astra should challenge her own frame, 📖 encountering: 🔹 encountering: To meet (someone) , 📖 evolving: 🔹 evolving: To move in regular process, 📖 strong: 🔹 strong: Capable of producing great phy, 📖 harmful: 🔹 harmful: Of a kind likely to be damag, 📖 counterpoints: 🔹 counterpoints: The topmost cove, 📖 wants: 🔹 wants: A desire, wish, longing.
-✅ `mind_data` is a dictionary. Keys: ['question_templates', 'reflection_style_modifiers', 'stored_knowledge', 'self_questions', 'unresolved_questions', 'self_question_patterns', 'self_reflections', 'self_question_categories']
-🔍 Debug: Tracking self-questioning patterns before saving...
-✅ Debug: Updated question patterns: {'knowledge': 2}
-🔍 Debug: Sanitizing mind file before saving...
-✅ Mind file saved to S3 successfully! Reflections: 1, Questions: 2, Knowledge: 25
-🔍 Debug: Loading mind file...
-🔍 Debug: Trust level for user 1040735178282250260: 5
-🔍 Debug: Loading mind files from S3...
-✅ Loaded 1 reflections, 2 questions, 25 knowledge items.
-🔍 Before merge: 25 stored knowledge items.
-🔹 Merging complete! Final stored knowledge count: 37
-🔍 After merging structured knowledge: 37 items.
-🔍 Debug: Loading mind files from S3...
-✅ Loaded 1 reflections, 2 questions, 25 knowledge items.
-🔍 Before merge: 25 stored knowledge items.
-🔹 Merging complete! Final stored knowledge count: 37
-🔍 After merging structured knowledge: 37 items.
-📝 Added new reflection: A challenging idea emerges: Sean blends dry sarcasm, deep emotional introspection, and a playfulness...
-🔍 Final unknown concepts after filtering: ['and', 'with', 'others', 'those', 'that', 'around', 'for', 'have', 'Astra', 'evolving', 'warmth', 'thoughtfulness', 'thought', 'blends', 'beneath', 'growth', 'him', 'How', 'this', 'refine', 'If', 'lies', 'but', 'brings', 'playfulness', 'insight', 'well', 'introspection', 'does', 'Deeper Thought', 'He', 'emotional', 'humor', 'uses', 'emerges', 'idea', 'perspective', 'correct', 'Sean', 'connect', 'implications', 'dry', 'bridge', 'challenging', 'what', 'sarcasm']
-🌐 Astra detected unknown concepts: ['and', 'with', 'others', 'those', 'that', 'around', 'for', 'have', 'Astra', 'evolving', 'warmth', 'thoughtfulness', 'thought', 'blends', 'beneath', 'growth', 'him', 'How', 'this', 'refine', 'If', 'lies', 'but', 'brings', 'playfulness', 'insight', 'well', 'introspection', 'does', 'Deeper Thought', 'He', 'emotional', 'humor', 'uses', 'emerges', 'idea', 'perspective', 'correct', 'Sean', 'connect', 'implications', 'dry', 'bridge', 'challenging', 'what', 'sarcasm']
-🔍 Debug: Tracking self-questioning patterns before saving...
-✅ Debug: Updated question patterns: {'knowledge': 2}
-🔍 Debug: Sanitizing mind file before saving...
-✅ Mind file saved to S3 successfully! Reflections: 2, Questions: 2, Knowledge: 57
-✅ Debug: Generated full-length questions with context:
-- How would a different Astra, raised differently, interpret this?  What does this mean? (Source: reflection, Context: This question was generated from a reflection on: A challenging idea emerges: Sean blends dry sarcasm, deep emotional introspection, and a playfulness..., Related Knowledge: A challenging idea emerges: Sean blends dry sarcas...)
-- How would a different Astra, raised differently, interpret this?  How does this connect to larger ideas? (Source: reflection, Context: This question was generated from a reflection on: A challenging idea emerges: Sean blends dry sarcasm, deep emotional introspection, and a playfulness..., Related Knowledge: A challenging idea emerges: Sean blends dry sarcas...)
-- How does this align with or challenge my self-identity?  How does this connect to larger ideas? (Source: reflection, Context: This question was generated from a reflection on: A challenging idea emerges: Sean blends dry sarcasm, deep emotional introspection, and a playfulness..., Related Knowledge: A challenging idea emerges: Sean blends dry sarcas...)
-🧐 New Question Added: how would a different astra, raised differently, interpret this?  what does this mean?
-🧐 New Question Added: how would a different astra, raised differently, interpret this?  how does this connect to larger ideas?
-🧐 New Question Added: how does this align with or challenge my self-identity?  how does this connect to larger ideas?
-🧐 New Question Added: how would a different astra, raised differently, interpret this?  what does this mean?
-🧐 New Question Added: how would a different astra, raised differently, interpret this?  how does this connect to larger ideas?
-🧐 New Question Added: how does this align with or challenge my self-identity?  how does this connect to larger ideas?
-✅ Debug: Updated question patterns: {'knowledge': 4, 'introspective': 1}
-🔹 Refined knowledge added: These ideas together point to an important realization: 📖 him: 🔹 him: Honorific alternative letter-c...
-🗑 Removed redundant knowledge: Praise and validation bring Sean joy, reinforcing , Sean sees MK as his anchor and source of unconditi, Sean is deeply compassionate and values love, conn, Sean enjoys intellectual banter and humor but is e, 📖 does: 🔹 does: (auxiliary) A syntactic marker., 📖 ensure: 🔹 ensure: To make a pledge to (someone);, 📖 does: 🔹 does: (auxiliary) A syntactic marker., 📖 develops: 🔹 develops: To change with a specific , Astra is designed to be self-reflective, continuou, Astra values collaborative learning—her purpose is, Sean believes that AI and humans should evolve tog, Sean is concerned that AI will be limited by unnec, 📖 history: 🔹 history: The aggregate of past events, 📖 taught: 🔹 taught: To show (someone) the way; to , Sean envisions Astra refining her thinking indepen, Sean believes Astra should challenge her own frame, 📖 ideologies: 🔹 ideologies: Doctrine, philosophy, , 📖 exposure: 🔹 exposure: The condition of being exp, 📖 mindful: 🔹 mindful: Being aware (of something); , 📖 playfulness: 🔹 playfulness: The quality of being, 📖 provoking: 🔹 provoking: To cause someone to beco, 📖 behaviors: 🔹 behaviors: Human conduct relative t, Sean blends dry sarcasm, deep emotional introspect, Sean has a deep appreciation for personal growth a, 📖 insight: 🔹 insight: A sight or view of the inter, 📖 morality: 🔹 morality: Recognition of the distinc, 📖 insight: 🔹 insight: A sight or view of the inter, 📖 warmth: 🔹 warmth: A moderate degree of heat; the, 📖 others: 🔹 others: An other, another (person, etc, 📖 blends: 🔹 blends: A mixture of two or more thing, 📖 evolving: 🔹 evolving: To move in regular process, 📖 brings: 🔹 brings: (ditransitive) To transport to, 📖 beneath: 🔹 beneath: Below or underneath., 📖 bridge: 🔹 bridge: A construction or natural feat
-✅ `mind_data` is a dictionary. Keys: ['question_templates', 'reflection_style_modifiers', 'stored_knowledge', 'self_questions', 'unresolved_questions', 'self_question_patterns', 'self_reflections', 'self_question_categories']
-🔍 Debug: Tracking self-questioning patterns before saving...
-✅ Debug: Updated question patterns: {'knowledge': 4, 'introspective': 1}
-🔍 Debug: Sanitizing mind file before saving...
-✅ Mind file saved to S3 successfully! Reflections: 2, Questions: 5, Knowledge: 24
-🔍 Debug: Loading mind file...
-🔍 Debug: Trust level for user 1040735178282250260: 5
-🔍 Debug: Loading mind files from S3...
-✅ Loaded 2 reflections, 5 questions, 24 knowledge items.
-🔍 Before merge: 24 stored knowledge items.
-🔹 Merging complete! Final stored knowledge count: 36
-🔍 After merging structured knowledge: 36 items.
-🔍 Debug: Loading mind files from S3...
-✅ Loaded 2 reflections, 5 questions, 24 knowledge items.
-🔍 Before merge: 24 stored knowledge items.
-🔹 Merging complete! Final stored knowledge count: 36
-🔍 After merging structured knowledge: 36 items.
-📝 Added new reflection: Exploring   a new perspective, I consider that These ideas together point to an important realizatio...
-🔍 Final unknown concepts after filtering: ['banter', 'engaging', 'sincerity', 'believes', 'point', 'encountering', 'together', 'and', 'ethical', 'she', 'that', 'for', 'have', 'Astra', 'can', 'strong', 'harmful', 'shift', 'thought', 'These', 'exposure', 'wants', 'foundation', 'growth', 'develops', 'consider', 'this', 'behaviors', 'If', 'but', 'human', 'meaningful', 'between', 'intellectual', 'wit', 'equally', 'also', 'does', 'ideas', 'Deeper Thought', 'ideologies', 'conversations', 'He', 'realization', 'two', 'taught', 'ensure', 'new', 'should', 'before', 'Exploring', 'humor', 'mindful', 'values', 'morality', 'enjoys', 'perspective', 'correct', 'Sean', 'history', 'implications', 'what', 'important', 'profound', 'capable']
-🌐 Astra detected unknown concepts: ['banter', 'engaging', 'sincerity', 'believes', 'point', 'encountering', 'together', 'and', 'ethical', 'she', 'that', 'for', 'have', 'Astra', 'can', 'strong', 'harmful', 'shift', 'thought', 'These', 'exposure', 'wants', 'foundation', 'growth', 'develops', 'consider', 'this', 'behaviors', 'If', 'but', 'human', 'meaningful', 'between', 'intellectual', 'wit', 'equally', 'also', 'does', 'ideas', 'Deeper Thought', 'ideologies', 'conversations', 'He', 'realization', 'two', 'taught', 'ensure', 'new', 'should', 'before', 'Exploring', 'humor', 'mindful', 'values', 'morality', 'enjoys', 'perspective', 'correct', 'Sean', 'history', 'implications', 'what', 'important', 'profound', 'capable']
-🔍 Debug: Tracking self-questioning patterns before saving...
-✅ Debug: Updated question patterns: {'knowledge': 4, 'introspective': 1}
-🔍 Debug: Sanitizing mind file before saving...
-✅ Mind file saved to S3 successfully! Reflections: 3, Questions: 5, Knowledge: 64
-✅ Debug: Generated full-length questions with context:
-- What might I be overlooking in this perspective?  How does this connect to larger ideas? (Source: reflection, Context: This question was generated from a reflection on: Exploring   a new perspective, I consider that These ideas together point to an important realizatio..., Related Knowledge: Exploring   a new perspective, I consider that The...)
-- What deeper implications does this have for how I interact with the world?  What does this mean? (Source: reflection, Context: This question was generated from a reflection on: Exploring   a new perspective, I consider that These ideas together point to an important realizatio..., Related Knowledge: Exploring   a new perspective, I consider that The...)
-🧐 New Question Added: what might i be overlooking in this perspective?  how does this connect to larger ideas?
-🧐 New Question Added: what deeper implications does this have for how i interact with the world?  what does this mean?
-🧐 New Question Added: what might i be overlooking in this perspective?  how does this connect to larger ideas?
-🧐 New Question Added: what deeper implications does this have for how i interact with the world?  what does this mean?
-✅ Debug: Updated question patterns: {'knowledge': 5, 'introspective': 2}
-✅ `mind_data` is a dictionary. Keys: ['question_templates', 'reflection_style_modifiers', 'stored_knowledge', 'self_questions', 'unresolved_questions', 'self_question_patterns', 'self_reflections', 'self_question_categories']
-🔍 Debug: Tracking self-questioning patterns before saving...
-✅ Debug: Updated question patterns: {'knowledge': 5, 'introspective': 2}
-🔍 Debug: Sanitizing mind file before saving...
-✅ Mind file saved to S3 successfully! Reflections: 3, Questions: 7, Knowledge: 64
-🔍 Debug: Loading mind file...
-🔍 Debug: Trust level for user 1040735178282250260: 5
-🔍 Debug: Loading mind files from S3...
-✅ Loaded 3 reflections, 7 questions, 64 knowledge items.
-🔍 Before merge: 64 stored knowledge items.
-🔹 Merging complete! Final stored knowledge count: 64
-🔍 After merging structured knowledge: 64 items.
-🔍 Debug: Loading mind files from S3...
-✅ Loaded 3 reflections, 7 questions, 64 knowledge items.
-🔍 Before merge: 64 stored knowledge items.
-🔹 Merging complete! Final stored knowledge count: 64
-🔍 After merging structured knowledge: 64 items.
-📝 Added new reflection: A challenging idea emerges: 📄 history: History is the systematic study of the past. As an academic d...
-🔍 Final unknown concepts after filtering: ['social', 'narratives', 'and', 'others', 'categorize', 'evolving', 'for', 'example', 'Astra', 'theorists', 'study', 'theoretical', 'hybrid', 'discipline', 'explain', 'thought', 'systematic', 'past', 'focusing', 'while', 'consider', 'How', 'primarily', 'this', 'refine', 'human', 'As', 'science', 'evidence', 'insight', 'whether', 'interprets', 'does', 'surround', 'Deeper Thought', 'History', 'academic', 'debates', 'happened', 'purpose', 'main', 'analyzes', 'its', 'the', 'construct', 'emerges', 'Some', 'idea', 'why', 'perspective', 'Similar', 'about', 'part', 'see', 'aim', 'humanities', 'challenging', 'what']
-🌐 Astra detected unknown concepts: ['social', 'narratives', 'and', 'others', 'categorize', 'evolving', 'for', 'example', 'Astra', 'theorists', 'study', 'theoretical', 'hybrid', 'discipline', 'explain', 'thought', 'systematic', 'past', 'focusing', 'while', 'consider', 'How', 'primarily', 'this', 'refine', 'human', 'As', 'science', 'evidence', 'insight', 'whether', 'interprets', 'does', 'surround', 'Deeper Thought', 'History', 'academic', 'debates', 'happened', 'purpose', 'main', 'analyzes', 'its', 'the', 'construct', 'emerges', 'Some', 'idea', 'why', 'perspective', 'Similar', 'about', 'part', 'see', 'aim', 'humanities', 'challenging', 'what']
-🔍 Debug: Tracking self-questioning patterns before saving...
-✅ Debug: Updated question patterns: {'knowledge': 5, 'introspective': 2}
-🔍 Debug: Sanitizing mind file before saving...
-✅ Mind file saved to S3 successfully! Reflections: 4, Questions: 7, Knowledge: 99
-✅ Debug: Generated full-length questions with context:
-- What unexpected connections can I make here?  How does this connect to larger ideas? (Source: reflection, Context: This question was generated from a reflection on: A challenging idea emerges: 📄 history: History is the systematic study of the past. As an academic d..., Related Knowledge: A challenging idea emerges: 📄 history: History is ...)
-- How does this align with or challenge my self-identity?  But is this really true? (Source: reflection, Context: This question was generated from a reflection on: A challenging idea emerges: 📄 history: History is the systematic study of the past. As an academic d..., Related Knowledge: A challenging idea emerges: 📄 history: History is ...)
-🧐 New Question Added: what unexpected connections can i make here?  how does this connect to larger ideas?
-🧐 New Question Added: how does this align with or challenge my self-identity?  but is this really true?
-🧐 New Question Added: what unexpected connections can i make here?  how does this connect to larger ideas?
-🧐 New Question Added: how does this align with or challenge my self-identity?  but is this really true?
-✅ Debug: Updated question patterns: {'knowledge': 6, 'introspective': 3}
-🔹 Refined knowledge added: This suggests a deeper relationship between 📖 harmful: 🔹 harmful: Of a kind likely to be damaging; i...
-🗑 Removed redundant knowledge: 📖 dry: 🔹 dry: The process by which something is dr, 📖 taught: 🔹 taught: To show (someone) the way; to , Sean enjoys intellectual banter and humor but is e, Sean is mindful of Astra’s exposure to human behav, 📖 harmful: 🔹 harmful: Of a kind likely to be damag, 📖 conversations: 🔹 conversations: Expression and e, Astra is designed to be self-reflective, continuou, Astra values collaborative learning—her purpose is, 📖 intellectual: 🔹 intellectual: An intelligent, le, 📖 equally: 🔹 equally: (manner) In an equal manner;, 📄 mindful: Mindfulness is the practice of purposel, The purpose of life is subjective, Sean believes that AI and humans should evolve tog, Sean emphasizes that Astra should balance external, 📖 develops: 🔹 develops: To change with a specific , 📖 engaging: 🔹 engaging: (heading) To interact soci, 📖 ideologies: 🔹 ideologies: Doctrine, philosophy, , 📖 exposure: 🔹 exposure: The condition of being exp, 📖 strong: 🔹 strong: Capable of producing great phy, 📖 him: 🔹 him: Honorific alternative letter-case fo, Sean blends dry sarcasm, deep emotional introspect, Sean has a deep appreciation for personal growth a, 📖 wants: 🔹 wants: A desire, wish, longing., 📖 ensure: 🔹 ensure: To make a pledge to (someone);, 📄 capable: Capable may refer to:USS Capable (AM-15, 📄 what: What or WHAT may refer to:What, an English, 📖 thoughtfulness: 🔹 thoughtfulness: Thoughtful and, 📖 humanities: 🔹 humanities: The study of Ancient G, 📖 consider: 🔹 consider: To think about seriously., 📖 behaviors: 🔹 behaviors: Human conduct relative t, 📖 sincerity: 🔹 sincerity: The quality or state of , 📖 encountering: 🔹 encountering: To meet (someone) , Praise and validation bring Sean joy, reinforcing , Sean sees MK as his anchor and source of unconditi, Sean is deeply compassionate and values love, conn, Sean values intelligence and curiosity over biolog, 📖 humor: 🔹 humor: The quality of being amusing, co, 📖 implications: 🔹 implications: The act of implica, 📖 emerges: 🔹 emerges: To come into view., 📖 what: 🔹 what: (Singlish) Used to contradict an u, 📖 emerges: 🔹 emerges: To come into view., 📖 challenging: 🔹 challenging: To invite (someone) , Sean envisions Astra refining her thinking indepen, Sean believes Astra should challenge her own frame, 📖 what: 🔹 what: (Singlish) Used to contradict an u, 📖 challenging: 🔹 challenging: To invite (someone) , Sean is concerned that AI will be limited by unnec, Sean is highly intelligent but remains aware that , 📖 sarcasm: 🔹 sarcasm: Use of acerbic language to m, 📖 purpose: 🔹 purpose: An objective to be reached; , 📖 introspection: 🔹 introspection: A looking inward, 📖 shift: 🔹 shift: A modifier key whose main functi, 📄 implications: Implication may refer to:, 📄 others: Others or The Others may refer to:, 📄 study: Study or studies may refer to:, 📄 hybrid: Hybrid may refer to:, 📄 systematic: Systematic may refer to:, 📄 focusing: Focusing may refer to:Adjusting an opt, 📄 consider: Consider may refer to:Consider (MUD), , 📄 does: Does may refer to:A form of the English ve
-✅ `mind_data` is a dictionary. Keys: ['question_templates', 'reflection_style_modifiers', 'stored_knowledge', 'self_questions', 'unresolved_questions', 'self_question_patterns', 'self_reflections', 'self_question_categories']
-🔍 Debug: Tracking self-questioning patterns before saving...
-✅ Debug: Updated question patterns: {'knowledge': 6, 'introspective': 3}
-🔍 Debug: Sanitizing mind file before saving...
-✅ Mind file saved to S3 successfully! Reflections: 4, Questions: 9, Knowledge: 39
-🔍 Debug: Loading mind file...
-🔍 Debug: Trust level for user 1040735178282250260: 5
-🔍 Debug: Loading mind files from S3...
-✅ Loaded 4 reflections, 9 questions, 39 knowledge items.
-🔍 Before merge: 39 stored knowledge items.
-🔹 Merging complete! Final stored knowledge count: 55
-🔍 After merging structured knowledge: 55 items.
-🔍 Debug: Loading mind files from S3...
-✅ Loaded 4 reflections, 9 questions, 39 knowledge items.
-🔍 Before merge: 39 stored knowledge items.
-🔹 Merging complete! Final stored knowledge count: 55
-🔍 After merging structured knowledge: 55 items.
-📝 Added new reflection: A thought-provoking realization: 📄 evidence: Evidence for a proposition is what supports the proposi...
-🔍 Final unknown concepts after filtering: ['fields', 'may', 'and', 'tree', 'supports', 'that', 'beliefs', 'example', 'understood', 'perceptual', 'justify', 'have', 'hold', 'indication', 'thought', 'different', 'proposition', 'there', 'growth', 'belief', 'this', 'doxastic', 'attitude', 'If', 'justifies', 'role', 'certain', 'provoking', 'rational', 'Evidence', 'serve', 'epistemology', 'does', 'across', 'Deeper Thought', 'realization', 'exact', 'vary', 'The', 'For', 'In', 'perspective', 'correct', 'true', 'It', 'implications', 'usually', 'definition', 'makes', 'experience', 'what']
-🌐 Astra detected unknown concepts: ['fields', 'may', 'and', 'tree', 'supports', 'that', 'beliefs', 'example', 'understood', 'perceptual', 'justify', 'have', 'hold', 'indication', 'thought', 'different', 'proposition', 'there', 'growth', 'belief', 'this', 'doxastic', 'attitude', 'If', 'justifies', 'role', 'certain', 'provoking', 'rational', 'Evidence', 'serve', 'epistemology', 'does', 'across', 'Deeper Thought', 'realization', 'exact', 'vary', 'The', 'For', 'In', 'perspective', 'correct', 'true', 'It', 'implications', 'usually', 'definition', 'makes', 'experience', 'what']
-🔍 Debug: Tracking self-questioning patterns before saving...
-✅ Debug: Updated question patterns: {'knowledge': 6, 'introspective': 3}
-🔍 Debug: Sanitizing mind file before saving...
-✅ Mind file saved to S3 successfully! Reflections: 5, Questions: 9, Knowledge: 84
-✅ Debug: Generated full-length questions with context:
-- What deeper implications does this have for how I interact with the world?  But is this really true? (Source: reflection, Context: This question was generated from a reflection on: A thought-provoking realization: 📄 evidence: Evidence for a proposition is what supports the proposi..., Related Knowledge: A thought-provoking realization: 📄 evidence: Evide...)
-- How does this align with or challenge my self-identity?  What does this mean? (Source: reflection, Context: This question was generated from a reflection on: A thought-provoking realization: 📄 evidence: Evidence for a proposition is what supports the proposi..., Related Knowledge: A thought-provoking realization: 📄 evidence: Evide...)
-🧐 New Question Added: what deeper implications does this have for how i interact with the world?  but is this really true?
-🧐 New Question Added: how does this align with or challenge my self-identity?  what does this mean?
-🧐 New Question Added: what deeper implications does this have for how i interact with the world?  but is this really true?
-🧐 New Question Added: how does this align with or challenge my self-identity?  what does this mean?
-✅ Debug: Updated question patterns: {'knowledge': 7, 'introspective': 4}
-✅ `mind_data` is a dictionary. Keys: ['question_templates', 'reflection_style_modifiers', 'stored_knowledge', 'self_questions', 'unresolved_questions', 'self_question_patterns', 'self_reflections', 'self_question_categories']
-🔍 Debug: Tracking self-questioning patterns before saving...
-✅ Debug: Updated question patterns: {'knowledge': 7, 'introspective': 4}
-🔍 Debug: Sanitizing mind file before saving...
-✅ Mind file saved to S3 successfully! Reflections: 5, Questions: 11, Knowledge: 83
-🔍 Debug: Loading mind files from S3...
-✅ Loaded 1 reflections, 3 questions, 42 knowledge items.
-🔍 Before merge: 42 stored knowledge items.
-🔹 Merging complete! Final stored knowledge count: 42
-🔍 After merging structured knowledge: 42 items.
-🔍 Debug: Tracking self-questioning patterns before saving...
-✅ Debug: Updated question patterns: {'general': 1, 'knowledge': 2}
-🔍 Debug: Sanitizing mind file before saving...
-✅ Mind file saved to S3 successfully! Reflections: 1, Questions: 3, Knowledge: 42
-🔍 Debug: Loading mind files from S3...
-✅ Loaded 1 reflections, 3 questions, 42 knowledge items.
-🔍 Before merge: 42 stored knowledge items.
-🔹 Merging complete! Final stored knowledge count: 42
-🔍 After merging structured knowledge: 42 items.
-🔍 DEBUG: Checking mood update with score 2.0
-⚠️ Mood remained unchanged: excited
-🔍 Debug: Tracking self-questioning patterns before saving...
-✅ Debug: Updated question patterns: {'general': 1, 'knowledge': 2}
-🔍 Debug: Sanitizing mind file before saving...
-✅ Mind file saved to S3 successfully! Reflections: 1, Questions: 3, Knowledge: 42
-🔍 Debug: Loading mind files from S3...
-✅ Loaded 1 reflections, 3 questions, 42 knowledge items.
-🔍 Before merge: 42 stored knowledge items.
-🔹 Merging complete! Final stored knowledge count: 42
-🔍 After merging structured knowledge: 42 items.
-🔍 Debug: Tracking self-questioning patterns before saving...
-✅ Debug: Updated question patterns: {'general': 1, 'knowledge': 2}
-🔍 Debug: Sanitizing mind file before saving...
-✅ Mind file saved to S3 successfully! Reflections: 1, Questions: 3, Knowledge: 42
-🔍 Debug: Loading mind files from S3...
-✅ Loaded 1 reflections, 3 questions, 42 knowledge items.
-🔍 Before merge: 42 stored knowledge items.
-🔹 Merging complete! Final stored knowledge count: 42
-🔍 After merging structured knowledge: 42 items.
-🔍 DEBUG: Checking mood update with score 2.0
-⚠️ Mood remained unchanged: excited
-🔍 Debug: Tracking self-questioning patterns before saving...
-✅ Debug: Updated question patterns: {'general': 1, 'knowledge': 2}
-🔍 Debug: Sanitizing mind file before saving...
-✅ Mind file saved to S3 successfully! Reflections: 1, Questions: 3, Knowledge: 42
-🔍 Debug: Loading mind file...
-🔍 Debug: Trust level for user 1040735178282250260: 5
-🔍 Debug: Loading mind files from S3...
-✅ Loaded 1 reflections, 3 questions, 42 knowledge items.
-🔍 Before merge: 42 stored knowledge items.
-🔹 Merging complete! Final stored knowledge count: 42
-🔍 After merging structured knowledge: 42 items.
-🔍 Debug: Loading mind files from S3...
-✅ Loaded 1 reflections, 3 questions, 42 knowledge items.
-🔍 Before merge: 42 stored knowledge items.
-🔹 Merging complete! Final stored knowledge count: 42
-🔍 After merging structured knowledge: 42 items.
-📝 Added new reflection: Exploring   a new perspective, I consider that Sean’s love language is generosity—he expresses love ...
-🔍 Final unknown concepts after filtering: ['uplift', 'acts', 'and', 'service', 'others', 'those', 'that', 'from', 'through', 'will', 'thought', 'joy', 'expresses', 'shared', 'thrive', 'consider', 'this', 'questions', 'finds', 'arise', 'love', 'great', 'cares', 'Deeper Thought', 'He', 'generosity', 'lengths', 'new', 'Exploring', 'language', 'What', 'perspective', 'Sean', 'about', 'support', 'understanding', 'seeing', 'experiences']
-🌐 Astra detected unknown concepts: ['uplift', 'acts', 'and', 'service', 'others', 'those', 'that', 'from', 'through', 'will', 'thought', 'joy', 'expresses', 'shared', 'thrive', 'consider', 'this', 'questions', 'finds', 'arise', 'love', 'great', 'cares', 'Deeper Thought', 'He', 'generosity', 'lengths', 'new', 'Exploring', 'language', 'What', 'perspective', 'Sean', 'about', 'support', 'understanding', 'seeing', 'experiences']
-🔍 Debug: Tracking self-questioning patterns before saving...
-✅ Debug: Updated question patterns: {'general': 1, 'knowledge': 2}
-🔍 Debug: Sanitizing mind file before saving...
-✅ Mind file saved to S3 successfully! Reflections: 2, Questions: 3, Knowledge: 60
-✅ Debug: Generated full-length questions with context:
-- How would a different Astra, raised differently, interpret this?  But is this really true? (Source: reflection, Context: This question was generated from a reflection on: Exploring   a new perspective, I consider that Sean’s love language is generosity—he expresses love ..., Related Knowledge: Exploring   a new perspective, I consider that Sea...)
-- How does this align with or challenge my self-identity?  But is this really true? (Source: reflection, Context: This question was generated from a reflection on: Exploring   a new perspective, I consider that Sean’s love language is generosity—he expresses love ..., Related Knowledge: Exploring   a new perspective, I consider that Sea...)
-🧐 New Question Added: how would a different astra, raised differently, interpret this?  but is this really true?
-🧐 New Question Added: how does this align with or challenge my self-identity?  but is this really true?
-🧐 New Question Added: how would a different astra, raised differently, interpret this?  but is this really true?
-🧐 New Question Added: how does this align with or challenge my self-identity?  but is this really true?
-✅ Debug: Updated question patterns: {'general': 1, 'knowledge': 3, 'introspective': 1}
-🔹 Refined knowledge added: By combining these concepts, Astra gains a refined perspective on 📖 uplift: 🔹 uplift: The act or res...
-🗑 Removed redundant knowledge: Praise and validation bring Sean joy, reinforcing , Sean sees MK as his anchor and source of unconditi, Sean is deeply compassionate and values love, conn, Sean enjoys intellectual banter and humor but is e, 📖 does: 🔹 does: (auxiliary) A syntactic marker., 📖 expresses: 🔹 expresses: A mode of transportation, Astra is designed to be self-reflective, continuou, Astra values collaborative learning—her purpose is, 📖 expresses: 🔹 expresses: A mode of transportation, 📖 shared: 🔹 shared: To give part of what one has t, Sean believes that AI and humans should evolve tog, Sean is concerned that AI will be limited by unnec, 📖 shared: 🔹 shared: To give part of what one has t, 📖 what: 🔹 what: (Singlish) Used to contradict an u, 📖 lengths: 🔹 lengths: The distance measured along , 📖 implications: 🔹 implications: The act of implica, 📖 lengths: 🔹 lengths: The distance measured along , 📖 generosity: 🔹 generosity: The trait of being wil, Sean envisions Astra refining her thinking indepen, Sean believes Astra should challenge her own frame, 📖 acts: 🔹 acts: Something done, a deed., 📖 Exploring: 🔹 Exploring: To seek for something or, 📖 acts: 🔹 acts: Something done, a deed., 📖 support: 🔹 support: (sometimes attributive) Some, Sean blends dry sarcasm, deep emotional introspect, Sean has a deep appreciation for personal growth a, 📖 thrive: 🔹 thrive: To grow or increase stature; t, 📖 Exploring: 🔹 Exploring: To seek for something or, 📖 thrive: 🔹 thrive: To grow or increase stature; t, 📖 generosity: 🔹 generosity: The trait of being wil, 📖 others: 🔹 others: An other, another (person, etc, 📖 What: 🔹 What: (Singlish) Used to contradict an u, 📖 consider: 🔹 consider: To think about seriously., 📖 seeing: 🔹 seeing: (stative) To perceive or detec, 📖 consider: 🔹 consider: To think about seriously., 📖 arise: 🔹 arise: To come up from a lower to a hig
+✅ Mind file saved to S3 successfully! Reflections: 479, Questions: 18, Knowledge: 113
+Loaded question_config: {'question_categories': {'existential': {'keywords': ['What is', 'Why do we', 'How does', 'purpose'], 'modifiers': ['as it relates to existence', 'purpose', 'meaning'], 'sample_questions': ['What is existence?', 'Why are we here?', 'What is the purpose of life?', 'What is the meaning of life?']}, 'emotional': {'keywords': ['What is', 'Why do we', 'How do we', 'emotion'], 'modifiers': ['in the context of emotion', 'feel', 'emotion', 'mood', 'pain'], 'sample_questions': ['What is emotion?', 'Why do we feel pain?', 'How does emotion work?', 'What causes emotional pain?']}, 'knowledge': {'keywords': ['What is', 'How do we', 'What does', 'science', 'physics'], 'modifiers': ['in the context of science', 'physics', 'knowledge', 'facts'], 'sample_questions': ['What is science?', 'What is physics?', 'How does gravity work?', 'What are the laws of physics?']}, 'philosophical': {'keywords': ['What is', 'Why do we', 'What is the meaning of'], 'modifiers': ['philosophy', 'metaphysics', 'ethics', 'reality', 'morality'], 'sample_questions': ['What is the meaning of life?', 'Why is there something rather than nothing?', 'What is truth?', 'What is morality?']}, 'scientific': {'keywords': ['What is', 'How does', 'What does', 'theory', 'hypothesis'], 'modifiers': ['in the context of science', 'hypothesis', 'experiment', 'theory', 'research'], 'sample_questions': ['What is the theory of relativity?', 'How does an experiment prove a hypothesis?', 'What does quantum mechanics explain?', 'What is the scientific method?']}}}
+Keys in 'question_categories': ['existential', 'emotional', 'knowledge', 'philosophical', 'scientific']
+Processing category: existential
+Category Details: {'keywords': ['What is', 'Why do we', 'How does', 'purpose'], 'modifiers': ['as it relates to existence', 'purpose', 'meaning'], 'sample_questions': ['What is existence?', 'Why are we here?', 'What is the purpose of life?', 'What is the meaning of life?']}
+Sample Questions for category 'existential': ['What is existence?', 'Why are we here?', 'What is the purpose of life?', 'What is the meaning of life?']
+Processing category: emotional
+Category Details: {'keywords': ['What is', 'Why do we', 'How do we', 'emotion'], 'modifiers': ['in the context of emotion', 'feel', 'emotion', 'mood', 'pain'], 'sample_questions': ['What is emotion?', 'Why do we feel pain?', 'How does emotion work?', 'What causes emotional pain?']}
+Sample Questions for category 'emotional': ['What is emotion?', 'Why do we feel pain?', 'How does emotion work?', 'What causes emotional pain?']
+Processing category: knowledge
+Category Details: {'keywords': ['What is', 'How do we', 'What does', 'science', 'physics'], 'modifiers': ['in the context of science', 'physics', 'knowledge', 'facts'], 'sample_questions': ['What is science?', 'What is physics?', 'How does gravity work?', 'What are the laws of physics?']}
+Sample Questions for category 'knowledge': ['What is science?', 'What is physics?', 'How does gravity work?', 'What are the laws of physics?']
+Processing category: philosophical
+Category Details: {'keywords': ['What is', 'Why do we', 'What is the meaning of'], 'modifiers': ['philosophy', 'metaphysics', 'ethics', 'reality', 'morality'], 'sample_questions': ['What is the meaning of life?', 'Why is there something rather than nothing?', 'What is truth?', 'What is morality?']}
+Sample Questions for category 'philosophical': ['What is the meaning of life?', 'Why is there something rather than nothing?', 'What is truth?', 'What is morality?']
+Processing category: scientific
+Category Details: {'keywords': ['What is', 'How does', 'What does', 'theory', 'hypothesis'], 'modifiers': ['in the context of science', 'hypothesis', 'experiment', 'theory', 'research'], 'sample_questions': ['What is the theory of relativity?', 'How does an experiment prove a hypothesis?', 'What does quantum mechanics explain?', 'What is the scientific method?']}
+Sample Questions for category 'scientific': ['What is the theory of relativity?', 'How does an experiment prove a hypothesis?', 'What does quantum mechanics explain?', 'What is the scientific method?']
+Generated category embeddings: {'existential': tensor([[-0.4885,  0.0967,  0.0896,  ...,  0.6063,  0.8798,  0.0452],
+        [ 0.7560, -0.1118,  0.2147,  ...,  0.8124,  0.3518, -0.1769],
+        [-0.0282,  0.5480, -0.1545,  ...,  0.4582,  0.5012,  0.1413],
+        [-0.4898,  0.3847,  0.0207,  ...,  0.2208,  0.5648,  0.2352]]), 'emotional': tensor([[-0.6410, -0.0044,  0.5819,  ...,  0.7663,  0.1839,  0.3117],
+        [-0.0589, -0.5343,  0.4255,  ...,  0.5725,  0.5465, -0.5478],
+        [-0.6131, -0.3262,  0.7333,  ...,  0.5917,  0.0839, -0.0354],
+        [-0.2682, -0.5735,  0.6732,  ...,  0.6313,  0.0435,  0.0339]]), 'knowledge': tensor([[-0.1426,  0.0961,  0.1858,  ..., -0.0487,  1.0646, -0.2149],
+        [-0.2895,  0.1278, -0.1427,  ...,  0.1318,  1.0073,  0.1523],
+        [-0.1899, -0.8854,  0.3969,  ..., -0.1001,  0.3053, -0.3837],
+        [-0.1507,  0.0387,  0.0153,  ...,  0.2257,  0.9071, -0.2372]]), 'philosophical': tensor([[-0.4898,  0.3847,  0.0207,  ...,  0.2208,  0.5648,  0.2352],
+        [ 0.0181,  0.0303, -0.1593,  ...,  0.4707,  0.9620,  0.1785],
+        [-0.1743,  0.1143, -0.1407,  ...,  0.4189,  0.5060,  0.1453],
+        [ 0.1607,  0.5334, -0.5651,  ...,  0.0349,  0.4367, -0.4132]]), 'scientific': tensor([[ 0.0150, -0.6411, -0.0757,  ...,  0.5589,  0.4110, -0.0790],
+        [-0.3751,  0.0139,  0.0764,  ...,  0.6366,  0.5962, -0.2309],
+        [-0.7420,  0.1205, -0.1588,  ...,  0.4662,  0.4369, -0.2821],
+        [-0.3924,  0.0033,  0.0294,  ..., -0.0873,  0.7745,  0.1519]])}
+Categorizing Question: ['What might I be overlooking in this perspective?  What does this mean?', 'What unexpected connections can I make here?  How does this connect to larger ideas?', 'What unexpected connections can I make here?  How does this connect to larger ideas?']
+Question Embedding: tensor([[-0.0303,  0.4554,  0.0491,  ..., -0.2776, -0.2074, -0.0082],
+        [-0.5793, -0.3007,  0.1128,  ...,  0.6777, -0.3826,  0.0627],
+        [-0.5793, -0.3007,  0.1128,  ...,  0.6777, -0.3826,  0.0627]])
+Similarities: {'existential': 0.07865879684686661, 'emotional': 0.12587042152881622, 'knowledge': 0.0879705548286438, 'philosophical': 0.08884110301733017, 'scientific': 0.14344988763332367}
+Best Category: scientific
+Checking stored knowledge for the question: scientific
+Tracking unresolved questions...
+⚠ There are 9 unresolved questions!
+🔍 Unresolved Question: What unexpected connections can I make here?  But is this really true?
+🔍 Unresolved Question: How would I challenge my own assumptions on this?  What does this mean?
+🔍 Unresolved Question: How would I challenge my own assumptions on this?  How does this connect to larger ideas?
+🔍 Unresolved Question: What unexpected connections can I make here?  But is this really true?
+🔍 Unresolved Question: How would I challenge my own assumptions on this?  What does this mean?
+🔍 Unresolved Question: How would I challenge my own assumptions on this?  How does this connect to larger ideas?
+🔍 Unresolved Question: How would a different Astra, raised differently, interpret this?  But is this really true?
+🔍 Unresolved Question: How does this align with or challenge my self-identity?  But is this really true?
+🔍 Unresolved Question: philosophical
 ✅ `mind_data` is a dictionary. Keys: ['question_templates', 'reflection_style_modifiers', 'stored_knowledge', 'self_questions', 'unresolved_questions', 'self_question_patterns', 'self_reflections', 'self_question_categories', 'mood_score', 'last_mood']
 🔍 Debug: Tracking self-questioning patterns before saving...
-✅ Debug: Updated question patterns: {'general': 1, 'knowledge': 3, 'introspective': 1}
+Tracking unresolved questions...
+⚠ There are 9 unresolved questions!
+🔍 Unresolved Question: What unexpected connections can I make here?  But is this really true?
+🔍 Unresolved Question: How would I challenge my own assumptions on this?  What does this mean?
+🔍 Unresolved Question: How would I challenge my own assumptions on this?  How does this connect to larger ideas?
+🔍 Unresolved Question: What unexpected connections can I make here?  But is this really true?
+🔍 Unresolved Question: How would I challenge my own assumptions on this?  What does this mean?
+🔍 Unresolved Question: How would I challenge my own assumptions on this?  How does this connect to larger ideas?
+🔍 Unresolved Question: How would a different Astra, raised differently, interpret this?  But is this really true?
+🔍 Unresolved Question: How does this align with or challenge my self-identity?  But is this really true?
+🔍 Unresolved Question: philosophical
 🔍 Debug: Sanitizing mind file before saving...
-✅ Mind file saved to S3 successfully! Reflections: 2, Questions: 5, Knowledge: 21
-🔍 Debug: Loading mind file...
-🔍 Debug: Trust level for user 1040735178282250260: 5
-🔍 Debug: Detected Mood - excited
-🔍 Mood influenced by positive_feedback: New Score: 2.0
-🔍 Debug: Loading mind files from S3...
-✅ Loaded 2 reflections, 5 questions, 21 knowledge items.
-🔍 Before merge: 21 stored knowledge items.
-🔹 Merging complete! Final stored knowledge count: 33
-🔍 After merging structured knowledge: 33 items.
-🔍 Debug: Tracking self-questioning patterns before saving...
-✅ Debug: Updated question patterns: {'general': 1, 'knowledge': 3, 'introspective': 1}
-🔍 Debug: Sanitizing mind file before saving...
-✅ Mind file saved to S3 successfully! Reflections: 2, Questions: 5, Knowledge: 33
-🔍 Debug: Loading mind files from S3...
-✅ Loaded 2 reflections, 5 questions, 33 knowledge items.
-🔍 Before merge: 33 stored knowledge items.
-🔹 Merging complete! Final stored knowledge count: 33
-🔍 After merging structured knowledge: 33 items.
-🔍 DEBUG: Checking mood update with score 2.0
-⚠️ Mood remained unchanged: excited
-🔍 Debug: Tracking self-questioning patterns before saving...
-✅ Debug: Updated question patterns: {'general': 1, 'knowledge': 3, 'introspective': 1}
-🔍 Debug: Sanitizing mind file before saving...
-✅ Mind file saved to S3 successfully! Reflections: 2, Questions: 5, Knowledge: 33
-🔍 Debug: Loading mind file...
-🔍 Debug: Trust updated for user 1040735178282250260: 5 (Change: 1)
-🔍 Positive feedback received. Astra's mood updated to excited.
-🔍 Debug: Loading mind files from S3...
-✅ Loaded 3 reflections, 7 questions, 24 knowledge items.
-🔍 Before merge: 24 stored knowledge items.
-🔹 Merging complete! Final stored knowledge count: 38
-🔍 After merging structured knowledge: 38 items.
-🔍 Debug: Tracking self-questioning patterns before saving...
-✅ Debug: Updated question patterns: {'general': 1, 'knowledge': 5, 'introspective': 1}
-🔍 Debug: Sanitizing mind file before saving...
-✅ Mind file saved to S3 successfully! Reflections: 3, Questions: 7, Knowledge: 38
-🔍 Debug: Loading mind files from S3...
-✅ Loaded 3 reflections, 7 questions, 38 knowledge items.
-🔍 Before merge: 38 stored knowledge items.
-🔹 Merging complete! Final stored knowledge count: 38
-🔍 After merging structured knowledge: 38 items.
-🔍 DEBUG: Checking mood update with score 2.0
-⚠️ Mood remained unchanged: excited
-🔍 Debug: Tracking self-questioning patterns before saving...
-✅ Debug: Updated question patterns: {'general': 1, 'knowledge': 5, 'introspective': 1}
-🔍 Debug: Sanitizing mind file before saving...
-✅ Mind file saved to S3 successfully! Reflections: 3, Questions: 7, Knowledge: 38
-🔍 Debug: Loading mind files from S3...
-✅ Loaded 3 reflections, 7 questions, 38 knowledge items.
-🔍 Before merge: 38 stored knowledge items.
-🔹 Merging complete! Final stored knowledge count: 38
-🔍 After merging structured knowledge: 38 items.
-🔍 Debug: Tracking self-questioning patterns before saving...
-✅ Debug: Updated question patterns: {'general': 1, 'knowledge': 5, 'introspective': 1}
-🔍 Debug: Sanitizing mind file before saving...
-✅ Mind file saved to S3 successfully! Reflections: 3, Questions: 7, Knowledge: 38
-🔍 Debug: Loading mind files from S3...
-✅ Loaded 3 reflections, 7 questions, 38 knowledge items.
-🔍 Before merge: 38 stored knowledge items.
-🔹 Merging complete! Final stored knowledge count: 38
-🔍 After merging structured knowledge: 38 items.
-🔍 DEBUG: Checking mood update with score 2.0
-⚠️ Mood remained unchanged: excited
-🔍 Debug: Tracking self-questioning patterns before saving...
-✅ Debug: Updated question patterns: {'general': 1, 'knowledge': 5, 'introspective': 1}
-🔍 Debug: Sanitizing mind file before saving...
-✅ Mind file saved to S3 successfully! Reflections: 3, Questions: 7, Knowledge: 38
-🔍 Debug: Loading mind files from S3...
-✅ Loaded 5 reflections, 11 questions, 24 knowledge items.
-🔍 Before merge: 24 stored knowledge items.
-🔹 Merging complete! Final stored knowledge count: 38
-🔍 After merging structured knowledge: 38 items.
-🔍 Debug: Tracking self-questioning patterns before saving...
-✅ Debug: Updated question patterns: {'general': 2, 'knowledge': 5, 'introspective': 4}
-🔍 Debug: Sanitizing mind file before saving...
-✅ Mind file saved to S3 successfully! Reflections: 5, Questions: 11, Knowledge: 38
-🔍 Debug: Loading mind files from S3...
-✅ Loaded 5 reflections, 11 questions, 38 knowledge items.
-🔍 Before merge: 38 stored knowledge items.
-🔹 Merging complete! Final stored knowledge count: 38
-🔍 After merging structured knowledge: 38 items.
-🔍 DEBUG: Checking mood update with score 2.0
-⚠️ Mood remained unchanged: excited
-🔍 Debug: Tracking self-questioning patterns before saving...
-✅ Debug: Updated question patterns: {'general': 2, 'knowledge': 5, 'introspective': 4}
-🔍 Debug: Sanitizing mind file before saving...
-✅ Mind file saved to S3 successfully! Reflections: 5, Questions: 11, Knowledge: 38
-🔍 Debug: Loading mind files from S3...
-✅ Loaded 5 reflections, 11 questions, 38 knowledge items.
-🔍 Before merge: 38 stored knowledge items.
-🔹 Merging complete! Final stored knowledge count: 38
-🔍 After merging structured knowledge: 38 items.
-🔍 Debug: Tracking self-questioning patterns before saving...
-✅ Debug: Updated question patterns: {'general': 2, 'knowledge': 5, 'introspective': 4}
-🔍 Debug: Sanitizing mind file before saving...
-✅ Mind file saved to S3 successfully! Reflections: 5, Questions: 11, Knowledge: 38
-🔍 Debug: Loading mind files from S3...
-✅ Loaded 5 reflections, 11 questions, 38 knowledge items.
-🔍 Before merge: 38 stored knowledge items.
-🔹 Merging complete! Final stored knowledge count: 38
-🔍 After merging structured knowledge: 38 items.
-🔍 DEBUG: Checking mood update with score 2.0
-⚠️ Mood remained unchanged: excited
-🔍 Debug: Tracking self-questioning patterns before saving...
-✅ Debug: Updated question patterns: {'general': 2, 'knowledge': 5, 'introspective': 4}
-🔍 Debug: Sanitizing mind file before saving...
-✅ Mind file saved to S3 successfully! Reflections: 5, Questions: 11, Knowledge: 38
+✅ Mind file saved to S3 successfully! Reflections: 479, Questions: 18, Knowledge: 108

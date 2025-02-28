@@ -1,6 +1,6 @@
 # astra_core/questions/question_tracker.py
 
-def track_unresolved_questions(mind_data):
+def track_question_patterns(mind_data):
     """Tracks unresolved questions and their progress."""
     unresolved_questions = mind_data.get("unresolved_questions", [])
 

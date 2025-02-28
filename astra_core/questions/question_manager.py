@@ -1,229 +1,62 @@
+import sys
+import os
 import random
-import time
-try:
-    from fuzzywuzzy import fuzz
-    fuzzy_available = True
-except ImportError:
-    print("⚠ FuzzyWuzzy module not found, falling back to exact matching.")
-    fuzzy_available = False
-    
-from astra_core.questions.question_answerer import self_answer_question
-from astra_interfaces.influence import load_mind, save_mind
-from astra_core.knowledge import knowledge_manager
 from astra_core.config_loader import load_config
+from astra_core.questions.question_generator import generate_questions  # Generates raw questions
+from astra_core.questions.question_utils import filter_questions, categorize_question
+from astra_core.questions.question_flagger import flag_unresolved_question
+from astra_core.questions.question_answerer import self_answer_questions
+from astra_core.questions.question_tracker import track_question_patterns
+from fuzzywuzzy import fuzz  # ✅ Added for fuzzy matching
 
+# Load configuration files
 general_config = load_config("general_config")
 config_soul = load_config("config_soul")  # Load deeper soul-based questioning parameters
+question_config = load_config("question_config")
 
-def generate_questions(reflection, mind_data):
-    """Generates structured questions based on Astra's reflection, ensuring variety and avoiding redundancy."""
-    question_templates = list(set(general_config.get("question_templates", [])))
-    deep_thought_templates = list(set(config_soul.get("deep_thought_questions", [])))
-    principles = config_soul.get("soul", {}).get("principles", {})
-    reflection_modifiers = list(set(general_config.get("reflection_style_modifiers", {}).values()))
 
-    num_questions = random.randint(3, 6)
-    generated_questions = []
+def deduplicate_questions(questions, threshold=85):
+    """Removes near-duplicate questions using fuzzy matching."""
+    unique_questions = []
+    seen_questions = set()
 
-    while len(generated_questions) < num_questions // 2 and question_templates:
-        question_text = f"{random.choice(question_templates)}".strip()
-        modifier = random.choice(reflection_modifiers)
-        full_question = f"{question_text} {modifier}"
-        context_summary = f"This question was generated from a reflection on: {reflection[:100]}..."
-
-        generated_questions.append({
-            "question": full_question,
-            "source": "reflection",
-            "context_summary": context_summary,
-            "related_knowledge": reflection[:150],
-            "attempted_answers": []
-        })
-
-    while len(generated_questions) < num_questions and deep_thought_templates:
-        question_text = f"{random.choice(deep_thought_templates)}".strip()
-        principle_key = random.choice(list(principles.keys()))
-        principle_desc = principles[principle_key]["description"]
-        full_question = f"{question_text} How does this relate to my principle of {principle_key.replace('_', ' ')}: {principle_desc}?"
-        context_summary = f"This question explores Astra's core principle: {principle_key.replace('_', ' ')}."
-
-        generated_questions.append({
-            "question": full_question,
-            "source": "soul_principle",
-            "context_summary": context_summary,
-            "related_knowledge": principle_desc,
-            "attempted_answers": []
-        })
-
-    print("✅ Debug: Generated full-length questions with context:")
-    for q in generated_questions:
-        print(f"- {q['question']} (Source: {q['source']}, Context: {q['context_summary']}, Related Knowledge: {q['related_knowledge'][:50]}...)")
-
-    return categorize_questions(filter_questions(mind_data, generated_questions))
-
-def filter_questions(mind_data, new_questions):
-    """Filters out duplicate, near-duplicate, or answered questions before storing."""
-    filtered_questions = []
-    stored_knowledge = [k.lower() for k in mind_data.get("stored_knowledge", [])]
-    
-    # ✅ Store existing questions with their metadata for smarter deduplication
-    existing_questions = [
-        (q["question"].lower(), q.get("source", "").lower(), q.get("context_summary", "").lower(), q.get("related_knowledge", "").lower()) 
-        for q in mind_data.get("self_questions", []) if isinstance(q, dict)
-    ]
-
-    for question_entry in new_questions:
-        if isinstance(question_entry, dict) and "question" in question_entry:
-            question_text = question_entry["question"].strip().lower()
-            question_source = question_entry.get("source", "").strip().lower()
-            question_context = question_entry.get("context_summary", "").strip().lower()
-            question_related = question_entry.get("related_knowledge", "").strip().lower()
-        else:
-            print(f"⚠ Unexpected question format: {question_entry}")
-            continue  # Skip invalid entries
-
-        # ✅ Check if an answer already exists in stored knowledge
-        if any(question_text in knowledge.lower() for knowledge in stored_knowledge):
-            print(f"✅ Answer found! Archiving question: {question_text}")
-            continue
-
-        # ✅ Context-aware deduplication: Compare full question with source, context, and related knowledge
-        is_duplicate = False
-        for existing_text, existing_source, existing_context, existing_related in existing_questions:
-            similarity_score = fuzz.ratio(question_text, existing_text) if fuzzy_available else 0
-
-            # ✅ If text is highly similar (85%+) and source/context/related knowledge all match → skip as duplicate
-            if (
-                similarity_score > 85
-                and existing_source == question_source
-                and existing_context == question_context
-                and existing_related == question_related
-            ):
-                print(f"⚠ Near-duplicate question skipped (with context): {question_text}")
-                is_duplicate = True
-                break
+    for question in questions:
+        question_text = question["question"] if isinstance(question, dict) else str(question).strip()
+        
+        # Check if question is similar to any existing one
+        is_duplicate = any(fuzz.ratio(question_text.lower(), existing.lower()) > threshold for existing in seen_questions)
 
         if not is_duplicate:
-            filtered_questions.append(question_entry)
-            print(f"🧐 New Question Added: {question_text}")
-
-    return filtered_questions
-
-def self_answer_questions(mind_data):
-    """Checks if any self-questions can be answered using stored knowledge and archives answered ones."""
-    unanswered_questions = []
-    stored_knowledge = [k.lower() for k in mind_data.get("stored_knowledge", [])]
-
-    for question_entry in mind_data.get("self_questions", []):
-        if isinstance(question_entry, dict) and "question" in question_entry:
-            question_text = question_entry["question"].strip().lower()
+            unique_questions.append(question)
+            seen_questions.add(question_text.lower())
         else:
-            print(f"⚠ Unexpected question format in self_answering: {question_entry}")
-            continue  # Skip invalid entries
+            print(f"⚠ Removed duplicate question: {question_text}")
 
-        # ✅ Check if question is already answered
-        if any(question_text in knowledge.lower() for knowledge in stored_knowledge):
-            print(f"✅ Answer found in stored knowledge! Archiving: {question_text}")
-            continue
-
-        unanswered_questions.append(question_entry)
-
-    mind_data["self_questions"] = unanswered_questions  # ✅ Save only unanswered questions
-    print(f"✅ Self-answering complete! Remaining questions: {len(unanswered_questions)}")
-
-def deduplicate_questions(mind_data):
-    """Removes duplicate or near-duplicate questions while preserving context and metadata."""
-    unique_questions = []
-    seen_questions = set()  # Stores tuples (question_text, context_summary, related_knowledge)
-
-    for question_entry in mind_data.get("self_questions", []):
-        if isinstance(question_entry, dict) and "question" in question_entry:
-            question_text = question_entry["question"].strip().lower()
-            question_context = question_entry.get("context_summary", "").strip().lower()
-            question_related = question_entry.get("related_knowledge", "").strip().lower()
-
-            question_signature = (question_text, question_context, question_related)
-
-            # Use fuzzy matching to find similar questions
-            is_duplicate = any(
-                fuzz.ratio(question_text, existing[0]) > 85
-                and question_context == existing[1]
-                and question_related == existing[2]
-                for existing in seen_questions
-            ) if fuzzy_available else question_signature in seen_questions
-
-            if not is_duplicate:
-                unique_questions.append(question_entry)
-                seen_questions.add(question_signature)
-            else:
-                print(f"⚠ Removed duplicate question: {question_text}")
-
-    mind_data["self_questions"] = unique_questions
-    print(f"✅ Deduplication complete! Remaining questions: {len(unique_questions)}")
+    return unique_questions
 
 
-def track_question_patterns(mind_data):
-    """Analyzes the last 100 self-questions, categorizes recurring themes, and adjusts future question weighting."""
-    recent_questions = mind_data.get("self_questions", [])[-100:]
-    question_patterns = {}
-
-    for question_entry in recent_questions:
-        if isinstance(question_entry, dict) and "question" in question_entry:
-            category = categorize_question_type(question_entry["question"])
-        else:
-            print(f"⚠ Unexpected question format in track_question_patterns: {question_entry}")
-            continue  # Skip invalid entries
-
-        question_patterns[category] = question_patterns.get(category, 0) + 1
-
-    mind_data["self_question_patterns"] = question_patterns  # ✅ Store tracking data in mind file
-    print(f"✅ Debug: Updated question patterns: {question_patterns}")
-
-def categorize_question_type(question_text):
-    """Categorizes a question into a single theme based on keywords."""
-    categories = {
-        "philosophical": ["ethics", "values", "morality", "meaning"],
-        "introspective": ["identity", "self", "perspective"],
-        "knowledge": ["facts", "science", "history", "how"],
-    }
-
-    for category, keywords in categories.items():
-        if any(keyword in question_text.lower() for keyword in keywords):
-            return category
-    return "general"  # ✅ Default category
-
-def categorize_questions(questions):
-    """Categorizes questions into themes such as philosophical, introspective, knowledge-based, etc."""
-    categorized_questions = {"general": []}
-    category_counts = {"general": 0, "introspective": 0, "knowledge": 0}
-
-    for question_entry in questions:
-        if isinstance(question_entry, dict) and "question" in question_entry:
-            category = categorize_question_type(question_entry["question"])
-        else:
-            print(f"⚠ Unexpected question format in categorize_questions: {question_entry}")
-            continue  # Skip invalid entries
-
-        categorized_questions.setdefault(category, []).append(question_entry)
-        category_counts[category] += 1
-
-    return categorized_questions, category_counts
-
-def process_new_questions(reflection):
-    """Pipeline to generate, filter, categorize, self-answer, track patterns, and analyze Astra's thought patterns."""
-    mind_data = load_mind()
-    categorized_questions, category_counts = generate_questions(reflection, mind_data)
-
-    new_questions = [q for cat, questions in categorized_questions.items() for q in questions]
-
-    if new_questions:
-        print(f"✅ Debug: Adding {len(new_questions)} new questions to self_questions")
-        mind_data["self_questions"].extend(new_questions)
-
-    mind_data["self_question_categories"] = category_counts  
-
-    deduplicate_questions(mind_data)  # ✅ Run deduplication before saving
-    self_answer_questions(mind_data)  # ✅ Self-answering
-    track_question_patterns(mind_data)  # ✅ Track question patterns
-
-    save_mind(mind_data)
-
+def manage_questions(reflection, mind_data):
+    """Manages Astra's question pipeline in a fully modular way."""
+    
+    # Step 1: Generate raw questions
+    raw_questions = generate_questions(reflection, mind_data)
+    
+    # Step 2: Filter out duplicates and answered questions
+    filtered_questions = filter_questions(mind_data, raw_questions)
+    
+    # Step 3: Deduplicate remaining questions
+    unique_questions = deduplicate_questions(filtered_questions)
+    
+    # Step 4: Self-answer any questions that Astra already knows
+    unanswered_questions = self_answer_questions(unique_questions, mind_data)
+    
+    # Step 5: Categorize questions into themes
+    categorized_questions = {q: categorize_question(q['question']) for q in unanswered_questions}
+    
+    # Step 6: Flag unresolved questions for future learning
+    flagged_questions = flag_unresolved_question([q['question'] if isinstance(q, dict) else str(q) for q in categorized_questions], mind_data)
+    
+    # Step 7: Track question patterns for Astra's long-term learning
+    track_question_patterns(mind_data)
+    
+    return flagged_questions

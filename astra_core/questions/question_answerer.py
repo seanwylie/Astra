@@ -9,7 +9,7 @@ from astra_interfaces.influence import save_mind  # Import save_mind from influe
 from astra_core.questions.question_flagger import flag_unresolved_question
 
 
-def self_answer_question(mind_data):
+def self_answer_questions(mind_data):
     """Process Astra's questions and flag any unresolved ones."""
     unresolved_questions = mind_data.get("unresolved_questions", [])
     unanswered_questions = []  # Keep track of unanswered but not removed questions
