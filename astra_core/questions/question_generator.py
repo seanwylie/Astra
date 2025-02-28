@@ -69,7 +69,7 @@ def generate_questions(reflection, mind_data):
     categorized_questions = []
     for question in generated_questions:
         if isinstance(question, str) and len(question) > 6:
-            category = categorize_question(question, category_embeddings)
+            category = categorize_question([question], category_embeddings)  # ✅ Fixed: Ensure list input
             if category:
                 categorized_questions.append({"question": question.strip(), "category": category})
 
@@ -80,11 +80,16 @@ def generate_questions(reflection, mind_data):
     print(f"🔍 Debug: Flagged unresolved questions: {flagged_questions}")
 
     ### ✅ **Step 7: Cleanup Question Formatting**
-    flagged_questions = [
+    final_questions = [
         str(q).strip() for q in flagged_questions if isinstance(q, str) and len(q) > 6
     ]
 
-    final_questions = [q.split("?", 1)[0].strip() + "?" for q in flagged_questions if q]
+    final_questions = [q.split("?", 1)[0].strip() + "?" for q in final_questions if q]
+
+    ### ✅ **Fix: Ensure returned questions are in correct format**
+    if not isinstance(final_questions, list):
+        final_questions = [final_questions]  # Wrap in list if necessary
 
     categorized_questions = {"general": final_questions} if isinstance(final_questions, list) else final_questions
+
     return categorized_questions, {}

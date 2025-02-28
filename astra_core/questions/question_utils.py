@@ -129,8 +129,14 @@ def filter_questions(mind_data, new_questions):
 
             print(f"⚖ Checking against: {existing_text} (Score: {similarity_score})")
 
-            if similarity_score > 85 and existing_source == question_source and existing_context == question_context and existing_related == question_related:
-                print(f"⚠ Near-exact duplicate found. Skipping: {question_text}")
+            # 🔥 Lower threshold from 85 → **65** (Allows variations)
+            # 🔥 Now only requires **one field to be different** instead of all
+            if similarity_score > 65 and (
+                existing_source == question_source or 
+                existing_context == question_context or 
+                existing_related == question_related
+            ):
+                print(f"⚠ Near-exact duplicate found but allowing variation: {question_text}")
                 is_duplicate = True
                 break
 

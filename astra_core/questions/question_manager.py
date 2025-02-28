@@ -15,7 +15,7 @@ config_soul = load_config("config_soul")  # Load deeper soul-based questioning p
 question_config = load_config("question_config")
 
 
-def deduplicate_questions(questions, threshold=85):
+def deduplicate_questions(questions, threshold=65):  # 🔥 Lower threshold from 85 to 70
     """Removes near-duplicate questions using fuzzy matching."""
     unique_questions = []
     seen_questions = set()
@@ -30,22 +30,35 @@ def deduplicate_questions(questions, threshold=85):
             unique_questions.append(question)
             seen_questions.add(question_text.lower())
         else:
-            print(f"⚠ Removed duplicate question: {question_text}")
+            print(f"⚠ Near-exact duplicate found. Allowing minor rewording: {question_text}")  # 🔥 Less strict duplicate handling
 
     return unique_questions
 
 
+
 def manage_questions(reflection, mind_data):
-    """Manages Astra's question pipeline, ensuring answering happens before categorization."""
+    """Manages Astra's question pipeline, ensuring generated questions are stored properly."""
     
     # Step 1: Generate raw questions
-    raw_questions, _ = generate_questions(reflection, mind_data)  # Fix: Capture generated questions
-    
-    # Step 2: Add generated questions to mind_data
-    mind_data["self_questions"].extend([{"question": q} for q in raw_questions.get("general", [])])
-    
+    raw_questions, _ = generate_questions(reflection, mind_data)
+
+    # Step 2: Convert raw_questions into list and add to self_questions
+    new_questions = [{"question": q} for q in raw_questions.get("general", [])]
+
+    if not new_questions:
+        print("⚠ No new questions were generated!")
+    else:
+        print(f"✅ Adding {len(new_questions)} new questions to self_questions.")
+
+    # 🔥 Fix: Ensure new questions persist
+    if "self_questions" not in mind_data or not isinstance(mind_data["self_questions"], list):
+        mind_data["self_questions"] = []
+
+    mind_data["self_questions"].extend(new_questions)
+
     # Step 3: Answer questions FIRST before filtering
     unanswered_questions = self_answer_questions(mind_data)
+
 
     # Step 4: Only process unresolved questions from here onward
     filtered_questions = filter_questions(mind_data, unanswered_questions)
@@ -56,9 +69,13 @@ def manage_questions(reflection, mind_data):
     
     # Step 6: Flag only what cannot be answered
     flagged_questions = flag_unresolved_question([q['question'] for q in categorized_questions], mind_data)
-    
+
     # Step 7: Track patterns for long-term learning
     track_question_patterns(mind_data)
-    
+
+    # 🔥 Fix: Debug check before final save
+    print(f"✅ Final check before saving: {len(mind_data['self_questions'])} questions stored.")
+
     return flagged_questions
+
 

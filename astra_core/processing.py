@@ -11,6 +11,8 @@ from astra_core.questions.question_manager import generate_questions, track_ques
 from astra_core.expansion import refine_knowledge
 from astra_interfaces.influence import load_mind, save_mind
 from astra_core.config_loader import load_config  # ✅ Load configs dynamically
+from astra_core.questions.question_manager import manage_questions
+
 
 general_config = load_config("general_config")  # ✅ Load general settings
 
@@ -48,9 +50,6 @@ def filter_unanswered_questions(mind_data, questions):
 
     return unanswered_questions
 
-
-
-
 def process_reflection():
     """Generate, refine, and deepen Astra's reflections while ensuring questions are generated & answered."""
     mind_data = load_mind()
@@ -73,9 +72,9 @@ def process_reflection():
 
     # ✅ Generate new questions using Astra's enhanced system
     categorized_questions, category_counts = generate_questions(expanded_reflection, mind_data)
-    print(f"🔍 Debug: Generated categorized_questions: {categorized_questions}")  # Track output
+    print(f"🔍 Debug: Generated categorized_questions: {categorized_questions}")
 
-    # ✅ Extract only valid question objects
+    # ✅ Extract valid question objects
     new_questions = []
     for category, questions in categorized_questions.items():
         if isinstance(questions, list):
@@ -95,7 +94,9 @@ def process_reflection():
 
     print(f"✅ Debug: After update, self_questions has {len(mind_data['self_questions'])} questions")
 
-
+    # 🔥 NEW: Call `manage_questions()` to fully process questions
+    print("🔍 Debug: Calling manage_questions() to process and store questions.")
+    manage_questions(expanded_reflection, mind_data)
 
     # ✅ Store category tracking for Dinner Time discussions
     mind_data["self_question_categories"] = category_counts
@@ -118,6 +119,7 @@ def process_reflection():
     save_mind(mind_data)
 
     return expanded_reflection
+
 
 
 def expand_reflection(reflection):
