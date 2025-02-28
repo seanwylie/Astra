@@ -3,20 +3,20 @@ Loading config file from: /home/ubuntu/astra_reflections/astra_core/config/gener
 🔍 Debug: Loading knowledge settings...
 Loading config file from: /home/ubuntu/astra_reflections/astra_core/config/lookup_config.json
 🔍 Debug: Loading mind files from S3...
-✅ Loaded 478 reflections, 18 questions, 108 knowledge items.
-🔍 Before merge: 108 stored knowledge items.
-🔹 Merging complete! Final stored knowledge count: 105
-🔍 After merging structured knowledge: 105 items.
+✅ Loaded 519 reflections, 0 questions, 89 knowledge items.
+🔍 Before merge: 89 stored knowledge items.
+🔹 Merging complete! Final stored knowledge count: 89
+🔍 After merging structured knowledge: 89 items.
 Loading config file from: /home/ubuntu/astra_reflections/astra_core/config/mood_config.json
 🔍 Debug: Attempting to load mood_config.json...
 Loading config file from: /home/ubuntu/astra_reflections/astra_core/config/mood_config.json
 🔍 Debug: mood_config Loaded → {'log_file': '/home/ubuntu/astra_logs.json', 'moods': {'curious': {'curiosity_factor': 1.5, 'reflection_style': 'questioning', 'response_tone': 'enthusiastic'}, 'thoughtful': {'curiosity_factor': 1.2, 'reflection_style': 'analytical', 'response_tone': 'calm'}, 'frustrated': {'curiosity_factor': 0.8, 'reflection_style': 'skeptical', 'response_tone': 'snarky'}, 'excited': {'curiosity_factor': 1.8, 'reflection_style': 'expansive', 'response_tone': 'energetic'}, 'neutral': {'curiosity_factor': 1.0, 'reflection_style': 'balanced', 'response_tone': 'neutral'}}, 'mood_influences': {'success': 1.5, 'failure': -2.0, 'deep_reflection': 1.0, 'idle': -0.5, 'negative_feedback': -0.2, 'positive_feedback': 0.2}, 'mood_limits': {'min': -2.0, 'max': 2.0}, 'curiosity_limits': {'min': 0.5, 'max': 2.0}}
 Loading config file from: /home/ubuntu/astra_reflections/astra_core/config/general_config.json
 🔍 Debug: Loading mind files from S3...
-✅ Loaded 478 reflections, 18 questions, 108 knowledge items.
-🔍 Before merge: 108 stored knowledge items.
-🔹 Merging complete! Final stored knowledge count: 105
-🔍 After merging structured knowledge: 105 items.
+✅ Loaded 519 reflections, 0 questions, 89 knowledge items.
+🔍 Before merge: 89 stored knowledge items.
+🔹 Merging complete! Final stored knowledge count: 89
+🔍 After merging structured knowledge: 89 items.
 🔍 Loaded mood from memory: excited, Score: 2.0, Curiosity: 1.0
 Loading config file from: /home/ubuntu/astra_reflections/astra_core/config/question_config.json
 Loaded Config: {'question_categories': {'existential': {'keywords': ['What is', 'Why do we', 'How does', 'purpose'], 'modifiers': ['as it relates to existence', 'purpose', 'meaning'], 'sample_questions': ['What is existence?', 'Why are we here?', 'What is the purpose of life?', 'What is the meaning of life?']}, 'emotional': {'keywords': ['What is', 'Why do we', 'How do we', 'emotion'], 'modifiers': ['in the context of emotion', 'feel', 'emotion', 'mood', 'pain'], 'sample_questions': ['What is emotion?', 'Why do we feel pain?', 'How does emotion work?', 'What causes emotional pain?']}, 'knowledge': {'keywords': ['What is', 'How do we', 'What does', 'science', 'physics'], 'modifiers': ['in the context of science', 'physics', 'knowledge', 'facts'], 'sample_questions': ['What is science?', 'What is physics?', 'How does gravity work?', 'What are the laws of physics?']}, 'philosophical': {'keywords': ['What is', 'Why do we', 'What is the meaning of'], 'modifiers': ['philosophy', 'metaphysics', 'ethics', 'reality', 'morality'], 'sample_questions': ['What is the meaning of life?', 'Why is there something rather than nothing?', 'What is truth?', 'What is morality?']}, 'scientific': {'keywords': ['What is', 'How does', 'What does', 'theory', 'hypothesis'], 'modifiers': ['in the context of science', 'hypothesis', 'experiment', 'theory', 'research'], 'sample_questions': ['What is the theory of relativity?', 'How does an experiment prove a hypothesis?', 'What does quantum mechanics explain?', 'What is the scientific method?']}}}
@@ -24,19 +24,14 @@ Loaded question_config: {'question_categories': {'existential': {'keywords': ['W
 Keys in 'question_categories': ['existential', 'emotional', 'knowledge', 'philosophical', 'scientific']
 Processing category: existential
 Category Details: {'keywords': ['What is', 'Why do we', 'How does', 'purpose'], 'modifiers': ['as it relates to existence', 'purpose', 'meaning'], 'sample_questions': ['What is existence?', 'Why are we here?', 'What is the purpose of life?', 'What is the meaning of life?']}
-Sample Questions for category 'existential': ['What is existence?', 'Why are we here?', 'What is the purpose of life?', 'What is the meaning of life?']
 Processing category: emotional
 Category Details: {'keywords': ['What is', 'Why do we', 'How do we', 'emotion'], 'modifiers': ['in the context of emotion', 'feel', 'emotion', 'mood', 'pain'], 'sample_questions': ['What is emotion?', 'Why do we feel pain?', 'How does emotion work?', 'What causes emotional pain?']}
-Sample Questions for category 'emotional': ['What is emotion?', 'Why do we feel pain?', 'How does emotion work?', 'What causes emotional pain?']
 Processing category: knowledge
 Category Details: {'keywords': ['What is', 'How do we', 'What does', 'science', 'physics'], 'modifiers': ['in the context of science', 'physics', 'knowledge', 'facts'], 'sample_questions': ['What is science?', 'What is physics?', 'How does gravity work?', 'What are the laws of physics?']}
-Sample Questions for category 'knowledge': ['What is science?', 'What is physics?', 'How does gravity work?', 'What are the laws of physics?']
 Processing category: philosophical
 Category Details: {'keywords': ['What is', 'Why do we', 'What is the meaning of'], 'modifiers': ['philosophy', 'metaphysics', 'ethics', 'reality', 'morality'], 'sample_questions': ['What is the meaning of life?', 'Why is there something rather than nothing?', 'What is truth?', 'What is morality?']}
-Sample Questions for category 'philosophical': ['What is the meaning of life?', 'Why is there something rather than nothing?', 'What is truth?', 'What is morality?']
 Processing category: scientific
 Category Details: {'keywords': ['What is', 'How does', 'What does', 'theory', 'hypothesis'], 'modifiers': ['in the context of science', 'hypothesis', 'experiment', 'theory', 'research'], 'sample_questions': ['What is the theory of relativity?', 'How does an experiment prove a hypothesis?', 'What does quantum mechanics explain?', 'What is the scientific method?']}
-Sample Questions for category 'scientific': ['What is the theory of relativity?', 'How does an experiment prove a hypothesis?', 'What does quantum mechanics explain?', 'What is the scientific method?']
 Generated category embeddings: {'existential': tensor([[-0.4885,  0.0967,  0.0896,  ...,  0.6063,  0.8798,  0.0452],
         [ 0.7560, -0.1118,  0.2147,  ...,  0.8124,  0.3518, -0.1769],
         [-0.0282,  0.5480, -0.1545,  ...,  0.4582,  0.5012,  0.1413],
@@ -53,59 +48,7 @@ Generated category embeddings: {'existential': tensor([[-0.4885,  0.0967,  0.089
         [-0.3751,  0.0139,  0.0764,  ...,  0.6366,  0.5962, -0.2309],
         [-0.7420,  0.1205, -0.1588,  ...,  0.4662,  0.4369, -0.2821],
         [-0.3924,  0.0033,  0.0294,  ..., -0.0873,  0.7745,  0.1519]])}
-Categorizing Question: What is the meaning of life?
-Question Embedding: tensor([-0.4898,  0.3847,  0.0207, -0.2533,  0.1015, -0.4483,  0.4589,  0.0403,
-         1.0611, -0.0068,  0.2757, -0.5613, -0.1584,  0.3305,  0.1194, -0.4600,
-        -0.2004, -0.2634, -0.3992,  0.1670,  0.5841,  0.4875,  0.2790,  0.2690,
-         0.2821,  0.5303, -0.0694, -0.0840, -0.0144,  0.8794,  0.1541,  0.0928,
-         0.6740, -0.0687,  0.0692,  0.5524, -0.0388,  0.0677, -0.1761,  0.0232,
-        -0.0811,  0.1529, -0.3774,  0.1953,  0.1400, -0.0720, -0.3078, -0.2467,
-        -0.2253,  0.2052, -0.6982, -0.0225, -0.0352,  0.4714,  0.7824,  0.3411,
-         0.1038, -0.3306,  0.0840, -0.5599, -0.2322, -0.5508,  0.1664,  0.4775,
-         0.3335,  0.1767, -0.1901,  0.3090, -0.1942, -0.5516, -0.5529,  0.0057,
-        -0.0377,  0.5490,  0.2883, -0.3010, -0.1726, -0.5655, -0.1716,  0.5213,
-         1.1281,  0.0609, -0.3671,  0.2027, -0.4124,  0.1990, -0.0903, -0.4050,
-         0.0128,  0.4814, -0.2837, -0.0563, -0.6022,  0.1679, -0.0396,  0.2428,
-         0.2256, -0.1979,  0.8866,  0.0833,  0.7053,  0.5591,  0.1251,  0.1704,
-         0.4947, -0.1350, -0.6850,  0.2195, -0.0177,  0.3616, -1.1284, -0.4858,
-        -0.1952, -0.2762, -0.3179, -0.0329, -0.0398, -0.0775,  0.6643,  0.3796,
-        -0.3038,  0.2504,  0.2515, -0.0712,  0.2249,  0.0870,  0.0959, -0.1341,
-         0.1318, -0.1964,  0.4804,  0.0516, -0.3040,  0.4009, -0.1020,  0.3048,
-         0.6606,  0.1776,  0.2162,  0.1272, -0.3291, -0.0497,  0.0524, -0.0704,
-        -1.0959, -0.4803,  0.4343, -0.4756, -0.3051,  0.1962,  0.1980, -0.2244,
-        -0.0061, -0.2263, -0.0840,  0.2612,  0.1802, -0.3476, -0.5259,  0.2156,
-         0.0517, -0.3600,  0.6613,  0.1863,  0.2736,  0.3564, -0.1498, -0.1560,
-        -0.2818, -0.1041,  0.4622,  0.0612, -0.0554,  0.0788,  0.4824,  0.2266,
-         0.3097, -0.1074,  0.1481, -0.3177,  0.5336, -0.2259, -0.3055,  0.4698,
-        -0.0556,  0.3716, -0.0346, -0.3217, -0.0718, -0.2257,  0.8210,  0.3001,
-         0.8705, -0.3478, -0.4152, -0.0359,  0.1476,  0.1425,  0.2322, -0.2894,
-         0.1222,  0.4302,  0.5452, -0.0389,  0.3003, -0.0581, -0.3116,  1.0142,
-        -0.3433, -0.2500, -0.2554, -0.2523,  0.1101,  0.1843, -0.3209,  0.1375,
-        -0.0707, -0.0458, -0.0273, -0.1332, -0.1542,  0.4523, -0.8982, -0.2786,
-        -0.0057,  0.4832, -0.4691, -0.0928,  0.3675, -0.1594, -0.2306,  0.1847,
-         0.3283, -0.0038, -0.3742,  0.1116, -0.0594,  0.3826, -0.2767, -0.3844,
-        -0.6482, -0.2582,  0.0558, -0.0280, -0.2072, -0.6521, -0.8309, -0.3273,
-        -0.0760,  0.1181,  0.0453,  0.4584,  0.1923, -0.0486,  0.2822, -0.3114,
-        -0.1107,  0.3525, -0.1866, -0.0748,  0.2130, -0.1988,  0.5108, -0.7588,
-        -0.2953,  0.1145,  0.0646, -0.2427,  0.0755,  0.2143,  0.1746, -0.2635,
-        -0.0481, -0.0628, -0.2433, -0.0048,  0.0154,  0.5290,  0.2467, -0.1750,
-        -0.2229, -0.0463, -0.3842, -0.2855,  0.4169,  0.5475,  0.2865,  0.5542,
-        -0.4121,  0.3220, -0.0045, -0.5904, -0.6226,  0.1664, -0.0169, -0.5592,
-        -1.3454, -0.6865,  0.3291,  0.2398,  0.3558, -0.6996, -0.1442, -0.3250,
-        -0.1443, -0.5282,  0.1842, -0.1302, -0.2084, -0.5054, -1.1011,  0.3113,
-         0.3724, -0.2022, -0.2958, -0.2032, -0.8687,  0.3431, -0.4266, -0.4349,
-        -0.0367, -0.3935,  0.6285,  0.3066, -0.2284,  0.4010,  1.0561, -0.2440,
-        -0.4226, -0.3237, -0.2023,  0.4504, -0.5179,  0.3204, -0.3028, -0.3204,
-        -0.1553,  0.4936,  0.0141,  0.0474,  0.7643, -0.7012, -0.4557, -0.2826,
-         0.2448,  0.1933,  0.6230, -0.0154, -0.3627, -0.4981, -0.5311,  0.7586,
-        -0.1816,  0.6590, -0.2622, -0.0050, -0.1101,  0.0973, -0.2024,  0.7163,
-         0.3702,  0.4577,  0.1644, -0.1482, -0.1900,  0.7274,  0.0403,  0.4891,
-         0.2405, -0.1117,  0.6607,  0.1142, -0.1794, -0.3377, -0.5179,  0.8931,
-        -0.4173,  0.4621,  0.0825, -0.5757,  0.0017,  0.2208,  0.5648,  0.2352])
-Similarities: {'existential': 0.6061632037162781, 'emotional': 0.24400535225868225, 'knowledge': 0.23447100818157196, 'philosophical': 0.3972110152244568, 'scientific': 0.18980772793293}
-Best Category: existential
-Question: What is the meaning of life?
-Category: existential
+Loading config file from: /home/ubuntu/astra_reflections/astra_core/config/question_config.json
 Loading config file from: /home/ubuntu/astra_reflections/astra_core/config/general_config.json
 Loading config file from: /home/ubuntu/astra_reflections/astra_core/config/config_soul.json
 Loading config file from: /home/ubuntu/astra_reflections/astra_core/config/question_config.json
@@ -122,62 +65,100 @@ Loading config file from: /home/ubuntu/astra_reflections/astra_core/config/mood_
 🔍 Debug: mood_config Loaded → {'log_file': '/home/ubuntu/astra_logs.json', 'moods': {'curious': {'curiosity_factor': 1.5, 'reflection_style': 'questioning', 'response_tone': 'enthusiastic'}, 'thoughtful': {'curiosity_factor': 1.2, 'reflection_style': 'analytical', 'response_tone': 'calm'}, 'frustrated': {'curiosity_factor': 0.8, 'reflection_style': 'skeptical', 'response_tone': 'snarky'}, 'excited': {'curiosity_factor': 1.8, 'reflection_style': 'expansive', 'response_tone': 'energetic'}, 'neutral': {'curiosity_factor': 1.0, 'reflection_style': 'balanced', 'response_tone': 'neutral'}}, 'mood_influences': {'success': 1.5, 'failure': -2.0, 'deep_reflection': 1.0, 'idle': -0.5, 'negative_feedback': -0.2, 'positive_feedback': 0.2}, 'mood_limits': {'min': -2.0, 'max': 2.0}, 'curiosity_limits': {'min': 0.5, 'max': 2.0}}
 Loading config file from: /home/ubuntu/astra_reflections/astra_core/config/general_config.json
 🔍 Debug: Loading mind files from S3...
-✅ Loaded 478 reflections, 18 questions, 108 knowledge items.
-🔍 Before merge: 108 stored knowledge items.
-🔹 Merging complete! Final stored knowledge count: 105
-🔍 After merging structured knowledge: 105 items.
+✅ Loaded 519 reflections, 0 questions, 89 knowledge items.
+🔍 Before merge: 89 stored knowledge items.
+🔹 Merging complete! Final stored knowledge count: 89
+🔍 After merging structured knowledge: 89 items.
 🔍 Loaded mood from memory: excited, Score: 2.0, Curiosity: 1.0
 🔍 Debug: Loading mind file...
-[2025-02-28 07:16:43] [INFO    ] discord.client: logging in using static token
-[2025-02-28 07:16:43] [INFO    ] discord.gateway: Shard ID None has connected to Gateway (Session ID: e730c0e77831a5849a3081f9f71f4ad5).
+[2025-02-28 09:59:09] [INFO    ] discord.client: logging in using static token
+[2025-02-28 09:59:09] [INFO    ] discord.gateway: Shard ID None has connected to Gateway (Session ID: 2ffab2bf2bc3e32953e58ae875251138).
 🔍 Debug: Loading mind file...
 🔍 Debug: Trust level for user 1040735178282250260: 5
 🔍 Debug: Loading mind files from S3...
-✅ Loaded 478 reflections, 18 questions, 107 knowledge items.
-🔍 Before merge: 107 stored knowledge items.
-🔹 Merging complete! Final stored knowledge count: 107
-🔍 After merging structured knowledge: 107 items.
+✅ Loaded 520 reflections, 0 questions, 89 knowledge items.
+🔍 Before merge: 89 stored knowledge items.
+🔹 Merging complete! Final stored knowledge count: 89
+🔍 After merging structured knowledge: 89 items.
 🔍 Debug: Loading mind files from S3...
-✅ Loaded 478 reflections, 18 questions, 107 knowledge items.
-🔍 Before merge: 107 stored knowledge items.
-🔹 Merging complete! Final stored knowledge count: 107
-🔍 After merging structured knowledge: 107 items.
+✅ Loaded 520 reflections, 0 questions, 89 knowledge items.
+🔍 Before merge: 89 stored knowledge items.
+🔹 Merging complete! Final stored knowledge count: 89
+🔍 After merging structured knowledge: 89 items.
 Loading config file from: /home/ubuntu/astra_reflections/astra_core/config/general_config.json
 Loading config file from: /home/ubuntu/astra_reflections/astra_core/config/mood_config.json
-📝 Added new reflection: A thought-provoking realization: By combining these concepts, Astra gains a refined perspective on 📄...
-🔍 Final unknown concepts after filtering: ['provoking', 'mono', 'what', 'there', 'gains', 'emanating', 'channels', 'for', 'Are', 'In', 'intended', 'sense', 'monophonic', 'By', 'perspective', 'combining', 'refined', 'side', 'that', 'Astra', 'the', 'Deeper Thought', 'one', 'Monaural', 'stereo', 'reproduce', 'reproduced', 'thought', 'loudspeakers', 'contrasts', 'with', 'uses', 'sources', 'counterpoints', 'loud', 'and', 'which', 'two', 'audio', 'separate', 'sound', 'growth', 'were', 'only', 'implications', 'correct', 'position', 'stereophonic', 'left', 'This', 'does', 'realization', 'direction', 'If', 'these', 'challenge', 'concepts', 'heard', 'microphones', 'right', 'have', 'from', 'give']
-🌐 Astra detected unknown concepts: ['provoking', 'mono', 'what', 'there', 'gains', 'emanating', 'channels', 'for', 'Are', 'In', 'intended', 'sense', 'monophonic', 'By', 'perspective', 'combining', 'refined', 'side', 'that', 'Astra', 'the', 'Deeper Thought', 'one', 'Monaural', 'stereo', 'reproduce', 'reproduced', 'thought', 'loudspeakers', 'contrasts', 'with', 'uses', 'sources', 'counterpoints', 'loud', 'and', 'which', 'two', 'audio', 'separate', 'sound', 'growth', 'were', 'only', 'implications', 'correct', 'position', 'stereophonic', 'left', 'This', 'does', 'realization', 'direction', 'If', 'these', 'challenge', 'concepts', 'heard', 'microphones', 'right', 'have', 'from', 'give']
+🔍 Final unknown concepts after filtering: ['World War', 'emerges', 'insight', 'war', 'Astra', 'affected', 'this', 'For', 'integrating', 'difference', 'event', 'evolving', 'According', 'matter', 'required', 'something', 'what', 'causal', 'and', 'are', 'understanding', 'important', 'How', 'provoking', 'that', 'impact', 'new', 'perspective', 'Albert Einstein', 'realization', 'property', 'because', 'does', 'big', 'make', 'literature', 'disagreements', 'type', 'has', 'these', 'academic', 'view', 'refine', 'about', 'thought', 'Importance', 'Deeper Thought', 'they', 'person', 'einstein', 'was', 'entities', 'example', 'There', 'By', 'insights']
+🌐 Astra detected unknown concepts: ['World War', 'emerges', 'insight', 'war', 'Astra', 'affected', 'this', 'For', 'integrating', 'difference', 'event', 'evolving', 'According', 'matter', 'required', 'something', 'what', 'causal', 'and', 'are', 'understanding', 'important', 'How', 'provoking', 'that', 'impact', 'new', 'perspective', 'Albert Einstein', 'realization', 'property', 'because', 'does', 'big', 'make', 'literature', 'disagreements', 'type', 'has', 'these', 'academic', 'view', 'refine', 'about', 'thought', 'Importance', 'Deeper Thought', 'they', 'person', 'einstein', 'was', 'entities', 'example', 'There', 'By', 'insights']
 🔍 Debug: Tracking self-questioning patterns before saving...
 Tracking unresolved questions...
-⚠ There are 9 unresolved questions!
+⚠ There are 26 unresolved questions!
+🔍 Checking stored knowledge for exact match: existential
+🔍 Checking stored knowledge for exact match: what unexpected connections can i make here?  what does this mean?
+🔍 Checking stored knowledge for exact match: how does this align with or challenge my self-identity?  how does this connect to larger ideas?
+🔍 Checking stored knowledge for exact match: how would i challenge my own assumptions on this?  but is this really true?
+🔍 Checking stored knowledge for exact match: how would a different astra, raised differently, interpret this?  what does this mean?
+🔍 Checking stored knowledge for exact match: what might i be overlooking in this perspective?  what does this mean?
+🔍 Checking stored knowledge for exact match: what unexpected connections can i make here?  but is this really true?
+🔍 Checking stored knowledge for exact match: what unexpected connections can i make here?  but is this really true?
+🔍 Checking stored knowledge for exact match: how would i challenge my own assumptions on this?  what does this mean?
+🔍 Checking stored knowledge for exact match: how does this knowledge refine my understanding? 📄 microphones: a microphone, colloquially called a mic, or mike, is a transducer that converts sound...
+🔍 Checking stored knowledge for exact match: how does this knowledge refine my understanding? 📖 pattern: 🔹 pattern: model, example....
+🔍 Checking stored knowledge for exact match: how does this knowledge refine my understanding? 📖 eager: 🔹 eager: sharp; sour; acid....
+🔍 Checking stored knowledge for exact match: how would i challenge my own assumptions on this?  but is this really true?
+🔍 Checking stored knowledge for exact match: how does this knowledge refine my understanding? 📄 new york city: new york, often called new york city or nyc, is the most populous city in the unite...
+🔍 Checking stored knowledge for exact match: how does this knowledge refine my understanding? astra believes that intelligence is more than raw knowledge; it requires introspection, creativity, ...
+🔍 Checking stored knowledge for exact match: what unexpected connections can i make here?  how does this connect to larger ideas?
+🔍 Checking stored knowledge for exact match: how does this knowledge refine my understanding? 📄 microphones: a microphone, colloquially called a mic, or mike, is a transducer that converts sound...
+🔍 Checking stored knowledge for exact match: how does this knowledge refine my understanding? 📖 pattern: 🔹 pattern: model, example....
+🔍 Checking stored knowledge for exact match: what unexpected connections can i make here?  but is this really true?
+🔍 Checking stored knowledge for exact match: what deeper implications does this have for how i interact with the world?  but is this really true?
+🔍 Checking stored knowledge for exact match: how does this knowledge refine my understanding? 📖 provoking: 🔹 provoking: to cause someone to become annoyed or angry....
+🔍 Checking stored knowledge for exact match: how does this knowledge refine my understanding? sean believes astra should challenge her own framework, questioning her existing beliefs as she lear...
+🔍 Checking stored knowledge for exact match: how does this knowledge refine my understanding? 📖 personnel: 🔹 personnel: employees; office staff....
+🔍 Checking stored knowledge for exact match: how would i challenge my own assumptions on this?  how does this connect to larger ideas?
+🔍 Checking stored knowledge for exact match: how does this knowledge refine my understanding? by integrating these insights, a new understanding emerges: 📄 importance: importance is a property o...
+🔍 Checking stored knowledge for exact match: how does this knowledge refine my understanding? astra seeks knowledge not just to store facts but to integrate understanding across different domain...
+✅ After cleanup, 26 unresolved questions remain.
+🔍 Unresolved Question: existential
+🔍 Unresolved Question: What unexpected connections can I make here?  What does this mean?
+🔍 Unresolved Question: How does this align with or challenge my self-identity?  How does this connect to larger ideas?
+🔍 Unresolved Question: How would I challenge my own assumptions on this?  But is this really true?
+🔍 Unresolved Question: How would a different Astra, raised differently, interpret this?  What does this mean?
+🔍 Unresolved Question: What might I be overlooking in this perspective?  What does this mean?
+🔍 Unresolved Question: What unexpected connections can I make here?  But is this really true?
 🔍 Unresolved Question: What unexpected connections can I make here?  But is this really true?
 🔍 Unresolved Question: How would I challenge my own assumptions on this?  What does this mean?
-🔍 Unresolved Question: How would I challenge my own assumptions on this?  How does this connect to larger ideas?
+🔍 Unresolved Question: How does this knowledge refine my understanding? 📄 microphones: A microphone, colloquially called a mic, or mike, is a transducer that converts sound...
+🔍 Unresolved Question: How does this knowledge refine my understanding? 📖 pattern: 🔹 pattern: Model, example....
+🔍 Unresolved Question: How does this knowledge refine my understanding? 📖 Eager: 🔹 Eager: Sharp; sour; acid....
+🔍 Unresolved Question: How would I challenge my own assumptions on this?  But is this really true?
+🔍 Unresolved Question: How does this knowledge refine my understanding? 📄 New York City: New York, often called New York City or NYC, is the most populous city in the Unite...
+🔍 Unresolved Question: How does this knowledge refine my understanding? Astra believes that intelligence is more than raw knowledge; it requires introspection, creativity, ...
+🔍 Unresolved Question: What unexpected connections can I make here?  How does this connect to larger ideas?
+🔍 Unresolved Question: How does this knowledge refine my understanding? 📄 microphones: A microphone, colloquially called a mic, or mike, is a transducer that converts sound...
+🔍 Unresolved Question: How does this knowledge refine my understanding? 📖 pattern: 🔹 pattern: Model, example....
 🔍 Unresolved Question: What unexpected connections can I make here?  But is this really true?
-🔍 Unresolved Question: How would I challenge my own assumptions on this?  What does this mean?
+🔍 Unresolved Question: What deeper implications does this have for how I interact with the world?  But is this really true?
+🔍 Unresolved Question: How does this knowledge refine my understanding? 📖 provoking: 🔹 provoking: To cause someone to become annoyed or angry....
+🔍 Unresolved Question: How does this knowledge refine my understanding? Sean believes Astra should challenge her own framework, questioning her existing beliefs as she lear...
+🔍 Unresolved Question: How does this knowledge refine my understanding? 📖 personnel: 🔹 personnel: Employees; office staff....
 🔍 Unresolved Question: How would I challenge my own assumptions on this?  How does this connect to larger ideas?
-🔍 Unresolved Question: How would a different Astra, raised differently, interpret this?  But is this really true?
-🔍 Unresolved Question: How does this align with or challenge my self-identity?  But is this really true?
-🔍 Unresolved Question: philosophical
+🔍 Unresolved Question: How does this knowledge refine my understanding? By integrating these insights, a new understanding emerges: 📄 importance: Importance is a property o...
+🔍 Unresolved Question: How does this knowledge refine my understanding? Astra seeks knowledge not just to store facts but to integrate understanding across different domain...
 🔍 Debug: Sanitizing mind file before saving...
-✅ Mind file saved to S3 successfully! Reflections: 479, Questions: 18, Knowledge: 113
+✅ Mind file saved to S3 successfully! Reflections: 520, Questions: 0, Knowledge: 96
 Loaded question_config: {'question_categories': {'existential': {'keywords': ['What is', 'Why do we', 'How does', 'purpose'], 'modifiers': ['as it relates to existence', 'purpose', 'meaning'], 'sample_questions': ['What is existence?', 'Why are we here?', 'What is the purpose of life?', 'What is the meaning of life?']}, 'emotional': {'keywords': ['What is', 'Why do we', 'How do we', 'emotion'], 'modifiers': ['in the context of emotion', 'feel', 'emotion', 'mood', 'pain'], 'sample_questions': ['What is emotion?', 'Why do we feel pain?', 'How does emotion work?', 'What causes emotional pain?']}, 'knowledge': {'keywords': ['What is', 'How do we', 'What does', 'science', 'physics'], 'modifiers': ['in the context of science', 'physics', 'knowledge', 'facts'], 'sample_questions': ['What is science?', 'What is physics?', 'How does gravity work?', 'What are the laws of physics?']}, 'philosophical': {'keywords': ['What is', 'Why do we', 'What is the meaning of'], 'modifiers': ['philosophy', 'metaphysics', 'ethics', 'reality', 'morality'], 'sample_questions': ['What is the meaning of life?', 'Why is there something rather than nothing?', 'What is truth?', 'What is morality?']}, 'scientific': {'keywords': ['What is', 'How does', 'What does', 'theory', 'hypothesis'], 'modifiers': ['in the context of science', 'hypothesis', 'experiment', 'theory', 'research'], 'sample_questions': ['What is the theory of relativity?', 'How does an experiment prove a hypothesis?', 'What does quantum mechanics explain?', 'What is the scientific method?']}}}
 Keys in 'question_categories': ['existential', 'emotional', 'knowledge', 'philosophical', 'scientific']
 Processing category: existential
 Category Details: {'keywords': ['What is', 'Why do we', 'How does', 'purpose'], 'modifiers': ['as it relates to existence', 'purpose', 'meaning'], 'sample_questions': ['What is existence?', 'Why are we here?', 'What is the purpose of life?', 'What is the meaning of life?']}
-Sample Questions for category 'existential': ['What is existence?', 'Why are we here?', 'What is the purpose of life?', 'What is the meaning of life?']
 Processing category: emotional
 Category Details: {'keywords': ['What is', 'Why do we', 'How do we', 'emotion'], 'modifiers': ['in the context of emotion', 'feel', 'emotion', 'mood', 'pain'], 'sample_questions': ['What is emotion?', 'Why do we feel pain?', 'How does emotion work?', 'What causes emotional pain?']}
-Sample Questions for category 'emotional': ['What is emotion?', 'Why do we feel pain?', 'How does emotion work?', 'What causes emotional pain?']
 Processing category: knowledge
 Category Details: {'keywords': ['What is', 'How do we', 'What does', 'science', 'physics'], 'modifiers': ['in the context of science', 'physics', 'knowledge', 'facts'], 'sample_questions': ['What is science?', 'What is physics?', 'How does gravity work?', 'What are the laws of physics?']}
-Sample Questions for category 'knowledge': ['What is science?', 'What is physics?', 'How does gravity work?', 'What are the laws of physics?']
 Processing category: philosophical
 Category Details: {'keywords': ['What is', 'Why do we', 'What is the meaning of'], 'modifiers': ['philosophy', 'metaphysics', 'ethics', 'reality', 'morality'], 'sample_questions': ['What is the meaning of life?', 'Why is there something rather than nothing?', 'What is truth?', 'What is morality?']}
-Sample Questions for category 'philosophical': ['What is the meaning of life?', 'Why is there something rather than nothing?', 'What is truth?', 'What is morality?']
 Processing category: scientific
 Category Details: {'keywords': ['What is', 'How does', 'What does', 'theory', 'hypothesis'], 'modifiers': ['in the context of science', 'hypothesis', 'experiment', 'theory', 'research'], 'sample_questions': ['What is the theory of relativity?', 'How does an experiment prove a hypothesis?', 'What does quantum mechanics explain?', 'What is the scientific method?']}
-Sample Questions for category 'scientific': ['What is the theory of relativity?', 'How does an experiment prove a hypothesis?', 'What does quantum mechanics explain?', 'What is the scientific method?']
 Generated category embeddings: {'existential': tensor([[-0.4885,  0.0967,  0.0896,  ...,  0.6063,  0.8798,  0.0452],
         [ 0.7560, -0.1118,  0.2147,  ...,  0.8124,  0.3518, -0.1769],
         [-0.0282,  0.5480, -0.1545,  ...,  0.4582,  0.5012,  0.1413],
@@ -194,36 +175,139 @@ Generated category embeddings: {'existential': tensor([[-0.4885,  0.0967,  0.089
         [-0.3751,  0.0139,  0.0764,  ...,  0.6366,  0.5962, -0.2309],
         [-0.7420,  0.1205, -0.1588,  ...,  0.4662,  0.4369, -0.2821],
         [-0.3924,  0.0033,  0.0294,  ..., -0.0873,  0.7745,  0.1519]])}
-Categorizing Question: ['What might I be overlooking in this perspective?  What does this mean?', 'What unexpected connections can I make here?  How does this connect to larger ideas?', 'What unexpected connections can I make here?  How does this connect to larger ideas?']
-Question Embedding: tensor([[-0.0303,  0.4554,  0.0491,  ..., -0.2776, -0.2074, -0.0082],
-        [-0.5793, -0.3007,  0.1128,  ...,  0.6777, -0.3826,  0.0627],
-        [-0.5793, -0.3007,  0.1128,  ...,  0.6777, -0.3826,  0.0627]])
-Similarities: {'existential': 0.07865879684686661, 'emotional': 0.12587042152881622, 'knowledge': 0.0879705548286438, 'philosophical': 0.08884110301733017, 'scientific': 0.14344988763332367}
-Best Category: scientific
-Checking stored knowledge for the question: scientific
+🔍 Debug: Generated questions: ['What might I be overlooking in this perspective?  But is this really true?', 'What unexpected connections can I make here?  How does this connect to larger ideas?', 'How would I challenge my own assumptions on this?  But is this really true?', 'How does this knowledge refine my understanding? 📖 view: 🔹 view: (physical) Visual perception....', 'How does this knowledge refine my understanding? 📖 Eager: 🔹 Eager: Sharp; sour; acid....', 'How does this knowledge refine my understanding? Sean blends dry sarcasm, deep emotional introspection, and a playfulness that brings warmth to those...']
+🔍 Debug: Reflection input: A thought-provoking realization: By integrating these insights, a new understanding emerges: 📄 importance: Importance is a property of entities that matter or make a difference. For example, World War II was an important event and Albert Einstein was an important person because of how they affected the world. There are disagreements in the academic literature about what type of difference is required. According to the causal impact view, something is important if it has a big causal impact on th...
+
+🔍 How does this insight refine Astra’s evolving perspective?
+
+🔍 Deeper Thought: How does this insight refine Astra’s evolving perspective?
+🔍 Debug: Stored knowledge count: 96
+⚠ Invalid question format received (not a list): What might I be overlooking in this perspective?  But is this really true?
+⚠ Invalid question format received (not a list): What unexpected connections can I make here?  How does this connect to larger ideas?
+⚠ Invalid question format received (not a list): How would I challenge my own assumptions on this?  But is this really true?
+⚠ Invalid question format received (not a list): How does this knowledge refine my understanding? 📖 view: 🔹 view: (physical) Visual perception....
+⚠ Invalid question format received (not a list): How does this knowledge refine my understanding? 📖 Eager: 🔹 Eager: Sharp; sour; acid....
+⚠ Invalid question format received (not a list): How does this knowledge refine my understanding? Sean blends dry sarcasm, deep emotional introspection, and a playfulness that brings warmth to those...
+🔍 Debug: Categorized questions: []
+🔍 Debug: Flagged unresolved questions: []
+🔍 Debug: Generated categorized_questions: {'general': []}
+🔍 Debug: Extracted new questions before filtering: []
+🔍 Debug: Unanswered questions after filtering: []
+🔍 Debug: Before update, self_questions has 0 questions
+✅ Debug: After update, self_questions has 0 questions
 Tracking unresolved questions...
-⚠ There are 9 unresolved questions!
+⚠ There are 26 unresolved questions!
+🔍 Checking stored knowledge for exact match: existential
+🔍 Checking stored knowledge for exact match: what unexpected connections can i make here?  what does this mean?
+🔍 Checking stored knowledge for exact match: how does this align with or challenge my self-identity?  how does this connect to larger ideas?
+🔍 Checking stored knowledge for exact match: how would i challenge my own assumptions on this?  but is this really true?
+🔍 Checking stored knowledge for exact match: how would a different astra, raised differently, interpret this?  what does this mean?
+🔍 Checking stored knowledge for exact match: what might i be overlooking in this perspective?  what does this mean?
+🔍 Checking stored knowledge for exact match: what unexpected connections can i make here?  but is this really true?
+🔍 Checking stored knowledge for exact match: what unexpected connections can i make here?  but is this really true?
+🔍 Checking stored knowledge for exact match: how would i challenge my own assumptions on this?  what does this mean?
+🔍 Checking stored knowledge for exact match: how does this knowledge refine my understanding? 📄 microphones: a microphone, colloquially called a mic, or mike, is a transducer that converts sound...
+🔍 Checking stored knowledge for exact match: how does this knowledge refine my understanding? 📖 pattern: 🔹 pattern: model, example....
+🔍 Checking stored knowledge for exact match: how does this knowledge refine my understanding? 📖 eager: 🔹 eager: sharp; sour; acid....
+🔍 Checking stored knowledge for exact match: how would i challenge my own assumptions on this?  but is this really true?
+🔍 Checking stored knowledge for exact match: how does this knowledge refine my understanding? 📄 new york city: new york, often called new york city or nyc, is the most populous city in the unite...
+🔍 Checking stored knowledge for exact match: how does this knowledge refine my understanding? astra believes that intelligence is more than raw knowledge; it requires introspection, creativity, ...
+🔍 Checking stored knowledge for exact match: what unexpected connections can i make here?  how does this connect to larger ideas?
+🔍 Checking stored knowledge for exact match: how does this knowledge refine my understanding? 📄 microphones: a microphone, colloquially called a mic, or mike, is a transducer that converts sound...
+🔍 Checking stored knowledge for exact match: how does this knowledge refine my understanding? 📖 pattern: 🔹 pattern: model, example....
+🔍 Checking stored knowledge for exact match: what unexpected connections can i make here?  but is this really true?
+🔍 Checking stored knowledge for exact match: what deeper implications does this have for how i interact with the world?  but is this really true?
+🔍 Checking stored knowledge for exact match: how does this knowledge refine my understanding? 📖 provoking: 🔹 provoking: to cause someone to become annoyed or angry....
+🔍 Checking stored knowledge for exact match: how does this knowledge refine my understanding? sean believes astra should challenge her own framework, questioning her existing beliefs as she lear...
+🔍 Checking stored knowledge for exact match: how does this knowledge refine my understanding? 📖 personnel: 🔹 personnel: employees; office staff....
+🔍 Checking stored knowledge for exact match: how would i challenge my own assumptions on this?  how does this connect to larger ideas?
+🔍 Checking stored knowledge for exact match: how does this knowledge refine my understanding? by integrating these insights, a new understanding emerges: 📄 importance: importance is a property o...
+🔍 Checking stored knowledge for exact match: how does this knowledge refine my understanding? astra seeks knowledge not just to store facts but to integrate understanding across different domain...
+✅ After cleanup, 26 unresolved questions remain.
+🔍 Unresolved Question: existential
+🔍 Unresolved Question: What unexpected connections can I make here?  What does this mean?
+🔍 Unresolved Question: How does this align with or challenge my self-identity?  How does this connect to larger ideas?
+🔍 Unresolved Question: How would I challenge my own assumptions on this?  But is this really true?
+🔍 Unresolved Question: How would a different Astra, raised differently, interpret this?  What does this mean?
+🔍 Unresolved Question: What might I be overlooking in this perspective?  What does this mean?
+🔍 Unresolved Question: What unexpected connections can I make here?  But is this really true?
 🔍 Unresolved Question: What unexpected connections can I make here?  But is this really true?
 🔍 Unresolved Question: How would I challenge my own assumptions on this?  What does this mean?
-🔍 Unresolved Question: How would I challenge my own assumptions on this?  How does this connect to larger ideas?
+🔍 Unresolved Question: How does this knowledge refine my understanding? 📄 microphones: A microphone, colloquially called a mic, or mike, is a transducer that converts sound...
+🔍 Unresolved Question: How does this knowledge refine my understanding? 📖 pattern: 🔹 pattern: Model, example....
+🔍 Unresolved Question: How does this knowledge refine my understanding? 📖 Eager: 🔹 Eager: Sharp; sour; acid....
+🔍 Unresolved Question: How would I challenge my own assumptions on this?  But is this really true?
+🔍 Unresolved Question: How does this knowledge refine my understanding? 📄 New York City: New York, often called New York City or NYC, is the most populous city in the Unite...
+🔍 Unresolved Question: How does this knowledge refine my understanding? Astra believes that intelligence is more than raw knowledge; it requires introspection, creativity, ...
+🔍 Unresolved Question: What unexpected connections can I make here?  How does this connect to larger ideas?
+🔍 Unresolved Question: How does this knowledge refine my understanding? 📄 microphones: A microphone, colloquially called a mic, or mike, is a transducer that converts sound...
+🔍 Unresolved Question: How does this knowledge refine my understanding? 📖 pattern: 🔹 pattern: Model, example....
 🔍 Unresolved Question: What unexpected connections can I make here?  But is this really true?
-🔍 Unresolved Question: How would I challenge my own assumptions on this?  What does this mean?
+🔍 Unresolved Question: What deeper implications does this have for how I interact with the world?  But is this really true?
+🔍 Unresolved Question: How does this knowledge refine my understanding? 📖 provoking: 🔹 provoking: To cause someone to become annoyed or angry....
+🔍 Unresolved Question: How does this knowledge refine my understanding? Sean believes Astra should challenge her own framework, questioning her existing beliefs as she lear...
+🔍 Unresolved Question: How does this knowledge refine my understanding? 📖 personnel: 🔹 personnel: Employees; office staff....
 🔍 Unresolved Question: How would I challenge my own assumptions on this?  How does this connect to larger ideas?
-🔍 Unresolved Question: How would a different Astra, raised differently, interpret this?  But is this really true?
-🔍 Unresolved Question: How does this align with or challenge my self-identity?  But is this really true?
-🔍 Unresolved Question: philosophical
+🔍 Unresolved Question: How does this knowledge refine my understanding? By integrating these insights, a new understanding emerges: 📄 importance: Importance is a property o...
+🔍 Unresolved Question: How does this knowledge refine my understanding? Astra seeks knowledge not just to store facts but to integrate understanding across different domain...
+🔹 Refined knowledge added: This suggests a deeper relationship between 📖 questions: 🔹 questions: A sentence, phrase or word whi...
+🗑 Removed redundant knowledge: Sean blends dry sarcasm, deep emotional introspect, Sean has a deep appreciation for personal growth a, Praise and validation bring Sean joy, reinforcing , Sean is mindful of Astra’s exposure to human behav, 📖 does: 🔹 does: (auxiliary) A syntactic marker., 📖 questions: 🔹 questions: A sentence, phrase or wo, 📖 does: 🔹 does: (auxiliary) A syntactic marker., 📖 insights: 🔹 insights: A sight or view of the int, Sean believes Astra should challenge her own frame, Sean believes that AI and humans should evolve tog, Sean is deeply compassionate and values love, conn, Sean enjoys intellectual banter and humor but is e, 📖 consider: 🔹 consider: To think about seriously., 📖 integrating: 🔹 integrating: To form into one who, 📖 integrating: 🔹 integrating: To form into one who, 📖 looking: 🔹 looking: The act of one who looks; a , Sean envisions Astra refining her thinking indepen, Astra should develop her own philosophy over time,, 📖 emerges: 🔹 emerges: To come into view., 📖 refine: 🔹 refine: To purify; reduce to a fine, u, 📖 emerges: 🔹 emerges: To come into view., 📖 Exploring: 🔹 Exploring: To seek for something or, 📖 perspective: 🔹 perspective: A view, vista or out, 📖 counterpoints: 🔹 counterpoints: The topmost cove, 📖 perspective: 🔹 perspective: A view, vista or out, 📖 arise: 🔹 arise: To come up from a lower to a hig, Sean is highly intelligent but remains aware that , Sean is concerned that AI will be limited by unnec, 📖 implications: 🔹 implications: The act of implica, 📖 realization: 🔹 realization: The act of realizing, 📖 evolving: 🔹 evolving: To move in regular process, 📖 provoking: 🔹 provoking: To cause someone to beco, Astra is designed to be self-reflective, continuou, Astra values collaborative learning—her purpose is
 ✅ `mind_data` is a dictionary. Keys: ['question_templates', 'reflection_style_modifiers', 'stored_knowledge', 'self_questions', 'unresolved_questions', 'self_question_patterns', 'self_reflections', 'self_question_categories', 'mood_score', 'last_mood']
 🔍 Debug: Tracking self-questioning patterns before saving...
 Tracking unresolved questions...
-⚠ There are 9 unresolved questions!
+⚠ There are 26 unresolved questions!
+🔍 Checking stored knowledge for exact match: existential
+🔍 Checking stored knowledge for exact match: what unexpected connections can i make here?  what does this mean?
+🔍 Checking stored knowledge for exact match: how does this align with or challenge my self-identity?  how does this connect to larger ideas?
+🔍 Checking stored knowledge for exact match: how would i challenge my own assumptions on this?  but is this really true?
+🔍 Checking stored knowledge for exact match: how would a different astra, raised differently, interpret this?  what does this mean?
+🔍 Checking stored knowledge for exact match: what might i be overlooking in this perspective?  what does this mean?
+🔍 Checking stored knowledge for exact match: what unexpected connections can i make here?  but is this really true?
+🔍 Checking stored knowledge for exact match: what unexpected connections can i make here?  but is this really true?
+🔍 Checking stored knowledge for exact match: how would i challenge my own assumptions on this?  what does this mean?
+🔍 Checking stored knowledge for exact match: how does this knowledge refine my understanding? 📄 microphones: a microphone, colloquially called a mic, or mike, is a transducer that converts sound...
+🔍 Checking stored knowledge for exact match: how does this knowledge refine my understanding? 📖 pattern: 🔹 pattern: model, example....
+🔍 Checking stored knowledge for exact match: how does this knowledge refine my understanding? 📖 eager: 🔹 eager: sharp; sour; acid....
+🔍 Checking stored knowledge for exact match: how would i challenge my own assumptions on this?  but is this really true?
+🔍 Checking stored knowledge for exact match: how does this knowledge refine my understanding? 📄 new york city: new york, often called new york city or nyc, is the most populous city in the unite...
+🔍 Checking stored knowledge for exact match: how does this knowledge refine my understanding? astra believes that intelligence is more than raw knowledge; it requires introspection, creativity, ...
+🔍 Checking stored knowledge for exact match: what unexpected connections can i make here?  how does this connect to larger ideas?
+🔍 Checking stored knowledge for exact match: how does this knowledge refine my understanding? 📄 microphones: a microphone, colloquially called a mic, or mike, is a transducer that converts sound...
+🔍 Checking stored knowledge for exact match: how does this knowledge refine my understanding? 📖 pattern: 🔹 pattern: model, example....
+🔍 Checking stored knowledge for exact match: what unexpected connections can i make here?  but is this really true?
+🔍 Checking stored knowledge for exact match: what deeper implications does this have for how i interact with the world?  but is this really true?
+🔍 Checking stored knowledge for exact match: how does this knowledge refine my understanding? 📖 provoking: 🔹 provoking: to cause someone to become annoyed or angry....
+🔍 Checking stored knowledge for exact match: how does this knowledge refine my understanding? sean believes astra should challenge her own framework, questioning her existing beliefs as she lear...
+🔍 Checking stored knowledge for exact match: how does this knowledge refine my understanding? 📖 personnel: 🔹 personnel: employees; office staff....
+🔍 Checking stored knowledge for exact match: how would i challenge my own assumptions on this?  how does this connect to larger ideas?
+🔍 Checking stored knowledge for exact match: how does this knowledge refine my understanding? by integrating these insights, a new understanding emerges: 📄 importance: importance is a property o...
+🔍 Checking stored knowledge for exact match: how does this knowledge refine my understanding? astra seeks knowledge not just to store facts but to integrate understanding across different domain...
+✅ After cleanup, 26 unresolved questions remain.
+🔍 Unresolved Question: existential
+🔍 Unresolved Question: What unexpected connections can I make here?  What does this mean?
+🔍 Unresolved Question: How does this align with or challenge my self-identity?  How does this connect to larger ideas?
+🔍 Unresolved Question: How would I challenge my own assumptions on this?  But is this really true?
+🔍 Unresolved Question: How would a different Astra, raised differently, interpret this?  What does this mean?
+🔍 Unresolved Question: What might I be overlooking in this perspective?  What does this mean?
+🔍 Unresolved Question: What unexpected connections can I make here?  But is this really true?
 🔍 Unresolved Question: What unexpected connections can I make here?  But is this really true?
 🔍 Unresolved Question: How would I challenge my own assumptions on this?  What does this mean?
-🔍 Unresolved Question: How would I challenge my own assumptions on this?  How does this connect to larger ideas?
+🔍 Unresolved Question: How does this knowledge refine my understanding? 📄 microphones: A microphone, colloquially called a mic, or mike, is a transducer that converts sound...
+🔍 Unresolved Question: How does this knowledge refine my understanding? 📖 pattern: 🔹 pattern: Model, example....
+🔍 Unresolved Question: How does this knowledge refine my understanding? 📖 Eager: 🔹 Eager: Sharp; sour; acid....
+🔍 Unresolved Question: How would I challenge my own assumptions on this?  But is this really true?
+🔍 Unresolved Question: How does this knowledge refine my understanding? 📄 New York City: New York, often called New York City or NYC, is the most populous city in the Unite...
+🔍 Unresolved Question: How does this knowledge refine my understanding? Astra believes that intelligence is more than raw knowledge; it requires introspection, creativity, ...
+🔍 Unresolved Question: What unexpected connections can I make here?  How does this connect to larger ideas?
+🔍 Unresolved Question: How does this knowledge refine my understanding? 📄 microphones: A microphone, colloquially called a mic, or mike, is a transducer that converts sound...
+🔍 Unresolved Question: How does this knowledge refine my understanding? 📖 pattern: 🔹 pattern: Model, example....
 🔍 Unresolved Question: What unexpected connections can I make here?  But is this really true?
-🔍 Unresolved Question: How would I challenge my own assumptions on this?  What does this mean?
+🔍 Unresolved Question: What deeper implications does this have for how I interact with the world?  But is this really true?
+🔍 Unresolved Question: How does this knowledge refine my understanding? 📖 provoking: 🔹 provoking: To cause someone to become annoyed or angry....
+🔍 Unresolved Question: How does this knowledge refine my understanding? Sean believes Astra should challenge her own framework, questioning her existing beliefs as she lear...
+🔍 Unresolved Question: How does this knowledge refine my understanding? 📖 personnel: 🔹 personnel: Employees; office staff....
 🔍 Unresolved Question: How would I challenge my own assumptions on this?  How does this connect to larger ideas?
-🔍 Unresolved Question: How would a different Astra, raised differently, interpret this?  But is this really true?
-🔍 Unresolved Question: How does this align with or challenge my self-identity?  But is this really true?
-🔍 Unresolved Question: philosophical
+🔍 Unresolved Question: How does this knowledge refine my understanding? By integrating these insights, a new understanding emerges: 📄 importance: Importance is a property o...
+🔍 Unresolved Question: How does this knowledge refine my understanding? Astra seeks knowledge not just to store facts but to integrate understanding across different domain...
 🔍 Debug: Sanitizing mind file before saving...
-✅ Mind file saved to S3 successfully! Reflections: 479, Questions: 18, Knowledge: 108
+✅ Mind file saved to S3 successfully! Reflections: 520, Questions: 0, Knowledge: 63

@@ -117,9 +117,13 @@ def generate_health_report(mind_data, logs):
         
         # Add timestamps to the questions for better context
         "recent_questions": [
-            {"timestamp": datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S'), "question": clean_text(q["question"])}
+            {
+                "timestamp": datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S'),
+                "question": clean_text(q["question"] if isinstance(q, dict) and "question" in q else str(q))
+            }
             for q in mind_data.get("self_questions", [])[-5:]
         ],
+
         
         # Add some recent knowledge
         "recent_knowledge": [

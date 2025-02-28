@@ -1,23 +1,18 @@
 import random
-import time
-import sys
 import os
-import fuzzywuzzy
+from fuzzywuzzy import fuzz
+
 try:
-    from fuzzywuzzy import fuzz
     fuzzy_available = True
 except ImportError:
     print("⚠ FuzzyWuzzy module not found, falling back to exact matching.")
     fuzzy_available = False
 
-# Add the parent directory (astra_reflections) to sys.path so Python can find `astra_core`
-# sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../../')))
-
 from astra_core.config_loader import load_config
 from sentence_transformers import SentenceTransformer, util
 
 # Load question config
-question_config = load_config("question_config")  # Use the absolute path to the config file
+question_config = load_config("question_config")
 
 # Debugging: Check the loaded config structure
 print(f"Loaded Config: {question_config}")
@@ -33,127 +28,117 @@ def generate_category_embeddings(question_config):
     """Generate embeddings for each category's sample questions."""
     category_embeddings = {}
 
-    # Debugging: Print the entire question_config to inspect its structure
     print(f"Loaded question_config: {question_config}")
 
-    # Check if 'question_categories' exists in the config
     if 'question_categories' not in question_config:
         raise KeyError("'question_categories' not found in the config!")
 
-    # Debugging: Print the keys within 'question_categories' to ensure it's what we expect
     print(f"Keys in 'question_categories': {list(question_config['question_categories'].keys())}")
 
-    # Generate embeddings for each category's sample questions
     for category, details in question_config["question_categories"].items():
-        # Debugging: Print out the category and its details
         print(f"Processing category: {category}")
         print(f"Category Details: {details}")
         
         sample_questions = details.get("sample_questions", [])
         
-        # Debugging: Print out the sample questions for this category
-        print(f"Sample Questions for category '{category}': {sample_questions}")
-        
-        # Ensure there are sample questions before encoding them
         if not sample_questions:
             print(f"⚠ Warning: No sample questions found for category '{category}'")
         else:
-            # Generate embeddings for the sample questions
             category_embeddings[category] = model.encode(sample_questions, convert_to_tensor=True)
 
-    # Debugging: Print the generated embeddings
     print(f"Generated category embeddings: {category_embeddings}")
-
     return category_embeddings
 
-# Generate embeddings for all categories
 category_embeddings = generate_category_embeddings(question_config)
 
-def categorize_question(question, category_embeddings):
-    """Categorize an incoming question based on semantic similarity to category embeddings."""
-    # Encode the incoming question
-    question_embedding = model.encode(question, convert_to_tensor=True)
+def categorize_question(questions, category_embeddings):
+    """Categorize a list of questions, ensuring valid output format."""
+    categorized_questions = []
 
-    # Debugging: Print the question and its embedding
-    print(f"Categorizing Question: {question}")
-    print(f"Question Embedding: {question_embedding}")
+    if not isinstance(questions, list):
+        print(f"⚠ Invalid question format received (not a list): {questions}")
+        return []
 
-    # Compare the question with all category embeddings using cosine similarity
-    similarities = {}
-    for category, embeddings in category_embeddings.items():
-        similarities[category] = util.pytorch_cos_sim(question_embedding, embeddings).mean().item()
+    for question in questions:
+        if not isinstance(question, str) or len(question) < 5:  # ✅ Ignore short/invalid inputs
+            print(f"⚠ Skipping invalid question format: {question}")
+            continue
+        
+        question_embedding = model.encode(question, convert_to_tensor=True)
 
-    # Debugging: Print similarities for each category
-    print(f"Similarities: {similarities}")
-    
-    # Return the category with the highest similarity
-    best_category = max(similarities, key=similarities.get)
-    print(f"Best Category: {best_category}")
-    return best_category
+        # Compare the question with all category embeddings using cosine similarity
+        similarities = {
+            category: util.pytorch_cos_sim(question_embedding, embeddings).mean().item()
+            for category, embeddings in category_embeddings.items()
+        }
+
+        best_category = max(similarities, key=similarities.get)
+
+        print(f"🔍 Debug: Categorized '{question}' as '{best_category}'")
+
+        # ✅ Append full question instead of a nested list
+        categorized_questions.append({"question": question, "category": best_category})
+
+    return categorized_questions  # ✅ Ensures a flat list of dictionaries
+
+
 
 def filter_questions(mind_data, new_questions):
     """Filters out duplicate, near-duplicate, or answered questions before storing."""
+
+    print(f"🔍 Debug: filter_questions() received {len(new_questions)} questions")
+
+    if not new_questions:
+        print("⚠ No new questions received, stopping filtering early!")
+        return []
+
     filtered_questions = []
     stored_knowledge = [k.lower() for k in mind_data.get("stored_knowledge", [])]
-    
+
     # ✅ Store existing questions with their metadata for smarter deduplication
     existing_questions = [
-        (q["question"].lower(), q.get("source", "").lower(), q.get("context_summary", "").lower(), q.get("related_knowledge", "").lower()) 
-        for q in mind_data.get("self_questions", []) if isinstance(q, dict)
+        (q["question"].strip().lower(), q.get("source", "").strip().lower(),
+         q.get("context_summary", "").strip().lower(), q.get("related_knowledge", "").strip().lower())
+        for q in mind_data.get("self_questions", []) if isinstance(q, dict) and "question" in q
     ]
-    
-    # Debugging: Print the existing questions
-    print(f"Existing Questions: {existing_questions}")
 
     for question_entry in new_questions:
         if isinstance(question_entry, dict) and "question" in question_entry:
-            question_text = question_entry["question"].strip().lower()
-            question_source = question_entry.get("source", "").strip().lower()
-            question_context = question_entry.get("context_summary", "").strip().lower()
-            question_related = question_entry.get("related_knowledge", "").strip().lower()
+            question_text = question_entry["question"].strip()
+            question_source = question_entry.get("source", "").strip()
+            question_context = question_entry.get("context_summary", "").strip()
+            question_related = question_entry.get("related_knowledge", "").strip()
         else:
-            print(f"⚠ Unexpected question format: {question_entry}")
+            print(f"⚠ Unexpected question format (not dict with 'question' key): {question_entry}")
             continue  # Skip invalid entries
 
-        # Debugging: Print the current question being processed
-        print(f"Processing Question: {question_text}")
-
-        # ✅ Check if an answer already exists in stored knowledge
-        if any(question_text in knowledge.lower() for knowledge in stored_knowledge):
-            print(f"✅ Answer found! Archiving question: {question_text}")
+        if not question_text or len(question_text) < 6:
+            print(f"⚠ Ignoring invalid question (too short or empty): {question_text}")
             continue
 
-        # ✅ Context-aware deduplication: Compare full question with source, context, and related knowledge
+        question_text_lower = question_text.lower()
+
+        # ✅ Skip questions that already exist in stored knowledge
+        if any(question_text_lower in knowledge.lower() for knowledge in stored_knowledge):
+            print(f"✅ Skipping: Already answered in stored knowledge → {question_text}")
+            continue
+
         is_duplicate = False
         for existing_text, existing_source, existing_context, existing_related in existing_questions:
-            similarity_score = fuzz.ratio(question_text, existing_text) if fuzzy_available else 0
+            similarity_score = fuzz.ratio(question_text_lower, existing_text) if fuzzy_available else 0
 
-            # Debugging: Print similarity scores
-            print(f"Similarity score for '{question_text}' and '{existing_text}': {similarity_score}")
-            
-            # ✅ If text is highly similar (85%+) and source/context/related knowledge all match → skip as duplicate
-            if (
-                similarity_score > 85
-                and existing_source == question_source
-                and existing_context == question_context
-                and existing_related == question_related
-            ):
-                print(f"⚠ Near-duplicate question skipped (with context): {question_text}")
+            print(f"⚖ Checking against: {existing_text} (Score: {similarity_score})")
+
+            if similarity_score > 85 and existing_source == question_source and existing_context == question_context and existing_related == question_related:
+                print(f"⚠ Near-exact duplicate found. Skipping: {question_text}")
                 is_duplicate = True
                 break
 
         if not is_duplicate:
             filtered_questions.append(question_entry)
-            print(f"🧐 New Question Added: {question_text}")
+            print(f"✅ Accepted New Question: {question_text}")
+        else:
+            print(f"⚠ Rejected due to duplication: {question_text}")
 
+    print(f"🔍 Debug: {len(filtered_questions)} questions passed filtering and will be added.")
     return filtered_questions
-
-# Sample question for testing
-question = "What is the meaning of life?"
-
-# Categorize the question
-category = categorize_question(question, category_embeddings)
-
-# Output the result
-print(f"Question: {question}")
-print(f"Category: {category}")

@@ -73,6 +73,7 @@ def process_reflection():
 
     # ✅ Generate new questions using Astra's enhanced system
     categorized_questions, category_counts = generate_questions(expanded_reflection, mind_data)
+    print(f"🔍 Debug: Generated categorized_questions: {categorized_questions}")  # Track output
 
     # ✅ Extract only valid question objects
     new_questions = []
@@ -80,9 +81,21 @@ def process_reflection():
         if isinstance(questions, list):
             new_questions.extend(questions)
 
+    print(f"🔍 Debug: Extracted new questions before filtering: {new_questions}")
+
     # ✅ Answer check: Filter out questions Astra already knows the answer to
     unanswered_questions = filter_unanswered_questions(mind_data, new_questions)
+    print(f"🔍 Debug: Unanswered questions after filtering: {unanswered_questions}")
+
+    # ✅ Ensure `self_questions` is getting updated
+    print(f"🔍 Debug: Before update, self_questions has {len(mind_data['self_questions'])} questions")
+
+    # ✅ Update questions
     mind_data["self_questions"].extend(unanswered_questions)
+
+    print(f"✅ Debug: After update, self_questions has {len(mind_data['self_questions'])} questions")
+
+
 
     # ✅ Store category tracking for Dinner Time discussions
     mind_data["self_question_categories"] = category_counts

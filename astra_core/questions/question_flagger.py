@@ -1,37 +1,52 @@
 # In question_flagger.py
+from astra_core.config_loader import load_config
 
-def flag_unresolved_question(question, mind_data):
-    """Flags a question as unresolved if it cannot be answered using Astra's knowledge."""
+# Load configuration files
+question_config = load_config("question_config")
+# astra_core/questions/question_flagger.py
+
+def flag_unresolved_question(questions, mind_data):
+    """Flags a question as unresolved only if Astra truly cannot answer it."""
     unresolved_questions = mind_data.get("unresolved_questions", [])
-    
-    # Ensure question is a string before processing
-    question = ''.join(question) if isinstance(question, list) else str(question)
-    
-    # If the question can be answered, don't flag it
-    if can_answer_question(question, mind_data):
-        return [], {}  # ✅ Always return a tuple
+    valid_questions = []
 
-    
-    # Flag the question as unresolved and store it as a dictionary
-    unresolved_questions.append({
-        "question": question,
-        "unresolved": True,
-        "context": "Unresolved due to lack of knowledge at the moment."
-    })
-    
+    for question in questions:
+        question = question.strip()
+
+        if len(question) < 5:  
+            print(f"⚠ Ignoring invalid question: {question}")
+            continue
+
+        # 🔥 **Remove the category check to prevent false skips**
+        print(f"🔍 Checking if Astra can answer: {question}")
+
+        if can_answer_question(question, mind_data):
+            continue  # Skip flagging if answer exists
+
+        print(f"⚠ Flagging unresolved question: {question}")
+        unresolved_questions.append({
+            "question": question,
+            "unresolved": True,
+            "context": "Unresolved due to lack of knowledge."
+        })
+
+        valid_questions.append(question)
+
     mind_data["unresolved_questions"] = unresolved_questions
-    
-    return [q['question'].strip() if isinstance(q, dict) and 'question' in q else str(q).strip() for q in unresolved_questions]
+    return valid_questions
 
 
 def can_answer_question(question, mind_data):
-    """Determines if a question can be answered using Astra's stored knowledge."""
-    stored_knowledge = [str(k).lower() for k in mind_data.get("stored_knowledge", [])]
+    """Determines if a question can be answered using Astra's stored knowledge as full words, not character by character."""
     
-    # Ensure question is a string before processing
-    question = str(question) if not isinstance(question, str) else question
-    
-    # Debugging: Check if the question exists in the stored knowledge
-    print(f"Checking stored knowledge for the question: {''.join(question) if isinstance(question, list) else question}")
-    
-    return any(str(question).lower() in str(knowledge) for knowledge in stored_knowledge)
+    # Ensure question is a string
+    question = str(question).strip().lower()
+
+    # Retrieve stored knowledge as lowercase strings
+    stored_knowledge = [str(k).strip().lower() for k in mind_data.get("stored_knowledge", [])]
+
+    # 🔥 Fix: Ensure we compare against FULL stored knowledge phrases, not character-wise
+    print(f"🔍 Checking stored knowledge for exact match: {question}")
+
+    # 🔥 Fix: Instead of exact match, allow substrings for more flexible checking
+    return any(question in knowledge for knowledge in stored_knowledge)
