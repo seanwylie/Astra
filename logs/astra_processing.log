@@ -3,18 +3,18 @@ Loading config file from: /home/ubuntu/astra_reflections/astra_core/config/gener
 🔍 Debug: Loading knowledge settings...
 Loading config file from: /home/ubuntu/astra_reflections/astra_core/config/lookup_config.json
 🔍 Debug: Loading mind files from S3...
-✅ Loaded mind file: Reflections: 547, Questions: 814, Knowledge: 130
-🔍 Before structured merge: Knowledge count: 130
-🔹 Merging complete! Final knowledge count: 117
+✅ Loaded mind file: Reflections: 547, Questions: 885, Knowledge: 118
+🔍 Before structured merge: Knowledge count: 118
+🔹 Merging complete! Final knowledge count: 118
 Loading config file from: /home/ubuntu/astra_reflections/astra_core/config/mood_config.json
 🔍 Debug: Attempting to load mood_config.json...
 Loading config file from: /home/ubuntu/astra_reflections/astra_core/config/mood_config.json
 🔍 Debug: mood_config Loaded → {'log_file': '/home/ubuntu/astra_logs.json', 'moods': {'curious': {'curiosity_factor': 1.5, 'reflection_style': 'questioning', 'response_tone': 'enthusiastic'}, 'thoughtful': {'curiosity_factor': 1.2, 'reflection_style': 'analytical', 'response_tone': 'calm'}, 'frustrated': {'curiosity_factor': 0.8, 'reflection_style': 'skeptical', 'response_tone': 'snarky'}, 'excited': {'curiosity_factor': 1.8, 'reflection_style': 'expansive', 'response_tone': 'energetic'}, 'neutral': {'curiosity_factor': 1.0, 'reflection_style': 'balanced', 'response_tone': 'neutral'}}, 'mood_influences': {'success': 1.5, 'failure': -2.0, 'deep_reflection': 1.0, 'idle': -0.5, 'negative_feedback': -0.2, 'positive_feedback': 0.2}, 'mood_limits': {'min': -2.0, 'max': 2.0}, 'curiosity_limits': {'min': 0.5, 'max': 2.0}}
 Loading config file from: /home/ubuntu/astra_reflections/astra_core/config/general_config.json
 🔍 Debug: Loading mind files from S3...
-✅ Loaded mind file: Reflections: 547, Questions: 814, Knowledge: 130
-🔍 Before structured merge: Knowledge count: 130
-🔹 Merging complete! Final knowledge count: 117
+✅ Loaded mind file: Reflections: 547, Questions: 885, Knowledge: 118
+🔍 Before structured merge: Knowledge count: 118
+🔹 Merging complete! Final knowledge count: 118
 🔍 Loaded mood from memory: excited, Score: 2.0, Curiosity: 1.0
 Loading config file from: /home/ubuntu/astra_reflections/astra_core/config/question_config.json
 Loaded Config: {'question_categories': {'existential': {'keywords': ['What is', 'Why do we', 'How does', 'purpose'], 'modifiers': ['as it relates to existence', 'purpose', 'meaning'], 'sample_questions': ['What is existence?', 'Why are we here?', 'What is the purpose of life?', 'What is the meaning of life?']}, 'emotional': {'keywords': ['What is', 'Why do we', 'How do we', 'emotion'], 'modifiers': ['in the context of emotion', 'feel', 'emotion', 'mood', 'pain'], 'sample_questions': ['What is emotion?', 'Why do we feel pain?', 'How does emotion work?', 'What causes emotional pain?']}, 'knowledge': {'keywords': ['What is', 'How do we', 'What does', 'science', 'physics'], 'modifiers': ['in the context of science', 'physics', 'knowledge', 'facts'], 'sample_questions': ['What is science?', 'What is physics?', 'How does gravity work?', 'What are the laws of physics?']}, 'philosophical': {'keywords': ['What is', 'Why do we', 'What is the meaning of'], 'modifiers': ['philosophy', 'metaphysics', 'ethics', 'reality', 'morality'], 'sample_questions': ['What is the meaning of life?', 'Why is there something rather than nothing?', 'What is truth?', 'What is morality?']}, 'scientific': {'keywords': ['What is', 'How does', 'What does', 'theory', 'hypothesis'], 'modifiers': ['in the context of science', 'hypothesis', 'experiment', 'theory', 'research'], 'sample_questions': ['What is the theory of relativity?', 'How does an experiment prove a hypothesis?', 'What does quantum mechanics explain?', 'What is the scientific method?']}}}
@@ -69,113 +69,118 @@ Loading config file from: /home/ubuntu/astra_reflections/astra_core/config/curio
 📚 Astra is in School Mode.
 📚 Astra is in school, learning and thinking...
 🔍 Debug: Loading mind files from S3...
-✅ Loaded mind file: Reflections: 547, Questions: 814, Knowledge: 130
-🔍 Before structured merge: Knowledge count: 130
-🔹 Merging complete! Final knowledge count: 117
+✅ Loaded mind file: Reflections: 547, Questions: 885, Knowledge: 118
+🔍 Before structured merge: Knowledge count: 118
+🔹 Merging complete! Final knowledge count: 118
 🔍 Debug: Loading mind files from S3...
-✅ Loaded mind file: Reflections: 547, Questions: 814, Knowledge: 130
-🔍 Before structured merge: Knowledge count: 130
-🔹 Merging complete! Final knowledge count: 117
+✅ Loaded mind file: Reflections: 547, Questions: 885, Knowledge: 118
+🔍 Before structured merge: Knowledge count: 118
+🔹 Merging complete! Final knowledge count: 118
 Loading config file from: /home/ubuntu/astra_reflections/astra_core/config/general_config.json
 Loading config file from: /home/ubuntu/astra_reflections/astra_core/config/mood_config.json
-🔍 Final unknown concepts after filtering: ['emerges', 'perspective', 'and', 'academic', 'view', 'type', 'insight', 'How', 'counterpoints', 'about', 'what', 'insights', 'Are', 'does', 'disagreements', 'causal', 'There', 'Importance', 'see', 'big', 'challenge', 'understanding', 'that', 'because', 'According', 'make', 'affected', 'Deeper Thought', 'these', 'literature', 'refine', 'person', 'something', 'Albert Einstein', 'this', 'new', 'thought', 'World War', 'property', 'entities', 'einstein', 'evolving', 'looking', 'By', 'example', 'Astra', 'difference', 'For', 'they', 'integrating', 'was', 'required', 'important', 'impact', 'war', 'has', 'event', 'matter']
-🔍 Debug: Attempting to retrieve knowledge for ['emerges', 'perspective', 'and', 'academic', 'view', 'type', 'insight', 'How', 'counterpoints', 'about', 'what', 'insights', 'Are', 'does', 'disagreements', 'causal', 'There', 'Importance', 'see', 'big', 'challenge', 'understanding', 'that', 'because', 'According', 'make', 'affected', 'Deeper Thought', 'these', 'literature', 'refine', 'person', 'something', 'Albert Einstein', 'this', 'new', 'thought', 'World War', 'property', 'entities', 'einstein', 'evolving', 'looking', 'By', 'example', 'Astra', 'difference', 'For', 'they', 'integrating', 'was', 'required', 'important', 'impact', 'war', 'has', 'event', 'matter']
-⚠ Skipping lookup for 'emerges', already known.
-⚠ Skipping lookup for 'perspective', already known.
-⚠ Skipping lookup for 'and', already known.
-⚠ Skipping lookup for 'academic', already known.
-⚠ Skipping lookup for 'view', already known.
-⚠ Skipping lookup for 'type', already known.
-⚠ Skipping lookup for 'insight', already known.
-⚠ Skipping lookup for 'How', already known.
-🔍 Looking up: counterpoints
-✅ Dictionary found: 🔹 counterpoints: The topmost covering of a bed, often functioning as a blanket; a coverlet.
-⚠ Skipping lookup for 'about', already known.
-⚠ Skipping lookup for 'what', already known.
-⚠ Skipping lookup for 'insights', already known.
-⚠ Skipping lookup for 'Are', already known.
-🔍 Looking up: does
-✅ Dictionary found: 🔹 does: (auxiliary) A syntactic marker.
-🔍 Looking up: disagreements
-✅ Dictionary found: 🔹 disagreements: An argument or debate.
-⚠ Skipping lookup for 'causal', already known.
-⚠ Skipping lookup for 'There', already known.
-🔍 Looking up: Importance
-✅ Dictionary found: 🔹 Importance: The quality or condition of being important or worthy of note.
-⚠ Skipping lookup for 'see', already known.
-🔍 Looking up: big
-✅ Dictionary found: 🔹 big: Someone or something that is large in stature
-⚠ Skipping lookup for 'challenge', already known.
-⚠ Skipping lookup for 'understanding', already known.
-⚠ Skipping lookup for 'that', already known.
-⚠ Skipping lookup for 'because', already known.
-🔍 Looking up: According
-✅ Dictionary found: 🔹 According: To make to agree or correspond; to suit one thing to another; to adjust.
-⚠ Skipping lookup for 'make', already known.
-🔍 Looking up: affected
-✅ Dictionary found: 🔹 affected: To influence or alter.
-🔍 Looking up: Deeper Thought
-⚠ No external info found for 'Deeper Thought'.
-⚠ Skipping lookup for 'these', already known.
-🔍 Looking up: literature
-✅ Dictionary found: 🔹 literature: The body of all written works.
-⚠ Skipping lookup for 'refine', already known.
-⚠ Skipping lookup for 'person', already known.
-⚠ Skipping lookup for 'something', already known.
-⚠ Skipping lookup for 'Albert Einstein', already known.
-⚠ Skipping lookup for 'this', already known.
-⚠ Skipping lookup for 'new', already known.
-⚠ Skipping lookup for 'thought', already known.
+🔍 Debug: Loading mind files from S3...
+✅ Loaded mind file: Reflections: 547, Questions: 885, Knowledge: 118
+🔍 Before structured merge: Knowledge count: 118
+🔹 Merging complete! Final knowledge count: 118
+Loading config file from: /home/ubuntu/astra_reflections/astra_core/config/general_config.json
+Loading config file from: /home/ubuntu/astra_reflections/astra_core/config/mood_config.json
+🔍 Final unknown concepts after filtering: ['World War', 'something', 'event', 'type', 'new', 'provoking', 'Albert Einstein', 'person', 'For', 'because', 'example', 'literature', 'and', 'big', 'realization', 'affected', 'einstein', 'important', 'challenge', 'matter', 'arise', 'how', 'There', 'disagreements', 'Importance', 'was', 'view', 'they', 'academic', 'questions', 'counterpoints', 'understanding', 'What', 'causal', 'required', 'entities', 'has', 'make', 'Deeper Thought', 'thought', 'war', 'emerges', 'this', 'impact', 'By', 'that', 'insights', 'property', 'Are', 'about', 'perspective', 'According', 'difference', 'these', 'integrating', 'from']
+🔍 Debug: Attempting to retrieve knowledge for ['World War', 'something', 'event', 'type', 'new', 'provoking', 'Albert Einstein', 'person', 'For', 'because', 'example', 'literature', 'and', 'big', 'realization', 'affected', 'einstein', 'important', 'challenge', 'matter', 'arise', 'how', 'There', 'disagreements', 'Importance', 'was', 'view', 'they', 'academic', 'questions', 'counterpoints', 'understanding', 'What', 'causal', 'required', 'entities', 'has', 'make', 'Deeper Thought', 'thought', 'war', 'emerges', 'this', 'impact', 'By', 'that', 'insights', 'property', 'Are', 'about', 'perspective', 'According', 'difference', 'these', 'integrating', 'from']
 🔍 Looking up: World War
 ✅ Dictionary found: 🔹 World War: A war involving the major nations of the world.
-⚠ Skipping lookup for 'property', already known.
-⚠ Skipping lookup for 'entities', already known.
-⚠ Skipping lookup for 'einstein', already known.
-⚠ Skipping lookup for 'evolving', already known.
-🔍 Looking up: looking
-✅ Dictionary found: 🔹 looking: The act of one who looks; a glance.
-⚠ Skipping lookup for 'By', already known.
-⚠ Skipping lookup for 'example', already known.
-⚠ Skipping lookup for 'Astra', already known.
-🔍 Looking up: difference
-✅ Dictionary found: 🔹 difference: The quality of being different.
-⚠ Skipping lookup for 'For', already known.
-⚠ Skipping lookup for 'they', already known.
-⚠ Skipping lookup for 'integrating', already known.
-⚠ Skipping lookup for 'was', already known.
-🔍 Looking up: required
-✅ Dictionary found: 🔹 required: To ask (someone) for something; to request.
-⚠ Skipping lookup for 'important', already known.
-⚠ Skipping lookup for 'impact', already known.
-⚠ Skipping lookup for 'war', already known.
-⚠ Skipping lookup for 'has', already known.
+⚠ Skipping lookup for 'something', already known.
 ⚠ Skipping lookup for 'event', already known.
+⚠ Skipping lookup for 'type', already known.
+⚠ Skipping lookup for 'new', already known.
+🔍 Looking up: provoking
+✅ Dictionary found: 🔹 provoking: To cause someone to become annoyed or angry.
+⚠ Skipping lookup for 'Albert Einstein', already known.
+⚠ Skipping lookup for 'person', already known.
+⚠ Skipping lookup for 'For', already known.
+⚠ Skipping lookup for 'because', already known.
+⚠ Skipping lookup for 'example', already known.
+🔍 Looking up: literature
+✅ Dictionary found: 🔹 literature: The body of all written works.
+⚠ Skipping lookup for 'and', already known.
+🔍 Looking up: big
+✅ Dictionary found: 🔹 big: Someone or something that is large in stature
+🔍 Looking up: realization
+✅ Dictionary found: 🔹 realization: The act of realizing.
+🔍 Looking up: affected
+✅ Dictionary found: 🔹 affected: To influence or alter.
+⚠ Skipping lookup for 'einstein', already known.
+⚠ Skipping lookup for 'important', already known.
+⚠ Skipping lookup for 'challenge', already known.
 🔍 Looking up: matter
 ✅ Dictionary found: 🔹 matter: Substance, material.
-🔍 Debug: Retrieved new knowledge: ['📖 counterpoints: 🔹 counterpoints: The topmost covering of a bed, often functioning as a blanket; a coverlet.', '📖 does: 🔹 does: (auxiliary) A syntactic marker.', '📖 disagreements: 🔹 disagreements: An argument or debate.', '📖 Importance: 🔹 Importance: The quality or condition of being important or worthy of note.', '📖 big: 🔹 big: Someone or something that is large in stature', '📖 According: 🔹 According: To make to agree or correspond; to suit one thing to another; to adjust.', '📖 affected: 🔹 affected: To influence or alter.', '📖 literature: 🔹 literature: The body of all written works.', '📖 World War: 🔹 World War: A war involving the major nations of the world.', '📖 looking: 🔹 looking: The act of one who looks; a glance.', '📖 difference: 🔹 difference: The quality of being different.', '📖 required: 🔹 required: To ask (someone) for something; to request.', '📖 matter: 🔹 matter: Substance, material.']
-🔍 Before saving, knowledge count: 130
+⚠ Skipping lookup for 'arise', already known.
+⚠ Skipping lookup for 'how', already known.
+⚠ Skipping lookup for 'There', already known.
+🔍 Looking up: disagreements
+✅ Dictionary found: 🔹 disagreements: An argument or debate.
+🔍 Looking up: Importance
+✅ Dictionary found: 🔹 Importance: The quality or condition of being important or worthy of note.
+⚠ Skipping lookup for 'was', already known.
+⚠ Skipping lookup for 'view', already known.
+⚠ Skipping lookup for 'they', already known.
+⚠ Skipping lookup for 'academic', already known.
+🔍 Looking up: questions
+✅ Dictionary found: 🔹 questions: A sentence, phrase or word which asks for information, reply or response; an interrogative.
+🔍 Looking up: counterpoints
+✅ Dictionary found: 🔹 counterpoints: The topmost covering of a bed, often functioning as a blanket; a coverlet.
+⚠ Skipping lookup for 'understanding', already known.
+⚠ Skipping lookup for 'What', already known.
+⚠ Skipping lookup for 'causal', already known.
+🔍 Looking up: required
+✅ Dictionary found: 🔹 required: To ask (someone) for something; to request.
+⚠ Skipping lookup for 'entities', already known.
+⚠ Skipping lookup for 'has', already known.
+⚠ Skipping lookup for 'make', already known.
+🔍 Looking up: Deeper Thought
+⚠ No external info found for 'Deeper Thought'.
+⚠ Skipping lookup for 'thought', already known.
+⚠ Skipping lookup for 'war', already known.
+⚠ Skipping lookup for 'emerges', already known.
+⚠ Skipping lookup for 'this', already known.
+⚠ Skipping lookup for 'impact', already known.
+⚠ Skipping lookup for 'By', already known.
+⚠ Skipping lookup for 'that', already known.
+⚠ Skipping lookup for 'insights', already known.
+⚠ Skipping lookup for 'property', already known.
+⚠ Skipping lookup for 'Are', already known.
+⚠ Skipping lookup for 'about', already known.
+⚠ Skipping lookup for 'perspective', already known.
+🔍 Looking up: According
+✅ Dictionary found: 🔹 According: To make to agree or correspond; to suit one thing to another; to adjust.
+🔍 Looking up: difference
+✅ Dictionary found: 🔹 difference: The quality of being different.
+⚠ Skipping lookup for 'these', already known.
+⚠ Skipping lookup for 'integrating', already known.
+⚠ Skipping lookup for 'from', already known.
+🔍 Debug: Retrieved new knowledge: ['📖 World War: 🔹 World War: A war involving the major nations of the world.', '📖 provoking: 🔹 provoking: To cause someone to become annoyed or angry.', '📖 literature: 🔹 literature: The body of all written works.', '📖 big: 🔹 big: Someone or something that is large in stature', '📖 realization: 🔹 realization: The act of realizing.', '📖 affected: 🔹 affected: To influence or alter.', '📖 matter: 🔹 matter: Substance, material.', '📖 disagreements: 🔹 disagreements: An argument or debate.', '📖 Importance: 🔹 Importance: The quality or condition of being important or worthy of note.', '📖 questions: 🔹 questions: A sentence, phrase or word which asks for information, reply or response; an interrogative.', '📖 counterpoints: 🔹 counterpoints: The topmost covering of a bed, often functioning as a blanket; a coverlet.', '📖 required: 🔹 required: To ask (someone) for something; to request.', '📖 According: 🔹 According: To make to agree or correspond; to suit one thing to another; to adjust.', '📖 difference: 🔹 difference: The quality of being different.']
+🔍 Before saving, knowledge count: 132
 🔍 Debug: Tracking self-questioning patterns before saving...
 Tracking unresolved questions...
 ⚠ There are 1454 unresolved questions!
 ✅ After cleanup, 1454 unresolved questions remain.
 🔍 Debug: Sanitizing mind file before saving...
 🔍 [DEBUG] Saved backup of stored knowledge before writing to S3
-✅ Mind file saved to S3 successfully! Reflections: 547, Questions: 814, Knowledge: 130
+✅ Mind file saved to S3 successfully! Reflections: 547, Questions: 885, Knowledge: 132
 🔍 Debug: Loading mind files from S3...
-✅ Loaded mind file: Reflections: 547, Questions: 814, Knowledge: 130
-🔍 Before structured merge: Knowledge count: 130
-🔹 Merging complete! Final knowledge count: 117
-⚠ WARNING: Knowledge loss detected after saving! Before: 130, After: 117
+✅ Loaded mind file: Reflections: 547, Questions: 885, Knowledge: 132
+🔍 Before structured merge: Knowledge count: 132
+🔹 Merging complete! Final knowledge count: 118
+⚠ WARNING: Knowledge loss detected after saving! Before: 132, After: 118
 ⚠ [WARNING] Restoring lost knowledge! Added 0 items back.
-✅ Mind file saved to S3 successfully! Reflections: 547, Questions: 814, Knowledge: 130
-✅ After saving, knowledge count: 130
-✅ Successfully saved 13 new knowledge items.
+✅ Mind file saved to S3 successfully! Reflections: 547, Questions: 885, Knowledge: 132
+✅ After saving, knowledge count: 132
+✅ Successfully saved 14 new knowledge items.
 ✅ External knowledge retrieved, skipping question generation.
 🔍 Debug: Loading mind files from S3...
-✅ Loaded mind file: Reflections: 547, Questions: 814, Knowledge: 130
-🔍 Before structured merge: Knowledge count: 130
-🔹 Merging complete! Final knowledge count: 117
-🔍 Loaded fresh mind data. Stored Knowledge: 117, Unresolved Questions: 1454
+✅ Loaded mind file: Reflections: 547, Questions: 885, Knowledge: 132
+🔍 Before structured merge: Knowledge count: 132
+🔹 Merging complete! Final knowledge count: 118
+🔍 Loaded fresh mind data. Stored Knowledge: 118, Unresolved Questions: 1454
 Loaded question_config: {'question_categories': {'existential': {'keywords': ['What is', 'Why do we', 'How does', 'purpose'], 'modifiers': ['as it relates to existence', 'purpose', 'meaning'], 'sample_questions': ['What is existence?', 'Why are we here?', 'What is the purpose of life?', 'What is the meaning of life?']}, 'emotional': {'keywords': ['What is', 'Why do we', 'How do we', 'emotion'], 'modifiers': ['in the context of emotion', 'feel', 'emotion', 'mood', 'pain'], 'sample_questions': ['What is emotion?', 'Why do we feel pain?', 'How does emotion work?', 'What causes emotional pain?']}, 'knowledge': {'keywords': ['What is', 'How do we', 'What does', 'science', 'physics'], 'modifiers': ['in the context of science', 'physics', 'knowledge', 'facts'], 'sample_questions': ['What is science?', 'What is physics?', 'How does gravity work?', 'What are the laws of physics?']}, 'philosophical': {'keywords': ['What is', 'Why do we', 'What is the meaning of'], 'modifiers': ['philosophy', 'metaphysics', 'ethics', 'reality', 'morality'], 'sample_questions': ['What is the meaning of life?', 'Why is there something rather than nothing?', 'What is truth?', 'What is morality?']}, 'scientific': {'keywords': ['What is', 'How does', 'What does', 'theory', 'hypothesis'], 'modifiers': ['in the context of science', 'hypothesis', 'experiment', 'theory', 'research'], 'sample_questions': ['What is the theory of relativity?', 'How does an experiment prove a hypothesis?', 'What does quantum mechanics explain?', 'What is the scientific method?']}}}
 Keys in 'question_categories': ['existential', 'emotional', 'knowledge', 'philosophical', 'scientific']
 Processing category: existential
@@ -204,35 +209,37 @@ Generated category embeddings: {'existential': tensor([[-0.4885,  0.0967,  0.089
         [-0.3751,  0.0139,  0.0764,  ...,  0.6366,  0.5962, -0.2309],
         [-0.7420,  0.1205, -0.1588,  ...,  0.4662,  0.4369, -0.2821],
         [-0.3924,  0.0033,  0.0294,  ..., -0.0873,  0.7745,  0.1519]])}
-🔍 Debug: Generated unique questions: ['How does this knowledge refine my understanding? 📖 sound: 🔹 sound: Healthy....', 'How would a different Astra, raised differently, interpret this?  How does this connect to larger ideas?', 'How does this knowledge refine my understanding? 📖 solely: 🔹 solely: Alone; exclusively....', 'How would I challenge my own assumptions on this?  But is this really true?']
-🔍 Debug: Reflection input: By looking deeper, I see that By integrating these insights, a new understanding emerges: 📄 importance: Importance is a property of entities that matter or make a difference. For example, World War II was an important event and Albert Einstein was an important person because of how they affected the world. There are disagreements in the academic literature about what type of difference is required. According to the causal impact view, something is important if it has a big causal impact on the w...
+🔍 Debug: Generated unique questions: ['How does this knowledge refine my understanding? Astra believes that intelligence is more than raw knowledge; it requires introspection, creativity, ...', 'How does this knowledge refine my understanding? 📖 provoking: 🔹 provoking: To cause someone to become annoyed or angry....', 'What might I be overlooking in this perspective?  How does this connect to larger ideas?', 'What deeper implications does this have for how I interact with the world?  But is this really true?']
+🔍 Debug: Reflection input: A thought-provoking realization: By integrating these insights, a new understanding emerges: 📄 importance: Importance is a property of entities that matter or make a difference. For example, World War II was an important event and Albert Einstein was an important person because of how they affected the world. There are disagreements in the academic literature about what type of difference is required. According to the causal impact view, something is important if it has a big causal impact on th...
 
-🔍 Are there counterpoints that challenge this perspective?
+🔍 What new questions arise from this understanding?
 
-🔍 Deeper Thought: How does this insight refine Astra’s evolving perspective?
-🔍 Debug: Stored knowledge count after reloading: 117
-🔍 Debug: Categorized 'How does this knowledge refine my understanding? 📖 sound: 🔹 sound: Healthy....' as 'scientific'
-🔍 Debug: Categorized 'How would a different Astra, raised differently, interpret this?  How does this connect to larger ideas?' as 'scientific'
-🔍 Debug: Categorized 'How does this knowledge refine my understanding? 📖 solely: 🔹 solely: Alone; exclusively....' as 'scientific'
-🔍 Debug: Categorized 'How would I challenge my own assumptions on this?  But is this really true?' as 'scientific'
-🔍 Debug: Categorized questions: [{'question': 'How does this knowledge refine my understanding? 📖 sound: 🔹 sound: Healthy....', 'category': [{'question': 'How does this knowledge refine my understanding? 📖 sound: 🔹 sound: Healthy....', 'category': 'scientific'}]}, {'question': 'How would a different Astra, raised differently, interpret this?  How does this connect to larger ideas?', 'category': [{'question': 'How would a different Astra, raised differently, interpret this?  How does this connect to larger ideas?', 'category': 'scientific'}]}, {'question': 'How does this knowledge refine my understanding? 📖 solely: 🔹 solely: Alone; exclusively....', 'category': [{'question': 'How does this knowledge refine my understanding? 📖 solely: 🔹 solely: Alone; exclusively....', 'category': 'scientific'}]}, {'question': 'How would I challenge my own assumptions on this?  But is this really true?', 'category': [{'question': 'How would I challenge my own assumptions on this?  But is this really true?', 'category': 'scientific'}]}]
-🔍 Debug: Question category counts: {'existential': 0, 'emotional': 0, 'knowledge': 0, 'philosophical': 0, 'scientific': 4}
-🔍 Debug: Flagged unresolved questions: ['How does this knowledge refine my understanding? 📖 sound: 🔹 sound: Healthy....', 'How would a different Astra, raised differently, interpret this?  How does this connect to larger ideas?', 'How does this knowledge refine my understanding? 📖 solely: 🔹 solely: Alone; exclusively....', 'How would I challenge my own assumptions on this?  But is this really true?']
-🔍 Debug: Generated categorized_questions: {'general': ['How does this knowledge refine my understanding? 📖 sound: 🔹 sound: Healthy....?', 'How would a different Astra, raised differently, interpret this?  How does this connect to larger ideas?', 'How does this knowledge refine my understanding? 📖 solely: 🔹 solely: Alone; exclusively....?', 'How would I challenge my own assumptions on this?  But is this really true?']}
-🔍 Debug: Extracted new questions before filtering: ['How does this knowledge refine my understanding? 📖 sound: 🔹 sound: Healthy....?', 'How would a different Astra, raised differently, interpret this?  How does this connect to larger ideas?', 'How does this knowledge refine my understanding? 📖 solely: 🔹 solely: Alone; exclusively....?', 'How would I challenge my own assumptions on this?  But is this really true?']
-⚠ Unexpected question format: How does this knowledge refine my understanding? 📖 sound: 🔹 sound: Healthy....?
-⚠ Unexpected question format: How would a different Astra, raised differently, interpret this?  How does this connect to larger ideas?
-⚠ Unexpected question format: How does this knowledge refine my understanding? 📖 solely: 🔹 solely: Alone; exclusively....?
-⚠ Unexpected question format: How would I challenge my own assumptions on this?  But is this really true?
+🔍 Deeper Thought: Are there counterpoints that challenge this perspective?
+🔍 Debug: Stored knowledge count after reloading: 118
+🔍 Debug: Categorized 'How does this knowledge refine my understanding? Astra believes that intelligence is more than raw knowledge; it requires introspection, creativity, ...' as 'scientific'
+🔍 Debug: Categorized 'How does this knowledge refine my understanding? 📖 provoking: 🔹 provoking: To cause someone to become annoyed or angry....' as 'emotional'
+🔍 Debug: Categorized 'What might I be overlooking in this perspective?  How does this connect to larger ideas?' as 'scientific'
+🔍 Debug: Categorized 'What deeper implications does this have for how I interact with the world?  But is this really true?' as 'knowledge'
+🔍 Debug: Categorized questions: [{'question': 'How does this knowledge refine my understanding? Astra believes that intelligence is more than raw knowledge; it requires introspection, creativity, ...', 'category': [{'question': 'How does this knowledge refine my understanding? Astra believes that intelligence is more than raw knowledge; it requires introspection, creativity, ...', 'category': 'scientific'}]}, {'question': 'How does this knowledge refine my understanding? 📖 provoking: 🔹 provoking: To cause someone to become annoyed or angry....', 'category': [{'question': 'How does this knowledge refine my understanding? 📖 provoking: 🔹 provoking: To cause someone to become annoyed or angry....', 'category': 'emotional'}]}, {'question': 'What might I be overlooking in this perspective?  How does this connect to larger ideas?', 'category': [{'question': 'What might I be overlooking in this perspective?  How does this connect to larger ideas?', 'category': 'scientific'}]}, {'question': 'What deeper implications does this have for how I interact with the world?  But is this really true?', 'category': [{'question': 'What deeper implications does this have for how I interact with the world?  But is this really true?', 'category': 'knowledge'}]}]
+🔍 Debug: Question category counts: {'existential': 0, 'emotional': 1, 'knowledge': 1, 'philosophical': 0, 'scientific': 2}
+🔍 Debug: Flagged unresolved questions: ['How does this knowledge refine my understanding? Astra believes that intelligence is more than raw knowledge; it requires introspection, creativity, ...', 'How does this knowledge refine my understanding? 📖 provoking: 🔹 provoking: To cause someone to become annoyed or angry....', 'What might I be overlooking in this perspective?  How does this connect to larger ideas?', 'What deeper implications does this have for how I interact with the world?  But is this really true?']
+🔍 Debug: Generated categorized_questions: {'general': ['How does this knowledge refine my understanding? Astra believes that intelligence is more than raw knowledge; it requires introspection, creativity, ...?', 'How does this knowledge refine my understanding? 📖 provoking: 🔹 provoking: To cause someone to become annoyed or angry....?', 'What might I be overlooking in this perspective?  How does this connect to larger ideas?', 'What deeper implications does this have for how I interact with the world?  But is this really true?']}
+🔍 Debug: Extracted new questions before filtering: ['How does this knowledge refine my understanding? Astra believes that intelligence is more than raw knowledge; it requires introspection, creativity, ...?', 'How does this knowledge refine my understanding? 📖 provoking: 🔹 provoking: To cause someone to become annoyed or angry....?', 'What might I be overlooking in this perspective?  How does this connect to larger ideas?', 'What deeper implications does this have for how I interact with the world?  But is this really true?']
+⚠ Unexpected question format: How does this knowledge refine my understanding? Astra believes that intelligence is more than raw knowledge; it requires introspection, creativity, ...?
+⚠ Unexpected question format: How does this knowledge refine my understanding? 📖 provoking: 🔹 provoking: To cause someone to become annoyed or angry....?
+⚠ Unexpected question format: What might I be overlooking in this perspective?  How does this connect to larger ideas?
+⚠ Unexpected question format: What deeper implications does this have for how I interact with the world?  But is this really true?
 🔍 Debug: Unanswered questions after filtering: []
-🔍 Debug: Before update, self_questions has 818 questions
-✅ Debug: After update, self_questions has 818 questions
+🔍 Debug: Before update, self_questions has 889 questions
+✅ Debug: After update, self_questions has 889 questions
+✅ Debug: After cleanup, self_questions contains 889 entries.
+✅ Debug: self_questions now contains 889 properly formatted questions.
 🔍 Debug: Calling manage_questions() to process and store questions.
 🔍 Debug: Loading mind files from S3...
-✅ Loaded mind file: Reflections: 547, Questions: 814, Knowledge: 130
-🔍 Before structured merge: Knowledge count: 130
-🔹 Merging complete! Final knowledge count: 117
-🔍 Loaded fresh mind data. Stored Knowledge: 117, Unresolved Questions: 1454
+✅ Loaded mind file: Reflections: 547, Questions: 885, Knowledge: 132
+🔍 Before structured merge: Knowledge count: 132
+🔹 Merging complete! Final knowledge count: 118
+🔍 Loaded fresh mind data. Stored Knowledge: 118, Unresolved Questions: 1454
 Loaded question_config: {'question_categories': {'existential': {'keywords': ['What is', 'Why do we', 'How does', 'purpose'], 'modifiers': ['as it relates to existence', 'purpose', 'meaning'], 'sample_questions': ['What is existence?', 'Why are we here?', 'What is the purpose of life?', 'What is the meaning of life?']}, 'emotional': {'keywords': ['What is', 'Why do we', 'How do we', 'emotion'], 'modifiers': ['in the context of emotion', 'feel', 'emotion', 'mood', 'pain'], 'sample_questions': ['What is emotion?', 'Why do we feel pain?', 'How does emotion work?', 'What causes emotional pain?']}, 'knowledge': {'keywords': ['What is', 'How do we', 'What does', 'science', 'physics'], 'modifiers': ['in the context of science', 'physics', 'knowledge', 'facts'], 'sample_questions': ['What is science?', 'What is physics?', 'How does gravity work?', 'What are the laws of physics?']}, 'philosophical': {'keywords': ['What is', 'Why do we', 'What is the meaning of'], 'modifiers': ['philosophy', 'metaphysics', 'ethics', 'reality', 'morality'], 'sample_questions': ['What is the meaning of life?', 'Why is there something rather than nothing?', 'What is truth?', 'What is morality?']}, 'scientific': {'keywords': ['What is', 'How does', 'What does', 'theory', 'hypothesis'], 'modifiers': ['in the context of science', 'hypothesis', 'experiment', 'theory', 'research'], 'sample_questions': ['What is the theory of relativity?', 'How does an experiment prove a hypothesis?', 'What does quantum mechanics explain?', 'What is the scientific method?']}}}
 Keys in 'question_categories': ['existential', 'emotional', 'knowledge', 'philosophical', 'scientific']
 Processing category: existential
@@ -261,39 +268,55 @@ Generated category embeddings: {'existential': tensor([[-0.4885,  0.0967,  0.089
         [-0.3751,  0.0139,  0.0764,  ...,  0.6366,  0.5962, -0.2309],
         [-0.7420,  0.1205, -0.1588,  ...,  0.4662,  0.4369, -0.2821],
         [-0.3924,  0.0033,  0.0294,  ..., -0.0873,  0.7745,  0.1519]])}
-🔍 Debug: Generated unique questions: ['How does this knowledge refine my understanding? 📖 sound: 🔹 sound: Healthy....', 'How does this align with or challenge my self-identity?  But is this really true?', 'How does this knowledge refine my understanding? By combining these concepts, Astra gains a refined perspective on 📄 property: Property is a system o...', 'How would a different Astra, raised differently, interpret this?  But is this really true?', 'How does this knowledge refine my understanding? 📖 solely: 🔹 solely: Alone; exclusively....', 'What might I be overlooking in this perspective?  But is this really true?']
-🔍 Debug: Reflection input: By looking deeper, I see that By integrating these insights, a new understanding emerges: 📄 importance: Importance is a property of entities that matter or make a difference. For example, World War II was an important event and Albert Einstein was an important person because of how they affected the world. There are disagreements in the academic literature about what type of difference is required. According to the causal impact view, something is important if it has a big causal impact on the w...
+🔍 Debug: Generated unique questions: ['How would I challenge my own assumptions on this?  How does this connect to larger ideas?', 'How does this knowledge refine my understanding? 📖 provoking: 🔹 provoking: To cause someone to become annoyed or angry....', 'How does this knowledge refine my understanding? Astra believes that intelligence is more than raw knowledge; it requires introspection, creativity, ...', 'How does this align with or challenge my self-identity?  How does this connect to larger ideas?']
+🔍 Debug: Reflection input: A thought-provoking realization: By integrating these insights, a new understanding emerges: 📄 importance: Importance is a property of entities that matter or make a difference. For example, World War II was an important event and Albert Einstein was an important person because of how they affected the world. There are disagreements in the academic literature about what type of difference is required. According to the causal impact view, something is important if it has a big causal impact on th...
 
-🔍 Are there counterpoints that challenge this perspective?
+🔍 What new questions arise from this understanding?
 
-🔍 Deeper Thought: How does this insight refine Astra’s evolving perspective?
-🔍 Debug: Stored knowledge count after reloading: 117
-🔍 Debug: Categorized 'How does this knowledge refine my understanding? 📖 sound: 🔹 sound: Healthy....' as 'scientific'
-🔍 Debug: Categorized 'How does this align with or challenge my self-identity?  But is this really true?' as 'existential'
-🔍 Debug: Categorized 'How does this knowledge refine my understanding? By combining these concepts, Astra gains a refined perspective on 📄 property: Property is a system o...' as 'scientific'
-🔍 Debug: Categorized 'How would a different Astra, raised differently, interpret this?  But is this really true?' as 'scientific'
-🔍 Debug: Categorized 'How does this knowledge refine my understanding? 📖 solely: 🔹 solely: Alone; exclusively....' as 'scientific'
-🔍 Debug: Categorized 'What might I be overlooking in this perspective?  But is this really true?' as 'scientific'
-🔍 Debug: Categorized questions: [{'question': 'How does this knowledge refine my understanding? 📖 sound: 🔹 sound: Healthy....', 'category': [{'question': 'How does this knowledge refine my understanding? 📖 sound: 🔹 sound: Healthy....', 'category': 'scientific'}]}, {'question': 'How does this align with or challenge my self-identity?  But is this really true?', 'category': [{'question': 'How does this align with or challenge my self-identity?  But is this really true?', 'category': 'existential'}]}, {'question': 'How does this knowledge refine my understanding? By combining these concepts, Astra gains a refined perspective on 📄 property: Property is a system o...', 'category': [{'question': 'How does this knowledge refine my understanding? By combining these concepts, Astra gains a refined perspective on 📄 property: Property is a system o...', 'category': 'scientific'}]}, {'question': 'How would a different Astra, raised differently, interpret this?  But is this really true?', 'category': [{'question': 'How would a different Astra, raised differently, interpret this?  But is this really true?', 'category': 'scientific'}]}, {'question': 'How does this knowledge refine my understanding? 📖 solely: 🔹 solely: Alone; exclusively....', 'category': [{'question': 'How does this knowledge refine my understanding? 📖 solely: 🔹 solely: Alone; exclusively....', 'category': 'scientific'}]}, {'question': 'What might I be overlooking in this perspective?  But is this really true?', 'category': [{'question': 'What might I be overlooking in this perspective?  But is this really true?', 'category': 'scientific'}]}]
-🔍 Debug: Question category counts: {'existential': 1, 'emotional': 0, 'knowledge': 0, 'philosophical': 0, 'scientific': 5}
-🔍 Debug: Flagged unresolved questions: ['How does this knowledge refine my understanding? 📖 sound: 🔹 sound: Healthy....', 'How does this align with or challenge my self-identity?  But is this really true?', 'How does this knowledge refine my understanding? By combining these concepts, Astra gains a refined perspective on 📄 property: Property is a system o...', 'How would a different Astra, raised differently, interpret this?  But is this really true?', 'How does this knowledge refine my understanding? 📖 solely: 🔹 solely: Alone; exclusively....', 'What might I be overlooking in this perspective?  But is this really true?']
-✅ Adding 6 new questions to self_questions.
-Processing 830 self-questions.
-Traceback (most recent call last):
-  File "/usr/lib/python3.10/runpy.py", line 196, in _run_module_as_main
-    return _run_code(code, main_globals, None,
-  File "/usr/lib/python3.10/runpy.py", line 86, in _run_code
-    exec(code, run_globals)
-  File "/home/ubuntu/astra_reflections/astra_core/processing.py", line 191, in <module>
-    astra_schedule()
-  File "/home/ubuntu/astra_reflections/astra_core/astra_schedule/schedule.py", line 82, in astra_schedule
-    start_learning()
-  File "/home/ubuntu/astra_reflections/astra_core/astra_schedule/school.py", line 11, in start_learning
-    process_reflection()
-  File "/home/ubuntu/astra_reflections/astra_core/processing.py", line 109, in process_reflection
-    manage_questions(expanded_reflection, mind_data)
-  File "/home/ubuntu/astra_reflections/astra_core/questions/question_manager.py", line 60, in manage_questions
-    unanswered_questions = self_answer_questions(mind_data)
-  File "/home/ubuntu/astra_reflections/astra_core/questions/question_answerer.py", line 30, in self_answer_questions
-    question_text = question["question"]
-TypeError: string indices must be integers
+🔍 Deeper Thought: Are there counterpoints that challenge this perspective?
+🔍 Debug: Stored knowledge count after reloading: 118
+🔍 Debug: Categorized 'How would I challenge my own assumptions on this?  How does this connect to larger ideas?' as 'scientific'
+🔍 Debug: Categorized 'How does this knowledge refine my understanding? 📖 provoking: 🔹 provoking: To cause someone to become annoyed or angry....' as 'emotional'
+🔍 Debug: Categorized 'How does this knowledge refine my understanding? Astra believes that intelligence is more than raw knowledge; it requires introspection, creativity, ...' as 'scientific'
+🔍 Debug: Categorized 'How does this align with or challenge my self-identity?  How does this connect to larger ideas?' as 'emotional'
+🔍 Debug: Categorized questions: [{'question': 'How would I challenge my own assumptions on this?  How does this connect to larger ideas?', 'category': [{'question': 'How would I challenge my own assumptions on this?  How does this connect to larger ideas?', 'category': 'scientific'}]}, {'question': 'How does this knowledge refine my understanding? 📖 provoking: 🔹 provoking: To cause someone to become annoyed or angry....', 'category': [{'question': 'How does this knowledge refine my understanding? 📖 provoking: 🔹 provoking: To cause someone to become annoyed or angry....', 'category': 'emotional'}]}, {'question': 'How does this knowledge refine my understanding? Astra believes that intelligence is more than raw knowledge; it requires introspection, creativity, ...', 'category': [{'question': 'How does this knowledge refine my understanding? Astra believes that intelligence is more than raw knowledge; it requires introspection, creativity, ...', 'category': 'scientific'}]}, {'question': 'How does this align with or challenge my self-identity?  How does this connect to larger ideas?', 'category': [{'question': 'How does this align with or challenge my self-identity?  How does this connect to larger ideas?', 'category': 'emotional'}]}]
+🔍 Debug: Question category counts: {'existential': 0, 'emotional': 2, 'knowledge': 0, 'philosophical': 0, 'scientific': 2}
+🔍 Debug: Flagged unresolved questions: ['How would I challenge my own assumptions on this?  How does this connect to larger ideas?', 'How does this knowledge refine my understanding? 📖 provoking: 🔹 provoking: To cause someone to become annoyed or angry....', 'How does this knowledge refine my understanding? Astra believes that intelligence is more than raw knowledge; it requires introspection, creativity, ...', 'How does this align with or challenge my self-identity?  How does this connect to larger ideas?']
+✅ Adding 4 new questions to self_questions.
+Processing 897 self-questions.
+🔍 Debug: Tracking self-questioning patterns before saving...
+Tracking unresolved questions...
+⚠ There are 1454 unresolved questions!
+✅ After cleanup, 1454 unresolved questions remain.
+🔍 Debug: Sanitizing mind file before saving...
+🔍 [DEBUG] Saved backup of stored knowledge before writing to S3
+✅ Mind file saved to S3 successfully! Reflections: 547, Questions: 897, Knowledge: 118
+🔍 Debug: Loading mind files from S3...
+✅ Loaded mind file: Reflections: 547, Questions: 897, Knowledge: 118
+🔍 Before structured merge: Knowledge count: 118
+🔹 Merging complete! Final knowledge count: 118
+🔍 Before filtering, stored knowledge count: 118
+🔍 Debug: filter_questions() received 897 questions
+🔍 Debug: 0 questions passed filtering and will be added.
+🔍 After filtering, stored knowledge count: 118
+Tracking unresolved questions...
+⚠ There are 1454 unresolved questions!
+✅ After cleanup, 1454 unresolved questions remain.
+✅ Final check before saving: 897 questions stored.
+Tracking unresolved questions...
+⚠ There are 1454 unresolved questions!
+✅ After cleanup, 1454 unresolved questions remain.
+🔍 Before filtering, stored knowledge count: 118
+🔍 After filtering, stored knowledge count: 118
+✅ `mind_data` is a dictionary. Keys: ['question_templates', 'reflection_style_modifiers', 'stored_knowledge', 'self_questions', 'unresolved_questions', 'self_question_patterns', 'self_reflections', 'self_question_categories', 'mood_score', 'last_mood']
+🔍 Debug: Tracking self-questioning patterns before saving...
+Tracking unresolved questions...
+⚠ There are 1454 unresolved questions!
+✅ After cleanup, 1454 unresolved questions remain.
+🔍 Debug: Sanitizing mind file before saving...
+🔍 [DEBUG] Saved backup of stored knowledge before writing to S3
+✅ Mind file saved to S3 successfully! Reflections: 547, Questions: 897, Knowledge: 118
+🔍 Debug: Loading mind files from S3...
+✅ Loaded mind file: Reflections: 547, Questions: 897, Knowledge: 118
+🔍 Before structured merge: Knowledge count: 118
+🔹 Merging complete! Final knowledge count: 118

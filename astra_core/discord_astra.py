@@ -129,8 +129,10 @@ async def mood(ctx):
 
     await ctx.send(f"{responses.get('mood_intro', 'Right now, I feel')} {mood}. {trait_message}")
 
-@bot.command()
-async def help(ctx):
+    @bot.command(name="assist")  # Renames help command to "assist"
+    async def assist(ctx):
+        await ctx.send("Here’s how you can interact with Astra...")
+
     """Displays a list of available commands."""
     commands_list = [
         "**!reflect** - Generate a self-reflection",
