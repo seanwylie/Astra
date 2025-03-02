@@ -25,7 +25,7 @@ def track_question_patterns(mind_data):
 
     # Debugging: Print updated unresolved questions
     print(f"✅ After cleanup, {len(unresolved_questions)} unresolved questions remain.")
-    for question in unresolved_questions:
-        print(f"🔍 Unresolved Question: {question['question']}")
+    # for question in unresolved_questions:
+        # print(f"🔍 Unresolved Question: {question['question']}")
 
     return mind_data  # ✅ Return updated mind_data

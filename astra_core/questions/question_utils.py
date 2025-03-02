@@ -83,10 +83,9 @@ def categorize_question(questions, category_embeddings):
 
 
 
-from fuzzywuzzy import fuzz
-
 def filter_questions(mind_data, new_questions):
     """Filters out duplicate, near-duplicate, or answered questions before storing."""
+    print(f"🔍 Before filtering, stored knowledge count: {len(mind_data['stored_knowledge'])}")
 
     print(f"🔍 Debug: filter_questions() received {len(new_questions)} questions")
 
@@ -95,7 +94,7 @@ def filter_questions(mind_data, new_questions):
         return []
 
     filtered_questions = []
-    stored_knowledge = [k.lower() for k in mind_data.get("stored_knowledge", [])]
+    stored_knowledge_set = set(mind_data.get("stored_knowledge", []))  # ✅ Prevents mutation
 
     # ✅ Store existing questions with precomputed lowercase versions
     existing_questions = [
@@ -107,9 +106,6 @@ def filter_questions(mind_data, new_questions):
     for question_entry in new_questions:
         if isinstance(question_entry, dict) and "question" in question_entry:
             question_text = question_entry["question"].strip()
-            question_source = question_entry.get("source", "").strip()
-            question_context = question_entry.get("context_summary", "").strip()
-            question_related = question_entry.get("related_knowledge", "").strip()
         else:
             print(f"⚠ Unexpected question format (not dict with 'question' key): {question_entry}")
             continue  # Skip invalid entries
@@ -120,32 +116,25 @@ def filter_questions(mind_data, new_questions):
 
         question_text_lower = question_text.lower()
 
-        # ✅ Skip questions that already exist in stored knowledge
-        if any(question_text_lower in knowledge.lower() for knowledge in stored_knowledge):
-            print(f"✅ Skipping: Already answered in stored knowledge → {question_text}")
-            continue
+        # ✅ Ensure stored knowledge is **never modified** by filtering
+        if question_text_lower in stored_knowledge_set:
+            print(f"⚠ WARNING: Possible false positive → Skipping '{question_text}' (already in stored knowledge)")
+            continue  # 🚨 This might be accidentally removing legitimate questions!
 
         is_duplicate = False
-        for existing_text, existing_source, existing_context, existing_related in existing_questions:
+        for existing_text, _, _, _ in existing_questions:
             similarity_score = fuzz.ratio(question_text_lower, existing_text)
 
-            print(f"⚖ Checking against: {existing_text} (Score: {similarity_score})")
-
             # 🔥 Updated comparison logic: Allow minor variations
-            if similarity_score > 70 and (
-                question_source == existing_source or 
-                question_context == existing_context or 
-                question_related == existing_related
-            ):
-                print(f"⚠ Near-exact duplicate found. Skipping: {question_text}")
+            if similarity_score > 65:
                 is_duplicate = True
                 break
 
         if not is_duplicate:
             filtered_questions.append(question_entry)
             print(f"✅ Accepted New Question: {question_text}")
-        else:
-            print(f"⚠ Rejected due to duplication: {question_text}")
 
     print(f"🔍 Debug: {len(filtered_questions)} questions passed filtering and will be added.")
+    print(f"🔍 After filtering, stored knowledge count: {len(mind_data['stored_knowledge'])}")
+
     return filtered_questions

@@ -46,48 +46,72 @@ class KnowledgeManager:
             print(f"⚠ Wikipedia lookup failed for '{concept}': {e}")
         return None
 
-    def retrieve_external_knowledge(self, search_terms, mind_data):
-        """Fetch knowledge from external sources and update stored knowledge."""
+    def retrieve_external_knowledge(self, search_terms):
+        """Fetch knowledge from external sources and update stored knowledge *before* generating new questions."""
         new_knowledge = []
+        retrieved_anything = False  # ✅ Track whether anything was found
+
+        print(f"🔍 Debug: Attempting to retrieve knowledge for {search_terms}")
+
         for concept in search_terms:
             if not self.should_lookup_concept(concept):
+                print(f"⚠ Skipping lookup for '{concept}', already known.")
                 continue
+            
+            print(f"🔍 Looking up: {concept}")
             dictionary_info = self.lookup_dictionary_definition(concept)
             wiki_info = self.fetch_wikipedia_summary(concept)
+
             if dictionary_info:
                 new_knowledge.append(f"📖 {concept}: {dictionary_info}")
+                print(f"✅ Dictionary found: {dictionary_info}")
             elif wiki_info:
                 new_knowledge.append(f"📄 {concept}: {wiki_info}")
+                print(f"✅ Wikipedia found: {wiki_info}")
+            else:
+                print(f"⚠ No external info found for '{concept}'.")
+
+        print(f"🔍 Debug: Retrieved new knowledge: {new_knowledge}")
+
         if new_knowledge:
-            mind_data["stored_knowledge"].extend(new_knowledge)
-            save_mind(mind_data)
-        
-        return mind_data  # ✅ Ensures the function always returns the full mind_data dictionary
+            retrieved_anything = True
+            self.mind_data["stored_knowledge"].extend(new_knowledge)
+            print(f"🔍 Before saving, knowledge count: {len(self.mind_data['stored_knowledge'])}")
+            save_mind(self.mind_data)
+            print(f"✅ After saving, knowledge count: {len(self.mind_data['stored_knowledge'])}")
+            print(f"✅ Successfully saved {len(new_knowledge)} new knowledge items.")
 
+        return retrieved_anything  # ✅ Return whether we found anything
 
-    def extract_unknown_terms(self, reflection, mind_data):
-        """Extract potential unknown concepts from a reflection dynamically."""
-        known_terms = set(mind_data.get("stored_knowledge", []))  # ✅ Use a set for fast lookup
-    
-        # ✅ Detect Multi-Word Phrases (Proper Nouns, Scientific Terms, etc.)
+    def extract_unknown_terms(self, reflection):
+        """Extract potential unknown concepts and force an external lookup *before* generating more self-questions."""
+        known_terms = set(self.mind_data.get("stored_knowledge", []))  # ✅ Use a set for fast lookup
+
         phrase_pattern = r'\b(?:[A-Z][a-z]+(?:\s+[A-Z][a-z]+)*)\b'
         found_phrases = re.findall(phrase_pattern, reflection)
 
-        # ✅ Detect Individual Words
         words = re.findall(r'\b\w+\b', reflection)
         found_words = [word.lower() for word in words if len(word) > 2]
 
-        # ✅ Filter out individual words that are part of a known phrase
         filtered_words = [word for word in found_words if not any(phrase.lower().startswith(word) for phrase in found_phrases)]
 
-        # ✅ Combine phrases and words into a single set
         all_terms = set(found_phrases + filtered_words)
-
-        # ✅ Only consider terms that Astra doesn't fully understand
         unknown_terms = [term for term in all_terms if term not in known_terms]
 
         print(f"🔍 Final unknown concepts after filtering: {unknown_terms}")
-        return unknown_terms
+
+        if unknown_terms:
+            found_new_knowledge = self.retrieve_external_knowledge(unknown_terms)
+
+            # ✅ If new knowledge was found, return empty (no need for self-questions)
+            if found_new_knowledge:
+                print(f"✅ External knowledge retrieved, skipping question generation.")
+                return []
+
+        return unknown_terms  # ✅ If nothing was found, allow question generation
+
+
+
 
 # ✅ Initialize knowledge manager instance
 knowledge_manager = KnowledgeManager()

@@ -65,10 +65,10 @@ def process_reflection():
         print(f"📝 Added new reflection: {expanded_reflection[:100]}...")
 
     # ✅ Extract unknown concepts & seek external knowledge
-    unknown_concepts = knowledge_manager.extract_unknown_terms(expanded_reflection, mind_data)
+    unknown_concepts = knowledge_manager.extract_unknown_terms(expanded_reflection)
     if unknown_concepts:
         print(f"🌐 Astra detected unknown concepts: {unknown_concepts}")
-        mind_data = knowledge_manager.retrieve_external_knowledge(unknown_concepts, mind_data)
+        mind_data = knowledge_manager.retrieve_external_knowledge(unknown_concepts)
 
     # ✅ Generate new questions using Astra's enhanced system
     categorized_questions, category_counts = generate_questions(expanded_reflection, mind_data)
@@ -93,6 +93,25 @@ def process_reflection():
     mind_data["self_questions"].extend(unanswered_questions)
 
     print(f"✅ Debug: After update, self_questions has {len(mind_data['self_questions'])} questions")
+    # ✅ Fix corrupted self_questions entries
+    cleaned_questions = []
+
+    for q in mind_data["self_questions"]:
+        if isinstance(q, str):  
+            cleaned_questions.append({"question": q})  # ✅ Convert to dict
+        elif isinstance(q, dict) and "question" in q:
+            cleaned_questions.append(q)  # ✅ Keep valid questions
+        else:
+            print(f"⚠ Removing corrupt entry from self_questions: {q}")
+
+    mind_data["self_questions"] = cleaned_questions
+    print(f"✅ Debug: After cleanup, self_questions contains {len(mind_data['self_questions'])} entries.")
+
+    # ✅ Replace `self_questions` with formatted questions
+    mind_data["self_questions"] = cleaned_questions
+
+    # ✅ Debugging: Ensure questions are formatted correctly
+    print(f"✅ Debug: self_questions now contains {len(mind_data['self_questions'])} properly formatted questions.")
 
     # 🔥 NEW: Call `manage_questions()` to fully process questions
     print("🔍 Debug: Calling manage_questions() to process and store questions.")
@@ -110,7 +129,13 @@ def process_reflection():
         mind_data["stored_knowledge"].append(refined_idea)
         print(f"🔹 Refined knowledge added: {refined_idea[:150]}...")
 
+    print(f"🔍 Before filtering, stored knowledge count: {len(mind_data['stored_knowledge'])}")
+
     mind_data["stored_knowledge"] = filter_knowledge(mind_data["stored_knowledge"])
+
+
+    print(f"🔍 After filtering, stored knowledge count: {len(mind_data['stored_knowledge'])}")
+
 
     # ✅ Debugging: Track changes before saving
     track_mind_data_changes("before saving", mind_data)

@@ -6,7 +6,7 @@ question_config = load_config("question_config")
 # astra_core/questions/question_flagger.py
 
 def flag_unresolved_question(questions, mind_data):
-    """Flags a question as unresolved only if Astra truly cannot answer it."""
+    """Store all questions as unresolved without checking for answers."""
     unresolved_questions = mind_data.get("unresolved_questions", [])
     valid_questions = []
 
@@ -17,36 +17,21 @@ def flag_unresolved_question(questions, mind_data):
             print(f"⚠ Ignoring invalid question: {question}")
             continue
 
-        # 🔥 **Remove the category check to prevent false skips**
-        print(f"🔍 Checking if Astra can answer: {question}")
-
-        if can_answer_question(question, mind_data):
-            continue  # Skip flagging if answer exists
-
-        print(f"⚠ Flagging unresolved question: {question}")
+        # 🔥 No checking—just store questions
         unresolved_questions.append({
             "question": question,
             "unresolved": True,
-            "context": "Unresolved due to lack of knowledge."
+            "context": "Stored for future answering."
         })
 
         valid_questions.append(question)
 
     mind_data["unresolved_questions"] = unresolved_questions
-    return valid_questions
+    return valid_questions  # ✅ Questions are stored but not processed
+
 
 
 def can_answer_question(question, mind_data):
-    """Determines if a question can be answered using Astra's stored knowledge as full words, not character by character."""
-    
-    # Ensure question is a string
-    question = str(question).strip().lower()
+    """Disable question answering; store all questions instead."""
+    return False  # ✅ Always store, never answer
 
-    # Retrieve stored knowledge as lowercase strings
-    stored_knowledge = [str(k).strip().lower() for k in mind_data.get("stored_knowledge", [])]
-
-    # 🔥 Fix: Ensure we compare against FULL stored knowledge phrases, not character-wise
-    print(f"🔍 Checking stored knowledge for exact match: {question}")
-
-    # 🔥 Fix: Instead of exact match, allow substrings for more flexible checking
-    return any(question in knowledge for knowledge in stored_knowledge)

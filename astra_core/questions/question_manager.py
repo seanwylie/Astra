@@ -29,8 +29,8 @@ def deduplicate_questions(questions, threshold=65):  # 🔥 Lower threshold from
         if not is_duplicate:
             unique_questions.append(question)
             seen_questions.add(question_text.lower())
-        else:
-            print(f"⚠ Near-exact duplicate found. Allowing minor rewording: {question_text}")  # 🔥 Less strict duplicate handling
+        # else:
+            # print(f"⚠ Near-exact duplicate found. Allowing minor rewording: {question_text}")  # 🔥 Less strict duplicate handling
 
     return unique_questions
 
