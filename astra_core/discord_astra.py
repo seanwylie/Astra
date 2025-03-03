@@ -4,6 +4,7 @@ import discord
 import time
 import json
 from discord.ext import commands
+from astra_core.knowledge import knowledge_manager  # ✅ Re-enable knowledge lookup
 from dotenv import load_dotenv
 from astra_core.config_loader import load_config
 from astra_core.processing import process_reflection
@@ -85,8 +86,14 @@ async def reflect(ctx):
 @bot.command()
 async def ask(ctx):
     """Astra asks a self-reflective question based on her current mood."""
-    question = random.choice(mind_data.get("self_questions", [])) if mind_data["self_questions"] else responses.get("ask_empty", "I don't have a question right now. Ask me to reflect!")
-    await ctx.send(f"{responses['ask_intro'].get(mood_manager.current_mood, responses['ask_intro']['neutral'])}\n{question}")
+    if mind_data["self_questions"]:
+        question_entry = random.choice(mind_data["self_questions"])
+        question_text = question_entry["question"] if isinstance(question_entry, dict) else question_entry
+    else:
+        question_text = responses.get("ask_empty", "I don't have a question right now. Ask me to reflect!")
+
+    await ctx.send(f"{responses['ask_intro'].get(mood_manager.current_mood, responses['ask_intro']['neutral'])}\n{question_text}")
+
 
 @bot.command()
 async def trust(ctx):
@@ -129,9 +136,9 @@ async def mood(ctx):
 
     await ctx.send(f"{responses.get('mood_intro', 'Right now, I feel')} {mood}. {trait_message}")
 
-    @bot.command(name="assist")  # Renames help command to "assist"
-    async def assist(ctx):
-        await ctx.send("Here’s how you can interact with Astra...")
+@bot.command(name="assist")  # Renames help command to "assist"
+async def assist(ctx):
+    await ctx.send("Here’s how you can interact with Astra...")
 
     """Displays a list of available commands."""
     commands_list = [
@@ -143,6 +150,18 @@ async def mood(ctx):
         "**!personality** - View Astra's personality traits"
     ]
     await ctx.send(f"📜 **Astra's Commands:**\n" + "\n".join(commands_list))
+
+@bot.command()
+async def lookup(ctx, *, concept):
+    """Forces Astra to look up a concept externally and store the knowledge."""
+    found = knowledge_manager.retrieve_external_knowledge([concept])
+
+    if found:
+        await ctx.send(f"✅ I've learned something new about **{concept}**!")
+    else:
+        await ctx.send(f"❌ I couldn't find reliable information on **{concept}**.")
+
+
 
 @bot.event
 async def on_ready():

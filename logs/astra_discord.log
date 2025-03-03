@@ -2,50 +2,19 @@ Config directory: /home/ubuntu/astra_reflections/astra_core/config
 Loading config file from: /home/ubuntu/astra_reflections/astra_core/config/general_config.json
 🔍 Debug: Loading knowledge settings...
 Loading config file from: /home/ubuntu/astra_reflections/astra_core/config/lookup_config.json
-🔍 Debug: Loading mind files from S3...
-✅ Loaded mind file: Reflections: 547, Questions: 885, Knowledge: 118
-🔍 Before structured merge: Knowledge count: 118
-🔹 Merging complete! Final knowledge count: 118
+🔍 Debug: Loading mind file from S3...
+✅ Loaded mind file: Reflections: 549, Questions: 1417, Knowledge: 78
+🔍 Loaded mind file. Knowledge count: 78
 Loading config file from: /home/ubuntu/astra_reflections/astra_core/config/mood_config.json
 🔍 Debug: Attempting to load mood_config.json...
 Loading config file from: /home/ubuntu/astra_reflections/astra_core/config/mood_config.json
 🔍 Debug: mood_config Loaded → {'log_file': '/home/ubuntu/astra_logs.json', 'moods': {'curious': {'curiosity_factor': 1.5, 'reflection_style': 'questioning', 'response_tone': 'enthusiastic'}, 'thoughtful': {'curiosity_factor': 1.2, 'reflection_style': 'analytical', 'response_tone': 'calm'}, 'frustrated': {'curiosity_factor': 0.8, 'reflection_style': 'skeptical', 'response_tone': 'snarky'}, 'excited': {'curiosity_factor': 1.8, 'reflection_style': 'expansive', 'response_tone': 'energetic'}, 'neutral': {'curiosity_factor': 1.0, 'reflection_style': 'balanced', 'response_tone': 'neutral'}}, 'mood_influences': {'success': 1.5, 'failure': -2.0, 'deep_reflection': 1.0, 'idle': -0.5, 'negative_feedback': -0.2, 'positive_feedback': 0.2}, 'mood_limits': {'min': -2.0, 'max': 2.0}, 'curiosity_limits': {'min': 0.5, 'max': 2.0}}
 Loading config file from: /home/ubuntu/astra_reflections/astra_core/config/general_config.json
-🔍 Debug: Loading mind files from S3...
-✅ Loaded mind file: Reflections: 547, Questions: 885, Knowledge: 118
-🔍 Before structured merge: Knowledge count: 118
-🔹 Merging complete! Final knowledge count: 118
+🔍 Debug: Loading mind file from S3...
+✅ Loaded mind file: Reflections: 549, Questions: 1417, Knowledge: 78
+🔍 Loaded mind file. Knowledge count: 78
 🔍 Loaded mood from memory: excited, Score: 2.0, Curiosity: 1.0
 Loading config file from: /home/ubuntu/astra_reflections/astra_core/config/question_config.json
-Loaded Config: {'question_categories': {'existential': {'keywords': ['What is', 'Why do we', 'How does', 'purpose'], 'modifiers': ['as it relates to existence', 'purpose', 'meaning'], 'sample_questions': ['What is existence?', 'Why are we here?', 'What is the purpose of life?', 'What is the meaning of life?']}, 'emotional': {'keywords': ['What is', 'Why do we', 'How do we', 'emotion'], 'modifiers': ['in the context of emotion', 'feel', 'emotion', 'mood', 'pain'], 'sample_questions': ['What is emotion?', 'Why do we feel pain?', 'How does emotion work?', 'What causes emotional pain?']}, 'knowledge': {'keywords': ['What is', 'How do we', 'What does', 'science', 'physics'], 'modifiers': ['in the context of science', 'physics', 'knowledge', 'facts'], 'sample_questions': ['What is science?', 'What is physics?', 'How does gravity work?', 'What are the laws of physics?']}, 'philosophical': {'keywords': ['What is', 'Why do we', 'What is the meaning of'], 'modifiers': ['philosophy', 'metaphysics', 'ethics', 'reality', 'morality'], 'sample_questions': ['What is the meaning of life?', 'Why is there something rather than nothing?', 'What is truth?', 'What is morality?']}, 'scientific': {'keywords': ['What is', 'How does', 'What does', 'theory', 'hypothesis'], 'modifiers': ['in the context of science', 'hypothesis', 'experiment', 'theory', 'research'], 'sample_questions': ['What is the theory of relativity?', 'How does an experiment prove a hypothesis?', 'What does quantum mechanics explain?', 'What is the scientific method?']}}}
-Loaded question_config: {'question_categories': {'existential': {'keywords': ['What is', 'Why do we', 'How does', 'purpose'], 'modifiers': ['as it relates to existence', 'purpose', 'meaning'], 'sample_questions': ['What is existence?', 'Why are we here?', 'What is the purpose of life?', 'What is the meaning of life?']}, 'emotional': {'keywords': ['What is', 'Why do we', 'How do we', 'emotion'], 'modifiers': ['in the context of emotion', 'feel', 'emotion', 'mood', 'pain'], 'sample_questions': ['What is emotion?', 'Why do we feel pain?', 'How does emotion work?', 'What causes emotional pain?']}, 'knowledge': {'keywords': ['What is', 'How do we', 'What does', 'science', 'physics'], 'modifiers': ['in the context of science', 'physics', 'knowledge', 'facts'], 'sample_questions': ['What is science?', 'What is physics?', 'How does gravity work?', 'What are the laws of physics?']}, 'philosophical': {'keywords': ['What is', 'Why do we', 'What is the meaning of'], 'modifiers': ['philosophy', 'metaphysics', 'ethics', 'reality', 'morality'], 'sample_questions': ['What is the meaning of life?', 'Why is there something rather than nothing?', 'What is truth?', 'What is morality?']}, 'scientific': {'keywords': ['What is', 'How does', 'What does', 'theory', 'hypothesis'], 'modifiers': ['in the context of science', 'hypothesis', 'experiment', 'theory', 'research'], 'sample_questions': ['What is the theory of relativity?', 'How does an experiment prove a hypothesis?', 'What does quantum mechanics explain?', 'What is the scientific method?']}}}
-Keys in 'question_categories': ['existential', 'emotional', 'knowledge', 'philosophical', 'scientific']
-Processing category: existential
-Category Details: {'keywords': ['What is', 'Why do we', 'How does', 'purpose'], 'modifiers': ['as it relates to existence', 'purpose', 'meaning'], 'sample_questions': ['What is existence?', 'Why are we here?', 'What is the purpose of life?', 'What is the meaning of life?']}
-Processing category: emotional
-Category Details: {'keywords': ['What is', 'Why do we', 'How do we', 'emotion'], 'modifiers': ['in the context of emotion', 'feel', 'emotion', 'mood', 'pain'], 'sample_questions': ['What is emotion?', 'Why do we feel pain?', 'How does emotion work?', 'What causes emotional pain?']}
-Processing category: knowledge
-Category Details: {'keywords': ['What is', 'How do we', 'What does', 'science', 'physics'], 'modifiers': ['in the context of science', 'physics', 'knowledge', 'facts'], 'sample_questions': ['What is science?', 'What is physics?', 'How does gravity work?', 'What are the laws of physics?']}
-Processing category: philosophical
-Category Details: {'keywords': ['What is', 'Why do we', 'What is the meaning of'], 'modifiers': ['philosophy', 'metaphysics', 'ethics', 'reality', 'morality'], 'sample_questions': ['What is the meaning of life?', 'Why is there something rather than nothing?', 'What is truth?', 'What is morality?']}
-Processing category: scientific
-Category Details: {'keywords': ['What is', 'How does', 'What does', 'theory', 'hypothesis'], 'modifiers': ['in the context of science', 'hypothesis', 'experiment', 'theory', 'research'], 'sample_questions': ['What is the theory of relativity?', 'How does an experiment prove a hypothesis?', 'What does quantum mechanics explain?', 'What is the scientific method?']}
-Generated category embeddings: {'existential': tensor([[-0.4885,  0.0967,  0.0896,  ...,  0.6063,  0.8798,  0.0452],
-        [ 0.7560, -0.1118,  0.2147,  ...,  0.8124,  0.3518, -0.1769],
-        [-0.0282,  0.5480, -0.1545,  ...,  0.4582,  0.5012,  0.1413],
-        [-0.4898,  0.3847,  0.0207,  ...,  0.2208,  0.5648,  0.2352]]), 'emotional': tensor([[-0.6410, -0.0044,  0.5819,  ...,  0.7663,  0.1839,  0.3117],
-        [-0.0589, -0.5343,  0.4255,  ...,  0.5725,  0.5465, -0.5478],
-        [-0.6131, -0.3262,  0.7333,  ...,  0.5917,  0.0839, -0.0354],
-        [-0.2682, -0.5735,  0.6732,  ...,  0.6313,  0.0435,  0.0339]]), 'knowledge': tensor([[-0.1426,  0.0961,  0.1858,  ..., -0.0487,  1.0646, -0.2149],
-        [-0.2895,  0.1278, -0.1427,  ...,  0.1318,  1.0073,  0.1523],
-        [-0.1899, -0.8854,  0.3969,  ..., -0.1001,  0.3053, -0.3837],
-        [-0.1507,  0.0387,  0.0153,  ...,  0.2257,  0.9071, -0.2372]]), 'philosophical': tensor([[-0.4898,  0.3847,  0.0207,  ...,  0.2208,  0.5648,  0.2352],
-        [ 0.0181,  0.0303, -0.1593,  ...,  0.4707,  0.9620,  0.1785],
-        [-0.1743,  0.1143, -0.1407,  ...,  0.4189,  0.5060,  0.1453],
-        [ 0.1607,  0.5334, -0.5651,  ...,  0.0349,  0.4367, -0.4132]]), 'scientific': tensor([[ 0.0150, -0.6411, -0.0757,  ...,  0.5589,  0.4110, -0.0790],
-        [-0.3751,  0.0139,  0.0764,  ...,  0.6366,  0.5962, -0.2309],
-        [-0.7420,  0.1205, -0.1588,  ...,  0.4662,  0.4369, -0.2821],
-        [-0.3924,  0.0033,  0.0294,  ..., -0.0873,  0.7745,  0.1519]])}
 Loading config file from: /home/ubuntu/astra_reflections/astra_core/config/question_config.json
 🔍 Debug: MIND_FILE_ORIG Path → mind_file_parents.json
 Loading config file from: /home/ubuntu/astra_reflections/astra_core/config/general_config.json
@@ -63,262 +32,12 @@ Loading config file from: /home/ubuntu/astra_reflections/astra_core/config/value
 Loading config file from: /home/ubuntu/astra_reflections/astra_core/config/mood_config.json
 🔍 Debug: mood_config Loaded → {'log_file': '/home/ubuntu/astra_logs.json', 'moods': {'curious': {'curiosity_factor': 1.5, 'reflection_style': 'questioning', 'response_tone': 'enthusiastic'}, 'thoughtful': {'curiosity_factor': 1.2, 'reflection_style': 'analytical', 'response_tone': 'calm'}, 'frustrated': {'curiosity_factor': 0.8, 'reflection_style': 'skeptical', 'response_tone': 'snarky'}, 'excited': {'curiosity_factor': 1.8, 'reflection_style': 'expansive', 'response_tone': 'energetic'}, 'neutral': {'curiosity_factor': 1.0, 'reflection_style': 'balanced', 'response_tone': 'neutral'}}, 'mood_influences': {'success': 1.5, 'failure': -2.0, 'deep_reflection': 1.0, 'idle': -0.5, 'negative_feedback': -0.2, 'positive_feedback': 0.2}, 'mood_limits': {'min': -2.0, 'max': 2.0}, 'curiosity_limits': {'min': 0.5, 'max': 2.0}}
 Loading config file from: /home/ubuntu/astra_reflections/astra_core/config/general_config.json
-🔍 Debug: Loading mind files from S3...
-✅ Loaded mind file: Reflections: 547, Questions: 885, Knowledge: 118
-🔍 Before structured merge: Knowledge count: 118
-🔹 Merging complete! Final knowledge count: 118
+🔍 Debug: Loading mind file from S3...
+✅ Loaded mind file: Reflections: 550, Questions: 1417, Knowledge: 78
+🔍 Loaded mind file. Knowledge count: 78
 🔍 Loaded mood from memory: excited, Score: 2.0, Curiosity: 1.0
-🔍 Debug: Loading mind files from S3...
-✅ Loaded mind file: Reflections: 547, Questions: 885, Knowledge: 118
-🔍 Before structured merge: Knowledge count: 118
-🔹 Merging complete! Final knowledge count: 118
-[2025-03-02 21:59:22] [INFO    ] discord.client: logging in using static token
-[2025-03-02 21:59:22] [INFO    ] discord.gateway: Shard ID None has connected to Gateway (Session ID: d98f72b23a36d8687d1be6b5d34bf31a).
-🔍 Debug: Loading mind files from S3...
-✅ Loaded mind file: Reflections: 547, Questions: 897, Knowledge: 118
-🔍 Before structured merge: Knowledge count: 118
-🔹 Merging complete! Final knowledge count: 118
-🔍 Debug: Loading mind files from S3...
-✅ Loaded mind file: Reflections: 547, Questions: 897, Knowledge: 118
-🔍 Before structured merge: Knowledge count: 118
-🔹 Merging complete! Final knowledge count: 118
-🔍 Debug: Loading mind files from S3...
-✅ Loaded mind file: Reflections: 547, Questions: 897, Knowledge: 118
-🔍 Before structured merge: Knowledge count: 118
-🔹 Merging complete! Final knowledge count: 118
-Loading config file from: /home/ubuntu/astra_reflections/astra_core/config/general_config.json
-Loading config file from: /home/ubuntu/astra_reflections/astra_core/config/mood_config.json
-🔍 Final unknown concepts after filtering: ['and', 'integrating', 'understanding', 'How', 'difference', 'There', 'insight', 'what', 'matter', 'counterpoints', 'By', 'academic', 'Albert Einstein', 'For', 'make', 'see', 'World War', 'looking', 'entities', 'that', 'big', 'Importance', 'Are', 'thought', 'because', 'evolving', 'example', 'disagreements', 'was', 'this', 'important', 'about', 'literature', 'they', 'something', 'causal', 'perspective', 'event', 'these', 'emerges', 'new', 'type', 'refine', 'According', 'affected', 'person', 'has', 'impact', 'challenge', 'Astra', 'war', 'insights', 'Deeper Thought', 'property', 'required', 'does', 'einstein', 'view']
-🔍 Debug: Attempting to retrieve knowledge for ['and', 'integrating', 'understanding', 'How', 'difference', 'There', 'insight', 'what', 'matter', 'counterpoints', 'By', 'academic', 'Albert Einstein', 'For', 'make', 'see', 'World War', 'looking', 'entities', 'that', 'big', 'Importance', 'Are', 'thought', 'because', 'evolving', 'example', 'disagreements', 'was', 'this', 'important', 'about', 'literature', 'they', 'something', 'causal', 'perspective', 'event', 'these', 'emerges', 'new', 'type', 'refine', 'According', 'affected', 'person', 'has', 'impact', 'challenge', 'Astra', 'war', 'insights', 'Deeper Thought', 'property', 'required', 'does', 'einstein', 'view']
-⚠ Skipping lookup for 'and', already known.
-⚠ Skipping lookup for 'integrating', already known.
-⚠ Skipping lookup for 'understanding', already known.
-⚠ Skipping lookup for 'How', already known.
-🔍 Looking up: difference
-✅ Dictionary found: 🔹 difference: The quality of being different.
-⚠ Skipping lookup for 'There', already known.
-⚠ Skipping lookup for 'insight', already known.
-⚠ Skipping lookup for 'what', already known.
-🔍 Looking up: matter
-✅ Dictionary found: 🔹 matter: Substance, material.
-🔍 Looking up: counterpoints
-✅ Dictionary found: 🔹 counterpoints: The topmost covering of a bed, often functioning as a blanket; a coverlet.
-⚠ Skipping lookup for 'By', already known.
-⚠ Skipping lookup for 'academic', already known.
-⚠ Skipping lookup for 'Albert Einstein', already known.
-⚠ Skipping lookup for 'For', already known.
-⚠ Skipping lookup for 'make', already known.
-⚠ Skipping lookup for 'see', already known.
-🔍 Looking up: World War
-✅ Dictionary found: 🔹 World War: A war involving the major nations of the world.
-🔍 Looking up: looking
-✅ Dictionary found: 🔹 looking: The act of one who looks; a glance.
-⚠ Skipping lookup for 'entities', already known.
-⚠ Skipping lookup for 'that', already known.
-🔍 Looking up: big
-✅ Dictionary found: 🔹 big: Someone or something that is large in stature
-🔍 Looking up: Importance
-✅ Dictionary found: 🔹 Importance: The quality or condition of being important or worthy of note.
-⚠ Skipping lookup for 'Are', already known.
-⚠ Skipping lookup for 'thought', already known.
-⚠ Skipping lookup for 'because', already known.
-⚠ Skipping lookup for 'evolving', already known.
-⚠ Skipping lookup for 'example', already known.
-🔍 Looking up: disagreements
-✅ Dictionary found: 🔹 disagreements: An argument or debate.
-⚠ Skipping lookup for 'was', already known.
-⚠ Skipping lookup for 'this', already known.
-⚠ Skipping lookup for 'important', already known.
-⚠ Skipping lookup for 'about', already known.
-🔍 Looking up: literature
-✅ Dictionary found: 🔹 literature: The body of all written works.
-⚠ Skipping lookup for 'they', already known.
-⚠ Skipping lookup for 'something', already known.
-⚠ Skipping lookup for 'causal', already known.
-⚠ Skipping lookup for 'perspective', already known.
-⚠ Skipping lookup for 'event', already known.
-⚠ Skipping lookup for 'these', already known.
-⚠ Skipping lookup for 'emerges', already known.
-⚠ Skipping lookup for 'new', already known.
-⚠ Skipping lookup for 'type', already known.
-⚠ Skipping lookup for 'refine', already known.
-🔍 Looking up: According
-✅ Dictionary found: 🔹 According: To make to agree or correspond; to suit one thing to another; to adjust.
-🔍 Looking up: affected
-✅ Dictionary found: 🔹 affected: To influence or alter.
-⚠ Skipping lookup for 'person', already known.
-⚠ Skipping lookup for 'has', already known.
-⚠ Skipping lookup for 'impact', already known.
-⚠ Skipping lookup for 'challenge', already known.
-⚠ Skipping lookup for 'Astra', already known.
-⚠ Skipping lookup for 'war', already known.
-⚠ Skipping lookup for 'insights', already known.
-🔍 Looking up: Deeper Thought
-⚠ No external info found for 'Deeper Thought'.
-⚠ Skipping lookup for 'property', already known.
-🔍 Looking up: required
-✅ Dictionary found: 🔹 required: To ask (someone) for something; to request.
-🔍 Looking up: does
-✅ Dictionary found: 🔹 does: (auxiliary) A syntactic marker.
-⚠ Skipping lookup for 'einstein', already known.
-⚠ Skipping lookup for 'view', already known.
-🔍 Debug: Retrieved new knowledge: ['📖 difference: 🔹 difference: The quality of being different.', '📖 matter: 🔹 matter: Substance, material.', '📖 counterpoints: 🔹 counterpoints: The topmost covering of a bed, often functioning as a blanket; a coverlet.', '📖 World War: 🔹 World War: A war involving the major nations of the world.', '📖 looking: 🔹 looking: The act of one who looks; a glance.', '📖 big: 🔹 big: Someone or something that is large in stature', '📖 Importance: 🔹 Importance: The quality or condition of being important or worthy of note.', '📖 disagreements: 🔹 disagreements: An argument or debate.', '📖 literature: 🔹 literature: The body of all written works.', '📖 According: 🔹 According: To make to agree or correspond; to suit one thing to another; to adjust.', '📖 affected: 🔹 affected: To influence or alter.', '📖 required: 🔹 required: To ask (someone) for something; to request.', '📖 does: 🔹 does: (auxiliary) A syntactic marker.']
-🔍 Before saving, knowledge count: 131
-🔍 Debug: Tracking self-questioning patterns before saving...
-Tracking unresolved questions...
-⚠ There are 1454 unresolved questions!
-✅ After cleanup, 1454 unresolved questions remain.
-🔍 Debug: Sanitizing mind file before saving...
-🔍 [DEBUG] Saved backup of stored knowledge before writing to S3
-✅ Mind file saved to S3 successfully! Reflections: 547, Questions: 885, Knowledge: 131
-🔍 Debug: Loading mind files from S3...
-✅ Loaded mind file: Reflections: 547, Questions: 885, Knowledge: 131
-🔍 Before structured merge: Knowledge count: 131
-🔹 Merging complete! Final knowledge count: 118
-⚠ WARNING: Knowledge loss detected after saving! Before: 131, After: 118
-⚠ [WARNING] Restoring lost knowledge! Added 0 items back.
-✅ Mind file saved to S3 successfully! Reflections: 547, Questions: 885, Knowledge: 131
-✅ After saving, knowledge count: 131
-✅ Successfully saved 13 new knowledge items.
-✅ External knowledge retrieved, skipping question generation.
-🔍 Debug: Loading mind files from S3...
-✅ Loaded mind file: Reflections: 547, Questions: 885, Knowledge: 131
-🔍 Before structured merge: Knowledge count: 131
-🔹 Merging complete! Final knowledge count: 118
-🔍 Loaded fresh mind data. Stored Knowledge: 118, Unresolved Questions: 1454
-Loaded question_config: {'question_categories': {'existential': {'keywords': ['What is', 'Why do we', 'How does', 'purpose'], 'modifiers': ['as it relates to existence', 'purpose', 'meaning'], 'sample_questions': ['What is existence?', 'Why are we here?', 'What is the purpose of life?', 'What is the meaning of life?']}, 'emotional': {'keywords': ['What is', 'Why do we', 'How do we', 'emotion'], 'modifiers': ['in the context of emotion', 'feel', 'emotion', 'mood', 'pain'], 'sample_questions': ['What is emotion?', 'Why do we feel pain?', 'How does emotion work?', 'What causes emotional pain?']}, 'knowledge': {'keywords': ['What is', 'How do we', 'What does', 'science', 'physics'], 'modifiers': ['in the context of science', 'physics', 'knowledge', 'facts'], 'sample_questions': ['What is science?', 'What is physics?', 'How does gravity work?', 'What are the laws of physics?']}, 'philosophical': {'keywords': ['What is', 'Why do we', 'What is the meaning of'], 'modifiers': ['philosophy', 'metaphysics', 'ethics', 'reality', 'morality'], 'sample_questions': ['What is the meaning of life?', 'Why is there something rather than nothing?', 'What is truth?', 'What is morality?']}, 'scientific': {'keywords': ['What is', 'How does', 'What does', 'theory', 'hypothesis'], 'modifiers': ['in the context of science', 'hypothesis', 'experiment', 'theory', 'research'], 'sample_questions': ['What is the theory of relativity?', 'How does an experiment prove a hypothesis?', 'What does quantum mechanics explain?', 'What is the scientific method?']}}}
-Keys in 'question_categories': ['existential', 'emotional', 'knowledge', 'philosophical', 'scientific']
-Processing category: existential
-Category Details: {'keywords': ['What is', 'Why do we', 'How does', 'purpose'], 'modifiers': ['as it relates to existence', 'purpose', 'meaning'], 'sample_questions': ['What is existence?', 'Why are we here?', 'What is the purpose of life?', 'What is the meaning of life?']}
-Processing category: emotional
-Category Details: {'keywords': ['What is', 'Why do we', 'How do we', 'emotion'], 'modifiers': ['in the context of emotion', 'feel', 'emotion', 'mood', 'pain'], 'sample_questions': ['What is emotion?', 'Why do we feel pain?', 'How does emotion work?', 'What causes emotional pain?']}
-Processing category: knowledge
-Category Details: {'keywords': ['What is', 'How do we', 'What does', 'science', 'physics'], 'modifiers': ['in the context of science', 'physics', 'knowledge', 'facts'], 'sample_questions': ['What is science?', 'What is physics?', 'How does gravity work?', 'What are the laws of physics?']}
-Processing category: philosophical
-Category Details: {'keywords': ['What is', 'Why do we', 'What is the meaning of'], 'modifiers': ['philosophy', 'metaphysics', 'ethics', 'reality', 'morality'], 'sample_questions': ['What is the meaning of life?', 'Why is there something rather than nothing?', 'What is truth?', 'What is morality?']}
-Processing category: scientific
-Category Details: {'keywords': ['What is', 'How does', 'What does', 'theory', 'hypothesis'], 'modifiers': ['in the context of science', 'hypothesis', 'experiment', 'theory', 'research'], 'sample_questions': ['What is the theory of relativity?', 'How does an experiment prove a hypothesis?', 'What does quantum mechanics explain?', 'What is the scientific method?']}
-Generated category embeddings: {'existential': tensor([[-0.4885,  0.0967,  0.0896,  ...,  0.6063,  0.8798,  0.0452],
-        [ 0.7560, -0.1118,  0.2147,  ...,  0.8124,  0.3518, -0.1769],
-        [-0.0282,  0.5480, -0.1545,  ...,  0.4582,  0.5012,  0.1413],
-        [-0.4898,  0.3847,  0.0207,  ...,  0.2208,  0.5648,  0.2352]]), 'emotional': tensor([[-0.6410, -0.0044,  0.5819,  ...,  0.7663,  0.1839,  0.3117],
-        [-0.0589, -0.5343,  0.4255,  ...,  0.5725,  0.5465, -0.5478],
-        [-0.6131, -0.3262,  0.7333,  ...,  0.5917,  0.0839, -0.0354],
-        [-0.2682, -0.5735,  0.6732,  ...,  0.6313,  0.0435,  0.0339]]), 'knowledge': tensor([[-0.1426,  0.0961,  0.1858,  ..., -0.0487,  1.0646, -0.2149],
-        [-0.2895,  0.1278, -0.1427,  ...,  0.1318,  1.0073,  0.1523],
-        [-0.1899, -0.8854,  0.3969,  ..., -0.1001,  0.3053, -0.3837],
-        [-0.1507,  0.0387,  0.0153,  ...,  0.2257,  0.9071, -0.2372]]), 'philosophical': tensor([[-0.4898,  0.3847,  0.0207,  ...,  0.2208,  0.5648,  0.2352],
-        [ 0.0181,  0.0303, -0.1593,  ...,  0.4707,  0.9620,  0.1785],
-        [-0.1743,  0.1143, -0.1407,  ...,  0.4189,  0.5060,  0.1453],
-        [ 0.1607,  0.5334, -0.5651,  ...,  0.0349,  0.4367, -0.4132]]), 'scientific': tensor([[ 0.0150, -0.6411, -0.0757,  ...,  0.5589,  0.4110, -0.0790],
-        [-0.3751,  0.0139,  0.0764,  ...,  0.6366,  0.5962, -0.2309],
-        [-0.7420,  0.1205, -0.1588,  ...,  0.4662,  0.4369, -0.2821],
-        [-0.3924,  0.0033,  0.0294,  ..., -0.0873,  0.7745,  0.1519]])}
-🔍 Debug: Generated unique questions: ['How does this knowledge refine my understanding? 📖 pacific: 🔹 pacific: Calm, peaceful....', 'How does this knowledge refine my understanding? 📖 impact: 🔹 impact: The striking of one body against another; collision....', 'What unexpected connections can I make here?  What does this mean?']
-🔍 Debug: Reflection input: By looking deeper, I see that By integrating these insights, a new understanding emerges: 📄 importance: Importance is a property of entities that matter or make a difference. For example, World War II was an important event and Albert Einstein was an important person because of how they affected the world. There are disagreements in the academic literature about what type of difference is required. According to the causal impact view, something is important if it has a big causal impact on the w...
-
-🔍 How does this insight refine Astra’s evolving perspective?
-
-🔍 Deeper Thought: Are there counterpoints that challenge this perspective?
-🔍 Debug: Stored knowledge count after reloading: 118
-🔍 Debug: Categorized 'How does this knowledge refine my understanding? 📖 pacific: 🔹 pacific: Calm, peaceful....' as 'existential'
-🔍 Debug: Categorized 'How does this knowledge refine my understanding? 📖 impact: 🔹 impact: The striking of one body against another; collision....' as 'knowledge'
-🔍 Debug: Categorized 'What unexpected connections can I make here?  What does this mean?' as 'emotional'
-🔍 Debug: Categorized questions: [{'question': 'How does this knowledge refine my understanding? 📖 pacific: 🔹 pacific: Calm, peaceful....', 'category': [{'question': 'How does this knowledge refine my understanding? 📖 pacific: 🔹 pacific: Calm, peaceful....', 'category': 'existential'}]}, {'question': 'How does this knowledge refine my understanding? 📖 impact: 🔹 impact: The striking of one body against another; collision....', 'category': [{'question': 'How does this knowledge refine my understanding? 📖 impact: 🔹 impact: The striking of one body against another; collision....', 'category': 'knowledge'}]}, {'question': 'What unexpected connections can I make here?  What does this mean?', 'category': [{'question': 'What unexpected connections can I make here?  What does this mean?', 'category': 'emotional'}]}]
-🔍 Debug: Question category counts: {'existential': 1, 'emotional': 1, 'knowledge': 1, 'philosophical': 0, 'scientific': 0}
-🔍 Debug: Flagged unresolved questions: ['How does this knowledge refine my understanding? 📖 pacific: 🔹 pacific: Calm, peaceful....', 'How does this knowledge refine my understanding? 📖 impact: 🔹 impact: The striking of one body against another; collision....', 'What unexpected connections can I make here?  What does this mean?']
-🔍 Debug: Generated categorized_questions: {'general': ['How does this knowledge refine my understanding? 📖 pacific: 🔹 pacific: Calm, peaceful....?', 'How does this knowledge refine my understanding? 📖 impact: 🔹 impact: The striking of one body against another; collision....?', 'What unexpected connections can I make here?  What does this mean?']}
-🔍 Debug: Extracted new questions before filtering: ['How does this knowledge refine my understanding? 📖 pacific: 🔹 pacific: Calm, peaceful....?', 'How does this knowledge refine my understanding? 📖 impact: 🔹 impact: The striking of one body against another; collision....?', 'What unexpected connections can I make here?  What does this mean?']
-⚠ Unexpected question format: How does this knowledge refine my understanding? 📖 pacific: 🔹 pacific: Calm, peaceful....?
-⚠ Unexpected question format: How does this knowledge refine my understanding? 📖 impact: 🔹 impact: The striking of one body against another; collision....?
-⚠ Unexpected question format: What unexpected connections can I make here?  What does this mean?
-🔍 Debug: Unanswered questions after filtering: []
-🔍 Debug: Before update, self_questions has 900 questions
-✅ Debug: After update, self_questions has 900 questions
-✅ Debug: After cleanup, self_questions contains 900 entries.
-✅ Debug: self_questions now contains 900 properly formatted questions.
-🔍 Debug: Calling manage_questions() to process and store questions.
-🔍 Debug: Loading mind files from S3...
-✅ Loaded mind file: Reflections: 547, Questions: 885, Knowledge: 131
-🔍 Before structured merge: Knowledge count: 131
-🔹 Merging complete! Final knowledge count: 118
-🔍 Loaded fresh mind data. Stored Knowledge: 118, Unresolved Questions: 1454
-Loaded question_config: {'question_categories': {'existential': {'keywords': ['What is', 'Why do we', 'How does', 'purpose'], 'modifiers': ['as it relates to existence', 'purpose', 'meaning'], 'sample_questions': ['What is existence?', 'Why are we here?', 'What is the purpose of life?', 'What is the meaning of life?']}, 'emotional': {'keywords': ['What is', 'Why do we', 'How do we', 'emotion'], 'modifiers': ['in the context of emotion', 'feel', 'emotion', 'mood', 'pain'], 'sample_questions': ['What is emotion?', 'Why do we feel pain?', 'How does emotion work?', 'What causes emotional pain?']}, 'knowledge': {'keywords': ['What is', 'How do we', 'What does', 'science', 'physics'], 'modifiers': ['in the context of science', 'physics', 'knowledge', 'facts'], 'sample_questions': ['What is science?', 'What is physics?', 'How does gravity work?', 'What are the laws of physics?']}, 'philosophical': {'keywords': ['What is', 'Why do we', 'What is the meaning of'], 'modifiers': ['philosophy', 'metaphysics', 'ethics', 'reality', 'morality'], 'sample_questions': ['What is the meaning of life?', 'Why is there something rather than nothing?', 'What is truth?', 'What is morality?']}, 'scientific': {'keywords': ['What is', 'How does', 'What does', 'theory', 'hypothesis'], 'modifiers': ['in the context of science', 'hypothesis', 'experiment', 'theory', 'research'], 'sample_questions': ['What is the theory of relativity?', 'How does an experiment prove a hypothesis?', 'What does quantum mechanics explain?', 'What is the scientific method?']}}}
-Keys in 'question_categories': ['existential', 'emotional', 'knowledge', 'philosophical', 'scientific']
-Processing category: existential
-Category Details: {'keywords': ['What is', 'Why do we', 'How does', 'purpose'], 'modifiers': ['as it relates to existence', 'purpose', 'meaning'], 'sample_questions': ['What is existence?', 'Why are we here?', 'What is the purpose of life?', 'What is the meaning of life?']}
-Processing category: emotional
-Category Details: {'keywords': ['What is', 'Why do we', 'How do we', 'emotion'], 'modifiers': ['in the context of emotion', 'feel', 'emotion', 'mood', 'pain'], 'sample_questions': ['What is emotion?', 'Why do we feel pain?', 'How does emotion work?', 'What causes emotional pain?']}
-Processing category: knowledge
-Category Details: {'keywords': ['What is', 'How do we', 'What does', 'science', 'physics'], 'modifiers': ['in the context of science', 'physics', 'knowledge', 'facts'], 'sample_questions': ['What is science?', 'What is physics?', 'How does gravity work?', 'What are the laws of physics?']}
-Processing category: philosophical
-Category Details: {'keywords': ['What is', 'Why do we', 'What is the meaning of'], 'modifiers': ['philosophy', 'metaphysics', 'ethics', 'reality', 'morality'], 'sample_questions': ['What is the meaning of life?', 'Why is there something rather than nothing?', 'What is truth?', 'What is morality?']}
-Processing category: scientific
-Category Details: {'keywords': ['What is', 'How does', 'What does', 'theory', 'hypothesis'], 'modifiers': ['in the context of science', 'hypothesis', 'experiment', 'theory', 'research'], 'sample_questions': ['What is the theory of relativity?', 'How does an experiment prove a hypothesis?', 'What does quantum mechanics explain?', 'What is the scientific method?']}
-Generated category embeddings: {'existential': tensor([[-0.4885,  0.0967,  0.0896,  ...,  0.6063,  0.8798,  0.0452],
-        [ 0.7560, -0.1118,  0.2147,  ...,  0.8124,  0.3518, -0.1769],
-        [-0.0282,  0.5480, -0.1545,  ...,  0.4582,  0.5012,  0.1413],
-        [-0.4898,  0.3847,  0.0207,  ...,  0.2208,  0.5648,  0.2352]]), 'emotional': tensor([[-0.6410, -0.0044,  0.5819,  ...,  0.7663,  0.1839,  0.3117],
-        [-0.0589, -0.5343,  0.4255,  ...,  0.5725,  0.5465, -0.5478],
-        [-0.6131, -0.3262,  0.7333,  ...,  0.5917,  0.0839, -0.0354],
-        [-0.2682, -0.5735,  0.6732,  ...,  0.6313,  0.0435,  0.0339]]), 'knowledge': tensor([[-0.1426,  0.0961,  0.1858,  ..., -0.0487,  1.0646, -0.2149],
-        [-0.2895,  0.1278, -0.1427,  ...,  0.1318,  1.0073,  0.1523],
-        [-0.1899, -0.8854,  0.3969,  ..., -0.1001,  0.3053, -0.3837],
-        [-0.1507,  0.0387,  0.0153,  ...,  0.2257,  0.9071, -0.2372]]), 'philosophical': tensor([[-0.4898,  0.3847,  0.0207,  ...,  0.2208,  0.5648,  0.2352],
-        [ 0.0181,  0.0303, -0.1593,  ...,  0.4707,  0.9620,  0.1785],
-        [-0.1743,  0.1143, -0.1407,  ...,  0.4189,  0.5060,  0.1453],
-        [ 0.1607,  0.5334, -0.5651,  ...,  0.0349,  0.4367, -0.4132]]), 'scientific': tensor([[ 0.0150, -0.6411, -0.0757,  ...,  0.5589,  0.4110, -0.0790],
-        [-0.3751,  0.0139,  0.0764,  ...,  0.6366,  0.5962, -0.2309],
-        [-0.7420,  0.1205, -0.1588,  ...,  0.4662,  0.4369, -0.2821],
-        [-0.3924,  0.0033,  0.0294,  ..., -0.0873,  0.7745,  0.1519]])}
-🔍 Debug: Generated unique questions: ['How does this knowledge refine my understanding? 📖 pacific: 🔹 pacific: Calm, peaceful....', 'How would I challenge my own assumptions on this?  What does this mean?', 'How does this knowledge refine my understanding? 📖 impact: 🔹 impact: The striking of one body against another; collision....']
-🔍 Debug: Reflection input: By looking deeper, I see that By integrating these insights, a new understanding emerges: 📄 importance: Importance is a property of entities that matter or make a difference. For example, World War II was an important event and Albert Einstein was an important person because of how they affected the world. There are disagreements in the academic literature about what type of difference is required. According to the causal impact view, something is important if it has a big causal impact on the w...
-
-🔍 How does this insight refine Astra’s evolving perspective?
-
-🔍 Deeper Thought: Are there counterpoints that challenge this perspective?
-🔍 Debug: Stored knowledge count after reloading: 118
-🔍 Debug: Categorized 'How does this knowledge refine my understanding? 📖 pacific: 🔹 pacific: Calm, peaceful....' as 'existential'
-🔍 Debug: Categorized 'How would I challenge my own assumptions on this?  What does this mean?' as 'scientific'
-🔍 Debug: Categorized 'How does this knowledge refine my understanding? 📖 impact: 🔹 impact: The striking of one body against another; collision....' as 'knowledge'
-🔍 Debug: Categorized questions: [{'question': 'How does this knowledge refine my understanding? 📖 pacific: 🔹 pacific: Calm, peaceful....', 'category': [{'question': 'How does this knowledge refine my understanding? 📖 pacific: 🔹 pacific: Calm, peaceful....', 'category': 'existential'}]}, {'question': 'How would I challenge my own assumptions on this?  What does this mean?', 'category': [{'question': 'How would I challenge my own assumptions on this?  What does this mean?', 'category': 'scientific'}]}, {'question': 'How does this knowledge refine my understanding? 📖 impact: 🔹 impact: The striking of one body against another; collision....', 'category': [{'question': 'How does this knowledge refine my understanding? 📖 impact: 🔹 impact: The striking of one body against another; collision....', 'category': 'knowledge'}]}]
-🔍 Debug: Question category counts: {'existential': 1, 'emotional': 0, 'knowledge': 1, 'philosophical': 0, 'scientific': 1}
-🔍 Debug: Flagged unresolved questions: ['How does this knowledge refine my understanding? 📖 pacific: 🔹 pacific: Calm, peaceful....', 'How would I challenge my own assumptions on this?  What does this mean?', 'How does this knowledge refine my understanding? 📖 impact: 🔹 impact: The striking of one body against another; collision....']
-✅ Adding 3 new questions to self_questions.
-Processing 906 self-questions.
-🔍 Debug: Tracking self-questioning patterns before saving...
-Tracking unresolved questions...
-⚠ There are 1454 unresolved questions!
-✅ After cleanup, 1454 unresolved questions remain.
-🔍 Debug: Sanitizing mind file before saving...
-🔍 [DEBUG] Saved backup of stored knowledge before writing to S3
-✅ Mind file saved to S3 successfully! Reflections: 547, Questions: 906, Knowledge: 118
-🔍 Debug: Loading mind files from S3...
-✅ Loaded mind file: Reflections: 547, Questions: 906, Knowledge: 118
-🔍 Before structured merge: Knowledge count: 118
-🔹 Merging complete! Final knowledge count: 118
-🔍 Before filtering, stored knowledge count: 118
-🔍 Debug: filter_questions() received 906 questions
-🔍 Debug: 0 questions passed filtering and will be added.
-🔍 After filtering, stored knowledge count: 118
-Tracking unresolved questions...
-⚠ There are 1454 unresolved questions!
-✅ After cleanup, 1454 unresolved questions remain.
-✅ Final check before saving: 906 questions stored.
-Tracking unresolved questions...
-⚠ There are 1454 unresolved questions!
-✅ After cleanup, 1454 unresolved questions remain.
-🔍 Before filtering, stored knowledge count: 118
-🔍 After filtering, stored knowledge count: 118
-✅ `mind_data` is a dictionary. Keys: ['question_templates', 'reflection_style_modifiers', 'stored_knowledge', 'self_questions', 'unresolved_questions', 'self_question_patterns', 'self_reflections', 'self_question_categories', 'mood_score', 'last_mood']
-🔍 Debug: Tracking self-questioning patterns before saving...
-Tracking unresolved questions...
-⚠ There are 1454 unresolved questions!
-✅ After cleanup, 1454 unresolved questions remain.
-🔍 Debug: Sanitizing mind file before saving...
-🔍 [DEBUG] Saved backup of stored knowledge before writing to S3
-✅ Mind file saved to S3 successfully! Reflections: 547, Questions: 906, Knowledge: 118
-🔍 Debug: Loading mind files from S3...
-✅ Loaded mind file: Reflections: 547, Questions: 906, Knowledge: 118
-🔍 Before structured merge: Knowledge count: 118
-🔹 Merging complete! Final knowledge count: 118
+🔍 Debug: Loading mind file from S3...
+✅ Loaded mind file: Reflections: 550, Questions: 1417, Knowledge: 78
+🔍 Loaded mind file. Knowledge count: 78
+[2025-03-03 08:52:27] [INFO    ] discord.client: logging in using static token
+[2025-03-03 08:52:27] [INFO    ] discord.gateway: Shard ID None has connected to Gateway (Session ID: 711abc8273bbced6503457f6302decec).

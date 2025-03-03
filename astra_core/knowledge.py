@@ -1,5 +1,6 @@
 import requests
 import re
+from fuzzywuzzy import fuzz
 from astra_core.config_loader import load_config
 from astra_interfaces.influence import load_mind, save_mind  # ✅ Handles memory storage
 
@@ -18,9 +19,19 @@ class KnowledgeManager:
             self.mind_data["stored_knowledge"] = []
 
     def should_lookup_concept(self, concept):
-        """Determine if Astra should look up a concept based on existing knowledge."""
-        concept_count = sum(1 for insight in self.mind_data["stored_knowledge"] if concept.lower() in insight.lower())
-        return concept_count < self.config["knowledge_storage_threshold"]
+        """Determine if Astra should look up a concept based on meaningful stored knowledge."""
+        concept_lower = concept.lower()
+
+        # ✅ Ensure we only check *actual definitions*, not just any mention
+        existing_definitions = [
+            entry for entry in self.mind_data["stored_knowledge"]
+            if entry.lower().startswith(f"📖 {concept_lower}:") or entry.lower().startswith(f"📄 {concept_lower}:")
+        ]
+
+        return len(existing_definitions) == 0  # ✅ Only skip lookup if a proper definition exists
+
+
+
 
     def lookup_dictionary_definition(self, word):
         """Fetch definitions using the dictionary API."""

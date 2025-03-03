@@ -76,18 +76,31 @@ def generate_questions(reflection, mind_data):
     categorized_questions = []
     for question in generated_questions:
         if isinstance(question, str) and len(question) > 6:
-            category = categorize_question([question], category_embeddings)  # ✅ Pass as a list
+            print(f"🔍 Debug: Attempting to categorize question: {question}")  # Debugging
+
+            # ✅ FIX: Ensure we pass a single string, not a list
+            category = categorize_question([question], category_embeddings)
+
+
+            if not category:
+                print(f"⚠ Warning: No category found for question: {question}")
+            else:
+                print(f"✅ Categorized '{question}' as: {category}")
+
             if category:
-                categorized_questions.append({"question": question.strip(), "category": category})
-                # ✅ Track category counts
-                category_counts[category[0]["category"]] += 1  # Increment count for the first assigned category
+                categorized_questions.append({"question": question.strip(), "category": category[0]["category"]})
+                category_counts[category[0]["category"]] += 1  # ✅ Track first assigned category
 
     print(f"🔍 Debug: Categorized questions: {categorized_questions}")
     print(f"🔍 Debug: Question category counts: {category_counts}")
 
     ### ✅ **Step 6: Store Categorized Questions Before Filtering**
-    categorized_question_list = [q["question"] for q in categorized_questions]  # ✅ Extract only questions
-    mind_data["self_questions"].extend(categorized_question_list)  # ✅ Store before filtering
+    if categorized_questions:
+        categorized_question_list = [q["question"] for q in categorized_questions]  # ✅ Extract only questions
+        print(f"✅ Debug: Adding categorized questions to mind_data: {categorized_question_list}")
+        mind_data["self_questions"].extend(categorized_question_list)
+    else:
+        print(f"⚠ Warning: No categorized questions were added to mind_data!")
 
     ### ✅ **Step 7: Flag Unresolved Questions**
     flagged_questions = flag_unresolved_question(categorized_question_list, fresh_mind_data) or []

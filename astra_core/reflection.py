@@ -1,5 +1,5 @@
 import random
-from astra_interfaces.influence import load_mind
+from astra_interfaces.influence import load_mind, save_mind
 from astra_core.config_loader import load_config
 from astra_core.mood.mood_manager import mood_manager
 
@@ -32,29 +32,38 @@ def generate_reflection(knowledge=None, recent_reflections=None):
     # ✅ Select a mood-driven reflection template
     selected_template = random.choice(reflection_templates)
 
-    # ✅ Prioritize deeper insights by weighting longer knowledge entries higher
-    base_idea = max(knowledge, key=len)
+    # ✅ Filter out dictionary-style entries and non-meaningful knowledge
+    filtered_knowledge = [
+        entry for entry in knowledge 
+        if not entry.startswith("📖") and not entry.startswith("🔹") and ":" not in entry[:20]
+    ]
+    
+    # ✅ Prioritize meaningful insights instead of dictionary definitions
+    base_idea = max(filtered_knowledge, key=len) if filtered_knowledge else "I need more insights to reflect on."
 
     # ✅ Apply reflection template
     new_reflection = selected_template.format(base_idea)
 
+    # ✅ Ensure clean formatting (strip JSON-like structures)
+    if isinstance(new_reflection, (dict, list)):
+        new_reflection = str(new_reflection)  # Convert structured data into a clean string
+
     # ✅ Apply deeper thought expansion (Prevent duplicates)
     deeper_thought_options = [t for t in deeper_thought_templates if t not in new_reflection]
     deeper_thought = random.choice(deeper_thought_options) if deeper_thought_options else ""
-    
+
     # ✅ Ensure reflection isn't overly long
     new_reflection = new_reflection[:500] + "..." if len(new_reflection) > 500 else new_reflection
-    
-    # ✅ Ensure clean question formatting (no raw JSON dumps)
+
     if deeper_thought:
         new_reflection += f"\n\n🔍 {deeper_thought}"
-    
-    # ✅ Ensure unique reflection and format final output properly
-    if new_reflection in recent_reflections:
-        return generate_reflection(knowledge, recent_reflections)  # Retry with a different idea
-    
-    # ✅ Properly extract and clean up reflection output
-    if "{'question':" in new_reflection:
-        new_reflection = new_reflection.split("{'question':", 1)[0].strip()
-    
+
+    # ✅ Ensure reflection is stored before returning
+    if new_reflection not in mind_data["self_reflections"]:
+        mind_data["self_reflections"].append(new_reflection)
+        print(f"📝 [DEBUG] Added new reflection: {new_reflection[:100]}...")
+
+        # ✅ Save immediately after adding the reflection
+        save_mind(mind_data)
+
     return new_reflection

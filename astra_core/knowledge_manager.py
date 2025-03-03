@@ -3,12 +3,12 @@ import sys
 import os
 from fuzzywuzzy import fuzz
 from utils.json_loader import load_json_file
-from astra_interfaces.influence import load_mind, save_mind
+from astra_interfaces.influence import load_mind, save_mind, save_to_s3
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
 MIND_FILE_ORIG = "mind_file_parents.json"
-print(f"\U0001F50D Debug: MIND_FILE_ORIG Path → {MIND_FILE_ORIG}")  # ✅ Debug print
+print(f"🔍 Debug: MIND_FILE_ORIG Path → {MIND_FILE_ORIG}")  # ✅ Debug print
 
 def safe_decode(text):
     """Ensure Unicode characters are properly decoded before storing."""
@@ -19,86 +19,77 @@ def safe_decode(text):
 
 def merge_knowledge(existing_knowledge, new_knowledge):
     """Merge new knowledge while preserving unique insights safely."""
+
     print(f"🔍 Debug: Incoming new knowledge items: {len(new_knowledge)}")
     print(f"🔍 Debug: Existing knowledge before merge: {len(existing_knowledge)}")
 
-    # 🚨 Save backup BEFORE merging
-    with open("debug_before_merge.json", "w") as debug_file:
-        json.dump(existing_knowledge, debug_file, indent=4)
-        print(f"🔍 [DEBUG] Backup of knowledge BEFORE merging saved.")
+    if not new_knowledge:
+        print("⚠ WARNING: No new knowledge provided for merging!")
+        return existing_knowledge
 
+    # ✅ Preserve original knowledge
     knowledge_list = list(existing_knowledge)
-    knowledge_set = set(existing_knowledge)  
-
-    initial_count = len(knowledge_list)
+    knowledge_set = set(existing_knowledge)
 
     for item in new_knowledge:
         decoded_item = safe_decode(item)
 
-        # ✅ Reduce threshold to avoid aggressive filtering
-        is_duplicate = any(fuzz.ratio(decoded_item.lower(), existing.lower()) > 98 for existing in knowledge_set)
+        # ✅ **Protect dictionary entries** if they contain detailed information
+        is_dict_entry = decoded_item.startswith("📖") or ":" in decoded_item[:20]
+        if is_dict_entry and len(decoded_item.split()) <= 5:  # 🚀 Only remove very short definitions
+            print(f"⚠ SKIPPED (Trivial Dictionary Entry): {decoded_item}")
+            continue
+
+        # ✅ **Only remove near-duplicates if similarity is extremely high (>97%)**
+        is_duplicate = any(fuzz.ratio(decoded_item.lower(), existing.lower()) > 97 for existing in knowledge_set)
 
         if is_duplicate:
-            print(f"⚠ SKIPPED (potential false duplicate, fuzzy match >98%): {decoded_item}")
+            print(f"⚠ SKIPPED (Potential duplicate, fuzzy match >97%): {decoded_item}")
         else:
             knowledge_list.append(decoded_item)
             knowledge_set.add(decoded_item)
             print(f"➕ Added new knowledge: {decoded_item}")
 
     final_count = len(knowledge_list)
-
-    # 🚨 Save backup AFTER merging
-    with open("debug_after_merge.json", "w") as debug_file:
-        json.dump(knowledge_list, debug_file, indent=4)
-        print(f"🔍 [DEBUG] Backup of knowledge AFTER merging saved.")
-
     print(f"🔍 After merging, stored knowledge count: {final_count}")
-
-    if final_count < initial_count:
-        print(f"⚠ WARNING: Knowledge count **decreased**, investigate merge logic!")
 
     return knowledge_list
 
 
-def merge_structured_knowledge():
-    """Merge insights from structured data into Astra's memory safely without overwriting stored knowledge."""
 
-    mind_data = load_mind()
+def merge_structured_knowledge():
+    """Merge insights from structured data into Astra's memory safely without overwriting."""
+    
+    mind_data = load_mind()  # ✅ Load once before merging
     structured_data = load_json_file(MIND_FILE_ORIG, {"insights": []})
 
-    if not mind_data:
-        print("🚨 [ERROR] Mind data is empty or failed to load! Aborting merge.")
-        return None
+    print(f"🔍 Before merging, stored knowledge count: {len(mind_data['stored_knowledge'])}")
 
     if "insights" in structured_data:
-        structured_knowledge = set(entry["insight"] for entry in structured_data["insights"])
-        existing_knowledge = set(mind_data.get("stored_knowledge", []))
+        structured_knowledge = [entry["insight"] for entry in structured_data["insights"]]
 
-        # ✅ Fix: Merge structured knowledge without replacing stored knowledge
-        merged_knowledge = existing_knowledge.union(structured_knowledge)
-        mind_data["stored_knowledge"] = list(merged_knowledge)
+        # ✅ Log each new knowledge entry before merging
+        print("🔍 **All Incoming Structured Knowledge:**")
+        for insight in structured_knowledge:
+            print(f"➕ {insight}")
 
-        print(f"🔍 Debug: Structured merge completed. Final stored knowledge count: {len(mind_data['stored_knowledge'])}")
+        # ✅ Merge knowledge (no second `load_mind()` call needed)
+        merged_knowledge = merge_knowledge(mind_data["stored_knowledge"], structured_knowledge)
 
-        # ✅ Save merged data to prevent knowledge loss
-        save_mind(mind_data)
+        # ✅ Keep ALL previous knowledge while adding structured knowledge
+        mind_data["stored_knowledge"] = list(dict.fromkeys(mind_data["stored_knowledge"] + merged_knowledge))  # 🚀 Preserve order while removing duplicates
 
-        # 🚨 Verify that saved knowledge count matches expectations
-        reloaded_data = load_mind()
-        reloaded_count = len(reloaded_data.get("stored_knowledge", []))
+        # ✅ Ensure reflections are also saved properly
+        if "self_reflections" in mind_data:
+            print(f"🔍 Debug: Reflections count before saving: {len(mind_data['self_reflections'])}")
+        else:
+            print("⚠ WARNING: Reflections key missing in mind_data!")
 
-        if reloaded_count < len(merged_knowledge):
-            print(f"⚠ WARNING: Knowledge loss detected! Expected: {len(merged_knowledge)}, Reloaded: {reloaded_count}")
+        save_to_s3(mind_data)  # ✅ Save updated knowledge
 
-            # ✅ Restore lost knowledge
-            save_mind(mind_data)
-            print("✅ Restored lost knowledge after structured merge.")
+        print(f"🔍 After saving, stored knowledge count: {len(mind_data['stored_knowledge'])}")
 
-            # 🔍 Double-check if the restoration was successful
-            final_reloaded_data = load_mind()
-            final_count = len(final_reloaded_data.get("stored_knowledge", []))
-            print(f"🔍 Final stored knowledge count after restoration: {final_count}")
-
+    print(f"🔹 Knowledge merge complete! Total knowledge items: {len(mind_data['stored_knowledge'])}")
     return mind_data
 
 

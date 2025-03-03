@@ -1,6 +1,7 @@
 import random
 import os
 import sys
+from fuzzywuzzy import fuzz  # ✅ Re-added missing fuzzy matching import
 
 # ✅ Ensure Python knows where to find `astra_schedule`
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
@@ -24,31 +25,6 @@ def validate_mind_structure(mind_data):
     mind_data.setdefault("self_questions", [])
     mind_data.setdefault("stored_knowledge", [])
 
-def filter_unanswered_questions(mind_data, questions):
-    """Checks if questions can be answered from stored knowledge before saving them."""
-    unanswered_questions = []
-
-    for question_entry in questions:
-        if isinstance(question_entry, dict) and "question" in question_entry:
-            question_core = question_entry["question"].strip().lower()  # ✅ Extract question text properly
-        else:
-            print(f"⚠ Unexpected question format: {question_entry}")
-            continue  # Skip invalid entries
-
-        # ✅ Ensure proper question comparison, not just category names
-        if any(question_core == knowledge.lower() for knowledge in mind_data["stored_knowledge"]):
-            print(f"✅ Answer found! Archiving question: {question_core}")
-            continue  
-
-        # ✅ Prevent full duplicates, but allow similar phrasing
-        if any(question_core == q["question"].strip().lower() for q in mind_data["self_questions"] if isinstance(q, dict)):
-            print(f"⚠ Duplicate question skipped: {question_core}")
-            continue 
-
-        unanswered_questions.append(question_entry)
-        print(f"🧐 New Question Added: {question_core}")
-
-    return unanswered_questions
 
 def process_reflection():
     """Generate, refine, and deepen Astra's reflections while ensuring questions are generated & answered."""
@@ -59,22 +35,23 @@ def process_reflection():
     new_reflection = generate_reflection(mind_data["stored_knowledge"], mind_data["self_reflections"])
     expanded_reflection = expand_reflection(new_reflection)
 
+    # 🔍 **Extract unknown terms before generating questions**
+    unknown_terms = knowledge_manager.extract_unknown_terms(expanded_reflection)
+    if unknown_terms:
+        print(f"🔍 Detected unknown terms: {unknown_terms}")
+        found_new_knowledge = knowledge_manager.retrieve_external_knowledge(unknown_terms)
+        if found_new_knowledge:
+            print(f"✅ New knowledge added from external lookup: {unknown_terms}")
+
     # ✅ Store reflection if it's new
     if expanded_reflection not in mind_data["self_reflections"]:
         mind_data["self_reflections"].append(expanded_reflection)
         print(f"📝 Added new reflection: {expanded_reflection[:100]}...")
 
-    # ✅ Extract unknown concepts & seek external knowledge
-    unknown_concepts = knowledge_manager.extract_unknown_terms(expanded_reflection)
-    if unknown_concepts:
-        print(f"🌐 Astra detected unknown concepts: {unknown_concepts}")
-        mind_data = knowledge_manager.retrieve_external_knowledge(unknown_concepts)
-
     # ✅ Generate new questions using Astra's enhanced system
     categorized_questions, category_counts = generate_questions(expanded_reflection, mind_data)
     print(f"🔍 Debug: Generated categorized_questions: {categorized_questions}")
 
-    # ✅ Extract valid question objects
     new_questions = []
     for category, questions in categorized_questions.items():
         if isinstance(questions, list):
@@ -82,46 +59,7 @@ def process_reflection():
 
     print(f"🔍 Debug: Extracted new questions before filtering: {new_questions}")
 
-    # ✅ Answer check: Filter out questions Astra already knows the answer to
-    unanswered_questions = filter_unanswered_questions(mind_data, new_questions)
-    print(f"🔍 Debug: Unanswered questions after filtering: {unanswered_questions}")
-
-    # ✅ Ensure `self_questions` is getting updated
-    print(f"🔍 Debug: Before update, self_questions has {len(mind_data['self_questions'])} questions")
-
-    # ✅ Update questions
-    mind_data["self_questions"].extend(unanswered_questions)
-
-    print(f"✅ Debug: After update, self_questions has {len(mind_data['self_questions'])} questions")
-    # ✅ Fix corrupted self_questions entries
-    cleaned_questions = []
-
-    for q in mind_data["self_questions"]:
-        if isinstance(q, str):  
-            cleaned_questions.append({"question": q})  # ✅ Convert to dict
-        elif isinstance(q, dict) and "question" in q:
-            cleaned_questions.append(q)  # ✅ Keep valid questions
-        else:
-            print(f"⚠ Removing corrupt entry from self_questions: {q}")
-
-    mind_data["self_questions"] = cleaned_questions
-    print(f"✅ Debug: After cleanup, self_questions contains {len(mind_data['self_questions'])} entries.")
-
-    # ✅ Replace `self_questions` with formatted questions
-    mind_data["self_questions"] = cleaned_questions
-
-    # ✅ Debugging: Ensure questions are formatted correctly
-    print(f"✅ Debug: self_questions now contains {len(mind_data['self_questions'])} properly formatted questions.")
-
-    # 🔥 NEW: Call `manage_questions()` to fully process questions
-    print("🔍 Debug: Calling manage_questions() to process and store questions.")
-    manage_questions(expanded_reflection, mind_data)
-
-    # ✅ Store category tracking for Dinner Time discussions
-    mind_data["self_question_categories"] = category_counts
-
-    # ✅ Analyze question patterns for self-reflection tracking
-    track_question_patterns(mind_data)
+    mind_data["self_questions"].extend(new_questions)
 
     # ✅ Merge knowledge & filter
     refined_idea = refine_knowledge(mind_data["stored_knowledge"], mind_data)
@@ -131,20 +69,13 @@ def process_reflection():
 
     print(f"🔍 Before filtering, stored knowledge count: {len(mind_data['stored_knowledge'])}")
 
-    mind_data["stored_knowledge"] = filter_knowledge(mind_data["stored_knowledge"])
-
+    # filtered_knowledge = filter_knowledge(mind_data["stored_knowledge"])
+    # mind_data["stored_knowledge"] = list(set(mind_data["stored_knowledge"]) | set(filtered_knowledge))
 
     print(f"🔍 After filtering, stored knowledge count: {len(mind_data['stored_knowledge'])}")
 
-
-    # ✅ Debugging: Track changes before saving
-    track_mind_data_changes("before saving", mind_data)
-
-    # ✅ Save updated mind
     save_mind(mind_data)
-
     return expanded_reflection
-
 
 
 def expand_reflection(reflection):
@@ -162,10 +93,8 @@ def expand_reflection(reflection):
 
     return expanded_reflection
 
-
-# ✅ Function: Filter Knowledge & Remove Duplicates
 def filter_knowledge(knowledge_list):
-    """Ensure Astra keeps valuable knowledge while avoiding duplicates."""
+    """Ensure Astra keeps valuable knowledge while avoiding excessive duplicates."""
     filtered_knowledge = []
     seen = set()
 
@@ -175,13 +104,17 @@ def filter_knowledge(knowledge_list):
 
         key = entry.lower().strip()
 
-        if key in seen:
-            continue  # Avoid duplicates
+        # ✅ Only remove near-duplicates if the similarity is **very high** (>85%)
+        if any(fuzz.ratio(key, existing) > 85 for existing in seen):
+            print(f"⚠ [FILTERED] Removing near-duplicate knowledge: {entry[:100]}")
+            continue  # Avoid near-duplicates but allow slight variations
 
         seen.add(key)
         filtered_knowledge.append(entry)
 
     return filtered_knowledge
+
+
 
 
 # ✅ Debugging Function

@@ -1,10 +1,62 @@
-from astra_core.knowledge import knowledge_manager  # ✅ Correct import
-from astra_interfaces.influence import load_mind, save_mind
-from astra_core.knowledge_manager import merge_knowledge
+import json
+import sys
+import os
+from fuzzywuzzy import fuzz
 from utils.json_loader import load_json_file
+from astra_interfaces.influence import load_mind, save_mind
 
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
 MIND_FILE_ORIG = "mind_file_parents.json"
+print(f"🔍 Debug: MIND_FILE_ORIG Path → {MIND_FILE_ORIG}")  # ✅ Debug print
+
+def safe_decode(text):
+    """Ensure Unicode characters are properly decoded before storing."""
+    try:
+        return json.loads(f'"{text}"')  # Decodes Unicode safely
+    except json.JSONDecodeError:
+        return text  # If decoding fails, return the original text
+
+def merge_knowledge(existing_knowledge, new_knowledge):
+    """Merge new knowledge while preserving unique insights safely."""
+    print(f"🔍 Debug: Incoming new knowledge items: {len(new_knowledge)}")
+    print(f"🔍 Debug: Existing knowledge before merge: {len(existing_knowledge)}")
+
+    if not new_knowledge:
+        print("⚠ WARNING: No new knowledge provided for merging!")
+        return existing_knowledge  # Avoid overwriting with an empty set
+
+    # 🚨 Save backup BEFORE merging
+    with open("debug_before_merge.json", "w") as debug_file:
+        json.dump(existing_knowledge, debug_file, indent=4)
+        print(f"🔍 [DEBUG] Backup of knowledge BEFORE merging saved.")
+
+    knowledge_list = list(existing_knowledge)  # ✅ Preserve original knowledge
+    knowledge_set = set(existing_knowledge)
+
+    for item in new_knowledge:
+        decoded_item = safe_decode(item)
+
+        # ✅ Reduce duplicate threshold from 95% → 90%
+        is_duplicate = any(fuzz.ratio(decoded_item.lower(), existing.lower()) > 90 for existing in knowledge_set)
+
+        if is_duplicate:
+            print(f"⚠ SKIPPED (potential false duplicate, fuzzy match >90%): {decoded_item}")
+        else:
+            knowledge_list.append(decoded_item)
+            knowledge_set.add(decoded_item)
+            print(f"➕ Added new knowledge: {decoded_item}")
+
+    final_count = len(knowledge_list)
+
+    # 🚨 Save backup AFTER merging
+    with open("debug_after_merge.json", "w") as debug_file:
+        json.dump(knowledge_list, debug_file, indent=4)
+        print(f"🔍 [DEBUG] Backup of knowledge AFTER merging saved.")
+
+    print(f"🔍 After merging, stored knowledge count: {final_count}")
+
+    return knowledge_list  # ✅ Ensure updated knowledge is returned
 
 def merge_structured_knowledge():
     """Merge insights from structured data into Astra's memory safely without overwriting."""
@@ -52,6 +104,6 @@ def merge_structured_knowledge():
     print(f"🔹 Knowledge merge complete! Total knowledge items: {len(saved_mind_data['stored_knowledge'])}")
     return saved_mind_data
 
-
-# ✅ Run the function
-merge_structured_knowledge()
+# ✅ Prevent execution on import to avoid circular dependency issues
+if __name__ == "__main__":
+    merge_structured_knowledge()
