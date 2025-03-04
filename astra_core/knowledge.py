@@ -86,13 +86,26 @@ class KnowledgeManager:
 
         if new_knowledge:
             retrieved_anything = True
-            self.mind_data["stored_knowledge"].extend(new_knowledge)
-            print(f"🔍 Before saving, knowledge count: {len(self.mind_data['stored_knowledge'])}")
-            save_mind(self.mind_data)
-            print(f"✅ After saving, knowledge count: {len(self.mind_data['stored_knowledge'])}")
-            print(f"✅ Successfully saved {len(new_knowledge)} new knowledge items.")
 
-        return retrieved_anything  # ✅ Return whether we found anything
+            # ✅ Ensure knowledge is added BEFORE saving
+            pre_save_count = len(self.mind_data["stored_knowledge"])
+            self.mind_data["stored_knowledge"].extend(new_knowledge)
+
+            print(f"🔍 Debug: Before saving, knowledge count: {pre_save_count} -> {len(self.mind_data['stored_knowledge'])}")
+
+            save_mind(self.mind_data)
+
+            # ✅ Immediately reload to check if it was actually saved
+            reloaded_mind = load_mind()
+            post_save_count = len(reloaded_mind["stored_knowledge"])
+
+            print(f"🔍 Debug: After reloading, knowledge count: {post_save_count}")
+
+            if post_save_count < len(self.mind_data["stored_knowledge"]):
+                print("🚨 WARNING: Knowledge lost between saving and reloading!")
+
+        return retrieved_anything
+
 
     def extract_unknown_terms(self, reflection):
         """Extract potential unknown concepts and force an external lookup *before* generating more self-questions."""

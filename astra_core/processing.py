@@ -42,6 +42,8 @@ def process_reflection():
         found_new_knowledge = knowledge_manager.retrieve_external_knowledge(unknown_terms)
         if found_new_knowledge:
             print(f"✅ New knowledge added from external lookup: {unknown_terms}")
+            save_mind(mind_data)  # 🛑 **Save immediately after knowledge is retrieved**
+
 
     # ✅ Store reflection if it's new
     if expanded_reflection not in mind_data["self_reflections"]:
@@ -74,7 +76,14 @@ def process_reflection():
 
     print(f"🔍 After filtering, stored knowledge count: {len(mind_data['stored_knowledge'])}")
 
+    pre_save_knowledge = set(mind_data["stored_knowledge"])
     save_mind(mind_data)
+    post_save_knowledge = set(load_mind()["stored_knowledge"])
+
+    lost_knowledge = pre_save_knowledge - post_save_knowledge
+    if lost_knowledge:
+        print(f"⚠ WARNING: {len(lost_knowledge)} knowledge items were lost: {lost_knowledge}")
+
     return expanded_reflection
 
 

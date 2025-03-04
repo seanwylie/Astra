@@ -3,16 +3,16 @@ Loading config file from: /home/ubuntu/astra_reflections/astra_core/config/gener
 🔍 Debug: Loading knowledge settings...
 Loading config file from: /home/ubuntu/astra_reflections/astra_core/config/lookup_config.json
 🔍 Debug: Loading mind file from S3...
-✅ Loaded mind file: Reflections: 549, Questions: 1417, Knowledge: 78
-🔍 Loaded mind file. Knowledge count: 78
+✅ Loaded mind file: Reflections: 556, Questions: 2461, Knowledge: 67
+🔍 Loaded mind file. Knowledge count: 67
 Loading config file from: /home/ubuntu/astra_reflections/astra_core/config/mood_config.json
 🔍 Debug: Attempting to load mood_config.json...
 Loading config file from: /home/ubuntu/astra_reflections/astra_core/config/mood_config.json
 🔍 Debug: mood_config Loaded → {'log_file': '/home/ubuntu/astra_logs.json', 'moods': {'curious': {'curiosity_factor': 1.5, 'reflection_style': 'questioning', 'response_tone': 'enthusiastic'}, 'thoughtful': {'curiosity_factor': 1.2, 'reflection_style': 'analytical', 'response_tone': 'calm'}, 'frustrated': {'curiosity_factor': 0.8, 'reflection_style': 'skeptical', 'response_tone': 'snarky'}, 'excited': {'curiosity_factor': 1.8, 'reflection_style': 'expansive', 'response_tone': 'energetic'}, 'neutral': {'curiosity_factor': 1.0, 'reflection_style': 'balanced', 'response_tone': 'neutral'}}, 'mood_influences': {'success': 1.5, 'failure': -2.0, 'deep_reflection': 1.0, 'idle': -0.5, 'negative_feedback': -0.2, 'positive_feedback': 0.2}, 'mood_limits': {'min': -2.0, 'max': 2.0}, 'curiosity_limits': {'min': 0.5, 'max': 2.0}}
 Loading config file from: /home/ubuntu/astra_reflections/astra_core/config/general_config.json
 🔍 Debug: Loading mind file from S3...
-✅ Loaded mind file: Reflections: 549, Questions: 1417, Knowledge: 78
-🔍 Loaded mind file. Knowledge count: 78
+✅ Loaded mind file: Reflections: 556, Questions: 2461, Knowledge: 67
+🔍 Loaded mind file. Knowledge count: 67
 🔍 Loaded mood from memory: excited, Score: 2.0, Curiosity: 1.0
 Loading config file from: /home/ubuntu/astra_reflections/astra_core/config/question_config.json
 Loading config file from: /home/ubuntu/astra_reflections/astra_core/config/question_config.json
@@ -35,123 +35,319 @@ Loading config file from: /home/ubuntu/astra_reflections/astra_core/config/sched
 Loading config file from: /home/ubuntu/astra_reflections/astra_core/config/general_config.json
 Loading config file from: /home/ubuntu/astra_reflections/astra_core/config/schedule_config.json
 Loading config file from: /home/ubuntu/astra_reflections/astra_core/config/curiosity_config.json
-📚 Astra is in School Mode.
-📚 Astra is in school, learning and thinking...
+😴 Astra is in Sleep Mode. No active schedule detected.
+😴 Astra is sleeping...
 🔍 Debug: Loading mind file from S3...
-✅ Loaded mind file: Reflections: 549, Questions: 1417, Knowledge: 78
-🔍 Loaded mind file. Knowledge count: 78
-🔍 Debug: Loading mind file from S3...
-✅ Loaded mind file: Reflections: 549, Questions: 1417, Knowledge: 78
-🔍 Loaded mind file. Knowledge count: 78
-Loading config file from: /home/ubuntu/astra_reflections/astra_core/config/general_config.json
-Loading config file from: /home/ubuntu/astra_reflections/astra_core/config/mood_config.json
-📝 [DEBUG] Added new reflection: A thought-provoking realization: By integrating these insights, a new understanding emerges: 📄 impor...
+✅ Loaded mind file: Reflections: 556, Questions: 2493, Knowledge: 68
+🔍 Loaded mind file. Knowledge count: 68
 🔍 Debug: Tracking self-questioning patterns before saving...
 Tracking unresolved questions...
 ⚠ There are 1454 unresolved questions!
 ✅ After cleanup, 1454 unresolved questions remain.
 🔍 Debug: Sanitizing mind file before saving...
-✅ Mind file saved to S3 successfully! Reflections: 550, Questions: 1417, Knowledge: 78
+✅ Mind file saved to S3 successfully! Reflections: 556, Questions: 2493, Knowledge: 68
 🔍 Debug: Loading mind file from S3...
-✅ Loaded mind file: Reflections: 550, Questions: 1417, Knowledge: 78
-🔍 Loaded mind file. Knowledge count: 78
-🔍 Final unknown concepts after filtering: ['was', 'this', 'type', 'perspective', 'understanding', 'event', 'evolving', 'that', 'questions', 'academic', 'war', 'are', 'from', 'World War', 'important', 'emerges', 'For', 'insight', 'entities', 'impact', 'einstein', 'about', 'matter', 'What', 'disagreements', 'required', 'Albert Einstein', 'How', 'integrating', 'insights', 'and', 'does', 'According', 'literature', 'causal', 'because', 'Importance', 'these', 'person', 'By', 'make', 'arise', 'affected', 'big', 'There', 'has', 'realization', 'provoking', 'refine', 'Deeper Thought', 'difference', 'thought', 'Astra', 'they', 'property', 'new', 'something', 'view', 'example']
-🔍 Debug: Attempting to retrieve knowledge for ['was', 'this', 'type', 'perspective', 'understanding', 'event', 'evolving', 'that', 'questions', 'academic', 'war', 'are', 'from', 'World War', 'important', 'emerges', 'For', 'insight', 'entities', 'impact', 'einstein', 'about', 'matter', 'What', 'disagreements', 'required', 'Albert Einstein', 'How', 'integrating', 'insights', 'and', 'does', 'According', 'literature', 'causal', 'because', 'Importance', 'these', 'person', 'By', 'make', 'arise', 'affected', 'big', 'There', 'has', 'realization', 'provoking', 'refine', 'Deeper Thought', 'difference', 'thought', 'Astra', 'they', 'property', 'new', 'something', 'view', 'example']
-🔍 Looking up: was
-✅ Wikipedia found: Was or WAS may refer to:Was, a past-tense form of the English copular verb to be
-🔍 Looking up: this
-✅ Dictionary found: 🔹 this: Something being indicated that is here; one of these.
-🔍 Looking up: type
-✅ Dictionary found: 🔹 type: A grouping based on shared characteristics; a class.
-🔍 Looking up: perspective
-✅ Dictionary found: 🔹 perspective: A view, vista or outlook.
-🔍 Looking up: understanding
-✅ Dictionary found: 🔹 understanding: To grasp a concept fully and thoroughly, especially (of words, statements, art, etc.) to be aware of the meaning of and (of people) to be aware of the intent of.
-🔍 Looking up: event
-✅ Dictionary found: 🔹 event: An occurrence; something that happens.
-🔍 Looking up: evolving
-✅ Dictionary found: 🔹 evolving: To move in regular procession through a system.
-🔍 Looking up: that
-✅ Dictionary found: 🔹 that: Something being indicated that is there; one of those.
-🔍 Looking up: questions
-✅ Dictionary found: 🔹 questions: A sentence, phrase or word which asks for information, reply or response; an interrogative.
-🔍 Looking up: academic
-✅ Dictionary found: 🔹 academic: (usually capitalized) A follower of Plato, a Platonist.
-⚠ Skipping lookup for 'war', already known.
-🔍 Looking up: are
-✅ Dictionary found: 🔹 are: An accepted (but deprecated and rarely used) SI unit of area equal to 100 square metres, or a former unit of approximately the same extent. Symbol: a.
-🔍 Looking up: from
-✅ Dictionary found: 🔹 from: Used to indicate source or provenance.
-⚠ Skipping lookup for 'World War', already known.
-🔍 Looking up: important
-✅ Dictionary found: 🔹 important: Having relevant and crucial value.
-🔍 Looking up: emerges
-✅ Dictionary found: 🔹 emerges: To come into view.
-🔍 Looking up: For
-✅ Wikipedia found: For or FOR may refer to:
+✅ Loaded mind file: Reflections: 556, Questions: 2493, Knowledge: 68
+🔍 Loaded mind file. Knowledge count: 68
+🔍 Debug: Loading mind file from S3...
+✅ Loaded mind file: Reflections: 556, Questions: 2493, Knowledge: 68
+🔍 Loaded mind file. Knowledge count: 68
+🔍 DEBUG: Checking mood update with score 2.0
+⚠️ Mood remained unchanged: excited
+🔍 Debug: Tracking self-questioning patterns before saving...
+Tracking unresolved questions...
+⚠ There are 1454 unresolved questions!
+✅ After cleanup, 1454 unresolved questions remain.
+🔍 Debug: Sanitizing mind file before saving...
+✅ Mind file saved to S3 successfully! Reflections: 556, Questions: 2493, Knowledge: 68
+🔍 Debug: Loading mind file from S3...
+✅ Loaded mind file: Reflections: 556, Questions: 2493, Knowledge: 68
+🔍 Loaded mind file. Knowledge count: 68
+🔍 Debug: Loading mind file from S3...
+✅ Loaded mind file: Reflections: 556, Questions: 2521, Knowledge: 70
+🔍 Loaded mind file. Knowledge count: 70
+🔍 Debug: Tracking self-questioning patterns before saving...
+Tracking unresolved questions...
+⚠ There are 1454 unresolved questions!
+✅ After cleanup, 1454 unresolved questions remain.
+🔍 Debug: Sanitizing mind file before saving...
+✅ Mind file saved to S3 successfully! Reflections: 556, Questions: 2521, Knowledge: 70
+🔍 Debug: Loading mind file from S3...
+✅ Loaded mind file: Reflections: 556, Questions: 2521, Knowledge: 70
+🔍 Loaded mind file. Knowledge count: 70
+🔍 Debug: Loading mind file from S3...
+✅ Loaded mind file: Reflections: 556, Questions: 2521, Knowledge: 70
+🔍 Loaded mind file. Knowledge count: 70
+🔍 DEBUG: Checking mood update with score 2.0
+⚠️ Mood remained unchanged: excited
+🔍 Debug: Tracking self-questioning patterns before saving...
+Tracking unresolved questions...
+⚠ There are 1454 unresolved questions!
+✅ After cleanup, 1454 unresolved questions remain.
+🔍 Debug: Sanitizing mind file before saving...
+✅ Mind file saved to S3 successfully! Reflections: 556, Questions: 2521, Knowledge: 70
+🔍 Debug: Loading mind file from S3...
+✅ Loaded mind file: Reflections: 556, Questions: 2521, Knowledge: 70
+🔍 Loaded mind file. Knowledge count: 70
+🔍 Debug: Loading mind file from S3...
+✅ Loaded mind file: Reflections: 556, Questions: 2521, Knowledge: 70
+🔍 Loaded mind file. Knowledge count: 70
+🔍 Debug: Tracking self-questioning patterns before saving...
+Tracking unresolved questions...
+⚠ There are 1454 unresolved questions!
+✅ After cleanup, 1454 unresolved questions remain.
+🔍 Debug: Sanitizing mind file before saving...
+✅ Mind file saved to S3 successfully! Reflections: 556, Questions: 2521, Knowledge: 70
+🔍 Debug: Loading mind file from S3...
+✅ Loaded mind file: Reflections: 556, Questions: 2521, Knowledge: 70
+🔍 Loaded mind file. Knowledge count: 70
+🔍 Debug: Loading mind file from S3...
+✅ Loaded mind file: Reflections: 556, Questions: 2521, Knowledge: 70
+🔍 Loaded mind file. Knowledge count: 70
+🔍 DEBUG: Checking mood update with score 2.0
+⚠️ Mood remained unchanged: excited
+🔍 Debug: Tracking self-questioning patterns before saving...
+Tracking unresolved questions...
+⚠ There are 1454 unresolved questions!
+✅ After cleanup, 1454 unresolved questions remain.
+🔍 Debug: Sanitizing mind file before saving...
+✅ Mind file saved to S3 successfully! Reflections: 556, Questions: 2521, Knowledge: 70
+🔍 Debug: Loading mind file from S3...
+✅ Loaded mind file: Reflections: 556, Questions: 2521, Knowledge: 70
+🔍 Loaded mind file. Knowledge count: 70
+🔍 Debug: Loading mind file from S3...
+✅ Loaded mind file: Reflections: 561, Questions: 2521, Knowledge: 70
+🔍 Loaded mind file. Knowledge count: 70
+🔍 Debug: Tracking self-questioning patterns before saving...
+Tracking unresolved questions...
+⚠ There are 1454 unresolved questions!
+✅ After cleanup, 1454 unresolved questions remain.
+🔍 Debug: Sanitizing mind file before saving...
+✅ Mind file saved to S3 successfully! Reflections: 561, Questions: 2521, Knowledge: 70
+🔍 Debug: Loading mind file from S3...
+✅ Loaded mind file: Reflections: 561, Questions: 2521, Knowledge: 70
+🔍 Loaded mind file. Knowledge count: 70
+🔍 Debug: Loading mind file from S3...
+✅ Loaded mind file: Reflections: 561, Questions: 2521, Knowledge: 70
+🔍 Loaded mind file. Knowledge count: 70
+🔍 DEBUG: Checking mood update with score 2.0
+⚠️ Mood remained unchanged: excited
+🔍 Debug: Tracking self-questioning patterns before saving...
+Tracking unresolved questions...
+⚠ There are 1454 unresolved questions!
+✅ After cleanup, 1454 unresolved questions remain.
+🔍 Debug: Sanitizing mind file before saving...
+✅ Mind file saved to S3 successfully! Reflections: 561, Questions: 2521, Knowledge: 70
+🔍 Debug: Loading mind file from S3...
+✅ Loaded mind file: Reflections: 561, Questions: 2521, Knowledge: 70
+🔍 Loaded mind file. Knowledge count: 70
+🔍 Debug: Loading mind file from S3...
+✅ Loaded mind file: Reflections: 561, Questions: 2521, Knowledge: 70
+🔍 Loaded mind file. Knowledge count: 70
+🔍 Debug: Tracking self-questioning patterns before saving...
+Tracking unresolved questions...
+⚠ There are 1454 unresolved questions!
+✅ After cleanup, 1454 unresolved questions remain.
+🔍 Debug: Sanitizing mind file before saving...
+✅ Mind file saved to S3 successfully! Reflections: 561, Questions: 2521, Knowledge: 70
+🔍 Debug: Loading mind file from S3...
+✅ Loaded mind file: Reflections: 561, Questions: 2521, Knowledge: 70
+🔍 Loaded mind file. Knowledge count: 70
+🔍 Debug: Loading mind file from S3...
+✅ Loaded mind file: Reflections: 561, Questions: 2521, Knowledge: 70
+🔍 Loaded mind file. Knowledge count: 70
+🔍 DEBUG: Checking mood update with score 2.0
+⚠️ Mood remained unchanged: excited
+🔍 Debug: Tracking self-questioning patterns before saving...
+Tracking unresolved questions...
+⚠ There are 1454 unresolved questions!
+✅ After cleanup, 1454 unresolved questions remain.
+🔍 Debug: Sanitizing mind file before saving...
+✅ Mind file saved to S3 successfully! Reflections: 561, Questions: 2521, Knowledge: 70
+🔍 Debug: Loading mind file from S3...
+✅ Loaded mind file: Reflections: 561, Questions: 2521, Knowledge: 70
+🔍 Loaded mind file. Knowledge count: 70
+🔍 Debug: Loading mind file from S3...
+✅ Loaded mind file: Reflections: 561, Questions: 2521, Knowledge: 70
+🔍 Loaded mind file. Knowledge count: 70
+🔍 Debug: Tracking self-questioning patterns before saving...
+Tracking unresolved questions...
+⚠ There are 1454 unresolved questions!
+✅ After cleanup, 1454 unresolved questions remain.
+🔍 Debug: Sanitizing mind file before saving...
+✅ Mind file saved to S3 successfully! Reflections: 561, Questions: 2521, Knowledge: 70
+🔍 Debug: Loading mind file from S3...
+✅ Loaded mind file: Reflections: 561, Questions: 2521, Knowledge: 70
+🔍 Loaded mind file. Knowledge count: 70
+🔍 Debug: Loading mind file from S3...
+✅ Loaded mind file: Reflections: 561, Questions: 2521, Knowledge: 70
+🔍 Loaded mind file. Knowledge count: 70
+🔍 DEBUG: Checking mood update with score 2.0
+⚠️ Mood remained unchanged: excited
+🔍 Debug: Tracking self-questioning patterns before saving...
+Tracking unresolved questions...
+⚠ There are 1454 unresolved questions!
+✅ After cleanup, 1454 unresolved questions remain.
+🔍 Debug: Sanitizing mind file before saving...
+✅ Mind file saved to S3 successfully! Reflections: 561, Questions: 2521, Knowledge: 70
+🔍 Debug: Loading mind file from S3...
+✅ Loaded mind file: Reflections: 561, Questions: 2521, Knowledge: 70
+🔍 Loaded mind file. Knowledge count: 70
+🔍 Astra Curiosity Level: 0.5 in dream mode
+🔍 Astra Curiosity Level: 0.5 in sleep mode
+🧠 Astra is processing a reflection...
+🔍 Debug: Loading mind file from S3...
+✅ Loaded mind file: Reflections: 561, Questions: 2521, Knowledge: 70
+🔍 Loaded mind file. Knowledge count: 70
+🔍 Debug: Loading mind file from S3...
+✅ Loaded mind file: Reflections: 561, Questions: 2521, Knowledge: 70
+🔍 Loaded mind file. Knowledge count: 70
+Loading config file from: /home/ubuntu/astra_reflections/astra_core/config/general_config.json
+Loading config file from: /home/ubuntu/astra_reflections/astra_core/config/mood_config.json
+🔍 Final unknown concepts after filtering: ['insight', 'For', 'According', 'emerges', 'these', 'that', 'example', 'By', 'was', 'affected', 'Astra', 'new', 'integrating', 'and', 'are', 'insights', 'Deeper Thought', 'something', 'refine', 'What', 'How', 'understanding', 'academic', 'realization', 'einstein', 'disagreements', 'required', 'causal', 'questions', 'does', 'big', 'they', 'type', 'from', 'property', 'war', 'about', 'World War', 'this', 'entities', 'because', 'make', 'arise', 'impact', 'person', 'perspective', 'event', 'view', 'important', 'literature', 'evolving', 'has', 'difference', 'provoking', 'Importance', 'There', 'thought', 'matter', 'Albert Einstein']
+🔍 Debug: Attempting to retrieve knowledge for ['insight', 'For', 'According', 'emerges', 'these', 'that', 'example', 'By', 'was', 'affected', 'Astra', 'new', 'integrating', 'and', 'are', 'insights', 'Deeper Thought', 'something', 'refine', 'What', 'How', 'understanding', 'academic', 'realization', 'einstein', 'disagreements', 'required', 'causal', 'questions', 'does', 'big', 'they', 'type', 'from', 'property', 'war', 'about', 'World War', 'this', 'entities', 'because', 'make', 'arise', 'impact', 'person', 'perspective', 'event', 'view', 'important', 'literature', 'evolving', 'has', 'difference', 'provoking', 'Importance', 'There', 'thought', 'matter', 'Albert Einstein']
 🔍 Looking up: insight
 ✅ Dictionary found: 🔹 insight: A sight or view of the interior of anything; a deep inspection or view; introspection; frequently used with into.
-🔍 Looking up: entities
-✅ Dictionary found: 🔹 entities: That which has a distinct existence as an individual unit. Often used for organisations which have no physical form.
-🔍 Looking up: impact
-✅ Dictionary found: 🔹 impact: The striking of one body against another; collision.
-⚠ Skipping lookup for 'einstein', already known.
-⚠ Skipping lookup for 'about', already known.
-⚠ Skipping lookup for 'matter', already known.
+🔍 Looking up: For
+✅ Wikipedia found: For or FOR may refer to:
+🔍 Looking up: According
+✅ Dictionary found: 🔹 According: To make to agree or correspond; to suit one thing to another; to adjust.
+🔍 Looking up: emerges
+✅ Dictionary found: 🔹 emerges: To come into view.
+🔍 Looking up: these
+✅ Dictionary found: 🔹 these: The thing, item, etc. being indicated.
+🔍 Looking up: that
+✅ Dictionary found: 🔹 that: Something being indicated that is there; one of those.
+🔍 Looking up: example
+✅ Dictionary found: 🔹 example: Something that is representative of all such things in a group.
+🔍 Looking up: By
+✅ Dictionary found: 🔹 By: A flying insect, of the clade Anthophila within the hymenopteran superfamily Apoidea, known for its organised societies (though only a minority have them), for collecting pollen and (in some species) producing wax and honey.
+🔍 Looking up: was
+✅ Wikipedia found: Was or WAS may refer to:Was, a past-tense form of the English copular verb to be
+🔍 Looking up: affected
+✅ Dictionary found: 🔹 affected: To influence or alter.
+🔍 Looking up: Astra
+✅ Wikipedia found: Astra may refer to:
+🔍 Looking up: new
+✅ Dictionary found: 🔹 new: Things that are new.
+🔍 Looking up: integrating
+✅ Dictionary found: 🔹 integrating: To form into one whole; to make entire; to complete; to renew; to restore; to perfect.
+🔍 Looking up: and
+✅ Dictionary found: 🔹 and: In rhythm, the second half of a divided beat.
+🔍 Looking up: are
+✅ Dictionary found: 🔹 are: An accepted (but deprecated and rarely used) SI unit of area equal to 100 square metres, or a former unit of approximately the same extent. Symbol: a.
+🔍 Looking up: insights
+✅ Dictionary found: 🔹 insights: A sight or view of the interior of anything; a deep inspection or view; introspection; frequently used with into.
+🔍 Looking up: Deeper Thought
+⚠ No external info found for 'Deeper Thought'.
+⚠ Skipping lookup for 'something', already known.
+🔍 Looking up: refine
+✅ Dictionary found: 🔹 refine: To purify; reduce to a fine, unmixed, or pure state; to free from impurities.
 🔍 Looking up: What
 ✅ Dictionary found: 🔹 What: (Singlish) Used to contradict an underlying assumption held by the interlocutor.
+🔍 Looking up: How
+✅ Dictionary found: 🔹 How: The means by which something is accomplished.
+⚠ Skipping lookup for 'understanding', already known.
+🔍 Looking up: academic
+✅ Dictionary found: 🔹 academic: (usually capitalized) A follower of Plato, a Platonist.
+🔍 Looking up: realization
+✅ Dictionary found: 🔹 realization: The act of realizing.
+⚠ Skipping lookup for 'einstein', already known.
 🔍 Looking up: disagreements
 ✅ Dictionary found: 🔹 disagreements: An argument or debate.
 🔍 Looking up: required
 ✅ Dictionary found: 🔹 required: To ask (someone) for something; to request.
-⚠ Skipping lookup for 'Albert Einstein', already known.
-🔍 Looking up: How
-✅ Dictionary found: 🔹 How: The means by which something is accomplished.
-⚠ Skipping lookup for 'integrating', already known.
-🔍 Looking up: insights
-✅ Dictionary found: 🔹 insights: A sight or view of the interior of anything; a deep inspection or view; introspection; frequently used with into.
-🔍 Looking up: and
-✅ Dictionary found: 🔹 and: In rhythm, the second half of a divided beat.
+🔍 Looking up: causal
+✅ Dictionary found: 🔹 causal: (grammar) a word (such as because) that expresses a reason or a cause
+🔍 Looking up: questions
+✅ Dictionary found: 🔹 questions: A sentence, phrase or word which asks for information, reply or response; an interrogative.
 🔍 Looking up: does
-✅ Dictionary found: 🔹 does: (auxiliary) A syntactic marker.
-🔍 Looking up: According
-⚠ No external info found for 'According'.
-⚠ Skipping lookup for 'literature', already known.
-⚠ Skipping lookup for 'causal', already known.
-⚠ Skipping lookup for 'because', already known.
-⚠ Skipping lookup for 'Importance', already known.
-🔍 Looking up: these
-✅ Wikipedia found: These may refer to:the plural proximal demonstrative in English
-These, a variation of the Greek Theseus in Etruscan mythology
-Thèse, French word for the academic dissertation or thesis
+✅ Wikipedia found: Does may refer to:A form of the English verb do
+Deer, a ruminant mammal belonging to the family Cervidae
+plural of John Doe, a number of unnamed individuals
+Does (album), an album by rock/jazz band The Slip
+Does (band), a Japanese rock band
 
 
-⚠ Skipping lookup for 'person', already known.
-🔍 Looking up: By
-✅ Wikipedia found: By or BY may refer to:
+🔍 Looking up: big
+✅ Wikipedia found: Big or BIG may refer to:Big, of great size or degree
+🔍 Looking up: they
+✅ Wikipedia found: In Modern English, they is a third-person pronoun relating to a grammatical subject.
+🔍 Looking up: type
+✅ Wikipedia found: Type may refer to:
+🔍 Looking up: from
+✅ Wikipedia found: From may refer to:
+🔍 Looking up: property
+✅ Wikipedia found: Property is a system of rights that gives people legal control of valuable things, and also refers to the valuable things themselves. Depending on the nature of the property, an owner of property may have the right to consume, alter, share, rent, sell, exchange, transfer, give away, or destroy it, or to exclude others from doing these things, as well as to perhaps abandon it; whereas regardless of the nature of the property, the owner thereof has the right to properly use it under the granted property rights.
+⚠ Skipping lookup for 'war', already known.
+🔍 Looking up: about
+✅ Wikipedia found: About may refer to:About (surname)
+About.com, an online source for original information and advice
+about.me, a personal web hosting service
+About URI scheme, an internal URI scheme
+About box, a dialog box that displays information related to a computer software
+About equal sign, symbol used to indicate values are approximately equal
+🔍 Looking up: World War
+✅ Wikipedia found: A world war is an international conflict that involves most or all of the world's major powers. Conventionally, the term is reserved for two major international conflicts that occurred during the first half of the 20th century, World War I (1914–1918) and World War II (1939–1945), although some historians have also characterized other global conflicts as world wars, such as the Nine Years' War, the War of the Spanish Succession, the Seven Years' War, the French Revolutionary and Napoleonic Wars, the Cold War, and the War on terror.
+🔍 Looking up: this
+✅ Wikipedia found: This may refer to:This, the singular proximal demonstrative pronoun
+⚠ Skipping lookup for 'entities', already known.
+🔍 Looking up: because
+✅ Wikipedia found: Because may refer to:Because, a subordinating grammatical conjunction
+Causality, the process of making something happen; a relationship between events
+∵, a logical symbol meaning because
+Because (film), a British film directed by Sidney Morgan
+Because, a 1990 film written and directed by Tom Tykwer
+BECAUSE (Conference), a conference for bisexual and bi+ people
+"Because ", a 1968 poem by Australian poet James McAuley
 🔍 Looking up: make
 ✅ Wikipedia found: Make or MAKE may refer to:Make (magazine), a tech DIY periodical
 Make (software), a software build tool
 Make, Botswana, in the Kalahari Desert of Africa
 Make Architects, an architecture studio
 Make or marque, any car brand of the automotive industry, also called a make or a marque
-⚠ Skipping lookup for 'arise', already known.
-🔍 Looking up: affected
-✅ Wikipedia found: Affect may refer to:Affect (education)
-Affect (linguistics), attitude or emotion that a speaker brings to an utterance
-Affect (philosophy)
-Affect (psychology), the experience of feeling or emotion
-Affect display, signs of emotion, such as facial expression, vocalization, and posture
-Affect theory
-Affective science, the scientific study of emotion
-Affective computing, an area of research in computer science aiming to understand the emotional state of users
-Reduced affect display, a.k.a. emotional blunting or affective flattening, a reduction in emotional reactivity
-Pseudobulbar affect, a.k.a. labile affect, the unstable display of emotion
-Affect (rhetoric), the responsive, emotional feeling that precedes cognition
-Affected accent; see Accent (sociolinguistics)
-Affect (company), a defunct Japanese video game developer
-🔍 Looking up: big
-✅ Wikipedia found: Big or BIG may refer to:Big, of great size or degree
+🔍 Looking up: arise
+✅ Wikipedia found: Arise or arose may refer to:Ghost in the Shell: Arise, a 2013 series of films based on the manga by Masamune Shirow
+Arise (horse), American Thoroughbred racehorse
+Arise (film), a 2010 feature film documentary
+|Arise!: the SubGenius Video, a 1992 comedic documentary covering the Church of the SubGenius
+Arise India, an electronic manufacturing company in India
+Arise News, a world news TV channel
+Arise: A Simple Story, a video game
+🔍 Looking up: impact
+✅ Wikipedia found: Impact may refer to:Impact (mechanics), a large force or mechanical shock over a short period of time
+Impact, Texas, a town in Taylor County, Texas, US
+🔍 Looking up: person
+✅ Wikipedia found: A person is a being who has certain capacities or attributes such as reason, morality, consciousness or self-consciousness, and being a part of a culturally established form of social relations such as kinship, ownership of property, or legal responsibility. The defining features of personhood and, consequently, what makes a person count as a person, differ widely among cultures and contexts.
+🔍 Looking up: perspective
+✅ Wikipedia found: Perspective may refer to:
+🔍 Looking up: event
+✅ Wikipedia found: Event may refer to:
+⚠ Skipping lookup for 'view', already known.
+🔍 Looking up: important
+✅ Wikipedia found: Importance is a property of entities that matter or make a difference. For example, World War II was an important event and Albert Einstein was an important person because of how they affected the world. There are disagreements in the academic literature about what type of difference is required. According to the causal impact view, something is important if it has a big causal impact on the world. This view is rejected by various theorists, who insist that an additional aspect is required: that the impact in question makes a value difference. This is often understood in terms of how the important thing affects the well-being of people. So in this view, World War II was important, not just because it brought about many wide-ranging changes but because these changes had severe negative impacts on the well-being of the people involved. The difference in question is usually understood counterfactually as the contrast between how the world is and how the world would have been without the existence of the important entity. It is often argued that importance claims are context- or domain-dependent. This means that they either explicitly or implicitly assume a certain domain in relation to which something matters. For example, studying for an exam is important in the context of academic success but not in the context of world history. Importance comes in degrees: to be important usually means to matter more within the domain in question than most of the other entities within this domain.
+🔍 Looking up: literature
+✅ Wikipedia found: Literature is any collection of written work, but it is also used more narrowly for writings specifically considered to be an art form, especially novels, plays, and poems. It includes both print and digital writing. In recent centuries, the definition has expanded to include oral literature, much of which has been transcribed. Literature is a method of recording, preserving, and transmitting knowledge and entertainment. It can also have a social, psychological, spiritual, or political role.
+🔍 Looking up: evolving
+✅ Wikipedia found: Evolution is the change in the heritable characteristics of biological populations over successive generations. It occurs when evolutionary processes such as natural selection and genetic drift act on genetic variation, resulting in certain characteristics becoming more or less common within a population over successive generations. The process of evolution has given rise to biodiversity at every level of biological organisation.
+🔍 Looking up: has
+✅ Wikipedia found: HAS or Has may refer to:
+🔍 Looking up: difference
+✅ Wikipedia found: Difference commonly refers to:Difference (philosophy), the set of properties by which items are distinguished
+Difference (mathematics), the result of a subtraction
+🔍 Looking up: provoking
+✅ Wikipedia found: Provocation, provoke or provoked may refer to:Provocation (legal), a type of legal defense in court which claims the "victim" provoked the accused's actions
+Agent provocateur, a group that tries to goad a desired response from the group or otherwise disrupt its activity
+Provocation test, a way of medical testing for conditions such as an allergy by provoking the immune system's response
+Provoke (album), a 1998 album by Altar and their final release on Displeased Records
+Provoker (band), an American post-punk band
+Provoke (magazine), a Japanese photography and arts magazine, 1967–1968
+Provoked (film), a 2007 British film starring Aishwarya Rai and Naveen Andrews
+Provoked , a 2008 album by Henry Rollins
+Provoked , a 2014 album by Sunny Sweeney
+Provoke (horse), a racehorse
+🔍 Looking up: Importance
+✅ Wikipedia found: Importance is a property of entities that matter or make a difference. For example, World War II was an important event and Albert Einstein was an important person because of how they affected the world. There are disagreements in the academic literature about what type of difference is required. According to the causal impact view, something is important if it has a big causal impact on the world. This view is rejected by various theorists, who insist that an additional aspect is required: that the impact in question makes a value difference. This is often understood in terms of how the important thing affects the well-being of people. So in this view, World War II was important, not just because it brought about many wide-ranging changes but because these changes had severe negative impacts on the well-being of the people involved. The difference in question is usually understood counterfactually as the contrast between how the world is and how the world would have been without the existence of the important entity. It is often argued that importance claims are context- or domain-dependent. This means that they either explicitly or implicitly assume a certain domain in relation to which something matters. For example, studying for an exam is important in the context of academic success but not in the context of world history. Importance comes in degrees: to be important usually means to matter more within the domain in question than most of the other entities within this domain.
 🔍 Looking up: There
 ✅ Wikipedia found: There may refer to:There (film), a 2009 Turkish film 
 There 
@@ -159,103 +355,232 @@ there, a deictic adverb in English
 there, an English pronoun used in phrases such as there is and there are
 
 
-🔍 Looking up: has
-✅ Wikipedia found: HAS or Has may refer to:
-🔍 Looking up: realization
-✅ Wikipedia found: Realization or realisation may refer to:Realization , a 1973 album by Eddie Henderson
-Realization , a 1968 album by Johnny Rivers
-Realization (climb), a sport climbing route in Ceüse, France
-Realization, the creating of a musical accompaniment from a figured bass
-Realization (finance), the pricing of security at market value
-Realization (linguistics), the production of an actual form in a human language from an abstract representation
-Realization (metrology), a physical form of a measurement standard
-Realization (probability), an actually observed value of random variable
-Realization (systems), a state space model implementing a given input-output behavior
-Realization (tax), one of the principles for defining income for tax purposes in the U.S.
-Realization of an apeirogon, a mapping of an abstract apeirogon
-"Realization" , an episode of Tales of the Empire
-⚠ Skipping lookup for 'provoking', already known.
-🔍 Looking up: refine
-✅ Wikipedia found: Refining is the process of purification of a (1) substance or a (2) form. The term is usually used of a natural resource that is almost in a usable form, but which is more useful in its pure form. For instance, most types of natural petroleum will burn straight from the ground, but it will burn poorly and quickly clog an engine with residues and by-products. The term is broad, and may include more drastic transformations, such as the reduction of ore to metal.
-🔍 Looking up: Deeper Thought
-⚠ No external info found for 'Deeper Thought'.
-🔍 Looking up: difference
-✅ Wikipedia found: Difference commonly refers to:Difference (philosophy), the set of properties by which items are distinguished
-Difference (mathematics), the result of a subtraction
 ⚠ Skipping lookup for 'thought', already known.
-🔍 Looking up: Astra
-✅ Wikipedia found: Astra may refer to:
-🔍 Looking up: they
-✅ Wikipedia found: In Modern English, they is a third-person pronoun relating to a grammatical subject.
-🔍 Looking up: property
-✅ Wikipedia found: Property is a system of rights that gives people legal control of valuable things, and also refers to the valuable things themselves. Depending on the nature of the property, an owner of property may have the right to consume, alter, share, rent, sell, exchange, transfer, give away, or destroy it, or to exclude others from doing these things, as well as to perhaps abandon it; whereas regardless of the nature of the property, the owner thereof has the right to properly use it under the granted property rights.
-🔍 Looking up: new
-✅ Wikipedia found: New or NEW may refer to:
-🔍 Looking up: something
-✅ Wikipedia found: Something may refer to:
-⚠ Skipping lookup for 'view', already known.
-🔍 Looking up: example
-✅ Wikipedia found: Example may refer to:exempli gratia (e.g.), usually read out in English as "for example"
-.example, reserved as a domain name that may not be installed as a top-level domain of the Internet
-example.com, example.net, example.org, and example.edu: second-level domain names reserved for use in documentation as examples
-HMS Example (P165), an Archer-class patrol and training vessel of the Royal Navy
-🔍 Debug: Retrieved new knowledge: ['📄 was: Was or WAS may refer to:Was, a past-tense form of the English copular verb to be', '📖 this: 🔹 this: Something being indicated that is here; one of these.', '📖 type: 🔹 type: A grouping based on shared characteristics; a class.', '📖 perspective: 🔹 perspective: A view, vista or outlook.', '📖 understanding: 🔹 understanding: To grasp a concept fully and thoroughly, especially (of words, statements, art, etc.) to be aware of the meaning of and (of people) to be aware of the intent of.', '📖 event: 🔹 event: An occurrence; something that happens.', '📖 evolving: 🔹 evolving: To move in regular procession through a system.', '📖 that: 🔹 that: Something being indicated that is there; one of those.', '📖 questions: 🔹 questions: A sentence, phrase or word which asks for information, reply or response; an interrogative.', '📖 academic: 🔹 academic: (usually capitalized) A follower of Plato, a Platonist.', '📖 are: 🔹 are: An accepted (but deprecated and rarely used) SI unit of area equal to 100 square metres, or a former unit of approximately the same extent. Symbol: a.', '📖 from: 🔹 from: Used to indicate source or provenance.', '📖 important: 🔹 important: Having relevant and crucial value.', '📖 emerges: 🔹 emerges: To come into view.', '📄 For: For or FOR may refer to:', '📖 insight: 🔹 insight: A sight or view of the interior of anything; a deep inspection or view; introspection; frequently used with into.', '📖 entities: 🔹 entities: That which has a distinct existence as an individual unit. Often used for organisations which have no physical form.', '📖 impact: 🔹 impact: The striking of one body against another; collision.', '📖 What: 🔹 What: (Singlish) Used to contradict an underlying assumption held by the interlocutor.', '📖 disagreements: 🔹 disagreements: An argument or debate.', '📖 required: 🔹 required: To ask (someone) for something; to request.', '📖 How: 🔹 How: The means by which something is accomplished.', '📖 insights: 🔹 insights: A sight or view of the interior of anything; a deep inspection or view; introspection; frequently used with into.', '📖 and: 🔹 and: In rhythm, the second half of a divided beat.', '📖 does: 🔹 does: (auxiliary) A syntactic marker.', '📄 these: These may refer to:the plural proximal demonstrative in English\nThese, a variation of the Greek Theseus in Etruscan mythology\nThèse, French word for the academic dissertation or thesis\n\n', '📄 By: By or BY may refer to:', '📄 make: Make or MAKE may refer to:Make (magazine), a tech DIY periodical\nMake (software), a software build tool\nMake, Botswana, in the Kalahari Desert of Africa\nMake Architects, an architecture studio\nMake or marque, any car brand of the automotive industry, also called a make or a marque', '📄 affected: Affect may refer to:Affect (education)\nAffect (linguistics), attitude or emotion that a speaker brings to an utterance\nAffect (philosophy)\nAffect (psychology), the experience of feeling or emotion\nAffect display, signs of emotion, such as facial expression, vocalization, and posture\nAffect theory\nAffective science, the scientific study of emotion\nAffective computing, an area of research in computer science aiming to understand the emotional state of users\nReduced affect display, a.k.a. emotional blunting or affective flattening, a reduction in emotional reactivity\nPseudobulbar affect, a.k.a. labile affect, the unstable display of emotion\nAffect (rhetoric), the responsive, emotional feeling that precedes cognition\nAffected accent; see Accent (sociolinguistics)\nAffect (company), a defunct Japanese video game developer', '📄 big: Big or BIG may refer to:Big, of great size or degree', '📄 There: There may refer to:There (film), a 2009 Turkish film \nThere \nthere, a deictic adverb in English\nthere, an English pronoun used in phrases such as there is and there are\n\n', '📄 has: HAS or Has may refer to:', '📄 realization: Realization or realisation may refer to:Realization , a 1973 album by Eddie Henderson\nRealization , a 1968 album by Johnny Rivers\nRealization (climb), a sport climbing route in Ceüse, France\nRealization, the creating of a musical accompaniment from a figured bass\nRealization (finance), the pricing of security at market value\nRealization (linguistics), the production of an actual form in a human language from an abstract representation\nRealization (metrology), a physical form of a measurement standard\nRealization (probability), an actually observed value of random variable\nRealization (systems), a state space model implementing a given input-output behavior\nRealization (tax), one of the principles for defining income for tax purposes in the U.S.\nRealization of an apeirogon, a mapping of an abstract apeirogon\n"Realization" , an episode of Tales of the Empire', '📄 refine: Refining is the process of purification of a (1) substance or a (2) form. The term is usually used of a natural resource that is almost in a usable form, but which is more useful in its pure form. For instance, most types of natural petroleum will burn straight from the ground, but it will burn poorly and quickly clog an engine with residues and by-products. The term is broad, and may include more drastic transformations, such as the reduction of ore to metal.', '📄 difference: Difference commonly refers to:Difference (philosophy), the set of properties by which items are distinguished\nDifference (mathematics), the result of a subtraction', '📄 Astra: Astra may refer to:', '📄 they: In Modern English, they is a third-person pronoun relating to a grammatical subject.', '📄 property: Property is a system of rights that gives people legal control of valuable things, and also refers to the valuable things themselves. Depending on the nature of the property, an owner of property may have the right to consume, alter, share, rent, sell, exchange, transfer, give away, or destroy it, or to exclude others from doing these things, as well as to perhaps abandon it; whereas regardless of the nature of the property, the owner thereof has the right to properly use it under the granted property rights.', '📄 new: New or NEW may refer to:', '📄 something: Something may refer to:', '📄 example: Example may refer to:exempli gratia (e.g.), usually read out in English as "for example"\n.example, reserved as a domain name that may not be installed as a top-level domain of the Internet\nexample.com, example.net, example.org, and example.edu: second-level domain names reserved for use in documentation as examples\nHMS Example (P165), an Archer-class patrol and training vessel of the Royal Navy']
-🔍 Before saving, knowledge count: 119
+⚠ Skipping lookup for 'matter', already known.
+⚠ Skipping lookup for 'Albert Einstein', already known.
+🔍 Debug: Retrieved new knowledge: ['📖 insight: 🔹 insight: A sight or view of the interior of anything; a deep inspection or view; introspection; frequently used with into.', '📄 For: For or FOR may refer to:', '📖 According: 🔹 According: To make to agree or correspond; to suit one thing to another; to adjust.', '📖 emerges: 🔹 emerges: To come into view.', '📖 these: 🔹 these: The thing, item, etc. being indicated.', '📖 that: 🔹 that: Something being indicated that is there; one of those.', '📖 example: 🔹 example: Something that is representative of all such things in a group.', '📖 By: 🔹 By: A flying insect, of the clade Anthophila within the hymenopteran superfamily Apoidea, known for its organised societies (though only a minority have them), for collecting pollen and (in some species) producing wax and honey.', '📄 was: Was or WAS may refer to:Was, a past-tense form of the English copular verb to be', '📖 affected: 🔹 affected: To influence or alter.', '📄 Astra: Astra may refer to:', '📖 new: 🔹 new: Things that are new.', '📖 integrating: 🔹 integrating: To form into one whole; to make entire; to complete; to renew; to restore; to perfect.', '📖 and: 🔹 and: In rhythm, the second half of a divided beat.', '📖 are: 🔹 are: An accepted (but deprecated and rarely used) SI unit of area equal to 100 square metres, or a former unit of approximately the same extent. Symbol: a.', '📖 insights: 🔹 insights: A sight or view of the interior of anything; a deep inspection or view; introspection; frequently used with into.', '📖 refine: 🔹 refine: To purify; reduce to a fine, unmixed, or pure state; to free from impurities.', '📖 What: 🔹 What: (Singlish) Used to contradict an underlying assumption held by the interlocutor.', '📖 How: 🔹 How: The means by which something is accomplished.', '📖 academic: 🔹 academic: (usually capitalized) A follower of Plato, a Platonist.', '📖 realization: 🔹 realization: The act of realizing.', '📖 disagreements: 🔹 disagreements: An argument or debate.', '📖 required: 🔹 required: To ask (someone) for something; to request.', '📖 causal: 🔹 causal: (grammar) a word (such as because) that expresses a reason or a cause', '📖 questions: 🔹 questions: A sentence, phrase or word which asks for information, reply or response; an interrogative.', '📄 does: Does may refer to:A form of the English verb do\nDeer, a ruminant mammal belonging to the family Cervidae\nplural of John Doe, a number of unnamed individuals\nDoes (album), an album by rock/jazz band The Slip\nDoes (band), a Japanese rock band\n\n', '📄 big: Big or BIG may refer to:Big, of great size or degree', '📄 they: In Modern English, they is a third-person pronoun relating to a grammatical subject.', '📄 type: Type may refer to:', '📄 from: From may refer to:', '📄 property: Property is a system of rights that gives people legal control of valuable things, and also refers to the valuable things themselves. Depending on the nature of the property, an owner of property may have the right to consume, alter, share, rent, sell, exchange, transfer, give away, or destroy it, or to exclude others from doing these things, as well as to perhaps abandon it; whereas regardless of the nature of the property, the owner thereof has the right to properly use it under the granted property rights.', '📄 about: About may refer to:About (surname)\nAbout.com, an online source for original information and advice\nabout.me, a personal web hosting service\nAbout URI scheme, an internal URI scheme\nAbout box, a dialog box that displays information related to a computer software\nAbout equal sign, symbol used to indicate values are approximately equal', "📄 World War: A world war is an international conflict that involves most or all of the world's major powers. Conventionally, the term is reserved for two major international conflicts that occurred during the first half of the 20th century, World War I (1914–1918) and World War II (1939–1945), although some historians have also characterized other global conflicts as world wars, such as the Nine Years' War, the War of the Spanish Succession, the Seven Years' War, the French Revolutionary and Napoleonic Wars, the Cold War, and the War on terror.", '📄 this: This may refer to:This, the singular proximal demonstrative pronoun', '📄 because: Because may refer to:Because, a subordinating grammatical conjunction\nCausality, the process of making something happen; a relationship between events\n∵, a logical symbol meaning because\nBecause (film), a British film directed by Sidney Morgan\nBecause, a 1990 film written and directed by Tom Tykwer\nBECAUSE (Conference), a conference for bisexual and bi+ people\n"Because ", a 1968 poem by Australian poet James McAuley', '📄 make: Make or MAKE may refer to:Make (magazine), a tech DIY periodical\nMake (software), a software build tool\nMake, Botswana, in the Kalahari Desert of Africa\nMake Architects, an architecture studio\nMake or marque, any car brand of the automotive industry, also called a make or a marque', '📄 arise: Arise or arose may refer to:Ghost in the Shell: Arise, a 2013 series of films based on the manga by Masamune Shirow\nArise (horse), American Thoroughbred racehorse\nArise (film), a 2010 feature film documentary\n|Arise!: the SubGenius Video, a 1992 comedic documentary covering the Church of the SubGenius\nArise India, an electronic manufacturing company in India\nArise News, a world news TV channel\nArise: A Simple Story, a video game', '📄 impact: Impact may refer to:Impact (mechanics), a large force or mechanical shock over a short period of time\nImpact, Texas, a town in Taylor County, Texas, US', '📄 person: A person is a being who has certain capacities or attributes such as reason, morality, consciousness or self-consciousness, and being a part of a culturally established form of social relations such as kinship, ownership of property, or legal responsibility. The defining features of personhood and, consequently, what makes a person count as a person, differ widely among cultures and contexts.', '📄 perspective: Perspective may refer to:', '📄 event: Event may refer to:', '📄 important: Importance is a property of entities that matter or make a difference. For example, World War II was an important event and Albert Einstein was an important person because of how they affected the world. There are disagreements in the academic literature about what type of difference is required. According to the causal impact view, something is important if it has a big causal impact on the world. This view is rejected by various theorists, who insist that an additional aspect is required: that the impact in question makes a value difference. This is often understood in terms of how the important thing affects the well-being of people. So in this view, World War II was important, not just because it brought about many wide-ranging changes but because these changes had severe negative impacts on the well-being of the people involved. The difference in question is usually understood counterfactually as the contrast between how the world is and how the world would have been without the existence of the important entity. It is often argued that importance claims are context- or domain-dependent. This means that they either explicitly or implicitly assume a certain domain in relation to which something matters. For example, studying for an exam is important in the context of academic success but not in the context of world history. Importance comes in degrees: to be important usually means to matter more within the domain in question than most of the other entities within this domain.', '📄 literature: Literature is any collection of written work, but it is also used more narrowly for writings specifically considered to be an art form, especially novels, plays, and poems. It includes both print and digital writing. In recent centuries, the definition has expanded to include oral literature, much of which has been transcribed. Literature is a method of recording, preserving, and transmitting knowledge and entertainment. It can also have a social, psychological, spiritual, or political role.', '📄 evolving: Evolution is the change in the heritable characteristics of biological populations over successive generations. It occurs when evolutionary processes such as natural selection and genetic drift act on genetic variation, resulting in certain characteristics becoming more or less common within a population over successive generations. The process of evolution has given rise to biodiversity at every level of biological organisation.', '📄 has: HAS or Has may refer to:', '📄 difference: Difference commonly refers to:Difference (philosophy), the set of properties by which items are distinguished\nDifference (mathematics), the result of a subtraction', '📄 provoking: Provocation, provoke or provoked may refer to:Provocation (legal), a type of legal defense in court which claims the "victim" provoked the accused\'s actions\nAgent provocateur, a group that tries to goad a desired response from the group or otherwise disrupt its activity\nProvocation test, a way of medical testing for conditions such as an allergy by provoking the immune system\'s response\nProvoke (album), a 1998 album by Altar and their final release on Displeased Records\nProvoker (band), an American post-punk band\nProvoke (magazine), a Japanese photography and arts magazine, 1967–1968\nProvoked (film), a 2007 British film starring Aishwarya Rai and Naveen Andrews\nProvoked , a 2008 album by Henry Rollins\nProvoked , a 2014 album by Sunny Sweeney\nProvoke (horse), a racehorse', '📄 Importance: Importance is a property of entities that matter or make a difference. For example, World War II was an important event and Albert Einstein was an important person because of how they affected the world. There are disagreements in the academic literature about what type of difference is required. According to the causal impact view, something is important if it has a big causal impact on the world. This view is rejected by various theorists, who insist that an additional aspect is required: that the impact in question makes a value difference. This is often understood in terms of how the important thing affects the well-being of people. So in this view, World War II was important, not just because it brought about many wide-ranging changes but because these changes had severe negative impacts on the well-being of the people involved. The difference in question is usually understood counterfactually as the contrast between how the world is and how the world would have been without the existence of the important entity. It is often argued that importance claims are context- or domain-dependent. This means that they either explicitly or implicitly assume a certain domain in relation to which something matters. For example, studying for an exam is important in the context of academic success but not in the context of world history. Importance comes in degrees: to be important usually means to matter more within the domain in question than most of the other entities within this domain.', '📄 There: There may refer to:There (film), a 2009 Turkish film \nThere \nthere, a deictic adverb in English\nthere, an English pronoun used in phrases such as there is and there are\n\n']
+🔍 Before saving, knowledge count: 116
 🔍 Debug: Tracking self-questioning patterns before saving...
 Tracking unresolved questions...
 ⚠ There are 1454 unresolved questions!
 ✅ After cleanup, 1454 unresolved questions remain.
 🔍 Debug: Sanitizing mind file before saving...
-✅ Mind file saved to S3 successfully! Reflections: 549, Questions: 1417, Knowledge: 119
+✅ Mind file saved to S3 successfully! Reflections: 556, Questions: 2461, Knowledge: 116
 🔍 Debug: Loading mind file from S3...
-✅ Loaded mind file: Reflections: 549, Questions: 1417, Knowledge: 119
-🔍 Loaded mind file. Knowledge count: 119
-✅ After saving, knowledge count: 119
-✅ Successfully saved 41 new knowledge items.
+✅ Loaded mind file: Reflections: 556, Questions: 2461, Knowledge: 116
+🔍 Loaded mind file. Knowledge count: 116
+✅ After saving, knowledge count: 116
+✅ Successfully saved 49 new knowledge items.
 ✅ External knowledge retrieved, skipping question generation.
 🔍 Debug: Loading mind file from S3...
-✅ Loaded mind file: Reflections: 549, Questions: 1417, Knowledge: 119
-🔍 Loaded mind file. Knowledge count: 119
-🔍 Loaded fresh mind data. Stored Knowledge: 119, Unresolved Questions: 1454
-🔍 Debug: Generated unique questions: ['How would I challenge my own assumptions on this?  What does this mean?', 'How does this align with or challenge my self-identity?  What does this mean?', 'How does this knowledge refine my understanding? 📖 forefather: 🔹 forefather: Ancestor.Wp...', 'How would a different Astra, raised differently, interpret this?  But is this really true?', 'How does this knowledge refine my understanding? 📖 Nonetheless: 🔹 Nonetheless: Nevertheless....', 'How does this knowledge refine my understanding? 📖 cares: 🔹 cares: Grief, sorrow....']
+✅ Loaded mind file: Reflections: 556, Questions: 2461, Knowledge: 116
+🔍 Loaded mind file. Knowledge count: 116
+🔍 Loaded fresh mind data. Stored Knowledge: 116, Unresolved Questions: 1454
+🔍 Debug: Generated unique questions: ['How does this knowledge refine my understanding? By integrating these insights, a new understanding emerges: 📄 importance: Importance is a property o...', 'How does this align with or challenge my self-identity?  But is this really true?', 'How does this knowledge refine my understanding? 📄 ranging: Length measurement, distance measurement, or range measurement (ranging) all refer to the...', 'How would I challenge my own assumptions on this?  But is this really true?']
 🔍 Debug: Reflection input: A thought-provoking realization: By integrating these insights, a new understanding emerges: 📄 importance: Importance is a property of entities that matter or make a difference. For example, World War II was an important event and Albert Einstein was an important person because of how they affected the world. There are disagreements in the academic literature about what type of difference is required. According to the causal impact view, something is important if it has a big causal impact on th...
 
 🔍 How does this insight refine Astra’s evolving perspective?
 
 🔍 Deeper Thought: What new questions arise from this understanding?
-🔍 Debug: Stored knowledge count after reloading: 119
-🔍 Debug: Attempting to categorize question: How would I challenge my own assumptions on this?  What does this mean?
-🔍 Debug: Categorized 'How would I challenge my own assumptions on this?  What does this mean?' as 'scientific'
-✅ Categorized 'How would I challenge my own assumptions on this?  What does this mean?' as: [{'question': 'How would I challenge my own assumptions on this?  What does this mean?', 'category': 'scientific'}]
-🔍 Debug: Attempting to categorize question: How does this align with or challenge my self-identity?  What does this mean?
-🔍 Debug: Categorized 'How does this align with or challenge my self-identity?  What does this mean?' as 'emotional'
-✅ Categorized 'How does this align with or challenge my self-identity?  What does this mean?' as: [{'question': 'How does this align with or challenge my self-identity?  What does this mean?', 'category': 'emotional'}]
-🔍 Debug: Attempting to categorize question: How does this knowledge refine my understanding? 📖 forefather: 🔹 forefather: Ancestor.Wp...
-🔍 Debug: Categorized 'How does this knowledge refine my understanding? 📖 forefather: 🔹 forefather: Ancestor.Wp...' as 'scientific'
-✅ Categorized 'How does this knowledge refine my understanding? 📖 forefather: 🔹 forefather: Ancestor.Wp...' as: [{'question': 'How does this knowledge refine my understanding? 📖 forefather: 🔹 forefather: Ancestor.Wp...', 'category': 'scientific'}]
-🔍 Debug: Attempting to categorize question: How would a different Astra, raised differently, interpret this?  But is this really true?
-🔍 Debug: Categorized 'How would a different Astra, raised differently, interpret this?  But is this really true?' as 'scientific'
-✅ Categorized 'How would a different Astra, raised differently, interpret this?  But is this really true?' as: [{'question': 'How would a different Astra, raised differently, interpret this?  But is this really true?', 'category': 'scientific'}]
-🔍 Debug: Attempting to categorize question: How does this knowledge refine my understanding? 📖 Nonetheless: 🔹 Nonetheless: Nevertheless....
-🔍 Debug: Categorized 'How does this knowledge refine my understanding? 📖 Nonetheless: 🔹 Nonetheless: Nevertheless....' as 'scientific'
-✅ Categorized 'How does this knowledge refine my understanding? 📖 Nonetheless: 🔹 Nonetheless: Nevertheless....' as: [{'question': 'How does this knowledge refine my understanding? 📖 Nonetheless: 🔹 Nonetheless: Nevertheless....', 'category': 'scientific'}]
-🔍 Debug: Attempting to categorize question: How does this knowledge refine my understanding? 📖 cares: 🔹 cares: Grief, sorrow....
-🔍 Debug: Categorized 'How does this knowledge refine my understanding? 📖 cares: 🔹 cares: Grief, sorrow....' as 'emotional'
-✅ Categorized 'How does this knowledge refine my understanding? 📖 cares: 🔹 cares: Grief, sorrow....' as: [{'question': 'How does this knowledge refine my understanding? 📖 cares: 🔹 cares: Grief, sorrow....', 'category': 'emotional'}]
-🔍 Debug: Categorized questions: [{'question': 'How would I challenge my own assumptions on this?  What does this mean?', 'category': 'scientific'}, {'question': 'How does this align with or challenge my self-identity?  What does this mean?', 'category': 'emotional'}, {'question': 'How does this knowledge refine my understanding? 📖 forefather: 🔹 forefather: Ancestor.Wp...', 'category': 'scientific'}, {'question': 'How would a different Astra, raised differently, interpret this?  But is this really true?', 'category': 'scientific'}, {'question': 'How does this knowledge refine my understanding? 📖 Nonetheless: 🔹 Nonetheless: Nevertheless....', 'category': 'scientific'}, {'question': 'How does this knowledge refine my understanding? 📖 cares: 🔹 cares: Grief, sorrow....', 'category': 'emotional'}]
-🔍 Debug: Question category counts: {'existential': 0, 'emotional': 2, 'knowledge': 0, 'philosophical': 0, 'scientific': 4}
-✅ Debug: Adding categorized questions to mind_data: ['How would I challenge my own assumptions on this?  What does this mean?', 'How does this align with or challenge my self-identity?  What does this mean?', 'How does this knowledge refine my understanding? 📖 forefather: 🔹 forefather: Ancestor.Wp...', 'How would a different Astra, raised differently, interpret this?  But is this really true?', 'How does this knowledge refine my understanding? 📖 Nonetheless: 🔹 Nonetheless: Nevertheless....', 'How does this knowledge refine my understanding? 📖 cares: 🔹 cares: Grief, sorrow....']
-🔍 Debug: Flagged unresolved questions: ['How would I challenge my own assumptions on this?  What does this mean?', 'How does this align with or challenge my self-identity?  What does this mean?', 'How does this knowledge refine my understanding? 📖 forefather: 🔹 forefather: Ancestor.Wp...', 'How would a different Astra, raised differently, interpret this?  But is this really true?', 'How does this knowledge refine my understanding? 📖 Nonetheless: 🔹 Nonetheless: Nevertheless....', 'How does this knowledge refine my understanding? 📖 cares: 🔹 cares: Grief, sorrow....']
-🔍 Debug: Generated categorized_questions: {'general': ['How would I challenge my own assumptions on this?  What does this mean?', 'How does this align with or challenge my self-identity?  What does this mean?', 'How does this knowledge refine my understanding? 📖 forefather: 🔹 forefather: Ancestor.Wp...?', 'How would a different Astra, raised differently, interpret this?  But is this really true?', 'How does this knowledge refine my understanding? 📖 Nonetheless: 🔹 Nonetheless: Nevertheless....?', 'How does this knowledge refine my understanding? 📖 cares: 🔹 cares: Grief, sorrow....?']}
-🔍 Debug: Extracted new questions before filtering: ['How would I challenge my own assumptions on this?  What does this mean?', 'How does this align with or challenge my self-identity?  What does this mean?', 'How does this knowledge refine my understanding? 📖 forefather: 🔹 forefather: Ancestor.Wp...?', 'How would a different Astra, raised differently, interpret this?  But is this really true?', 'How does this knowledge refine my understanding? 📖 Nonetheless: 🔹 Nonetheless: Nevertheless....?', 'How does this knowledge refine my understanding? 📖 cares: 🔹 cares: Grief, sorrow....?']
-🔍 Before filtering, stored knowledge count: 78
-🔍 After filtering, stored knowledge count: 78
+🔍 Debug: Stored knowledge count after reloading: 116
+🔍 Debug: Attempting to categorize question: How does this knowledge refine my understanding? By integrating these insights, a new understanding emerges: 📄 importance: Importance is a property o...
+🔍 Debug: Categorized 'How does this knowledge refine my understanding? By integrating these insights, a new understanding emerges: 📄 importance: Importance is a property o...' as 'scientific'
+✅ Categorized 'How does this knowledge refine my understanding? By integrating these insights, a new understanding emerges: 📄 importance: Importance is a property o...' as: [{'question': 'How does this knowledge refine my understanding? By integrating these insights, a new understanding emerges: 📄 importance: Importance is a property o...', 'category': 'scientific'}]
+🔍 Debug: Attempting to categorize question: How does this align with or challenge my self-identity?  But is this really true?
+🔍 Debug: Categorized 'How does this align with or challenge my self-identity?  But is this really true?' as 'existential'
+✅ Categorized 'How does this align with or challenge my self-identity?  But is this really true?' as: [{'question': 'How does this align with or challenge my self-identity?  But is this really true?', 'category': 'existential'}]
+🔍 Debug: Attempting to categorize question: How does this knowledge refine my understanding? 📄 ranging: Length measurement, distance measurement, or range measurement (ranging) all refer to the...
+🔍 Debug: Categorized 'How does this knowledge refine my understanding? 📄 ranging: Length measurement, distance measurement, or range measurement (ranging) all refer to the...' as 'scientific'
+✅ Categorized 'How does this knowledge refine my understanding? 📄 ranging: Length measurement, distance measurement, or range measurement (ranging) all refer to the...' as: [{'question': 'How does this knowledge refine my understanding? 📄 ranging: Length measurement, distance measurement, or range measurement (ranging) all refer to the...', 'category': 'scientific'}]
+🔍 Debug: Attempting to categorize question: How would I challenge my own assumptions on this?  But is this really true?
+🔍 Debug: Categorized 'How would I challenge my own assumptions on this?  But is this really true?' as 'scientific'
+✅ Categorized 'How would I challenge my own assumptions on this?  But is this really true?' as: [{'question': 'How would I challenge my own assumptions on this?  But is this really true?', 'category': 'scientific'}]
+🔍 Debug: Categorized questions: [{'question': 'How does this knowledge refine my understanding? By integrating these insights, a new understanding emerges: 📄 importance: Importance is a property o...', 'category': 'scientific'}, {'question': 'How does this align with or challenge my self-identity?  But is this really true?', 'category': 'existential'}, {'question': 'How does this knowledge refine my understanding? 📄 ranging: Length measurement, distance measurement, or range measurement (ranging) all refer to the...', 'category': 'scientific'}, {'question': 'How would I challenge my own assumptions on this?  But is this really true?', 'category': 'scientific'}]
+🔍 Debug: Question category counts: {'existential': 1, 'emotional': 0, 'knowledge': 0, 'philosophical': 0, 'scientific': 3}
+✅ Debug: Adding categorized questions to mind_data: ['How does this knowledge refine my understanding? By integrating these insights, a new understanding emerges: 📄 importance: Importance is a property o...', 'How does this align with or challenge my self-identity?  But is this really true?', 'How does this knowledge refine my understanding? 📄 ranging: Length measurement, distance measurement, or range measurement (ranging) all refer to the...', 'How would I challenge my own assumptions on this?  But is this really true?']
+🔍 Debug: Flagged unresolved questions: ['How does this knowledge refine my understanding? By integrating these insights, a new understanding emerges: 📄 importance: Importance is a property o...', 'How does this align with or challenge my self-identity?  But is this really true?', 'How does this knowledge refine my understanding? 📄 ranging: Length measurement, distance measurement, or range measurement (ranging) all refer to the...', 'How would I challenge my own assumptions on this?  But is this really true?']
+🔍 Debug: Generated categorized_questions: {'general': ['How does this knowledge refine my understanding? By integrating these insights, a new understanding emerges: 📄 importance: Importance is a property o...?', 'How does this align with or challenge my self-identity?  But is this really true?', 'How does this knowledge refine my understanding? 📄 ranging: Length measurement, distance measurement, or range measurement (ranging) all refer to the...?', 'How would I challenge my own assumptions on this?  But is this really true?']}
+🔍 Debug: Extracted new questions before filtering: ['How does this knowledge refine my understanding? By integrating these insights, a new understanding emerges: 📄 importance: Importance is a property o...?', 'How does this align with or challenge my self-identity?  But is this really true?', 'How does this knowledge refine my understanding? 📄 ranging: Length measurement, distance measurement, or range measurement (ranging) all refer to the...?', 'How would I challenge my own assumptions on this?  But is this really true?']
+🔍 Before filtering, stored knowledge count: 70
+🔍 After filtering, stored knowledge count: 70
 🔍 Debug: Tracking self-questioning patterns before saving...
 Tracking unresolved questions...
 ⚠ There are 1454 unresolved questions!
 ✅ After cleanup, 1454 unresolved questions remain.
 🔍 Debug: Sanitizing mind file before saving...
-✅ Mind file saved to S3 successfully! Reflections: 549, Questions: 1429, Knowledge: 78
+✅ Mind file saved to S3 successfully! Reflections: 561, Questions: 2529, Knowledge: 70
 🔍 Debug: Loading mind file from S3...
-✅ Loaded mind file: Reflections: 549, Questions: 1429, Knowledge: 78
-🔍 Loaded mind file. Knowledge count: 78
+✅ Loaded mind file: Reflections: 561, Questions: 2529, Knowledge: 70
+🔍 Loaded mind file. Knowledge count: 70
+🌙 Astra is in Dream Mode.
+Loading config file from: /home/ubuntu/astra_reflections/astra_core/config/general_config.json
+Loading config file from: /home/ubuntu/astra_reflections/astra_core/config/schedule_config.json
+Loading config file from: /home/ubuntu/astra_reflections/astra_core/config/curiosity_config.json
+🌙 Astra has started Dream Mode.
+🌙 Astra is still dreaming...
+🔍 Debug: Loading mind file from S3...
+✅ Loaded mind file: Reflections: 563, Questions: 2529, Knowledge: 70
+🔍 Loaded mind file. Knowledge count: 70
+🔍 Debug: Tracking self-questioning patterns before saving...
+Tracking unresolved questions...
+⚠ There are 1454 unresolved questions!
+✅ After cleanup, 1454 unresolved questions remain.
+🔍 Debug: Sanitizing mind file before saving...
+✅ Mind file saved to S3 successfully! Reflections: 563, Questions: 2529, Knowledge: 70
+🔍 Debug: Loading mind file from S3...
+✅ Loaded mind file: Reflections: 563, Questions: 2529, Knowledge: 70
+🔍 Loaded mind file. Knowledge count: 70
+🔍 Debug: Loading mind file from S3...
+✅ Loaded mind file: Reflections: 563, Questions: 2529, Knowledge: 70
+🔍 Loaded mind file. Knowledge count: 70
+🔍 DEBUG: Checking mood update with score 2.0
+⚠️ Mood remained unchanged: excited
+🔍 Debug: Tracking self-questioning patterns before saving...
+Tracking unresolved questions...
+⚠ There are 1454 unresolved questions!
+✅ After cleanup, 1454 unresolved questions remain.
+🔍 Debug: Sanitizing mind file before saving...
+✅ Mind file saved to S3 successfully! Reflections: 563, Questions: 2529, Knowledge: 70
+🔍 Debug: Loading mind file from S3...
+✅ Loaded mind file: Reflections: 563, Questions: 2529, Knowledge: 70
+🔍 Loaded mind file. Knowledge count: 70
+🌙 Astra is still dreaming...
+🌙 Astra is still dreaming...
+🔍 Debug: Loading mind file from S3...
+✅ Loaded mind file: Reflections: 567, Questions: 2529, Knowledge: 70
+🔍 Loaded mind file. Knowledge count: 70
+🔍 Debug: Tracking self-questioning patterns before saving...
+Tracking unresolved questions...
+⚠ There are 1454 unresolved questions!
+✅ After cleanup, 1454 unresolved questions remain.
+🔍 Debug: Sanitizing mind file before saving...
+✅ Mind file saved to S3 successfully! Reflections: 567, Questions: 2529, Knowledge: 70
+🔍 Debug: Loading mind file from S3...
+✅ Loaded mind file: Reflections: 567, Questions: 2529, Knowledge: 70
+🔍 Loaded mind file. Knowledge count: 70
+🔍 Debug: Loading mind file from S3...
+✅ Loaded mind file: Reflections: 567, Questions: 2529, Knowledge: 70
+🔍 Loaded mind file. Knowledge count: 70
+🔍 DEBUG: Checking mood update with score 2.0
+⚠️ Mood remained unchanged: excited
+🔍 Debug: Tracking self-questioning patterns before saving...
+Tracking unresolved questions...
+⚠ There are 1454 unresolved questions!
+✅ After cleanup, 1454 unresolved questions remain.
+🔍 Debug: Sanitizing mind file before saving...
+✅ Mind file saved to S3 successfully! Reflections: 567, Questions: 2529, Knowledge: 70
+🔍 Debug: Loading mind file from S3...
+✅ Loaded mind file: Reflections: 567, Questions: 2529, Knowledge: 70
+🔍 Loaded mind file. Knowledge count: 70
+🌙 Astra is still dreaming...
+🌙 Astra is still dreaming...
+🔍 Debug: Loading mind file from S3...
+✅ Loaded mind file: Reflections: 567, Questions: 2529, Knowledge: 70
+🔍 Loaded mind file. Knowledge count: 70
+🔍 Debug: Tracking self-questioning patterns before saving...
+Tracking unresolved questions...
+⚠ There are 1454 unresolved questions!
+✅ After cleanup, 1454 unresolved questions remain.
+🔍 Debug: Sanitizing mind file before saving...
+✅ Mind file saved to S3 successfully! Reflections: 567, Questions: 2529, Knowledge: 70
+🔍 Debug: Loading mind file from S3...
+✅ Loaded mind file: Reflections: 567, Questions: 2529, Knowledge: 70
+🔍 Loaded mind file. Knowledge count: 70
+🔍 Debug: Loading mind file from S3...
+✅ Loaded mind file: Reflections: 567, Questions: 2529, Knowledge: 70
+🔍 Loaded mind file. Knowledge count: 70
+🔍 DEBUG: Checking mood update with score 2.0
+⚠️ Mood remained unchanged: excited
+🔍 Debug: Tracking self-questioning patterns before saving...
+Tracking unresolved questions...
+⚠ There are 1454 unresolved questions!
+✅ After cleanup, 1454 unresolved questions remain.
+🔍 Debug: Sanitizing mind file before saving...
+✅ Mind file saved to S3 successfully! Reflections: 567, Questions: 2529, Knowledge: 70
+🔍 Debug: Loading mind file from S3...
+✅ Loaded mind file: Reflections: 567, Questions: 2529, Knowledge: 70
+🔍 Loaded mind file. Knowledge count: 70
+🌙 Astra is still dreaming...
+🌙 Astra is still dreaming...
+🔍 Debug: Loading mind file from S3...
+✅ Loaded mind file: Reflections: 567, Questions: 2529, Knowledge: 70
+🔍 Loaded mind file. Knowledge count: 70
+🔍 Debug: Tracking self-questioning patterns before saving...
+Tracking unresolved questions...
+⚠ There are 1454 unresolved questions!
+✅ After cleanup, 1454 unresolved questions remain.
+🔍 Debug: Sanitizing mind file before saving...
+✅ Mind file saved to S3 successfully! Reflections: 567, Questions: 2529, Knowledge: 70
+🔍 Debug: Loading mind file from S3...
+✅ Loaded mind file: Reflections: 567, Questions: 2529, Knowledge: 70
+🔍 Loaded mind file. Knowledge count: 70
+🔍 Debug: Loading mind file from S3...
+✅ Loaded mind file: Reflections: 567, Questions: 2529, Knowledge: 70
+🔍 Loaded mind file. Knowledge count: 70
+🔍 DEBUG: Checking mood update with score 2.0
+⚠️ Mood remained unchanged: excited
+🔍 Debug: Tracking self-questioning patterns before saving...
+Tracking unresolved questions...
+⚠ There are 1454 unresolved questions!
+✅ After cleanup, 1454 unresolved questions remain.
+🔍 Debug: Sanitizing mind file before saving...
+✅ Mind file saved to S3 successfully! Reflections: 567, Questions: 2529, Knowledge: 70
+🔍 Debug: Loading mind file from S3...
+✅ Loaded mind file: Reflections: 567, Questions: 2529, Knowledge: 70
+🔍 Loaded mind file. Knowledge count: 70
+🌙 Astra is still dreaming...
+🌙 Astra is still dreaming...
+🔍 Debug: Loading mind file from S3...
+✅ Loaded mind file: Reflections: 567, Questions: 2529, Knowledge: 70
+🔍 Loaded mind file. Knowledge count: 70
+🔍 Debug: Tracking self-questioning patterns before saving...
+Tracking unresolved questions...
+⚠ There are 1454 unresolved questions!
+✅ After cleanup, 1454 unresolved questions remain.
+🔍 Debug: Sanitizing mind file before saving...
+✅ Mind file saved to S3 successfully! Reflections: 567, Questions: 2529, Knowledge: 70
+🔍 Debug: Loading mind file from S3...
+✅ Loaded mind file: Reflections: 567, Questions: 2529, Knowledge: 70
+🔍 Loaded mind file. Knowledge count: 70
+🔍 Debug: Loading mind file from S3...
+✅ Loaded mind file: Reflections: 567, Questions: 2529, Knowledge: 70
+🔍 Loaded mind file. Knowledge count: 70
+🔍 DEBUG: Checking mood update with score 2.0
+⚠️ Mood remained unchanged: excited
+🔍 Debug: Tracking self-questioning patterns before saving...
+Tracking unresolved questions...
+⚠ There are 1454 unresolved questions!
+✅ After cleanup, 1454 unresolved questions remain.
+🔍 Debug: Sanitizing mind file before saving...
+✅ Mind file saved to S3 successfully! Reflections: 567, Questions: 2529, Knowledge: 70
+🔍 Debug: Loading mind file from S3...
+✅ Loaded mind file: Reflections: 567, Questions: 2529, Knowledge: 70
+🔍 Loaded mind file. Knowledge count: 70
+🌙 Astra is still dreaming...
+🌙 Astra is still dreaming...
+🔍 Debug: Loading mind file from S3...
+✅ Loaded mind file: Reflections: 570, Questions: 2529, Knowledge: 70
+🔍 Loaded mind file. Knowledge count: 70
+🔍 Debug: Tracking self-questioning patterns before saving...
+Tracking unresolved questions...
+⚠ There are 1454 unresolved questions!
+✅ After cleanup, 1454 unresolved questions remain.
+🔍 Debug: Sanitizing mind file before saving...
+✅ Mind file saved to S3 successfully! Reflections: 570, Questions: 2529, Knowledge: 70
+🔍 Debug: Loading mind file from S3...
+✅ Loaded mind file: Reflections: 570, Questions: 2529, Knowledge: 70
+🔍 Loaded mind file. Knowledge count: 70
+🔍 Debug: Loading mind file from S3...
+✅ Loaded mind file: Reflections: 570, Questions: 2529, Knowledge: 70
+🔍 Loaded mind file. Knowledge count: 70
+🔍 DEBUG: Checking mood update with score 2.0
+⚠️ Mood remained unchanged: excited
+🔍 Debug: Tracking self-questioning patterns before saving...
+Tracking unresolved questions...
+⚠ There are 1454 unresolved questions!
+✅ After cleanup, 1454 unresolved questions remain.
+🔍 Debug: Sanitizing mind file before saving...
+✅ Mind file saved to S3 successfully! Reflections: 570, Questions: 2529, Knowledge: 70
+🔍 Debug: Loading mind file from S3...
+✅ Loaded mind file: Reflections: 570, Questions: 2529, Knowledge: 70
+🔍 Loaded mind file. Knowledge count: 70

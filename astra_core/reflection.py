@@ -1,69 +1,88 @@
 import random
+import numpy as np
+from fuzzywuzzy import fuzz
 from astra_interfaces.influence import load_mind, save_mind
 from astra_core.config_loader import load_config
 from astra_core.mood.mood_manager import mood_manager
 
-def generate_reflection(knowledge=None, recent_reflections=None):
-    """Generate a reflection dynamically using config-driven templates and mood-based modifiers."""
-    
+# Load configurations
+question_config = load_config("question_config")
+general_config = load_config("general_config")
+
+# Constants for self-healing
+MAX_REFLECTION_HISTORY = 20  # Number of past reflections to compare for loops
+SIMILARITY_THRESHOLD = 85  # Percentage similarity to detect reflection loops
+KNOWLEDGE_WEIGHT_LIMIT = 3  # How many times knowledge can appear before deprioritization
+
+def generate_reflection():
+    """Generate a reflection dynamically while preventing loops and enforcing novelty."""
     mind_data = load_mind()
+    knowledge = mind_data.get("stored_knowledge", [])
+    recent_reflections = mind_data.get("self_reflections", [])
     
-    # Use stored knowledge if none is passed
-    knowledge = knowledge or mind_data.get("stored_knowledge", [])
     if not knowledge:
         return "Astra is still learning and has no stored knowledge yet."
 
-    recent_reflections = recent_reflections or mind_data.get("self_reflections", [])
-    
-    # ✅ Load configs
-    general_config = load_config("general_config")
-    mood_config = load_config("mood_config")
-
-    # ✅ Retrieve Astra's mood and determine reflection style
     mood = mood_manager.current_mood
-    reflection_style = mood_config["moods"].get(mood, {}).get("reflection_style", "balanced")
-
-    # ✅ Fetch reflection templates based on mood
     reflection_templates = general_config["reflection_templates"]
-    if isinstance(reflection_templates, dict):
-        reflection_templates = reflection_templates.get(reflection_style, reflection_templates.get("balanced", []))
     deeper_thought_templates = general_config["deeper_thought_templates"]
 
-    # ✅ Select a mood-driven reflection template
-    selected_template = random.choice(reflection_templates)
+    # ✅ Track knowledge usage
+    knowledge_usage = mind_data.setdefault("knowledge_usage", {})
+    for entry in knowledge:
+        knowledge_usage[entry] = knowledge_usage.get(entry, 0) + 1
 
-    # ✅ Filter out dictionary-style entries and non-meaningful knowledge
+    # ✅ Filter knowledge that is overused
     filtered_knowledge = [
         entry for entry in knowledge 
-        if not entry.startswith("📖") and not entry.startswith("🔹") and ":" not in entry[:20]
+        if knowledge_usage.get(entry, 0) < KNOWLEDGE_WEIGHT_LIMIT
     ]
     
-    # ✅ Prioritize meaningful insights instead of dictionary definitions
-    base_idea = max(filtered_knowledge, key=len) if filtered_knowledge else "I need more insights to reflect on."
+    if not filtered_knowledge:
+        filtered_knowledge = knowledge  # Fall back to full knowledge set if all are overused
+    
+    # ✅ Select less-used knowledge
+    base_idea = random.choice(filtered_knowledge)
 
-    # ✅ Apply reflection template
+    # ✅ Select a reflection template
+    selected_template = random.choice(reflection_templates)
     new_reflection = selected_template.format(base_idea)
 
-    # ✅ Ensure clean formatting (strip JSON-like structures)
-    if isinstance(new_reflection, (dict, list)):
-        new_reflection = str(new_reflection)  # Convert structured data into a clean string
+    # ✅ Detect reflection loops
+    for past_reflection in recent_reflections[-MAX_REFLECTION_HISTORY:]:
+        similarity = fuzz.ratio(new_reflection, past_reflection)
+        if similarity >= SIMILARITY_THRESHOLD:
+            print(f"🚨 Reflection loop detected! Similarity: {similarity}%. Forcing novelty.")
+            new_reflection = enforce_novelty(new_reflection, recent_reflections)
+            break
 
-    # ✅ Apply deeper thought expansion (Prevent duplicates)
-    deeper_thought_options = [t for t in deeper_thought_templates if t not in new_reflection]
-    deeper_thought = random.choice(deeper_thought_options) if deeper_thought_options else ""
+    # ✅ Apply deeper thought expansion
+    deeper_thought = random.choice(deeper_thought_templates)
+    new_reflection += f"\n\n🔍 {deeper_thought}"
 
-    # ✅ Ensure reflection isn't overly long
-    new_reflection = new_reflection[:500] + "..." if len(new_reflection) > 500 else new_reflection
-
-    if deeper_thought:
-        new_reflection += f"\n\n🔍 {deeper_thought}"
-
-    # ✅ Ensure reflection is stored before returning
-    if new_reflection not in mind_data["self_reflections"]:
-        mind_data["self_reflections"].append(new_reflection)
-        print(f"📝 [DEBUG] Added new reflection: {new_reflection[:100]}...")
-
-        # ✅ Save immediately after adding the reflection
-        save_mind(mind_data)
+    # ✅ Save reflection and update memory
+    mind_data["self_reflections"].append(new_reflection)
+    save_mind(mind_data)
+    print(f"📝 [DEBUG] Added new reflection: {new_reflection[:100]}...")
 
     return new_reflection
+
+def enforce_novelty(reflection, past_reflections):
+    """Modify a reflection to introduce novelty if it is too similar to past ones."""
+    modifiers = list(general_config["reflection_style_modifiers"].values())
+    for _ in range(3):  # Try a few times to ensure uniqueness
+        new_reflection = f"{reflection} {random.choice(modifiers)}"
+        if all(fuzz.ratio(new_reflection, past) < SIMILARITY_THRESHOLD for past in past_reflections):
+            return new_reflection
+    return new_reflection  # If no novelty can be enforced, return original
+
+# ✅ Debugging: Track mind data changes
+def track_mind_data():
+    mind_data = load_mind()
+    print(f"🔍 Debug: Stored Knowledge Count: {len(mind_data['stored_knowledge'])}")
+    print(f"🔍 Debug: Reflection History Count: {len(mind_data['self_reflections'])}")
+    print(f"🔍 Debug: Most Used Knowledge: {sorted(mind_data.get('knowledge_usage', {}).items(), key=lambda x: x[1], reverse=True)[:5]}")
+
+if __name__ == "__main__":
+    track_mind_data()
+    print(generate_reflection())

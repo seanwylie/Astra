@@ -1,5 +1,9 @@
 import json
 import os
+import builtins
+import inspect
+
+original_print = builtins.print
 
 # Determine the base directory where Astra is running
 BASE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))  # Moves up from utils/
@@ -12,6 +16,18 @@ CONFIG_DIR = os.getenv("ASTRA_CONFIG_DIR", os.path.join(ASTRA_DIR, "config"))
 print(f"Config directory: {CONFIG_DIR}")
 
 CONFIG_CACHE = {}
+
+
+
+
+def custom_print(*args, **kwargs):
+    """Override print to include the filename in each log statement."""
+    frame = inspect.currentframe().f_back
+    filename = os.path.basename(frame.f_code.co_filename)
+    original_print(f"[{filename}]", *args, **kwargs)
+
+builtins.print = custom_print  # 🚀 Apply global override
+
 
 def load_config(filename):
     """Load a JSON config file dynamically, ensuring it always appends `.json`."""
