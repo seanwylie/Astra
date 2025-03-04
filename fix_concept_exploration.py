@@ -60,7 +60,7 @@ def merge_knowledge(existing_knowledge, new_knowledge):
 
 def merge_structured_knowledge():
     """Merge insights from structured data into Astra's memory safely without overwriting."""
-    
+    debug_log("Loading")  
     mind_data = load_mind()
     structured_data = load_json_file(MIND_FILE_ORIG, {"insights": []})
 
@@ -70,6 +70,7 @@ def merge_structured_knowledge():
         structured_knowledge = [entry["insight"] for entry in structured_data["insights"]]
 
         # ✅ Reload mind data before merging to prevent overwriting
+        debug_log("Loading")  
         reloaded_mind_data = load_mind()
         print(f"🔍 Reloaded mind data before merge. Stored Knowledge: {len(reloaded_mind_data['stored_knowledge'])}")
 
@@ -95,6 +96,7 @@ def merge_structured_knowledge():
         save_mind(reloaded_mind_data)
 
         # ✅ Reload after saving to verify persistence
+        debug_log("Loading")  
         saved_mind_data = load_mind()
         print(f"🔍 After saving & reloading, stored knowledge count: {len(saved_mind_data['stored_knowledge'])}")
 

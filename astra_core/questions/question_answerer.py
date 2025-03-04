@@ -1,5 +1,6 @@
 import sys
 import os
+from astra_core.config_loader import debug_log
 
 # Add the parent directory (astra_reflections) to sys.path so Python can find `astra_interfaces`
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../../')))
@@ -36,5 +37,6 @@ def self_answer_questions(mind_data):
     mind_data["self_questions"] = new_questions
     mind_data["unresolved_questions"] = unresolved_questions  # ✅ Keep track of unresolved
 
+    debug_log("Saving")
     save_mind(mind_data)
     return new_questions  # ✅ Return, but no processing

@@ -4,6 +4,7 @@ from astra_interfaces.influence import load_mind, save_mind
 from astra_core.config_loader import load_config
 from astra_core.mood.mood_manager import mood_manager
 from fuzzywuzzy import fuzz
+from astra_core.config_loader import debug_log
 
 # Load configurations
 question_config = load_config("question_config")
@@ -18,6 +19,7 @@ def generate_reflection(knowledge=None, recent_reflections=None, *args, **kwargs
     """Generate a reflection dynamically while preventing loops and enforcing novelty."""
 
     # ✅ Load mind data if not provided explicitly
+    debug_log("Loading")  
     mind_data = load_mind()
     knowledge = knowledge or mind_data.get("stored_knowledge", [])
     recent_reflections = recent_reflections or mind_data.get("self_reflections", [])
@@ -80,6 +82,7 @@ def enforce_novelty(reflection, past_reflections):
 
 # ✅ Debugging: Track mind data changes
 def track_mind_data():
+    debug_log("Loading")  
     mind_data = load_mind()
     print(f"🔍 Debug: Stored Knowledge Count: {len(mind_data['stored_knowledge'])}")
     print(f"🔍 Debug: Reflection History Count: {len(mind_data['self_reflections'])}")

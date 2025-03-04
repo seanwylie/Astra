@@ -1,6 +1,7 @@
 import time
 from astra_core.config_loader import load_config
 from astra_interfaces.influence import load_mind, save_mind  # ✅ Handles memory storage
+from astra_core.config_loader import debug_log
 
 class TrustManager:
     def __init__(self):
@@ -8,6 +9,7 @@ class TrustManager:
         print("\ud83d\udd0d Debug: Loading trust settings...")
         self.config = load_config("trust_config")
 
+        debug_log("Loading")  
         self.mind_data = load_mind()  # ✅ Load Astra's memory
 
         # ✅ Load or initialize trust tracking
@@ -79,6 +81,7 @@ class TrustManager:
         """Save trust data persistently."""
         self.mind_data["entity_trust"] = self.entity_trust
         self.mind_data["general_trust"] = self.general_trust
+        debug_log("Saving")
         save_mind(self.mind_data)  # ✅ Ensure trust data is saved persistently
 
     def validate_interaction(self, entity, validation_type):

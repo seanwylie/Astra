@@ -1,9 +1,11 @@
 import json
 import sys
 import os
+from collections import OrderedDict
 from fuzzywuzzy import fuzz
 from utils.json_loader import load_json_file
 from astra_interfaces.influence import load_mind, save_mind, save_to_s3
+from astra_core.config_loader import debug_log
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
@@ -30,25 +32,32 @@ def merge_knowledge(existing_knowledge, new_knowledge):
     # ✅ Preserve original knowledge
     knowledge_list = list(existing_knowledge)
     knowledge_set = set(existing_knowledge)
+    removed_items = []  # Track removed knowledge for debugging
 
     for item in new_knowledge:
         decoded_item = safe_decode(item)
 
-        # ✅ **Protect dictionary entries** if they contain detailed information
+        # ✅ **Protect dictionary entries** unless they are extremely short
         is_dict_entry = decoded_item.startswith("📖") or ":" in decoded_item[:20]
-        if is_dict_entry and len(decoded_item.split()) <= 5:  # 🚀 Only remove very short definitions
-            print(f"⚠ SKIPPED (Trivial Dictionary Entry): {decoded_item}")
+        if is_dict_entry and len(decoded_item.split()) <= 3:
+            removed_items.append(f"⚠ SKIPPED (Trivial Dictionary Entry): {decoded_item}")
             continue
 
-        # ✅ **Only remove near-duplicates if similarity is extremely high (>97%)**
-        is_duplicate = any(fuzz.ratio(decoded_item.lower(), existing.lower()) > 97 for existing in knowledge_set)
+        # ✅ **Only remove near-duplicates if similarity is extremely high (>98%)**
+        is_duplicate = any(fuzz.ratio(decoded_item.lower(), existing.lower()) > 98 for existing in knowledge_set)
 
         if is_duplicate:
-            print(f"⚠ SKIPPED (Potential duplicate, fuzzy match >97%): {decoded_item}")
+            removed_items.append(f"⚠ SKIPPED (Potential duplicate, fuzzy match >98%): {decoded_item}")
         else:
             knowledge_list.append(decoded_item)
             knowledge_set.add(decoded_item)
             print(f"➕ Added new knowledge: {decoded_item}")
+
+    # ✅ Log filtered-out knowledge to diagnose loss
+    if removed_items:
+        print("🚨 Debug: Knowledge removed during filtering:")
+        for item in removed_items:
+            print(item)
 
     final_count = len(knowledge_list)
     print(f"🔍 After merging, stored knowledge count: {final_count}")
@@ -56,10 +65,9 @@ def merge_knowledge(existing_knowledge, new_knowledge):
     return knowledge_list
 
 
-
 def merge_structured_knowledge():
     """Merge insights from structured data into Astra's memory safely without overwriting."""
-    
+    debug_log("Loading")  
     mind_data = load_mind()  # ✅ Load once before merging
     structured_data = load_json_file(MIND_FILE_ORIG, {"insights": []})
 
@@ -72,18 +80,27 @@ def merge_structured_knowledge():
         print("🔍 **All Incoming Structured Knowledge:**")
         for insight in structured_knowledge:
             print(f"➕ {insight}")
+        
+        print(f"🔍 Before merging, knowledge count: {len(mind_data['stored_knowledge'])}")
 
         # ✅ Merge knowledge (no second `load_mind()` call needed)
         merged_knowledge = merge_knowledge(mind_data["stored_knowledge"], structured_knowledge)
 
+        print(f"🔍 After merging, stored knowledge count: {len(mind_data['stored_knowledge'])}")
+
+
         # ✅ Keep ALL previous knowledge while adding structured knowledge
-        mind_data["stored_knowledge"] = list(dict.fromkeys(mind_data["stored_knowledge"] + merged_knowledge))  # 🚀 Preserve order while removing duplicates
+        # ✅ Preserve order while removing duplicates
+        mind_data["stored_knowledge"] = list(OrderedDict.fromkeys(mind_data["stored_knowledge"] + merged_knowledge))
+
 
         # ✅ Ensure reflections are also saved properly
         if "self_reflections" in mind_data:
             print(f"🔍 Debug: Reflections count before saving: {len(mind_data['self_reflections'])}")
         else:
             print("⚠ WARNING: Reflections key missing in mind_data!")
+
+        print(f"🔍 Before saving, knowledge count: {len(mind_data['stored_knowledge'])}")
 
         save_to_s3(mind_data)  # ✅ Save updated knowledge
 

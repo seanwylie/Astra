@@ -4,6 +4,7 @@ import boto3
 import io
 import wikipedia
 from astra_core.config_loader import load_config  # ✅ Load configs dynamically
+from astra_core.config_loader import debug_log
 
 # ✅ Load general configurations
 general_config = load_config("general_config")
@@ -53,6 +54,7 @@ def save_mind(mind_data):
     save_to_s3(mind_data)
 
     # ✅ Verify after saving
+    debug_log("Loading")  
     reloaded_mind_data = load_mind()
     if not reloaded_mind_data:
         print("🚨 [ERROR] Failed to reload mind file after saving!")
@@ -123,6 +125,7 @@ def store_knowledge(mind_data, new_insight):
         return
     
     mind_data["stored_knowledge"].append(new_insight)
+    debug_log("Saving")
     save_mind(mind_data)
     print("📄 [DEBUG] Knowledge saved successfully!")
 

@@ -1,15 +1,17 @@
 import requests
 import re
+import time
 from fuzzywuzzy import fuzz
 from astra_core.config_loader import load_config
 from astra_interfaces.influence import load_mind, save_mind  # ✅ Handles memory storage
+from astra_core.config_loader import debug_log
 
 class KnowledgeManager:
     def __init__(self):
         """Initialize Astra's knowledge system with configurable lookup sources."""
         print("🔍 Debug: Loading knowledge settings...")
         self.config = load_config("lookup_config")
-
+        debug_log("Loading")  
         self.mind_data = load_mind()  # ✅ Load Astra's memory
         if not isinstance(self.mind_data, dict):
             print("🚨 Warning: mind_data was corrupted! Resetting...")
@@ -18,17 +20,40 @@ class KnowledgeManager:
             print("🚨 Fixing `stored_knowledge`, ensuring it's a list!")
             self.mind_data["stored_knowledge"] = []
 
+
+
     def should_lookup_concept(self, concept):
         """Determine if Astra should look up a concept based on meaningful stored knowledge."""
         concept_lower = concept.lower()
-
-        # ✅ Ensure we only check *actual definitions*, not just any mention
+        
+        # ✅ Check for formal definitions first (📖 or 📄)
         existing_definitions = [
             entry for entry in self.mind_data["stored_knowledge"]
             if entry.lower().startswith(f"📖 {concept_lower}:") or entry.lower().startswith(f"📄 {concept_lower}:")
         ]
+        
+        if existing_definitions:
+            print(f"✅ Skipping lookup: Found structured definition for '{concept}'")
+            return False  # ✅ Proper definition exists, no need to look it up
 
-        return len(existing_definitions) == 0  # ✅ Only skip lookup if a proper definition exists
+        # ✅ Check if the concept is mentioned in stored knowledge in an *explanatory* way
+        for entry in self.mind_data["stored_knowledge"]:
+            if concept_lower in entry.lower():
+                # 🔍 Ensure it’s not just a *passing mention* but part of an actual explanation
+                if ":" in entry[:40] or len(entry.split()) > 10:  # Entry is likely an explanation, not a simple mention
+                    print(f"✅ Skipping lookup: '{concept}' appears in a meaningful knowledge entry.")
+                    return False  # ✅ Found an explanation, so skip lookup
+
+        # ✅ Use fuzzy matching as a last check for similar explanations
+        for entry in self.mind_data["stored_knowledge"]:
+            similarity = fuzz.partial_ratio(concept_lower, entry.lower())
+            if similarity > 90:  # 🔥 Adjust threshold as needed
+                print(f"✅ Skipping lookup: Found related explanation '{entry}' (similarity: {similarity}%)")
+                return False  # ✅ A related concept is well explained
+
+        print(f"🔍 Concept '{concept}' not found in an explained form, proceeding with lookup")
+        return True  # 🔍 No explanation found, look it up
+
 
 
 
@@ -56,6 +81,7 @@ class KnowledgeManager:
         except Exception as e:
             print(f"⚠ Wikipedia lookup failed for '{concept}': {e}")
         return None
+
 
     def retrieve_external_knowledge(self, search_terms):
         """Fetch knowledge from external sources and update stored knowledge *before* generating new questions."""
@@ -95,14 +121,29 @@ class KnowledgeManager:
 
             save_mind(self.mind_data)
 
-            # ✅ Immediately reload to check if it was actually saved
+            # ✅ Wait for save completion before reloading (adjust sleep time as needed)
+            time.sleep(0.5)
+
+            # ✅ First reload
+            debug_log("Loading")  
             reloaded_mind = load_mind()
+
+            print(f"🔍 After reloading, stored knowledge count: {len(reloaded_mind['stored_knowledge'])}")
+
             post_save_count = len(reloaded_mind["stored_knowledge"])
 
-            print(f"🔍 Debug: After reloading, knowledge count: {post_save_count}")
+            print(f"🔍 Debug: After first reload, knowledge count: {post_save_count}")
 
+            # ✅ Double-check consistency and reload again if necessary
             if post_save_count < len(self.mind_data["stored_knowledge"]):
-                print("🚨 WARNING: Knowledge lost between saving and reloading!")
+                print("🚨 WARNING: Knowledge count mismatch! Reloading again to verify data integrity.")
+                time.sleep(0.5)
+                reloaded_mind = load_mind()
+                post_save_count = len(reloaded_mind["stored_knowledge"])
+                print(f"🔍 Debug: After second reload, knowledge count: {post_save_count}")
+
+            # ✅ Update memory with the verified data
+            self.mind_data["stored_knowledge"] = reloaded_mind["stored_knowledge"]
 
         return retrieved_anything
 

@@ -8,6 +8,7 @@ def test_increment_tracking():
     """Test that reflections, questions, and knowledge are increasing as expected."""
     
     # ✅ Load initial mind state
+    debug_log("Loading")  
     mind_data = load_mind()
     initial_counts = {
         "reflections": len(mind_data.get("self_reflections", [])),
@@ -38,6 +39,7 @@ def test_increment_tracking():
     save_mind(mind_data)
 
     # ✅ Load updated state
+    debug_log("Loading")  
     updated_mind = load_mind()
     updated_counts = {
         "reflections": len(updated_mind.get("self_reflections", [])),

@@ -13,6 +13,7 @@ from astra_core.expansion import refine_knowledge
 from astra_interfaces.influence import load_mind, save_mind
 from astra_core.config_loader import load_config  # ✅ Load configs dynamically
 from astra_core.questions.question_manager import manage_questions
+from astra_core.config_loader import debug_log
 
 
 general_config = load_config("general_config")  # ✅ Load general settings
@@ -28,6 +29,7 @@ def validate_mind_structure(mind_data):
 
 def process_reflection():
     """Generate, refine, and deepen Astra's reflections while ensuring questions are generated & answered."""
+    debug_log("Loading")  
     mind_data = load_mind()
     validate_mind_structure(mind_data)
 
@@ -42,6 +44,7 @@ def process_reflection():
         found_new_knowledge = knowledge_manager.retrieve_external_knowledge(unknown_terms)
         if found_new_knowledge:
             print(f"✅ New knowledge added from external lookup: {unknown_terms}")
+            debug_log("Saving")
             save_mind(mind_data)  # 🛑 **Save immediately after knowledge is retrieved**
 
 
@@ -77,7 +80,9 @@ def process_reflection():
     print(f"🔍 After filtering, stored knowledge count: {len(mind_data['stored_knowledge'])}")
 
     pre_save_knowledge = set(mind_data["stored_knowledge"])
+    debug_log("Saving")
     save_mind(mind_data)
+    debug_log("Loading")  
     post_save_knowledge = set(load_mind()["stored_knowledge"])
 
     lost_knowledge = pre_save_knowledge - post_save_knowledge

@@ -11,6 +11,7 @@ from astra_core.processing import process_reflection
 from astra_core.mood.mood_manager import MoodManager
 from astra_core.personality.personality_manager import update_personality, load_personality, get_personality_state
 from astra_interfaces.influence import load_mind, save_mind  # ✅ Centralized mind management
+from astra_core.config_loader import debug_log
 
 # Load environment variables
 load_dotenv()
@@ -39,17 +40,21 @@ bot = commands.Bot(command_prefix=values["command_prefix"], intents=intents)
 mood_manager = MoodManager()
 
 # ✅ Load mind data at startup
+debug_log("Loading")  
 mind_data = load_mind()
 
 def get_trust_level(user_id):
     """Retrieve Astra's trust level for a given user."""
+    debug_log("Loading")  
     return load_mind().get("trust_levels", {}).get(user_id, 0)
 
 def update_trust(user_id, change):
     """Modify Astra's trust in a user and persist it."""
+    debug_log("Loading")  
     mind_data = load_mind()
     trust_levels = mind_data.setdefault("trust_levels", {})
     trust_levels[user_id] = max(min(trust_levels.get(user_id, 0) + change, values["max_trust"]), values["min_trust"])
+    debug_log("Saving")
     save_mind(mind_data)
 
 async def send_message_to_discord(channel_id, message):
@@ -105,6 +110,7 @@ async def trust(ctx):
 @bot.command()
 async def knowledge(ctx):
     """Displays Astra's stored knowledge."""
+    debug_log("Loading")  
     mind_data = load_mind()
     sample_insights = "\n".join(random.sample(mind_data["stored_knowledge"], min(3, len(mind_data["stored_knowledge"]))))
     await ctx.send(responses["knowledge_response"].format(knowledge=sample_insights))

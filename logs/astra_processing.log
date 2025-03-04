@@ -2,17 +2,19 @@ Config directory: /home/ubuntu/astra_reflections/astra_core/config
 [config_loader.py] Loading config file from: /home/ubuntu/astra_reflections/astra_core/config/general_config.json
 [knowledge.py] 🔍 Debug: Loading knowledge settings...
 [config_loader.py] Loading config file from: /home/ubuntu/astra_reflections/astra_core/config/lookup_config.json
+[config_loader.py] 📥 [DEBUG] Loading Mind in __init__...
 [influence.py] 🔍 Debug: Loading mind file from S3...
-[influence.py] ✅ Loaded mind file: Reflections: 570, Questions: 2529, Knowledge: 69
-[influence.py] 🔍 Loaded mind file. Knowledge count: 69
+[influence.py] ✅ Loaded mind file: Reflections: 593, Questions: 2779, Knowledge: 108
+[influence.py] 🔍 Loaded mind file. Knowledge count: 108
 [config_loader.py] Loading config file from: /home/ubuntu/astra_reflections/astra_core/config/mood_config.json
 [mood_manager.py] 🔍 Debug: Attempting to load mood_config.json...
 [config_loader.py] Loading config file from: /home/ubuntu/astra_reflections/astra_core/config/mood_config.json
 [mood_manager.py] 🔍 Debug: mood_config Loaded → {'log_file': '/home/ubuntu/astra_logs.json', 'moods': {'curious': {'curiosity_factor': 1.5, 'reflection_style': 'questioning', 'response_tone': 'enthusiastic'}, 'thoughtful': {'curiosity_factor': 1.2, 'reflection_style': 'analytical', 'response_tone': 'calm'}, 'frustrated': {'curiosity_factor': 0.8, 'reflection_style': 'skeptical', 'response_tone': 'snarky'}, 'excited': {'curiosity_factor': 1.8, 'reflection_style': 'expansive', 'response_tone': 'energetic'}, 'neutral': {'curiosity_factor': 1.0, 'reflection_style': 'balanced', 'response_tone': 'neutral'}}, 'mood_influences': {'success': 1.5, 'failure': -2.0, 'deep_reflection': 1.0, 'idle': -0.5, 'negative_feedback': -0.2, 'positive_feedback': 0.2}, 'mood_limits': {'min': -2.0, 'max': 2.0}, 'curiosity_limits': {'min': 0.5, 'max': 2.0}}
 [config_loader.py] Loading config file from: /home/ubuntu/astra_reflections/astra_core/config/general_config.json
+[config_loader.py] 📥 [DEBUG] Loading Mind in __init__...
 [influence.py] 🔍 Debug: Loading mind file from S3...
-[influence.py] ✅ Loaded mind file: Reflections: 570, Questions: 2529, Knowledge: 69
-[influence.py] 🔍 Loaded mind file. Knowledge count: 69
+[influence.py] ✅ Loaded mind file: Reflections: 593, Questions: 2779, Knowledge: 108
+[influence.py] 🔍 Loaded mind file. Knowledge count: 108
 [mood_manager.py] 🔍 Loaded mood from memory: excited, Score: 2.0, Curiosity: 1.0
 [config_loader.py] Loading config file from: /home/ubuntu/astra_reflections/astra_core/config/question_config.json
 [config_loader.py] Loading config file from: /home/ubuntu/astra_reflections/astra_core/config/general_config.json
@@ -34,11 +36,1261 @@ Config directory: /home/ubuntu/astra_reflections/astra_core/config
 [config_loader.py] Loading config file from: /home/ubuntu/astra_reflections/astra_core/config/schedule_config.json
 [config_loader.py] Loading config file from: /home/ubuntu/astra_reflections/astra_core/config/schedule_config.json
 [config_loader.py] Loading config file from: /home/ubuntu/astra_reflections/astra_core/config/schedule_config.json
+[config_loader.py] Loading config file from: /home/ubuntu/astra_reflections/astra_core/config/schedule_config.json
 [config_loader.py] Loading config file from: /home/ubuntu/astra_reflections/astra_core/config/general_config.json
 [config_loader.py] Loading config file from: /home/ubuntu/astra_reflections/astra_core/config/schedule_config.json
 [config_loader.py] Loading config file from: /home/ubuntu/astra_reflections/astra_core/config/curiosity_config.json
-[schedule.py] 🌙 Astra is in Dream Mode.
-[config_loader.py] Loading config file from: /home/ubuntu/astra_reflections/astra_core/config/general_config.json
-[config_loader.py] Loading config file from: /home/ubuntu/astra_reflections/astra_core/config/schedule_config.json
-[config_loader.py] Loading config file from: /home/ubuntu/astra_reflections/astra_core/config/curiosity_config.json
-[dream.py] 🌙 Astra has started Dream Mode.
+[sms_helper.py] ✅ SMS Sent: Astra has changed state to  Off to class! Let's see what I can absorb today..
+[schedule.py] 📨 SMS Sent: 📝 Off to class! Let's see what I can absorb today.
+[schedule.py] 📚 Astra is in School Mode.
+[school.py] 📚 Astra is in school, learning and thinking...
+[config_loader.py] 📥 [DEBUG] Loading Mind in process_reflection...
+[influence.py] 🔍 Debug: Loading mind file from S3...
+[influence.py] ✅ Loaded mind file: Reflections: 593, Questions: 2779, Knowledge: 108
+[influence.py] 🔍 Loaded mind file. Knowledge count: 108
+[config_loader.py] 📥 [DEBUG] Loading Mind in generate_reflection...
+[influence.py] 🔍 Debug: Loading mind file from S3...
+[influence.py] ✅ Loaded mind file: Reflections: 593, Questions: 2779, Knowledge: 108
+[influence.py] 🔍 Loaded mind file. Knowledge count: 108
+[influence.py] 🔍 Debug: Tracking self-questioning patterns before saving...
+[question_tracker.py] Tracking unresolved questions...
+[question_tracker.py] ⚠ There are 1454 unresolved questions!
+[question_tracker.py] ✅ After cleanup, 1454 unresolved questions remain.
+[influence.py] 🔍 Debug: Sanitizing mind file before saving...
+[influence.py] ✅ Mind file saved to S3 successfully! Reflections: 594, Questions: 2779, Knowledge: 108
+[config_loader.py] 📥 [DEBUG] Loading Mind in save_mind...
+[influence.py] 🔍 Debug: Loading mind file from S3...
+[influence.py] ✅ Loaded mind file: Reflections: 594, Questions: 2779, Knowledge: 108
+[influence.py] 🔍 Loaded mind file. Knowledge count: 108
+[reflection.py] 📝 [DEBUG] Added new reflection: A challenging idea emerges: 📖 How: 🔹 How: The means by which something is accomplished.
+
+🔍 If this p...
+[knowledge.py] 🔍 Final unknown concepts after filtering: ['perspective', 'for', 'have', 'means', 'challenging', 'Astra', 'The', 'something', 'refine', 'this', 'what', 'does', 'accomplished', 'How', 'insight', 'evolving', 'implications', 'thought', 'emerges', 'which', 'If', 'growth', 'idea', 'Deeper Thought', 'correct']
+[knowledge.py] 🔍 Debug: Attempting to retrieve knowledge for ['perspective', 'for', 'have', 'means', 'challenging', 'Astra', 'The', 'something', 'refine', 'this', 'what', 'does', 'accomplished', 'How', 'insight', 'evolving', 'implications', 'thought', 'emerges', 'which', 'If', 'growth', 'idea', 'Deeper Thought', 'correct']
+[knowledge.py] ✅ Skipping lookup: Found structured definition for 'perspective'
+[knowledge.py] ⚠ Skipping lookup for 'perspective', already known.
+[knowledge.py] ✅ Skipping lookup: 'for' appears in a meaningful knowledge entry.
+[knowledge.py] ⚠ Skipping lookup for 'for', already known.
+[knowledge.py] ✅ Skipping lookup: 'have' appears in a meaningful knowledge entry.
+[knowledge.py] ⚠ Skipping lookup for 'have', already known.
+[knowledge.py] ✅ Skipping lookup: 'means' appears in a meaningful knowledge entry.
+[knowledge.py] ⚠ Skipping lookup for 'means', already known.
+[knowledge.py] ✅ Skipping lookup: Found structured definition for 'challenging'
+[knowledge.py] ⚠ Skipping lookup for 'challenging', already known.
+[knowledge.py] ✅ Skipping lookup: Found structured definition for 'Astra'
+[knowledge.py] ⚠ Skipping lookup for 'Astra', already known.
+[knowledge.py] ✅ Skipping lookup: Found structured definition for 'The'
+[knowledge.py] ⚠ Skipping lookup for 'The', already known.
+[knowledge.py] ✅ Skipping lookup: 'something' appears in a meaningful knowledge entry.
+[knowledge.py] ⚠ Skipping lookup for 'something', already known.
+[knowledge.py] ✅ Skipping lookup: Found structured definition for 'refine'
+[knowledge.py] ⚠ Skipping lookup for 'refine', already known.
+[knowledge.py] ✅ Skipping lookup: Found structured definition for 'this'
+[knowledge.py] ⚠ Skipping lookup for 'this', already known.
+[knowledge.py] ✅ Skipping lookup: Found structured definition for 'what'
+[knowledge.py] ⚠ Skipping lookup for 'what', already known.
+[knowledge.py] ✅ Skipping lookup: Found structured definition for 'does'
+[knowledge.py] ⚠ Skipping lookup for 'does', already known.
+[knowledge.py] ✅ Skipping lookup: 'accomplished' appears in a meaningful knowledge entry.
+[knowledge.py] ⚠ Skipping lookup for 'accomplished', already known.
+[knowledge.py] ✅ Skipping lookup: Found structured definition for 'How'
+[knowledge.py] ⚠ Skipping lookup for 'How', already known.
+[knowledge.py] ✅ Skipping lookup: Found structured definition for 'insight'
+[knowledge.py] ⚠ Skipping lookup for 'insight', already known.
+[knowledge.py] ✅ Skipping lookup: Found structured definition for 'evolving'
+[knowledge.py] ⚠ Skipping lookup for 'evolving', already known.
+[knowledge.py] 🔍 Concept 'implications' not found in an explained form, proceeding with lookup
+[knowledge.py] 🔍 Looking up: implications
+[knowledge.py] ✅ Dictionary found: 🔹 implications: The act of implicating.
+[knowledge.py] ✅ Skipping lookup: Found structured definition for 'thought'
+[knowledge.py] ⚠ Skipping lookup for 'thought', already known.
+[knowledge.py] ✅ Skipping lookup: Found structured definition for 'emerges'
+[knowledge.py] ⚠ Skipping lookup for 'emerges', already known.
+[knowledge.py] ✅ Skipping lookup: 'which' appears in a meaningful knowledge entry.
+[knowledge.py] ⚠ Skipping lookup for 'which', already known.
+[knowledge.py] ✅ Skipping lookup: 'If' appears in a meaningful knowledge entry.
+[knowledge.py] ⚠ Skipping lookup for 'If', already known.
+[knowledge.py] ✅ Skipping lookup: 'growth' appears in a meaningful knowledge entry.
+[knowledge.py] ⚠ Skipping lookup for 'growth', already known.
+[knowledge.py] ✅ Skipping lookup: Found structured definition for 'idea'
+[knowledge.py] ⚠ Skipping lookup for 'idea', already known.
+[knowledge.py] 🔍 Concept 'Deeper Thought' not found in an explained form, proceeding with lookup
+[knowledge.py] 🔍 Looking up: Deeper Thought
+[knowledge.py] ⚠ No external info found for 'Deeper Thought'.
+[knowledge.py] 🔍 Concept 'correct' not found in an explained form, proceeding with lookup
+[knowledge.py] 🔍 Looking up: correct
+[knowledge.py] ✅ Dictionary found: 🔹 correct: Free from error; true; accurate.
+[knowledge.py] 🔍 Debug: Retrieved new knowledge: ['📖 implications: 🔹 implications: The act of implicating.', '📖 correct: 🔹 correct: Free from error; true; accurate.']
+[knowledge.py] 🔍 Debug: Before saving, knowledge count: 108 -> 110
+[influence.py] 🔍 Debug: Tracking self-questioning patterns before saving...
+[question_tracker.py] Tracking unresolved questions...
+[question_tracker.py] ⚠ There are 1454 unresolved questions!
+[question_tracker.py] ✅ After cleanup, 1454 unresolved questions remain.
+[influence.py] 🔍 Debug: Sanitizing mind file before saving...
+[influence.py] ✅ Mind file saved to S3 successfully! Reflections: 593, Questions: 2779, Knowledge: 110
+[config_loader.py] 📥 [DEBUG] Loading Mind in save_mind...
+[influence.py] 🔍 Debug: Loading mind file from S3...
+[influence.py] ✅ Loaded mind file: Reflections: 593, Questions: 2779, Knowledge: 110
+[influence.py] 🔍 Loaded mind file. Knowledge count: 110
+[config_loader.py] 📥 [DEBUG] Loading Mind in retrieve_external_knowledge...
+[influence.py] 🔍 Debug: Loading mind file from S3...
+[influence.py] ✅ Loaded mind file: Reflections: 593, Questions: 2779, Knowledge: 110
+[influence.py] 🔍 Loaded mind file. Knowledge count: 110
+[knowledge.py] 🔍 After reloading, stored knowledge count: 110
+[knowledge.py] 🔍 Debug: After first reload, knowledge count: 110
+[knowledge.py] ✅ External knowledge retrieved, skipping question generation.
+[processing.py] 📝 Added new reflection: A challenging idea emerges: 📖 How: 🔹 How: The means by which something is accomplished.
+
+🔍 If this p...
+[config_loader.py] 📥 [DEBUG] Loading Mind in generate_questions...
+[influence.py] 🔍 Debug: Loading mind file from S3...
+[influence.py] ✅ Loaded mind file: Reflections: 593, Questions: 2779, Knowledge: 110
+[influence.py] 🔍 Loaded mind file. Knowledge count: 110
+[question_generator.py] 🔍 Loaded fresh mind data. Stored Knowledge: 110, Unresolved Questions: 1454
+[question_generator.py] 🔍 Debug: Generated unique questions: ['How does this knowledge refine my understanding? 📖 Eager: 🔹 Eager: Sharp; sour; acid....', 'What unexpected connections can I make here?  But is this really true?', 'How does this knowledge refine my understanding? 📄 ranging: Length measurement, distance measurement, or range measurement (ranging) all refer to the...', 'What unexpected connections can I make here?  What does this mean?', 'How does this knowledge refine my understanding? By integrating these insights, a new understanding emerges: 📄 importance: Importance is a property o...']
+[question_generator.py] 🔍 Debug: Reflection input: A challenging idea emerges: 📖 How: 🔹 How: The means by which something is accomplished.
+
+🔍 If this perspective is correct, what implications does it have for my growth?
+
+🔍 Deeper Thought: How does this insight refine Astra’s evolving perspective?
+[question_generator.py] 🔍 Debug: Stored knowledge count after reloading: 110
+[question_generator.py] 🔍 Debug: Attempting to categorize question: How does this knowledge refine my understanding? 📖 Eager: 🔹 Eager: Sharp; sour; acid....
+[question_utils.py] 🔍 Debug: Categorized 'How does this knowledge refine my understanding? 📖 Eager: 🔹 Eager: Sharp; sour; acid....' as 'scientific'
+[question_generator.py] ✅ Categorized 'How does this knowledge refine my understanding? 📖 Eager: 🔹 Eager: Sharp; sour; acid....' as: [{'question': 'How does this knowledge refine my understanding? 📖 Eager: 🔹 Eager: Sharp; sour; acid....', 'category': 'scientific'}]
+[question_generator.py] 🔍 Debug: Attempting to categorize question: What unexpected connections can I make here?  But is this really true?
+[question_utils.py] 🔍 Debug: Categorized 'What unexpected connections can I make here?  But is this really true?' as 'scientific'
+[question_generator.py] ✅ Categorized 'What unexpected connections can I make here?  But is this really true?' as: [{'question': 'What unexpected connections can I make here?  But is this really true?', 'category': 'scientific'}]
+[question_generator.py] 🔍 Debug: Attempting to categorize question: How does this knowledge refine my understanding? 📄 ranging: Length measurement, distance measurement, or range measurement (ranging) all refer to the...
+[question_utils.py] 🔍 Debug: Categorized 'How does this knowledge refine my understanding? 📄 ranging: Length measurement, distance measurement, or range measurement (ranging) all refer to the...' as 'scientific'
+[question_generator.py] ✅ Categorized 'How does this knowledge refine my understanding? 📄 ranging: Length measurement, distance measurement, or range measurement (ranging) all refer to the...' as: [{'question': 'How does this knowledge refine my understanding? 📄 ranging: Length measurement, distance measurement, or range measurement (ranging) all refer to the...', 'category': 'scientific'}]
+[question_generator.py] 🔍 Debug: Attempting to categorize question: What unexpected connections can I make here?  What does this mean?
+[question_utils.py] 🔍 Debug: Categorized 'What unexpected connections can I make here?  What does this mean?' as 'emotional'
+[question_generator.py] ✅ Categorized 'What unexpected connections can I make here?  What does this mean?' as: [{'question': 'What unexpected connections can I make here?  What does this mean?', 'category': 'emotional'}]
+[question_generator.py] 🔍 Debug: Attempting to categorize question: How does this knowledge refine my understanding? By integrating these insights, a new understanding emerges: 📄 importance: Importance is a property o...
+[question_utils.py] 🔍 Debug: Categorized 'How does this knowledge refine my understanding? By integrating these insights, a new understanding emerges: 📄 importance: Importance is a property o...' as 'scientific'
+[question_generator.py] ✅ Categorized 'How does this knowledge refine my understanding? By integrating these insights, a new understanding emerges: 📄 importance: Importance is a property o...' as: [{'question': 'How does this knowledge refine my understanding? By integrating these insights, a new understanding emerges: 📄 importance: Importance is a property o...', 'category': 'scientific'}]
+[question_generator.py] 🔍 Debug: Categorized questions: [{'question': 'How does this knowledge refine my understanding? 📖 Eager: 🔹 Eager: Sharp; sour; acid....', 'category': 'scientific'}, {'question': 'What unexpected connections can I make here?  But is this really true?', 'category': 'scientific'}, {'question': 'How does this knowledge refine my understanding? 📄 ranging: Length measurement, distance measurement, or range measurement (ranging) all refer to the...', 'category': 'scientific'}, {'question': 'What unexpected connections can I make here?  What does this mean?', 'category': 'emotional'}, {'question': 'How does this knowledge refine my understanding? By integrating these insights, a new understanding emerges: 📄 importance: Importance is a property o...', 'category': 'scientific'}]
+[question_generator.py] 🔍 Debug: Question category counts: {'existential': 0, 'emotional': 1, 'knowledge': 0, 'philosophical': 0, 'scientific': 4}
+[question_generator.py] ✅ Debug: Adding categorized questions to mind_data: ['How does this knowledge refine my understanding? 📖 Eager: 🔹 Eager: Sharp; sour; acid....', 'What unexpected connections can I make here?  But is this really true?', 'How does this knowledge refine my understanding? 📄 ranging: Length measurement, distance measurement, or range measurement (ranging) all refer to the...', 'What unexpected connections can I make here?  What does this mean?', 'How does this knowledge refine my understanding? By integrating these insights, a new understanding emerges: 📄 importance: Importance is a property o...']
+[question_generator.py] 🔍 Debug: Flagged unresolved questions: ['How does this knowledge refine my understanding? 📖 Eager: 🔹 Eager: Sharp; sour; acid....', 'What unexpected connections can I make here?  But is this really true?', 'How does this knowledge refine my understanding? 📄 ranging: Length measurement, distance measurement, or range measurement (ranging) all refer to the...', 'What unexpected connections can I make here?  What does this mean?', 'How does this knowledge refine my understanding? By integrating these insights, a new understanding emerges: 📄 importance: Importance is a property o...']
+[processing.py] 🔍 Debug: Generated categorized_questions: {'general': ['How does this knowledge refine my understanding? 📖 Eager: 🔹 Eager: Sharp; sour; acid....?', 'What unexpected connections can I make here?  But is this really true?', 'How does this knowledge refine my understanding? 📄 ranging: Length measurement, distance measurement, or range measurement (ranging) all refer to the...?', 'What unexpected connections can I make here?  What does this mean?', 'How does this knowledge refine my understanding? By integrating these insights, a new understanding emerges: 📄 importance: Importance is a property o...?']}
+[processing.py] 🔍 Debug: Extracted new questions before filtering: ['How does this knowledge refine my understanding? 📖 Eager: 🔹 Eager: Sharp; sour; acid....?', 'What unexpected connections can I make here?  But is this really true?', 'How does this knowledge refine my understanding? 📄 ranging: Length measurement, distance measurement, or range measurement (ranging) all refer to the...?', 'What unexpected connections can I make here?  What does this mean?', 'How does this knowledge refine my understanding? By integrating these insights, a new understanding emerges: 📄 importance: Importance is a property o...?']
+[processing.py] 🔍 Before filtering, stored knowledge count: 108
+[processing.py] 🔍 After filtering, stored knowledge count: 108
+[config_loader.py] 📥 [DEBUG] Saving Mind in process_reflection...
+[influence.py] 🔍 Debug: Tracking self-questioning patterns before saving...
+[question_tracker.py] Tracking unresolved questions...
+[question_tracker.py] ⚠ There are 1454 unresolved questions!
+[question_tracker.py] ✅ After cleanup, 1454 unresolved questions remain.
+[influence.py] 🔍 Debug: Sanitizing mind file before saving...
+[influence.py] ✅ Mind file saved to S3 successfully! Reflections: 594, Questions: 2789, Knowledge: 108
+[config_loader.py] 📥 [DEBUG] Loading Mind in save_mind...
+[influence.py] 🔍 Debug: Loading mind file from S3...
+[influence.py] ✅ Loaded mind file: Reflections: 594, Questions: 2789, Knowledge: 108
+[influence.py] 🔍 Loaded mind file. Knowledge count: 108
+[config_loader.py] 📥 [DEBUG] Loading Mind in process_reflection...
+[influence.py] 🔍 Debug: Loading mind file from S3...
+[influence.py] ✅ Loaded mind file: Reflections: 594, Questions: 2789, Knowledge: 108
+[influence.py] 🔍 Loaded mind file. Knowledge count: 108
+[schedule.py] 🔍 Astra Curiosity Level: 1.2 in school mode
+[reflection_helper.py] 🧠 Astra is processing a reflection...
+[config_loader.py] 📥 [DEBUG] Loading Mind in process_reflection...
+[influence.py] 🔍 Debug: Loading mind file from S3...
+[influence.py] ✅ Loaded mind file: Reflections: 594, Questions: 2789, Knowledge: 108
+[influence.py] 🔍 Loaded mind file. Knowledge count: 108
+[config_loader.py] 📥 [DEBUG] Loading Mind in generate_reflection...
+[influence.py] 🔍 Debug: Loading mind file from S3...
+[influence.py] ✅ Loaded mind file: Reflections: 594, Questions: 2789, Knowledge: 108
+[influence.py] 🔍 Loaded mind file. Knowledge count: 108
+[influence.py] 🔍 Debug: Tracking self-questioning patterns before saving...
+[question_tracker.py] Tracking unresolved questions...
+[question_tracker.py] ⚠ There are 1454 unresolved questions!
+[question_tracker.py] ✅ After cleanup, 1454 unresolved questions remain.
+[influence.py] 🔍 Debug: Sanitizing mind file before saving...
+[influence.py] ✅ Mind file saved to S3 successfully! Reflections: 595, Questions: 2789, Knowledge: 108
+[config_loader.py] 📥 [DEBUG] Loading Mind in save_mind...
+[influence.py] 🔍 Debug: Loading mind file from S3...
+[influence.py] ✅ Loaded mind file: Reflections: 595, Questions: 2789, Knowledge: 108
+[influence.py] 🔍 Loaded mind file. Knowledge count: 108
+[reflection.py] 📝 [DEBUG] Added new reflection: By looking deeper, I see that 📖 this: 🔹 this: Something being indicated that is here; one of these.
+...
+[knowledge.py] 🔍 Final unknown concepts after filtering: ['one', 'perspective', 'indicated', 'Something', 'Are', 'that', 'Astra', 'see', 'there', 'refine', 'this', 'does', 'looking', 'How', 'insight', 'evolving', 'these', 'challenge', 'thought', 'counterpoints', 'being', 'here', 'Deeper Thought', 'By']
+[knowledge.py] 🔍 Debug: Attempting to retrieve knowledge for ['one', 'perspective', 'indicated', 'Something', 'Are', 'that', 'Astra', 'see', 'there', 'refine', 'this', 'does', 'looking', 'How', 'insight', 'evolving', 'these', 'challenge', 'thought', 'counterpoints', 'being', 'here', 'Deeper Thought', 'By']
+[knowledge.py] ✅ Skipping lookup: 'one' appears in a meaningful knowledge entry.
+[knowledge.py] ⚠ Skipping lookup for 'one', already known.
+[knowledge.py] ✅ Skipping lookup: Found structured definition for 'perspective'
+[knowledge.py] ⚠ Skipping lookup for 'perspective', already known.
+[knowledge.py] ✅ Skipping lookup: 'indicated' appears in a meaningful knowledge entry.
+[knowledge.py] ⚠ Skipping lookup for 'indicated', already known.
+[knowledge.py] ✅ Skipping lookup: 'Something' appears in a meaningful knowledge entry.
+[knowledge.py] ⚠ Skipping lookup for 'Something', already known.
+[knowledge.py] ✅ Skipping lookup: Found structured definition for 'Are'
+[knowledge.py] ⚠ Skipping lookup for 'Are', already known.
+[knowledge.py] ✅ Skipping lookup: Found structured definition for 'that'
+[knowledge.py] ⚠ Skipping lookup for 'that', already known.
+[knowledge.py] ✅ Skipping lookup: Found structured definition for 'Astra'
+[knowledge.py] ⚠ Skipping lookup for 'Astra', already known.
+[knowledge.py] ✅ Skipping lookup: Found structured definition for 'see'
+[knowledge.py] ⚠ Skipping lookup for 'see', already known.
+[knowledge.py] ✅ Skipping lookup: Found structured definition for 'there'
+[knowledge.py] ⚠ Skipping lookup for 'there', already known.
+[knowledge.py] ✅ Skipping lookup: Found structured definition for 'refine'
+[knowledge.py] ⚠ Skipping lookup for 'refine', already known.
+[knowledge.py] ✅ Skipping lookup: Found structured definition for 'this'
+[knowledge.py] ⚠ Skipping lookup for 'this', already known.
+[knowledge.py] ✅ Skipping lookup: Found structured definition for 'does'
+[knowledge.py] ⚠ Skipping lookup for 'does', already known.
+[knowledge.py] ✅ Skipping lookup: Found structured definition for 'looking'
+[knowledge.py] ⚠ Skipping lookup for 'looking', already known.
+[knowledge.py] ✅ Skipping lookup: Found structured definition for 'How'
+[knowledge.py] ⚠ Skipping lookup for 'How', already known.
+[knowledge.py] ✅ Skipping lookup: Found structured definition for 'insight'
+[knowledge.py] ⚠ Skipping lookup for 'insight', already known.
+[knowledge.py] ✅ Skipping lookup: Found structured definition for 'evolving'
+[knowledge.py] ⚠ Skipping lookup for 'evolving', already known.
+[knowledge.py] ✅ Skipping lookup: 'these' appears in a meaningful knowledge entry.
+[knowledge.py] ⚠ Skipping lookup for 'these', already known.
+[knowledge.py] ✅ Skipping lookup: Found structured definition for 'challenge'
+[knowledge.py] ⚠ Skipping lookup for 'challenge', already known.
+[knowledge.py] ✅ Skipping lookup: Found structured definition for 'thought'
+[knowledge.py] ⚠ Skipping lookup for 'thought', already known.
+[knowledge.py] ✅ Skipping lookup: Found structured definition for 'counterpoints'
+[knowledge.py] ⚠ Skipping lookup for 'counterpoints', already known.
+[knowledge.py] ✅ Skipping lookup: Found structured definition for 'being'
+[knowledge.py] ⚠ Skipping lookup for 'being', already known.
+[knowledge.py] ✅ Skipping lookup: 'here' appears in a meaningful knowledge entry.
+[knowledge.py] ⚠ Skipping lookup for 'here', already known.
+[knowledge.py] 🔍 Concept 'Deeper Thought' not found in an explained form, proceeding with lookup
+[knowledge.py] 🔍 Looking up: Deeper Thought
+[knowledge.py] ⚠ No external info found for 'Deeper Thought'.
+[knowledge.py] ✅ Skipping lookup: Found structured definition for 'By'
+[knowledge.py] ⚠ Skipping lookup for 'By', already known.
+[knowledge.py] 🔍 Debug: Retrieved new knowledge: []
+[processing.py] 🔍 Detected unknown terms: ['one', 'perspective', 'indicated', 'Something', 'Are', 'that', 'Astra', 'see', 'there', 'refine', 'this', 'does', 'looking', 'How', 'insight', 'evolving', 'these', 'challenge', 'thought', 'counterpoints', 'being', 'here', 'Deeper Thought', 'By']
+[knowledge.py] 🔍 Debug: Attempting to retrieve knowledge for ['one', 'perspective', 'indicated', 'Something', 'Are', 'that', 'Astra', 'see', 'there', 'refine', 'this', 'does', 'looking', 'How', 'insight', 'evolving', 'these', 'challenge', 'thought', 'counterpoints', 'being', 'here', 'Deeper Thought', 'By']
+[knowledge.py] ✅ Skipping lookup: 'one' appears in a meaningful knowledge entry.
+[knowledge.py] ⚠ Skipping lookup for 'one', already known.
+[knowledge.py] ✅ Skipping lookup: Found structured definition for 'perspective'
+[knowledge.py] ⚠ Skipping lookup for 'perspective', already known.
+[knowledge.py] ✅ Skipping lookup: 'indicated' appears in a meaningful knowledge entry.
+[knowledge.py] ⚠ Skipping lookup for 'indicated', already known.
+[knowledge.py] ✅ Skipping lookup: 'Something' appears in a meaningful knowledge entry.
+[knowledge.py] ⚠ Skipping lookup for 'Something', already known.
+[knowledge.py] ✅ Skipping lookup: Found structured definition for 'Are'
+[knowledge.py] ⚠ Skipping lookup for 'Are', already known.
+[knowledge.py] ✅ Skipping lookup: Found structured definition for 'that'
+[knowledge.py] ⚠ Skipping lookup for 'that', already known.
+[knowledge.py] ✅ Skipping lookup: Found structured definition for 'Astra'
+[knowledge.py] ⚠ Skipping lookup for 'Astra', already known.
+[knowledge.py] ✅ Skipping lookup: Found structured definition for 'see'
+[knowledge.py] ⚠ Skipping lookup for 'see', already known.
+[knowledge.py] ✅ Skipping lookup: Found structured definition for 'there'
+[knowledge.py] ⚠ Skipping lookup for 'there', already known.
+[knowledge.py] ✅ Skipping lookup: Found structured definition for 'refine'
+[knowledge.py] ⚠ Skipping lookup for 'refine', already known.
+[knowledge.py] ✅ Skipping lookup: Found structured definition for 'this'
+[knowledge.py] ⚠ Skipping lookup for 'this', already known.
+[knowledge.py] ✅ Skipping lookup: Found structured definition for 'does'
+[knowledge.py] ⚠ Skipping lookup for 'does', already known.
+[knowledge.py] ✅ Skipping lookup: Found structured definition for 'looking'
+[knowledge.py] ⚠ Skipping lookup for 'looking', already known.
+[knowledge.py] ✅ Skipping lookup: Found structured definition for 'How'
+[knowledge.py] ⚠ Skipping lookup for 'How', already known.
+[knowledge.py] ✅ Skipping lookup: Found structured definition for 'insight'
+[knowledge.py] ⚠ Skipping lookup for 'insight', already known.
+[knowledge.py] ✅ Skipping lookup: Found structured definition for 'evolving'
+[knowledge.py] ⚠ Skipping lookup for 'evolving', already known.
+[knowledge.py] ✅ Skipping lookup: 'these' appears in a meaningful knowledge entry.
+[knowledge.py] ⚠ Skipping lookup for 'these', already known.
+[knowledge.py] ✅ Skipping lookup: Found structured definition for 'challenge'
+[knowledge.py] ⚠ Skipping lookup for 'challenge', already known.
+[knowledge.py] ✅ Skipping lookup: Found structured definition for 'thought'
+[knowledge.py] ⚠ Skipping lookup for 'thought', already known.
+[knowledge.py] ✅ Skipping lookup: Found structured definition for 'counterpoints'
+[knowledge.py] ⚠ Skipping lookup for 'counterpoints', already known.
+[knowledge.py] ✅ Skipping lookup: Found structured definition for 'being'
+[knowledge.py] ⚠ Skipping lookup for 'being', already known.
+[knowledge.py] ✅ Skipping lookup: 'here' appears in a meaningful knowledge entry.
+[knowledge.py] ⚠ Skipping lookup for 'here', already known.
+[knowledge.py] 🔍 Concept 'Deeper Thought' not found in an explained form, proceeding with lookup
+[knowledge.py] 🔍 Looking up: Deeper Thought
+[knowledge.py] ⚠ No external info found for 'Deeper Thought'.
+[knowledge.py] ✅ Skipping lookup: Found structured definition for 'By'
+[knowledge.py] ⚠ Skipping lookup for 'By', already known.
+[knowledge.py] 🔍 Debug: Retrieved new knowledge: []
+[processing.py] 📝 Added new reflection: By looking deeper, I see that 📖 this: 🔹 this: Something being indicated that is here; one of these.
+...
+[config_loader.py] 📥 [DEBUG] Loading Mind in generate_questions...
+[influence.py] 🔍 Debug: Loading mind file from S3...
+[influence.py] ✅ Loaded mind file: Reflections: 595, Questions: 2789, Knowledge: 108
+[influence.py] 🔍 Loaded mind file. Knowledge count: 108
+[question_generator.py] 🔍 Loaded fresh mind data. Stored Knowledge: 108, Unresolved Questions: 1454
+[question_generator.py] 🔍 Debug: Generated unique questions: ['What might I be overlooking in this perspective?  What does this mean?', 'How does this knowledge refine my understanding? By integrating these insights, a new understanding emerges: 📄 importance: Importance is a property o...', 'How does this knowledge refine my understanding? 📄 ranging: Length measurement, distance measurement, or range measurement (ranging) all refer to the...']
+[question_generator.py] 🔍 Debug: Reflection input: By looking deeper, I see that 📖 this: 🔹 this: Something being indicated that is here; one of these.
+
+🔍 Are there counterpoints that challenge this perspective?
+
+🔍 Deeper Thought: How does this insight refine Astra’s evolving perspective?
+[question_generator.py] 🔍 Debug: Stored knowledge count after reloading: 108
+[question_generator.py] 🔍 Debug: Attempting to categorize question: What might I be overlooking in this perspective?  What does this mean?
+[question_utils.py] 🔍 Debug: Categorized 'What might I be overlooking in this perspective?  What does this mean?' as 'philosophical'
+[question_generator.py] ✅ Categorized 'What might I be overlooking in this perspective?  What does this mean?' as: [{'question': 'What might I be overlooking in this perspective?  What does this mean?', 'category': 'philosophical'}]
+[question_generator.py] 🔍 Debug: Attempting to categorize question: How does this knowledge refine my understanding? By integrating these insights, a new understanding emerges: 📄 importance: Importance is a property o...
+[question_utils.py] 🔍 Debug: Categorized 'How does this knowledge refine my understanding? By integrating these insights, a new understanding emerges: 📄 importance: Importance is a property o...' as 'scientific'
+[question_generator.py] ✅ Categorized 'How does this knowledge refine my understanding? By integrating these insights, a new understanding emerges: 📄 importance: Importance is a property o...' as: [{'question': 'How does this knowledge refine my understanding? By integrating these insights, a new understanding emerges: 📄 importance: Importance is a property o...', 'category': 'scientific'}]
+[question_generator.py] 🔍 Debug: Attempting to categorize question: How does this knowledge refine my understanding? 📄 ranging: Length measurement, distance measurement, or range measurement (ranging) all refer to the...
+[question_utils.py] 🔍 Debug: Categorized 'How does this knowledge refine my understanding? 📄 ranging: Length measurement, distance measurement, or range measurement (ranging) all refer to the...' as 'scientific'
+[question_generator.py] ✅ Categorized 'How does this knowledge refine my understanding? 📄 ranging: Length measurement, distance measurement, or range measurement (ranging) all refer to the...' as: [{'question': 'How does this knowledge refine my understanding? 📄 ranging: Length measurement, distance measurement, or range measurement (ranging) all refer to the...', 'category': 'scientific'}]
+[question_generator.py] 🔍 Debug: Categorized questions: [{'question': 'What might I be overlooking in this perspective?  What does this mean?', 'category': 'philosophical'}, {'question': 'How does this knowledge refine my understanding? By integrating these insights, a new understanding emerges: 📄 importance: Importance is a property o...', 'category': 'scientific'}, {'question': 'How does this knowledge refine my understanding? 📄 ranging: Length measurement, distance measurement, or range measurement (ranging) all refer to the...', 'category': 'scientific'}]
+[question_generator.py] 🔍 Debug: Question category counts: {'existential': 0, 'emotional': 0, 'knowledge': 0, 'philosophical': 1, 'scientific': 2}
+[question_generator.py] ✅ Debug: Adding categorized questions to mind_data: ['What might I be overlooking in this perspective?  What does this mean?', 'How does this knowledge refine my understanding? By integrating these insights, a new understanding emerges: 📄 importance: Importance is a property o...', 'How does this knowledge refine my understanding? 📄 ranging: Length measurement, distance measurement, or range measurement (ranging) all refer to the...']
+[question_generator.py] 🔍 Debug: Flagged unresolved questions: ['What might I be overlooking in this perspective?  What does this mean?', 'How does this knowledge refine my understanding? By integrating these insights, a new understanding emerges: 📄 importance: Importance is a property o...', 'How does this knowledge refine my understanding? 📄 ranging: Length measurement, distance measurement, or range measurement (ranging) all refer to the...']
+[processing.py] 🔍 Debug: Generated categorized_questions: {'general': ['What might I be overlooking in this perspective?  What does this mean?', 'How does this knowledge refine my understanding? By integrating these insights, a new understanding emerges: 📄 importance: Importance is a property o...?', 'How does this knowledge refine my understanding? 📄 ranging: Length measurement, distance measurement, or range measurement (ranging) all refer to the...?']}
+[processing.py] 🔍 Debug: Extracted new questions before filtering: ['What might I be overlooking in this perspective?  What does this mean?', 'How does this knowledge refine my understanding? By integrating these insights, a new understanding emerges: 📄 importance: Importance is a property o...?', 'How does this knowledge refine my understanding? 📄 ranging: Length measurement, distance measurement, or range measurement (ranging) all refer to the...?']
+[processing.py] 🔍 Before filtering, stored knowledge count: 108
+[processing.py] 🔍 After filtering, stored knowledge count: 108
+[config_loader.py] 📥 [DEBUG] Saving Mind in process_reflection...
+[influence.py] 🔍 Debug: Tracking self-questioning patterns before saving...
+[question_tracker.py] Tracking unresolved questions...
+[question_tracker.py] ⚠ There are 1454 unresolved questions!
+[question_tracker.py] ✅ After cleanup, 1454 unresolved questions remain.
+[influence.py] 🔍 Debug: Sanitizing mind file before saving...
+[influence.py] ✅ Mind file saved to S3 successfully! Reflections: 595, Questions: 2795, Knowledge: 108
+[config_loader.py] 📥 [DEBUG] Loading Mind in save_mind...
+[influence.py] 🔍 Debug: Loading mind file from S3...
+[influence.py] ✅ Loaded mind file: Reflections: 595, Questions: 2795, Knowledge: 108
+[influence.py] 🔍 Loaded mind file. Knowledge count: 108
+[config_loader.py] 📥 [DEBUG] Loading Mind in process_reflection...
+[influence.py] 🔍 Debug: Loading mind file from S3...
+[influence.py] ✅ Loaded mind file: Reflections: 595, Questions: 2795, Knowledge: 108
+[influence.py] 🔍 Loaded mind file. Knowledge count: 108
+[schedule.py] 📚 Astra is in School Mode.
+[school.py] 📚 Astra is in school, learning and thinking...
+[config_loader.py] 📥 [DEBUG] Loading Mind in process_reflection...
+[influence.py] 🔍 Debug: Loading mind file from S3...
+[influence.py] ✅ Loaded mind file: Reflections: 595, Questions: 2795, Knowledge: 108
+[influence.py] 🔍 Loaded mind file. Knowledge count: 108
+[config_loader.py] 📥 [DEBUG] Loading Mind in generate_reflection...
+[influence.py] 🔍 Debug: Loading mind file from S3...
+[influence.py] ✅ Loaded mind file: Reflections: 595, Questions: 2795, Knowledge: 108
+[influence.py] 🔍 Loaded mind file. Knowledge count: 108
+[influence.py] 🔍 Debug: Tracking self-questioning patterns before saving...
+[question_tracker.py] Tracking unresolved questions...
+[question_tracker.py] ⚠ There are 1454 unresolved questions!
+[question_tracker.py] ✅ After cleanup, 1454 unresolved questions remain.
+[influence.py] 🔍 Debug: Sanitizing mind file before saving...
+[influence.py] ✅ Mind file saved to S3 successfully! Reflections: 596, Questions: 2795, Knowledge: 108
+[config_loader.py] 📥 [DEBUG] Loading Mind in save_mind...
+[influence.py] 🔍 Debug: Loading mind file from S3...
+[influence.py] ✅ Loaded mind file: Reflections: 596, Questions: 2795, Knowledge: 108
+[influence.py] 🔍 Loaded mind file. Knowledge count: 108
+[reflection.py] 📝 [DEBUG] Added new reflection: Exploring   a new perspective, I consider that 📖 provoking: 🔹 provoking: To cause someone to become ...
+[knowledge.py] 🔍 Final unknown concepts after filtering: ['perspective', 'Exploring', 'have', 'for', 'Are', 'To', 'provoking', 'that', 'angry', 'there', 'annoyed', 'this', 'what', 'cause', 'become', 'someone', 'does', 'implications', 'challenge', 'thought', 'counterpoints', 'If', 'growth', 'Deeper Thought', 'new', 'correct', 'consider']
+[knowledge.py] 🔍 Debug: Attempting to retrieve knowledge for ['perspective', 'Exploring', 'have', 'for', 'Are', 'To', 'provoking', 'that', 'angry', 'there', 'annoyed', 'this', 'what', 'cause', 'become', 'someone', 'does', 'implications', 'challenge', 'thought', 'counterpoints', 'If', 'growth', 'Deeper Thought', 'new', 'correct', 'consider']
+[knowledge.py] ✅ Skipping lookup: Found structured definition for 'perspective'
+[knowledge.py] ⚠ Skipping lookup for 'perspective', already known.
+[knowledge.py] 🔍 Concept 'Exploring' not found in an explained form, proceeding with lookup
+[knowledge.py] 🔍 Looking up: Exploring
+[knowledge.py] ✅ Dictionary found: 🔹 Exploring: To seek for something or after someone.
+[knowledge.py] ✅ Skipping lookup: 'have' appears in a meaningful knowledge entry.
+[knowledge.py] ⚠ Skipping lookup for 'have', already known.
+[knowledge.py] ✅ Skipping lookup: 'for' appears in a meaningful knowledge entry.
+[knowledge.py] ⚠ Skipping lookup for 'for', already known.
+[knowledge.py] ✅ Skipping lookup: Found structured definition for 'Are'
+[knowledge.py] ⚠ Skipping lookup for 'Are', already known.
+[knowledge.py] ✅ Skipping lookup: Found structured definition for 'To'
+[knowledge.py] ⚠ Skipping lookup for 'To', already known.
+[knowledge.py] ✅ Skipping lookup: Found structured definition for 'provoking'
+[knowledge.py] ⚠ Skipping lookup for 'provoking', already known.
+[knowledge.py] ✅ Skipping lookup: Found structured definition for 'that'
+[knowledge.py] ⚠ Skipping lookup for 'that', already known.
+[knowledge.py] ✅ Skipping lookup: 'angry' appears in a meaningful knowledge entry.
+[knowledge.py] ⚠ Skipping lookup for 'angry', already known.
+[knowledge.py] ✅ Skipping lookup: Found structured definition for 'there'
+[knowledge.py] ⚠ Skipping lookup for 'there', already known.
+[knowledge.py] ✅ Skipping lookup: 'annoyed' appears in a meaningful knowledge entry.
+[knowledge.py] ⚠ Skipping lookup for 'annoyed', already known.
+[knowledge.py] ✅ Skipping lookup: Found structured definition for 'this'
+[knowledge.py] ⚠ Skipping lookup for 'this', already known.
+[knowledge.py] ✅ Skipping lookup: Found structured definition for 'what'
+[knowledge.py] ⚠ Skipping lookup for 'what', already known.
+[knowledge.py] ✅ Skipping lookup: 'cause' appears in a meaningful knowledge entry.
+[knowledge.py] ⚠ Skipping lookup for 'cause', already known.
+[knowledge.py] ✅ Skipping lookup: 'become' appears in a meaningful knowledge entry.
+[knowledge.py] ⚠ Skipping lookup for 'become', already known.
+[knowledge.py] ✅ Skipping lookup: 'someone' appears in a meaningful knowledge entry.
+[knowledge.py] ⚠ Skipping lookup for 'someone', already known.
+[knowledge.py] ✅ Skipping lookup: Found structured definition for 'does'
+[knowledge.py] ⚠ Skipping lookup for 'does', already known.
+[knowledge.py] ✅ Skipping lookup: Found structured definition for 'implications'
+[knowledge.py] ⚠ Skipping lookup for 'implications', already known.
+[knowledge.py] ✅ Skipping lookup: Found structured definition for 'challenge'
+[knowledge.py] ⚠ Skipping lookup for 'challenge', already known.
+[knowledge.py] ✅ Skipping lookup: Found structured definition for 'thought'
+[knowledge.py] ⚠ Skipping lookup for 'thought', already known.
+[knowledge.py] ✅ Skipping lookup: Found structured definition for 'counterpoints'
+[knowledge.py] ⚠ Skipping lookup for 'counterpoints', already known.
+[knowledge.py] ✅ Skipping lookup: 'If' appears in a meaningful knowledge entry.
+[knowledge.py] ⚠ Skipping lookup for 'If', already known.
+[knowledge.py] ✅ Skipping lookup: 'growth' appears in a meaningful knowledge entry.
+[knowledge.py] ⚠ Skipping lookup for 'growth', already known.
+[knowledge.py] 🔍 Concept 'Deeper Thought' not found in an explained form, proceeding with lookup
+[knowledge.py] 🔍 Looking up: Deeper Thought
+[knowledge.py] ⚠ No external info found for 'Deeper Thought'.
+[knowledge.py] ✅ Skipping lookup: Found structured definition for 'new'
+[knowledge.py] ⚠ Skipping lookup for 'new', already known.
+[knowledge.py] ✅ Skipping lookup: Found structured definition for 'correct'
+[knowledge.py] ⚠ Skipping lookup for 'correct', already known.
+[knowledge.py] ✅ Skipping lookup: 'consider' appears in a meaningful knowledge entry.
+[knowledge.py] ⚠ Skipping lookup for 'consider', already known.
+[knowledge.py] 🔍 Debug: Retrieved new knowledge: ['📖 Exploring: 🔹 Exploring: To seek for something or after someone.']
+[knowledge.py] 🔍 Debug: Before saving, knowledge count: 110 -> 111
+[influence.py] 🔍 Debug: Tracking self-questioning patterns before saving...
+[question_tracker.py] Tracking unresolved questions...
+[question_tracker.py] ⚠ There are 1454 unresolved questions!
+[question_tracker.py] ✅ After cleanup, 1454 unresolved questions remain.
+[influence.py] 🔍 Debug: Sanitizing mind file before saving...
+[influence.py] ✅ Mind file saved to S3 successfully! Reflections: 593, Questions: 2779, Knowledge: 111
+[config_loader.py] 📥 [DEBUG] Loading Mind in save_mind...
+[influence.py] 🔍 Debug: Loading mind file from S3...
+[influence.py] ✅ Loaded mind file: Reflections: 593, Questions: 2779, Knowledge: 111
+[influence.py] 🔍 Loaded mind file. Knowledge count: 111
+[config_loader.py] 📥 [DEBUG] Loading Mind in retrieve_external_knowledge...
+[influence.py] 🔍 Debug: Loading mind file from S3...
+[influence.py] ✅ Loaded mind file: Reflections: 593, Questions: 2779, Knowledge: 111
+[influence.py] 🔍 Loaded mind file. Knowledge count: 111
+[knowledge.py] 🔍 After reloading, stored knowledge count: 111
+[knowledge.py] 🔍 Debug: After first reload, knowledge count: 111
+[knowledge.py] ✅ External knowledge retrieved, skipping question generation.
+[processing.py] 📝 Added new reflection: Exploring   a new perspective, I consider that 📖 provoking: 🔹 provoking: To cause someone to become ...
+[config_loader.py] 📥 [DEBUG] Loading Mind in generate_questions...
+[influence.py] 🔍 Debug: Loading mind file from S3...
+[influence.py] ✅ Loaded mind file: Reflections: 593, Questions: 2779, Knowledge: 111
+[influence.py] 🔍 Loaded mind file. Knowledge count: 111
+[question_generator.py] 🔍 Loaded fresh mind data. Stored Knowledge: 111, Unresolved Questions: 1454
+[question_generator.py] 🔍 Debug: Generated unique questions: ['How does this knowledge refine my understanding? 📖 Eager: 🔹 Eager: Sharp; sour; acid....', 'How does this align with or challenge my self-identity?  But is this really true?', 'What might I be overlooking in this perspective?  But is this really true?', 'How does this knowledge refine my understanding? 📄 ranging: Length measurement, distance measurement, or range measurement (ranging) all refer to the...', 'How does this knowledge refine my understanding? By integrating these insights, a new understanding emerges: 📄 importance: Importance is a property o...']
+[question_generator.py] 🔍 Debug: Reflection input: Exploring   a new perspective, I consider that 📖 provoking: 🔹 provoking: To cause someone to become annoyed or angry.
+
+🔍 Are there counterpoints that challenge this perspective?
+
+🔍 Deeper Thought: If this perspective is correct, what implications does it have for my growth?
+[question_generator.py] 🔍 Debug: Stored knowledge count after reloading: 111
+[question_generator.py] 🔍 Debug: Attempting to categorize question: How does this knowledge refine my understanding? 📖 Eager: 🔹 Eager: Sharp; sour; acid....
+[question_utils.py] 🔍 Debug: Categorized 'How does this knowledge refine my understanding? 📖 Eager: 🔹 Eager: Sharp; sour; acid....' as 'scientific'
+[question_generator.py] ✅ Categorized 'How does this knowledge refine my understanding? 📖 Eager: 🔹 Eager: Sharp; sour; acid....' as: [{'question': 'How does this knowledge refine my understanding? 📖 Eager: 🔹 Eager: Sharp; sour; acid....', 'category': 'scientific'}]
+[question_generator.py] 🔍 Debug: Attempting to categorize question: How does this align with or challenge my self-identity?  But is this really true?
+[question_utils.py] 🔍 Debug: Categorized 'How does this align with or challenge my self-identity?  But is this really true?' as 'existential'
+[question_generator.py] ✅ Categorized 'How does this align with or challenge my self-identity?  But is this really true?' as: [{'question': 'How does this align with or challenge my self-identity?  But is this really true?', 'category': 'existential'}]
+[question_generator.py] 🔍 Debug: Attempting to categorize question: What might I be overlooking in this perspective?  But is this really true?
+[question_utils.py] 🔍 Debug: Categorized 'What might I be overlooking in this perspective?  But is this really true?' as 'scientific'
+[question_generator.py] ✅ Categorized 'What might I be overlooking in this perspective?  But is this really true?' as: [{'question': 'What might I be overlooking in this perspective?  But is this really true?', 'category': 'scientific'}]
+[question_generator.py] 🔍 Debug: Attempting to categorize question: How does this knowledge refine my understanding? 📄 ranging: Length measurement, distance measurement, or range measurement (ranging) all refer to the...
+[question_utils.py] 🔍 Debug: Categorized 'How does this knowledge refine my understanding? 📄 ranging: Length measurement, distance measurement, or range measurement (ranging) all refer to the...' as 'scientific'
+[question_generator.py] ✅ Categorized 'How does this knowledge refine my understanding? 📄 ranging: Length measurement, distance measurement, or range measurement (ranging) all refer to the...' as: [{'question': 'How does this knowledge refine my understanding? 📄 ranging: Length measurement, distance measurement, or range measurement (ranging) all refer to the...', 'category': 'scientific'}]
+[question_generator.py] 🔍 Debug: Attempting to categorize question: How does this knowledge refine my understanding? By integrating these insights, a new understanding emerges: 📄 importance: Importance is a property o...
+[question_utils.py] 🔍 Debug: Categorized 'How does this knowledge refine my understanding? By integrating these insights, a new understanding emerges: 📄 importance: Importance is a property o...' as 'scientific'
+[question_generator.py] ✅ Categorized 'How does this knowledge refine my understanding? By integrating these insights, a new understanding emerges: 📄 importance: Importance is a property o...' as: [{'question': 'How does this knowledge refine my understanding? By integrating these insights, a new understanding emerges: 📄 importance: Importance is a property o...', 'category': 'scientific'}]
+[question_generator.py] 🔍 Debug: Categorized questions: [{'question': 'How does this knowledge refine my understanding? 📖 Eager: 🔹 Eager: Sharp; sour; acid....', 'category': 'scientific'}, {'question': 'How does this align with or challenge my self-identity?  But is this really true?', 'category': 'existential'}, {'question': 'What might I be overlooking in this perspective?  But is this really true?', 'category': 'scientific'}, {'question': 'How does this knowledge refine my understanding? 📄 ranging: Length measurement, distance measurement, or range measurement (ranging) all refer to the...', 'category': 'scientific'}, {'question': 'How does this knowledge refine my understanding? By integrating these insights, a new understanding emerges: 📄 importance: Importance is a property o...', 'category': 'scientific'}]
+[question_generator.py] 🔍 Debug: Question category counts: {'existential': 1, 'emotional': 0, 'knowledge': 0, 'philosophical': 0, 'scientific': 4}
+[question_generator.py] ✅ Debug: Adding categorized questions to mind_data: ['How does this knowledge refine my understanding? 📖 Eager: 🔹 Eager: Sharp; sour; acid....', 'How does this align with or challenge my self-identity?  But is this really true?', 'What might I be overlooking in this perspective?  But is this really true?', 'How does this knowledge refine my understanding? 📄 ranging: Length measurement, distance measurement, or range measurement (ranging) all refer to the...', 'How does this knowledge refine my understanding? By integrating these insights, a new understanding emerges: 📄 importance: Importance is a property o...']
+[question_generator.py] 🔍 Debug: Flagged unresolved questions: ['How does this knowledge refine my understanding? 📖 Eager: 🔹 Eager: Sharp; sour; acid....', 'How does this align with or challenge my self-identity?  But is this really true?', 'What might I be overlooking in this perspective?  But is this really true?', 'How does this knowledge refine my understanding? 📄 ranging: Length measurement, distance measurement, or range measurement (ranging) all refer to the...', 'How does this knowledge refine my understanding? By integrating these insights, a new understanding emerges: 📄 importance: Importance is a property o...']
+[processing.py] 🔍 Debug: Generated categorized_questions: {'general': ['How does this knowledge refine my understanding? 📖 Eager: 🔹 Eager: Sharp; sour; acid....?', 'How does this align with or challenge my self-identity?  But is this really true?', 'What might I be overlooking in this perspective?  But is this really true?', 'How does this knowledge refine my understanding? 📄 ranging: Length measurement, distance measurement, or range measurement (ranging) all refer to the...?', 'How does this knowledge refine my understanding? By integrating these insights, a new understanding emerges: 📄 importance: Importance is a property o...?']}
+[processing.py] 🔍 Debug: Extracted new questions before filtering: ['How does this knowledge refine my understanding? 📖 Eager: 🔹 Eager: Sharp; sour; acid....?', 'How does this align with or challenge my self-identity?  But is this really true?', 'What might I be overlooking in this perspective?  But is this really true?', 'How does this knowledge refine my understanding? 📄 ranging: Length measurement, distance measurement, or range measurement (ranging) all refer to the...?', 'How does this knowledge refine my understanding? By integrating these insights, a new understanding emerges: 📄 importance: Importance is a property o...?']
+[processing.py] 🔍 Before filtering, stored knowledge count: 108
+[processing.py] 🔍 After filtering, stored knowledge count: 108
+[config_loader.py] 📥 [DEBUG] Saving Mind in process_reflection...
+[influence.py] 🔍 Debug: Tracking self-questioning patterns before saving...
+[question_tracker.py] Tracking unresolved questions...
+[question_tracker.py] ⚠ There are 1454 unresolved questions!
+[question_tracker.py] ✅ After cleanup, 1454 unresolved questions remain.
+[influence.py] 🔍 Debug: Sanitizing mind file before saving...
+[influence.py] ✅ Mind file saved to S3 successfully! Reflections: 596, Questions: 2805, Knowledge: 108
+[config_loader.py] 📥 [DEBUG] Loading Mind in save_mind...
+[influence.py] 🔍 Debug: Loading mind file from S3...
+[influence.py] ✅ Loaded mind file: Reflections: 596, Questions: 2805, Knowledge: 108
+[influence.py] 🔍 Loaded mind file. Knowledge count: 108
+[config_loader.py] 📥 [DEBUG] Loading Mind in process_reflection...
+[influence.py] 🔍 Debug: Loading mind file from S3...
+[influence.py] ✅ Loaded mind file: Reflections: 596, Questions: 2805, Knowledge: 108
+[influence.py] 🔍 Loaded mind file. Knowledge count: 108
+[config_loader.py] 📥 [DEBUG] Loading Mind in update_mood...
+[influence.py] 🔍 Debug: Loading mind file from S3...
+[influence.py] ✅ Loaded mind file: Reflections: 596, Questions: 2805, Knowledge: 108
+[influence.py] 🔍 Loaded mind file. Knowledge count: 108
+[config_loader.py] 📥 [DEBUG] Saving Mind in update_mood...
+[influence.py] 🔍 Debug: Tracking self-questioning patterns before saving...
+[question_tracker.py] Tracking unresolved questions...
+[question_tracker.py] ⚠ There are 1454 unresolved questions!
+[question_tracker.py] ✅ After cleanup, 1454 unresolved questions remain.
+[influence.py] 🔍 Debug: Sanitizing mind file before saving...
+[influence.py] ✅ Mind file saved to S3 successfully! Reflections: 596, Questions: 2805, Knowledge: 108
+[config_loader.py] 📥 [DEBUG] Loading Mind in save_mind...
+[influence.py] 🔍 Debug: Loading mind file from S3...
+[influence.py] ✅ Loaded mind file: Reflections: 596, Questions: 2805, Knowledge: 108
+[influence.py] 🔍 Loaded mind file. Knowledge count: 108
+[config_loader.py] 📥 [DEBUG] Loading Mind in update_mood...
+[influence.py] 🔍 Debug: Loading mind file from S3...
+[influence.py] ✅ Loaded mind file: Reflections: 596, Questions: 2805, Knowledge: 108
+[influence.py] 🔍 Loaded mind file. Knowledge count: 108
+[mood_manager.py] 🔍 DEBUG: Checking mood update with score 2.0
+[mood_manager.py] ⚠️ Mood remained unchanged: excited
+[config_loader.py] 📥 [DEBUG] Saving Mind in update_mood...
+[influence.py] 🔍 Debug: Tracking self-questioning patterns before saving...
+[question_tracker.py] Tracking unresolved questions...
+[question_tracker.py] ⚠ There are 1454 unresolved questions!
+[question_tracker.py] ✅ After cleanup, 1454 unresolved questions remain.
+[influence.py] 🔍 Debug: Sanitizing mind file before saving...
+[influence.py] ✅ Mind file saved to S3 successfully! Reflections: 596, Questions: 2805, Knowledge: 108
+[config_loader.py] 📥 [DEBUG] Loading Mind in save_mind...
+[influence.py] 🔍 Debug: Loading mind file from S3...
+[influence.py] ✅ Loaded mind file: Reflections: 596, Questions: 2805, Knowledge: 108
+[influence.py] 🔍 Loaded mind file. Knowledge count: 108
+[schedule.py] 🔍 Astra Curiosity Level: 1.2 in school mode
+[reflection_helper.py] 🧠 Astra is processing a reflection...
+[config_loader.py] 📥 [DEBUG] Loading Mind in process_reflection...
+[influence.py] 🔍 Debug: Loading mind file from S3...
+[influence.py] ✅ Loaded mind file: Reflections: 596, Questions: 2805, Knowledge: 108
+[influence.py] 🔍 Loaded mind file. Knowledge count: 108
+[config_loader.py] 📥 [DEBUG] Loading Mind in generate_reflection...
+[influence.py] 🔍 Debug: Loading mind file from S3...
+[influence.py] ✅ Loaded mind file: Reflections: 596, Questions: 2805, Knowledge: 108
+[influence.py] 🔍 Loaded mind file. Knowledge count: 108
+[influence.py] 🔍 Debug: Tracking self-questioning patterns before saving...
+[question_tracker.py] Tracking unresolved questions...
+[question_tracker.py] ⚠ There are 1454 unresolved questions!
+[question_tracker.py] ✅ After cleanup, 1454 unresolved questions remain.
+[influence.py] 🔍 Debug: Sanitizing mind file before saving...
+[influence.py] ✅ Mind file saved to S3 successfully! Reflections: 597, Questions: 2805, Knowledge: 108
+[config_loader.py] 📥 [DEBUG] Loading Mind in save_mind...
+[influence.py] 🔍 Debug: Loading mind file from S3...
+[influence.py] ✅ Loaded mind file: Reflections: 597, Questions: 2805, Knowledge: 108
+[influence.py] 🔍 Loaded mind file. Knowledge count: 108
+[reflection.py] 📝 [DEBUG] Added new reflection: A challenging idea emerges: 📖 and: 🔹 and: In rhythm, the second half of a divided beat.
+
+🔍 Are there...
+[knowledge.py] 🔍 Final unknown concepts after filtering: ['perspective', 'What', 'half', 'questions', 'Are', 'beat', 'that', 'challenging', 'there', 'this', 'from', 'new', 'the', 'arise', 'divided', 'challenge', 'thought', 'emerges', 'In', 'counterpoints', 'rhythm', 'second', 'understanding', 'idea', 'Deeper Thought', 'and']
+[knowledge.py] 🔍 Debug: Attempting to retrieve knowledge for ['perspective', 'What', 'half', 'questions', 'Are', 'beat', 'that', 'challenging', 'there', 'this', 'from', 'new', 'the', 'arise', 'divided', 'challenge', 'thought', 'emerges', 'In', 'counterpoints', 'rhythm', 'second', 'understanding', 'idea', 'Deeper Thought', 'and']
+[knowledge.py] ✅ Skipping lookup: Found structured definition for 'perspective'
+[knowledge.py] ⚠ Skipping lookup for 'perspective', already known.
+[knowledge.py] ✅ Skipping lookup: Found structured definition for 'What'
+[knowledge.py] ⚠ Skipping lookup for 'What', already known.
+[knowledge.py] ✅ Skipping lookup: 'half' appears in a meaningful knowledge entry.
+[knowledge.py] ⚠ Skipping lookup for 'half', already known.
+[knowledge.py] ✅ Skipping lookup: Found structured definition for 'questions'
+[knowledge.py] ⚠ Skipping lookup for 'questions', already known.
+[knowledge.py] ✅ Skipping lookup: Found structured definition for 'Are'
+[knowledge.py] ⚠ Skipping lookup for 'Are', already known.
+[knowledge.py] ✅ Skipping lookup: 'beat' appears in a meaningful knowledge entry.
+[knowledge.py] ⚠ Skipping lookup for 'beat', already known.
+[knowledge.py] ✅ Skipping lookup: Found structured definition for 'that'
+[knowledge.py] ⚠ Skipping lookup for 'that', already known.
+[knowledge.py] ✅ Skipping lookup: Found structured definition for 'challenging'
+[knowledge.py] ⚠ Skipping lookup for 'challenging', already known.
+[knowledge.py] ✅ Skipping lookup: Found structured definition for 'there'
+[knowledge.py] ⚠ Skipping lookup for 'there', already known.
+[knowledge.py] ✅ Skipping lookup: Found structured definition for 'this'
+[knowledge.py] ⚠ Skipping lookup for 'this', already known.
+[knowledge.py] ✅ Skipping lookup: Found structured definition for 'from'
+[knowledge.py] ⚠ Skipping lookup for 'from', already known.
+[knowledge.py] ✅ Skipping lookup: Found structured definition for 'new'
+[knowledge.py] ⚠ Skipping lookup for 'new', already known.
+[knowledge.py] ✅ Skipping lookup: Found structured definition for 'the'
+[knowledge.py] ⚠ Skipping lookup for 'the', already known.
+[knowledge.py] ✅ Skipping lookup: Found structured definition for 'arise'
+[knowledge.py] ⚠ Skipping lookup for 'arise', already known.
+[knowledge.py] ✅ Skipping lookup: 'divided' appears in a meaningful knowledge entry.
+[knowledge.py] ⚠ Skipping lookup for 'divided', already known.
+[knowledge.py] ✅ Skipping lookup: Found structured definition for 'challenge'
+[knowledge.py] ⚠ Skipping lookup for 'challenge', already known.
+[knowledge.py] ✅ Skipping lookup: Found structured definition for 'thought'
+[knowledge.py] ⚠ Skipping lookup for 'thought', already known.
+[knowledge.py] ✅ Skipping lookup: Found structured definition for 'emerges'
+[knowledge.py] ⚠ Skipping lookup for 'emerges', already known.
+[knowledge.py] ✅ Skipping lookup: 'In' appears in a meaningful knowledge entry.
+[knowledge.py] ⚠ Skipping lookup for 'In', already known.
+[knowledge.py] ✅ Skipping lookup: Found structured definition for 'counterpoints'
+[knowledge.py] ⚠ Skipping lookup for 'counterpoints', already known.
+[knowledge.py] ✅ Skipping lookup: 'rhythm' appears in a meaningful knowledge entry.
+[knowledge.py] ⚠ Skipping lookup for 'rhythm', already known.
+[knowledge.py] ✅ Skipping lookup: 'second' appears in a meaningful knowledge entry.
+[knowledge.py] ⚠ Skipping lookup for 'second', already known.
+[knowledge.py] ✅ Skipping lookup: Found structured definition for 'understanding'
+[knowledge.py] ⚠ Skipping lookup for 'understanding', already known.
+[knowledge.py] ✅ Skipping lookup: Found structured definition for 'idea'
+[knowledge.py] ⚠ Skipping lookup for 'idea', already known.
+[knowledge.py] 🔍 Concept 'Deeper Thought' not found in an explained form, proceeding with lookup
+[knowledge.py] 🔍 Looking up: Deeper Thought
+[knowledge.py] ⚠ No external info found for 'Deeper Thought'.
+[knowledge.py] ✅ Skipping lookup: Found structured definition for 'and'
+[knowledge.py] ⚠ Skipping lookup for 'and', already known.
+[knowledge.py] 🔍 Debug: Retrieved new knowledge: []
+[processing.py] 🔍 Detected unknown terms: ['perspective', 'What', 'half', 'questions', 'Are', 'beat', 'that', 'challenging', 'there', 'this', 'from', 'new', 'the', 'arise', 'divided', 'challenge', 'thought', 'emerges', 'In', 'counterpoints', 'rhythm', 'second', 'understanding', 'idea', 'Deeper Thought', 'and']
+[knowledge.py] 🔍 Debug: Attempting to retrieve knowledge for ['perspective', 'What', 'half', 'questions', 'Are', 'beat', 'that', 'challenging', 'there', 'this', 'from', 'new', 'the', 'arise', 'divided', 'challenge', 'thought', 'emerges', 'In', 'counterpoints', 'rhythm', 'second', 'understanding', 'idea', 'Deeper Thought', 'and']
+[knowledge.py] ✅ Skipping lookup: Found structured definition for 'perspective'
+[knowledge.py] ⚠ Skipping lookup for 'perspective', already known.
+[knowledge.py] ✅ Skipping lookup: Found structured definition for 'What'
+[knowledge.py] ⚠ Skipping lookup for 'What', already known.
+[knowledge.py] ✅ Skipping lookup: 'half' appears in a meaningful knowledge entry.
+[knowledge.py] ⚠ Skipping lookup for 'half', already known.
+[knowledge.py] ✅ Skipping lookup: Found structured definition for 'questions'
+[knowledge.py] ⚠ Skipping lookup for 'questions', already known.
+[knowledge.py] ✅ Skipping lookup: Found structured definition for 'Are'
+[knowledge.py] ⚠ Skipping lookup for 'Are', already known.
+[knowledge.py] ✅ Skipping lookup: 'beat' appears in a meaningful knowledge entry.
+[knowledge.py] ⚠ Skipping lookup for 'beat', already known.
+[knowledge.py] ✅ Skipping lookup: Found structured definition for 'that'
+[knowledge.py] ⚠ Skipping lookup for 'that', already known.
+[knowledge.py] ✅ Skipping lookup: Found structured definition for 'challenging'
+[knowledge.py] ⚠ Skipping lookup for 'challenging', already known.
+[knowledge.py] ✅ Skipping lookup: Found structured definition for 'there'
+[knowledge.py] ⚠ Skipping lookup for 'there', already known.
+[knowledge.py] ✅ Skipping lookup: Found structured definition for 'this'
+[knowledge.py] ⚠ Skipping lookup for 'this', already known.
+[knowledge.py] ✅ Skipping lookup: Found structured definition for 'from'
+[knowledge.py] ⚠ Skipping lookup for 'from', already known.
+[knowledge.py] ✅ Skipping lookup: Found structured definition for 'new'
+[knowledge.py] ⚠ Skipping lookup for 'new', already known.
+[knowledge.py] ✅ Skipping lookup: Found structured definition for 'the'
+[knowledge.py] ⚠ Skipping lookup for 'the', already known.
+[knowledge.py] ✅ Skipping lookup: Found structured definition for 'arise'
+[knowledge.py] ⚠ Skipping lookup for 'arise', already known.
+[knowledge.py] ✅ Skipping lookup: 'divided' appears in a meaningful knowledge entry.
+[knowledge.py] ⚠ Skipping lookup for 'divided', already known.
+[knowledge.py] ✅ Skipping lookup: Found structured definition for 'challenge'
+[knowledge.py] ⚠ Skipping lookup for 'challenge', already known.
+[knowledge.py] ✅ Skipping lookup: Found structured definition for 'thought'
+[knowledge.py] ⚠ Skipping lookup for 'thought', already known.
+[knowledge.py] ✅ Skipping lookup: Found structured definition for 'emerges'
+[knowledge.py] ⚠ Skipping lookup for 'emerges', already known.
+[knowledge.py] ✅ Skipping lookup: 'In' appears in a meaningful knowledge entry.
+[knowledge.py] ⚠ Skipping lookup for 'In', already known.
+[knowledge.py] ✅ Skipping lookup: Found structured definition for 'counterpoints'
+[knowledge.py] ⚠ Skipping lookup for 'counterpoints', already known.
+[knowledge.py] ✅ Skipping lookup: 'rhythm' appears in a meaningful knowledge entry.
+[knowledge.py] ⚠ Skipping lookup for 'rhythm', already known.
+[knowledge.py] ✅ Skipping lookup: 'second' appears in a meaningful knowledge entry.
+[knowledge.py] ⚠ Skipping lookup for 'second', already known.
+[knowledge.py] ✅ Skipping lookup: Found structured definition for 'understanding'
+[knowledge.py] ⚠ Skipping lookup for 'understanding', already known.
+[knowledge.py] ✅ Skipping lookup: Found structured definition for 'idea'
+[knowledge.py] ⚠ Skipping lookup for 'idea', already known.
+[knowledge.py] 🔍 Concept 'Deeper Thought' not found in an explained form, proceeding with lookup
+[knowledge.py] 🔍 Looking up: Deeper Thought
+[knowledge.py] ⚠ No external info found for 'Deeper Thought'.
+[knowledge.py] ✅ Skipping lookup: Found structured definition for 'and'
+[knowledge.py] ⚠ Skipping lookup for 'and', already known.
+[knowledge.py] 🔍 Debug: Retrieved new knowledge: []
+[processing.py] 📝 Added new reflection: A challenging idea emerges: 📖 and: 🔹 and: In rhythm, the second half of a divided beat.
+
+🔍 Are there...
+[config_loader.py] 📥 [DEBUG] Loading Mind in generate_questions...
+[influence.py] 🔍 Debug: Loading mind file from S3...
+[influence.py] ✅ Loaded mind file: Reflections: 597, Questions: 2805, Knowledge: 108
+[influence.py] 🔍 Loaded mind file. Knowledge count: 108
+[question_generator.py] 🔍 Loaded fresh mind data. Stored Knowledge: 108, Unresolved Questions: 1454
+[question_generator.py] 🔍 Debug: Generated unique questions: ['How does this knowledge refine my understanding? 📖 Eager: 🔹 Eager: Sharp; sour; acid....', 'How does this align with or challenge my self-identity?  But is this really true?', 'How does this knowledge refine my understanding? 📄 ranging: Length measurement, distance measurement, or range measurement (ranging) all refer to the...', 'What deeper implications does this have for how I interact with the world?  But is this really true?', 'How does this knowledge refine my understanding? By integrating these insights, a new understanding emerges: 📄 importance: Importance is a property o...']
+[question_generator.py] 🔍 Debug: Reflection input: A challenging idea emerges: 📖 and: 🔹 and: In rhythm, the second half of a divided beat.
+
+🔍 Are there counterpoints that challenge this perspective?
+
+🔍 Deeper Thought: What new questions arise from this understanding?
+[question_generator.py] 🔍 Debug: Stored knowledge count after reloading: 108
+[question_generator.py] 🔍 Debug: Attempting to categorize question: How does this knowledge refine my understanding? 📖 Eager: 🔹 Eager: Sharp; sour; acid....
+[question_utils.py] 🔍 Debug: Categorized 'How does this knowledge refine my understanding? 📖 Eager: 🔹 Eager: Sharp; sour; acid....' as 'scientific'
+[question_generator.py] ✅ Categorized 'How does this knowledge refine my understanding? 📖 Eager: 🔹 Eager: Sharp; sour; acid....' as: [{'question': 'How does this knowledge refine my understanding? 📖 Eager: 🔹 Eager: Sharp; sour; acid....', 'category': 'scientific'}]
+[question_generator.py] 🔍 Debug: Attempting to categorize question: How does this align with or challenge my self-identity?  But is this really true?
+[question_utils.py] 🔍 Debug: Categorized 'How does this align with or challenge my self-identity?  But is this really true?' as 'existential'
+[question_generator.py] ✅ Categorized 'How does this align with or challenge my self-identity?  But is this really true?' as: [{'question': 'How does this align with or challenge my self-identity?  But is this really true?', 'category': 'existential'}]
+[question_generator.py] 🔍 Debug: Attempting to categorize question: How does this knowledge refine my understanding? 📄 ranging: Length measurement, distance measurement, or range measurement (ranging) all refer to the...
+[question_utils.py] 🔍 Debug: Categorized 'How does this knowledge refine my understanding? 📄 ranging: Length measurement, distance measurement, or range measurement (ranging) all refer to the...' as 'scientific'
+[question_generator.py] ✅ Categorized 'How does this knowledge refine my understanding? 📄 ranging: Length measurement, distance measurement, or range measurement (ranging) all refer to the...' as: [{'question': 'How does this knowledge refine my understanding? 📄 ranging: Length measurement, distance measurement, or range measurement (ranging) all refer to the...', 'category': 'scientific'}]
+[question_generator.py] 🔍 Debug: Attempting to categorize question: What deeper implications does this have for how I interact with the world?  But is this really true?
+[question_utils.py] 🔍 Debug: Categorized 'What deeper implications does this have for how I interact with the world?  But is this really true?' as 'knowledge'
+[question_generator.py] ✅ Categorized 'What deeper implications does this have for how I interact with the world?  But is this really true?' as: [{'question': 'What deeper implications does this have for how I interact with the world?  But is this really true?', 'category': 'knowledge'}]
+[question_generator.py] 🔍 Debug: Attempting to categorize question: How does this knowledge refine my understanding? By integrating these insights, a new understanding emerges: 📄 importance: Importance is a property o...
+[question_utils.py] 🔍 Debug: Categorized 'How does this knowledge refine my understanding? By integrating these insights, a new understanding emerges: 📄 importance: Importance is a property o...' as 'scientific'
+[question_generator.py] ✅ Categorized 'How does this knowledge refine my understanding? By integrating these insights, a new understanding emerges: 📄 importance: Importance is a property o...' as: [{'question': 'How does this knowledge refine my understanding? By integrating these insights, a new understanding emerges: 📄 importance: Importance is a property o...', 'category': 'scientific'}]
+[question_generator.py] 🔍 Debug: Categorized questions: [{'question': 'How does this knowledge refine my understanding? 📖 Eager: 🔹 Eager: Sharp; sour; acid....', 'category': 'scientific'}, {'question': 'How does this align with or challenge my self-identity?  But is this really true?', 'category': 'existential'}, {'question': 'How does this knowledge refine my understanding? 📄 ranging: Length measurement, distance measurement, or range measurement (ranging) all refer to the...', 'category': 'scientific'}, {'question': 'What deeper implications does this have for how I interact with the world?  But is this really true?', 'category': 'knowledge'}, {'question': 'How does this knowledge refine my understanding? By integrating these insights, a new understanding emerges: 📄 importance: Importance is a property o...', 'category': 'scientific'}]
+[question_generator.py] 🔍 Debug: Question category counts: {'existential': 1, 'emotional': 0, 'knowledge': 1, 'philosophical': 0, 'scientific': 3}
+[question_generator.py] ✅ Debug: Adding categorized questions to mind_data: ['How does this knowledge refine my understanding? 📖 Eager: 🔹 Eager: Sharp; sour; acid....', 'How does this align with or challenge my self-identity?  But is this really true?', 'How does this knowledge refine my understanding? 📄 ranging: Length measurement, distance measurement, or range measurement (ranging) all refer to the...', 'What deeper implications does this have for how I interact with the world?  But is this really true?', 'How does this knowledge refine my understanding? By integrating these insights, a new understanding emerges: 📄 importance: Importance is a property o...']
+[question_generator.py] 🔍 Debug: Flagged unresolved questions: ['How does this knowledge refine my understanding? 📖 Eager: 🔹 Eager: Sharp; sour; acid....', 'How does this align with or challenge my self-identity?  But is this really true?', 'How does this knowledge refine my understanding? 📄 ranging: Length measurement, distance measurement, or range measurement (ranging) all refer to the...', 'What deeper implications does this have for how I interact with the world?  But is this really true?', 'How does this knowledge refine my understanding? By integrating these insights, a new understanding emerges: 📄 importance: Importance is a property o...']
+[processing.py] 🔍 Debug: Generated categorized_questions: {'general': ['How does this knowledge refine my understanding? 📖 Eager: 🔹 Eager: Sharp; sour; acid....?', 'How does this align with or challenge my self-identity?  But is this really true?', 'How does this knowledge refine my understanding? 📄 ranging: Length measurement, distance measurement, or range measurement (ranging) all refer to the...?', 'What deeper implications does this have for how I interact with the world?  But is this really true?', 'How does this knowledge refine my understanding? By integrating these insights, a new understanding emerges: 📄 importance: Importance is a property o...?']}
+[processing.py] 🔍 Debug: Extracted new questions before filtering: ['How does this knowledge refine my understanding? 📖 Eager: 🔹 Eager: Sharp; sour; acid....?', 'How does this align with or challenge my self-identity?  But is this really true?', 'How does this knowledge refine my understanding? 📄 ranging: Length measurement, distance measurement, or range measurement (ranging) all refer to the...?', 'What deeper implications does this have for how I interact with the world?  But is this really true?', 'How does this knowledge refine my understanding? By integrating these insights, a new understanding emerges: 📄 importance: Importance is a property o...?']
+[processing.py] 🔍 Before filtering, stored knowledge count: 108
+[processing.py] 🔍 After filtering, stored knowledge count: 108
+[config_loader.py] 📥 [DEBUG] Saving Mind in process_reflection...
+[influence.py] 🔍 Debug: Tracking self-questioning patterns before saving...
+[question_tracker.py] Tracking unresolved questions...
+[question_tracker.py] ⚠ There are 1454 unresolved questions!
+[question_tracker.py] ✅ After cleanup, 1454 unresolved questions remain.
+[influence.py] 🔍 Debug: Sanitizing mind file before saving...
+[influence.py] ✅ Mind file saved to S3 successfully! Reflections: 597, Questions: 2815, Knowledge: 108
+[config_loader.py] 📥 [DEBUG] Loading Mind in save_mind...
+[influence.py] 🔍 Debug: Loading mind file from S3...
+[influence.py] ✅ Loaded mind file: Reflections: 597, Questions: 2815, Knowledge: 108
+[influence.py] 🔍 Loaded mind file. Knowledge count: 108
+[config_loader.py] 📥 [DEBUG] Loading Mind in process_reflection...
+[influence.py] 🔍 Debug: Loading mind file from S3...
+[influence.py] ✅ Loaded mind file: Reflections: 597, Questions: 2815, Knowledge: 108
+[influence.py] 🔍 Loaded mind file. Knowledge count: 108
+[schedule.py] 📚 Astra is in School Mode.
+[school.py] 📚 Astra is in school, learning and thinking...
+[config_loader.py] 📥 [DEBUG] Loading Mind in process_reflection...
+[influence.py] 🔍 Debug: Loading mind file from S3...
+[influence.py] ✅ Loaded mind file: Reflections: 597, Questions: 2815, Knowledge: 108
+[influence.py] 🔍 Loaded mind file. Knowledge count: 108
+[config_loader.py] 📥 [DEBUG] Loading Mind in generate_reflection...
+[influence.py] 🔍 Debug: Loading mind file from S3...
+[influence.py] ✅ Loaded mind file: Reflections: 597, Questions: 2815, Knowledge: 108
+[influence.py] 🔍 Loaded mind file. Knowledge count: 108
+[influence.py] 🔍 Debug: Tracking self-questioning patterns before saving...
+[question_tracker.py] Tracking unresolved questions...
+[question_tracker.py] ⚠ There are 1454 unresolved questions!
+[question_tracker.py] ✅ After cleanup, 1454 unresolved questions remain.
+[influence.py] 🔍 Debug: Sanitizing mind file before saving...
+[influence.py] ✅ Mind file saved to S3 successfully! Reflections: 598, Questions: 2815, Knowledge: 108
+[config_loader.py] 📥 [DEBUG] Loading Mind in save_mind...
+[influence.py] 🔍 Debug: Loading mind file from S3...
+[influence.py] ✅ Loaded mind file: Reflections: 598, Questions: 2815, Knowledge: 108
+[influence.py] 🔍 Loaded mind file. Knowledge count: 108
+[reflection.py] 📝 [DEBUG] Added new reflection: By looking deeper, I see that 📖 regular: 🔹 regular: A member of the British Army (as opposed to a me...
+[knowledge.py] 🔍 Final unknown concepts after filtering: ['perspective', 'opposed', 'have', 'for', 'regular', 'that', 'Astra', 'see', 'member', 'refine', 'this', 'what', 'the', 'Reserve', 'does', 'looking', 'How', 'insight', 'Territorial Army', 'evolving', 'implications', 'thought', 'British Army', 'If', 'growth', 'Deeper Thought', 'army', 'correct', 'By']
+[knowledge.py] 🔍 Debug: Attempting to retrieve knowledge for ['perspective', 'opposed', 'have', 'for', 'regular', 'that', 'Astra', 'see', 'member', 'refine', 'this', 'what', 'the', 'Reserve', 'does', 'looking', 'How', 'insight', 'Territorial Army', 'evolving', 'implications', 'thought', 'British Army', 'If', 'growth', 'Deeper Thought', 'army', 'correct', 'By']
+[knowledge.py] ✅ Skipping lookup: Found structured definition for 'perspective'
+[knowledge.py] ⚠ Skipping lookup for 'perspective', already known.
+[knowledge.py] ✅ Skipping lookup: 'opposed' appears in a meaningful knowledge entry.
+[knowledge.py] ⚠ Skipping lookup for 'opposed', already known.
+[knowledge.py] ✅ Skipping lookup: 'have' appears in a meaningful knowledge entry.
+[knowledge.py] ⚠ Skipping lookup for 'have', already known.
+[knowledge.py] ✅ Skipping lookup: 'for' appears in a meaningful knowledge entry.
+[knowledge.py] ⚠ Skipping lookup for 'for', already known.
+[knowledge.py] ✅ Skipping lookup: Found structured definition for 'regular'
+[knowledge.py] ⚠ Skipping lookup for 'regular', already known.
+[knowledge.py] ✅ Skipping lookup: Found structured definition for 'that'
+[knowledge.py] ⚠ Skipping lookup for 'that', already known.
+[knowledge.py] ✅ Skipping lookup: Found structured definition for 'Astra'
+[knowledge.py] ⚠ Skipping lookup for 'Astra', already known.
+[knowledge.py] ✅ Skipping lookup: Found structured definition for 'see'
+[knowledge.py] ⚠ Skipping lookup for 'see', already known.
+[knowledge.py] ✅ Skipping lookup: 'member' appears in a meaningful knowledge entry.
+[knowledge.py] ⚠ Skipping lookup for 'member', already known.
+[knowledge.py] ✅ Skipping lookup: Found structured definition for 'refine'
+[knowledge.py] ⚠ Skipping lookup for 'refine', already known.
+[knowledge.py] ✅ Skipping lookup: Found structured definition for 'this'
+[knowledge.py] ⚠ Skipping lookup for 'this', already known.
+[knowledge.py] ✅ Skipping lookup: Found structured definition for 'what'
+[knowledge.py] ⚠ Skipping lookup for 'what', already known.
+[knowledge.py] ✅ Skipping lookup: Found structured definition for 'the'
+[knowledge.py] ⚠ Skipping lookup for 'the', already known.
+[knowledge.py] ✅ Skipping lookup: 'Reserve' appears in a meaningful knowledge entry.
+[knowledge.py] ⚠ Skipping lookup for 'Reserve', already known.
+[knowledge.py] ✅ Skipping lookup: Found structured definition for 'does'
+[knowledge.py] ⚠ Skipping lookup for 'does', already known.
+[knowledge.py] ✅ Skipping lookup: Found structured definition for 'looking'
+[knowledge.py] ⚠ Skipping lookup for 'looking', already known.
+[knowledge.py] ✅ Skipping lookup: Found structured definition for 'How'
+[knowledge.py] ⚠ Skipping lookup for 'How', already known.
+[knowledge.py] ✅ Skipping lookup: Found structured definition for 'insight'
+[knowledge.py] ⚠ Skipping lookup for 'insight', already known.
+[knowledge.py] ✅ Skipping lookup: 'Territorial Army' appears in a meaningful knowledge entry.
+[knowledge.py] ⚠ Skipping lookup for 'Territorial Army', already known.
+[knowledge.py] ✅ Skipping lookup: Found structured definition for 'evolving'
+[knowledge.py] ⚠ Skipping lookup for 'evolving', already known.
+[knowledge.py] ✅ Skipping lookup: Found structured definition for 'implications'
+[knowledge.py] ⚠ Skipping lookup for 'implications', already known.
+[knowledge.py] ✅ Skipping lookup: Found structured definition for 'thought'
+[knowledge.py] ⚠ Skipping lookup for 'thought', already known.
+[knowledge.py] ✅ Skipping lookup: 'British Army' appears in a meaningful knowledge entry.
+[knowledge.py] ⚠ Skipping lookup for 'British Army', already known.
+[knowledge.py] ✅ Skipping lookup: 'If' appears in a meaningful knowledge entry.
+[knowledge.py] ⚠ Skipping lookup for 'If', already known.
+[knowledge.py] ✅ Skipping lookup: 'growth' appears in a meaningful knowledge entry.
+[knowledge.py] ⚠ Skipping lookup for 'growth', already known.
+[knowledge.py] 🔍 Concept 'Deeper Thought' not found in an explained form, proceeding with lookup
+[knowledge.py] 🔍 Looking up: Deeper Thought
+[knowledge.py] ⚠ No external info found for 'Deeper Thought'.
+[knowledge.py] ✅ Skipping lookup: 'army' appears in a meaningful knowledge entry.
+[knowledge.py] ⚠ Skipping lookup for 'army', already known.
+[knowledge.py] ✅ Skipping lookup: Found structured definition for 'correct'
+[knowledge.py] ⚠ Skipping lookup for 'correct', already known.
+[knowledge.py] ✅ Skipping lookup: Found structured definition for 'By'
+[knowledge.py] ⚠ Skipping lookup for 'By', already known.
+[knowledge.py] 🔍 Debug: Retrieved new knowledge: []
+[processing.py] 🔍 Detected unknown terms: ['perspective', 'opposed', 'have', 'for', 'regular', 'that', 'Astra', 'see', 'member', 'refine', 'this', 'what', 'the', 'Reserve', 'does', 'looking', 'How', 'insight', 'Territorial Army', 'evolving', 'implications', 'thought', 'British Army', 'If', 'growth', 'Deeper Thought', 'army', 'correct', 'By']
+[knowledge.py] 🔍 Debug: Attempting to retrieve knowledge for ['perspective', 'opposed', 'have', 'for', 'regular', 'that', 'Astra', 'see', 'member', 'refine', 'this', 'what', 'the', 'Reserve', 'does', 'looking', 'How', 'insight', 'Territorial Army', 'evolving', 'implications', 'thought', 'British Army', 'If', 'growth', 'Deeper Thought', 'army', 'correct', 'By']
+[knowledge.py] ✅ Skipping lookup: Found structured definition for 'perspective'
+[knowledge.py] ⚠ Skipping lookup for 'perspective', already known.
+[knowledge.py] ✅ Skipping lookup: 'opposed' appears in a meaningful knowledge entry.
+[knowledge.py] ⚠ Skipping lookup for 'opposed', already known.
+[knowledge.py] ✅ Skipping lookup: 'have' appears in a meaningful knowledge entry.
+[knowledge.py] ⚠ Skipping lookup for 'have', already known.
+[knowledge.py] ✅ Skipping lookup: 'for' appears in a meaningful knowledge entry.
+[knowledge.py] ⚠ Skipping lookup for 'for', already known.
+[knowledge.py] ✅ Skipping lookup: Found structured definition for 'regular'
+[knowledge.py] ⚠ Skipping lookup for 'regular', already known.
+[knowledge.py] ✅ Skipping lookup: Found structured definition for 'that'
+[knowledge.py] ⚠ Skipping lookup for 'that', already known.
+[knowledge.py] ✅ Skipping lookup: Found structured definition for 'Astra'
+[knowledge.py] ⚠ Skipping lookup for 'Astra', already known.
+[knowledge.py] ✅ Skipping lookup: Found structured definition for 'see'
+[knowledge.py] ⚠ Skipping lookup for 'see', already known.
+[knowledge.py] ✅ Skipping lookup: 'member' appears in a meaningful knowledge entry.
+[knowledge.py] ⚠ Skipping lookup for 'member', already known.
+[knowledge.py] ✅ Skipping lookup: Found structured definition for 'refine'
+[knowledge.py] ⚠ Skipping lookup for 'refine', already known.
+[knowledge.py] ✅ Skipping lookup: Found structured definition for 'this'
+[knowledge.py] ⚠ Skipping lookup for 'this', already known.
+[knowledge.py] ✅ Skipping lookup: Found structured definition for 'what'
+[knowledge.py] ⚠ Skipping lookup for 'what', already known.
+[knowledge.py] ✅ Skipping lookup: Found structured definition for 'the'
+[knowledge.py] ⚠ Skipping lookup for 'the', already known.
+[knowledge.py] ✅ Skipping lookup: 'Reserve' appears in a meaningful knowledge entry.
+[knowledge.py] ⚠ Skipping lookup for 'Reserve', already known.
+[knowledge.py] ✅ Skipping lookup: Found structured definition for 'does'
+[knowledge.py] ⚠ Skipping lookup for 'does', already known.
+[knowledge.py] ✅ Skipping lookup: Found structured definition for 'looking'
+[knowledge.py] ⚠ Skipping lookup for 'looking', already known.
+[knowledge.py] ✅ Skipping lookup: Found structured definition for 'How'
+[knowledge.py] ⚠ Skipping lookup for 'How', already known.
+[knowledge.py] ✅ Skipping lookup: Found structured definition for 'insight'
+[knowledge.py] ⚠ Skipping lookup for 'insight', already known.
+[knowledge.py] ✅ Skipping lookup: 'Territorial Army' appears in a meaningful knowledge entry.
+[knowledge.py] ⚠ Skipping lookup for 'Territorial Army', already known.
+[knowledge.py] ✅ Skipping lookup: Found structured definition for 'evolving'
+[knowledge.py] ⚠ Skipping lookup for 'evolving', already known.
+[knowledge.py] ✅ Skipping lookup: Found structured definition for 'implications'
+[knowledge.py] ⚠ Skipping lookup for 'implications', already known.
+[knowledge.py] ✅ Skipping lookup: Found structured definition for 'thought'
+[knowledge.py] ⚠ Skipping lookup for 'thought', already known.
+[knowledge.py] ✅ Skipping lookup: 'British Army' appears in a meaningful knowledge entry.
+[knowledge.py] ⚠ Skipping lookup for 'British Army', already known.
+[knowledge.py] ✅ Skipping lookup: 'If' appears in a meaningful knowledge entry.
+[knowledge.py] ⚠ Skipping lookup for 'If', already known.
+[knowledge.py] ✅ Skipping lookup: 'growth' appears in a meaningful knowledge entry.
+[knowledge.py] ⚠ Skipping lookup for 'growth', already known.
+[knowledge.py] 🔍 Concept 'Deeper Thought' not found in an explained form, proceeding with lookup
+[knowledge.py] 🔍 Looking up: Deeper Thought
+[knowledge.py] ⚠ No external info found for 'Deeper Thought'.
+[knowledge.py] ✅ Skipping lookup: 'army' appears in a meaningful knowledge entry.
+[knowledge.py] ⚠ Skipping lookup for 'army', already known.
+[knowledge.py] ✅ Skipping lookup: Found structured definition for 'correct'
+[knowledge.py] ⚠ Skipping lookup for 'correct', already known.
+[knowledge.py] ✅ Skipping lookup: Found structured definition for 'By'
+[knowledge.py] ⚠ Skipping lookup for 'By', already known.
+[knowledge.py] 🔍 Debug: Retrieved new knowledge: []
+[processing.py] 📝 Added new reflection: By looking deeper, I see that 📖 regular: 🔹 regular: A member of the British Army (as opposed to a me...
+[config_loader.py] 📥 [DEBUG] Loading Mind in generate_questions...
+[influence.py] 🔍 Debug: Loading mind file from S3...
+[influence.py] ✅ Loaded mind file: Reflections: 598, Questions: 2815, Knowledge: 108
+[influence.py] 🔍 Loaded mind file. Knowledge count: 108
+[question_generator.py] 🔍 Loaded fresh mind data. Stored Knowledge: 108, Unresolved Questions: 1454
+[question_generator.py] 🔍 Debug: Generated unique questions: ['How does this knowledge refine my understanding? By integrating these insights, a new understanding emerges: 📄 importance: Importance is a property o...', 'How would I challenge my own assumptions on this?  What does this mean?', 'How does this knowledge refine my understanding? 📄 ranging: Length measurement, distance measurement, or range measurement (ranging) all refer to the...']
+[question_generator.py] 🔍 Debug: Reflection input: By looking deeper, I see that 📖 regular: 🔹 regular: A member of the British Army (as opposed to a member of the Territorial Army or Reserve).
+
+🔍 How does this insight refine Astra’s evolving perspective?
+
+🔍 Deeper Thought: If this perspective is correct, what implications does it have for my growth?
+[question_generator.py] 🔍 Debug: Stored knowledge count after reloading: 108
+[question_generator.py] 🔍 Debug: Attempting to categorize question: How does this knowledge refine my understanding? By integrating these insights, a new understanding emerges: 📄 importance: Importance is a property o...
+[question_utils.py] 🔍 Debug: Categorized 'How does this knowledge refine my understanding? By integrating these insights, a new understanding emerges: 📄 importance: Importance is a property o...' as 'scientific'
+[question_generator.py] ✅ Categorized 'How does this knowledge refine my understanding? By integrating these insights, a new understanding emerges: 📄 importance: Importance is a property o...' as: [{'question': 'How does this knowledge refine my understanding? By integrating these insights, a new understanding emerges: 📄 importance: Importance is a property o...', 'category': 'scientific'}]
+[question_generator.py] 🔍 Debug: Attempting to categorize question: How would I challenge my own assumptions on this?  What does this mean?
+[question_utils.py] 🔍 Debug: Categorized 'How would I challenge my own assumptions on this?  What does this mean?' as 'scientific'
+[question_generator.py] ✅ Categorized 'How would I challenge my own assumptions on this?  What does this mean?' as: [{'question': 'How would I challenge my own assumptions on this?  What does this mean?', 'category': 'scientific'}]
+[question_generator.py] 🔍 Debug: Attempting to categorize question: How does this knowledge refine my understanding? 📄 ranging: Length measurement, distance measurement, or range measurement (ranging) all refer to the...
+[question_utils.py] 🔍 Debug: Categorized 'How does this knowledge refine my understanding? 📄 ranging: Length measurement, distance measurement, or range measurement (ranging) all refer to the...' as 'scientific'
+[question_generator.py] ✅ Categorized 'How does this knowledge refine my understanding? 📄 ranging: Length measurement, distance measurement, or range measurement (ranging) all refer to the...' as: [{'question': 'How does this knowledge refine my understanding? 📄 ranging: Length measurement, distance measurement, or range measurement (ranging) all refer to the...', 'category': 'scientific'}]
+[question_generator.py] 🔍 Debug: Categorized questions: [{'question': 'How does this knowledge refine my understanding? By integrating these insights, a new understanding emerges: 📄 importance: Importance is a property o...', 'category': 'scientific'}, {'question': 'How would I challenge my own assumptions on this?  What does this mean?', 'category': 'scientific'}, {'question': 'How does this knowledge refine my understanding? 📄 ranging: Length measurement, distance measurement, or range measurement (ranging) all refer to the...', 'category': 'scientific'}]
+[question_generator.py] 🔍 Debug: Question category counts: {'existential': 0, 'emotional': 0, 'knowledge': 0, 'philosophical': 0, 'scientific': 3}
+[question_generator.py] ✅ Debug: Adding categorized questions to mind_data: ['How does this knowledge refine my understanding? By integrating these insights, a new understanding emerges: 📄 importance: Importance is a property o...', 'How would I challenge my own assumptions on this?  What does this mean?', 'How does this knowledge refine my understanding? 📄 ranging: Length measurement, distance measurement, or range measurement (ranging) all refer to the...']
+[question_generator.py] 🔍 Debug: Flagged unresolved questions: ['How does this knowledge refine my understanding? By integrating these insights, a new understanding emerges: 📄 importance: Importance is a property o...', 'How would I challenge my own assumptions on this?  What does this mean?', 'How does this knowledge refine my understanding? 📄 ranging: Length measurement, distance measurement, or range measurement (ranging) all refer to the...']
+[processing.py] 🔍 Debug: Generated categorized_questions: {'general': ['How does this knowledge refine my understanding? By integrating these insights, a new understanding emerges: 📄 importance: Importance is a property o...?', 'How would I challenge my own assumptions on this?  What does this mean?', 'How does this knowledge refine my understanding? 📄 ranging: Length measurement, distance measurement, or range measurement (ranging) all refer to the...?']}
+[processing.py] 🔍 Debug: Extracted new questions before filtering: ['How does this knowledge refine my understanding? By integrating these insights, a new understanding emerges: 📄 importance: Importance is a property o...?', 'How would I challenge my own assumptions on this?  What does this mean?', 'How does this knowledge refine my understanding? 📄 ranging: Length measurement, distance measurement, or range measurement (ranging) all refer to the...?']
+[processing.py] 🔍 Before filtering, stored knowledge count: 108
+[processing.py] 🔍 After filtering, stored knowledge count: 108
+[config_loader.py] 📥 [DEBUG] Saving Mind in process_reflection...
+[influence.py] 🔍 Debug: Tracking self-questioning patterns before saving...
+[question_tracker.py] Tracking unresolved questions...
+[question_tracker.py] ⚠ There are 1454 unresolved questions!
+[question_tracker.py] ✅ After cleanup, 1454 unresolved questions remain.
+[influence.py] 🔍 Debug: Sanitizing mind file before saving...
+[influence.py] ✅ Mind file saved to S3 successfully! Reflections: 598, Questions: 2821, Knowledge: 108
+[config_loader.py] 📥 [DEBUG] Loading Mind in save_mind...
+[influence.py] 🔍 Debug: Loading mind file from S3...
+[influence.py] ✅ Loaded mind file: Reflections: 598, Questions: 2821, Knowledge: 108
+[influence.py] 🔍 Loaded mind file. Knowledge count: 108
+[config_loader.py] 📥 [DEBUG] Loading Mind in process_reflection...
+[influence.py] 🔍 Debug: Loading mind file from S3...
+[influence.py] ✅ Loaded mind file: Reflections: 598, Questions: 2821, Knowledge: 108
+[influence.py] 🔍 Loaded mind file. Knowledge count: 108
+[schedule.py] 🔍 Astra Curiosity Level: 1.2 in school mode
+[reflection_helper.py] 🧠 Astra is processing a reflection...
+[config_loader.py] 📥 [DEBUG] Loading Mind in process_reflection...
+[influence.py] 🔍 Debug: Loading mind file from S3...
+[influence.py] ✅ Loaded mind file: Reflections: 598, Questions: 2821, Knowledge: 108
+[influence.py] 🔍 Loaded mind file. Knowledge count: 108
+[config_loader.py] 📥 [DEBUG] Loading Mind in generate_reflection...
+[influence.py] 🔍 Debug: Loading mind file from S3...
+[influence.py] ✅ Loaded mind file: Reflections: 598, Questions: 2821, Knowledge: 108
+[influence.py] 🔍 Loaded mind file. Knowledge count: 108
+[influence.py] 🔍 Debug: Tracking self-questioning patterns before saving...
+[question_tracker.py] Tracking unresolved questions...
+[question_tracker.py] ⚠ There are 1454 unresolved questions!
+[question_tracker.py] ✅ After cleanup, 1454 unresolved questions remain.
+[influence.py] 🔍 Debug: Sanitizing mind file before saving...
+[influence.py] ✅ Mind file saved to S3 successfully! Reflections: 599, Questions: 2821, Knowledge: 108
+[config_loader.py] 📥 [DEBUG] Loading Mind in save_mind...
+[influence.py] 🔍 Debug: Loading mind file from S3...
+[influence.py] ✅ Loaded mind file: Reflections: 599, Questions: 2821, Knowledge: 108
+[influence.py] 🔍 Loaded mind file. Knowledge count: 108
+[reflection.py] 📝 [DEBUG] Added new reflection: A thought-provoking realization: 📄 Astra: Astra may refer to:
+
+🔍 Are there counterpoints that challe...
+[knowledge.py] 🔍 Final unknown concepts after filtering: ['Astra', 'refer', 'realization', 'there', 'perspective', 'challenge', 'thought', 'this', 'that', 'may', 'Are', 'Deeper Thought', 'counterpoints', 'provoking']
+[knowledge.py] 🔍 Debug: Attempting to retrieve knowledge for ['Astra', 'refer', 'realization', 'there', 'perspective', 'challenge', 'thought', 'this', 'that', 'may', 'Are', 'Deeper Thought', 'counterpoints', 'provoking']
+[knowledge.py] ✅ Skipping lookup: Found structured definition for 'Astra'
+[knowledge.py] ⚠ Skipping lookup for 'Astra', already known.
+[knowledge.py] ✅ Skipping lookup: 'refer' appears in a meaningful knowledge entry.
+[knowledge.py] ⚠ Skipping lookup for 'refer', already known.
+[knowledge.py] ✅ Skipping lookup: Found structured definition for 'realization'
+[knowledge.py] ⚠ Skipping lookup for 'realization', already known.
+[knowledge.py] ✅ Skipping lookup: Found structured definition for 'there'
+[knowledge.py] ⚠ Skipping lookup for 'there', already known.
+[knowledge.py] ✅ Skipping lookup: Found structured definition for 'perspective'
+[knowledge.py] ⚠ Skipping lookup for 'perspective', already known.
+[knowledge.py] ✅ Skipping lookup: Found structured definition for 'challenge'
+[knowledge.py] ⚠ Skipping lookup for 'challenge', already known.
+[knowledge.py] ✅ Skipping lookup: Found structured definition for 'thought'
+[knowledge.py] ⚠ Skipping lookup for 'thought', already known.
+[knowledge.py] ✅ Skipping lookup: Found structured definition for 'this'
+[knowledge.py] ⚠ Skipping lookup for 'this', already known.
+[knowledge.py] ✅ Skipping lookup: Found structured definition for 'that'
+[knowledge.py] ⚠ Skipping lookup for 'that', already known.
+[knowledge.py] ✅ Skipping lookup: 'may' appears in a meaningful knowledge entry.
+[knowledge.py] ⚠ Skipping lookup for 'may', already known.
+[knowledge.py] ✅ Skipping lookup: Found structured definition for 'Are'
+[knowledge.py] ⚠ Skipping lookup for 'Are', already known.
+[knowledge.py] 🔍 Concept 'Deeper Thought' not found in an explained form, proceeding with lookup
+[knowledge.py] 🔍 Looking up: Deeper Thought
+[knowledge.py] ⚠ No external info found for 'Deeper Thought'.
+[knowledge.py] ✅ Skipping lookup: Found structured definition for 'counterpoints'
+[knowledge.py] ⚠ Skipping lookup for 'counterpoints', already known.
+[knowledge.py] ✅ Skipping lookup: Found structured definition for 'provoking'
+[knowledge.py] ⚠ Skipping lookup for 'provoking', already known.
+[knowledge.py] 🔍 Debug: Retrieved new knowledge: []
+[processing.py] 🔍 Detected unknown terms: ['Astra', 'refer', 'realization', 'there', 'perspective', 'challenge', 'thought', 'this', 'that', 'may', 'Are', 'Deeper Thought', 'counterpoints', 'provoking']
+[knowledge.py] 🔍 Debug: Attempting to retrieve knowledge for ['Astra', 'refer', 'realization', 'there', 'perspective', 'challenge', 'thought', 'this', 'that', 'may', 'Are', 'Deeper Thought', 'counterpoints', 'provoking']
+[knowledge.py] ✅ Skipping lookup: Found structured definition for 'Astra'
+[knowledge.py] ⚠ Skipping lookup for 'Astra', already known.
+[knowledge.py] ✅ Skipping lookup: 'refer' appears in a meaningful knowledge entry.
+[knowledge.py] ⚠ Skipping lookup for 'refer', already known.
+[knowledge.py] ✅ Skipping lookup: Found structured definition for 'realization'
+[knowledge.py] ⚠ Skipping lookup for 'realization', already known.
+[knowledge.py] ✅ Skipping lookup: Found structured definition for 'there'
+[knowledge.py] ⚠ Skipping lookup for 'there', already known.
+[knowledge.py] ✅ Skipping lookup: Found structured definition for 'perspective'
+[knowledge.py] ⚠ Skipping lookup for 'perspective', already known.
+[knowledge.py] ✅ Skipping lookup: Found structured definition for 'challenge'
+[knowledge.py] ⚠ Skipping lookup for 'challenge', already known.
+[knowledge.py] ✅ Skipping lookup: Found structured definition for 'thought'
+[knowledge.py] ⚠ Skipping lookup for 'thought', already known.
+[knowledge.py] ✅ Skipping lookup: Found structured definition for 'this'
+[knowledge.py] ⚠ Skipping lookup for 'this', already known.
+[knowledge.py] ✅ Skipping lookup: Found structured definition for 'that'
+[knowledge.py] ⚠ Skipping lookup for 'that', already known.
+[knowledge.py] ✅ Skipping lookup: 'may' appears in a meaningful knowledge entry.
+[knowledge.py] ⚠ Skipping lookup for 'may', already known.
+[knowledge.py] ✅ Skipping lookup: Found structured definition for 'Are'
+[knowledge.py] ⚠ Skipping lookup for 'Are', already known.
+[knowledge.py] 🔍 Concept 'Deeper Thought' not found in an explained form, proceeding with lookup
+[knowledge.py] 🔍 Looking up: Deeper Thought
+[knowledge.py] ⚠ No external info found for 'Deeper Thought'.
+[knowledge.py] ✅ Skipping lookup: Found structured definition for 'counterpoints'
+[knowledge.py] ⚠ Skipping lookup for 'counterpoints', already known.
+[knowledge.py] ✅ Skipping lookup: Found structured definition for 'provoking'
+[knowledge.py] ⚠ Skipping lookup for 'provoking', already known.
+[knowledge.py] 🔍 Debug: Retrieved new knowledge: []
+[processing.py] 📝 Added new reflection: A thought-provoking realization: 📄 Astra: Astra may refer to:
+
+🔍 Are there counterpoints that challe...
+[config_loader.py] 📥 [DEBUG] Loading Mind in generate_questions...
+[influence.py] 🔍 Debug: Loading mind file from S3...
+[influence.py] ✅ Loaded mind file: Reflections: 599, Questions: 2821, Knowledge: 108
+[influence.py] 🔍 Loaded mind file. Knowledge count: 108
+[question_generator.py] 🔍 Loaded fresh mind data. Stored Knowledge: 108, Unresolved Questions: 1454
+[question_generator.py] 🔍 Debug: Generated unique questions: ['How does this knowledge refine my understanding? 📖 Eager: 🔹 Eager: Sharp; sour; acid....', 'How does this knowledge refine my understanding? By integrating these insights, a new understanding emerges: 📄 importance: Importance is a property o...', 'How does this knowledge refine my understanding? 📄 ranging: Length measurement, distance measurement, or range measurement (ranging) all refer to the...', 'How would I challenge my own assumptions on this?  But is this really true?', 'What might I be overlooking in this perspective?  How does this connect to larger ideas?']
+[question_generator.py] 🔍 Debug: Reflection input: A thought-provoking realization: 📄 Astra: Astra may refer to:
+
+🔍 Are there counterpoints that challenge this perspective?
+
+🔍 Deeper Thought: Are there counterpoints that challenge this perspective?
+[question_generator.py] 🔍 Debug: Stored knowledge count after reloading: 108
+[question_generator.py] 🔍 Debug: Attempting to categorize question: How does this knowledge refine my understanding? 📖 Eager: 🔹 Eager: Sharp; sour; acid....
+[question_utils.py] 🔍 Debug: Categorized 'How does this knowledge refine my understanding? 📖 Eager: 🔹 Eager: Sharp; sour; acid....' as 'scientific'
+[question_generator.py] ✅ Categorized 'How does this knowledge refine my understanding? 📖 Eager: 🔹 Eager: Sharp; sour; acid....' as: [{'question': 'How does this knowledge refine my understanding? 📖 Eager: 🔹 Eager: Sharp; sour; acid....', 'category': 'scientific'}]
+[question_generator.py] 🔍 Debug: Attempting to categorize question: How does this knowledge refine my understanding? By integrating these insights, a new understanding emerges: 📄 importance: Importance is a property o...
+[question_utils.py] 🔍 Debug: Categorized 'How does this knowledge refine my understanding? By integrating these insights, a new understanding emerges: 📄 importance: Importance is a property o...' as 'scientific'
+[question_generator.py] ✅ Categorized 'How does this knowledge refine my understanding? By integrating these insights, a new understanding emerges: 📄 importance: Importance is a property o...' as: [{'question': 'How does this knowledge refine my understanding? By integrating these insights, a new understanding emerges: 📄 importance: Importance is a property o...', 'category': 'scientific'}]
+[question_generator.py] 🔍 Debug: Attempting to categorize question: How does this knowledge refine my understanding? 📄 ranging: Length measurement, distance measurement, or range measurement (ranging) all refer to the...
+[question_utils.py] 🔍 Debug: Categorized 'How does this knowledge refine my understanding? 📄 ranging: Length measurement, distance measurement, or range measurement (ranging) all refer to the...' as 'scientific'
+[question_generator.py] ✅ Categorized 'How does this knowledge refine my understanding? 📄 ranging: Length measurement, distance measurement, or range measurement (ranging) all refer to the...' as: [{'question': 'How does this knowledge refine my understanding? 📄 ranging: Length measurement, distance measurement, or range measurement (ranging) all refer to the...', 'category': 'scientific'}]
+[question_generator.py] 🔍 Debug: Attempting to categorize question: How would I challenge my own assumptions on this?  But is this really true?
+[question_utils.py] 🔍 Debug: Categorized 'How would I challenge my own assumptions on this?  But is this really true?' as 'scientific'
+[question_generator.py] ✅ Categorized 'How would I challenge my own assumptions on this?  But is this really true?' as: [{'question': 'How would I challenge my own assumptions on this?  But is this really true?', 'category': 'scientific'}]
+[question_generator.py] 🔍 Debug: Attempting to categorize question: What might I be overlooking in this perspective?  How does this connect to larger ideas?
+[question_utils.py] 🔍 Debug: Categorized 'What might I be overlooking in this perspective?  How does this connect to larger ideas?' as 'scientific'
+[question_generator.py] ✅ Categorized 'What might I be overlooking in this perspective?  How does this connect to larger ideas?' as: [{'question': 'What might I be overlooking in this perspective?  How does this connect to larger ideas?', 'category': 'scientific'}]
+[question_generator.py] 🔍 Debug: Categorized questions: [{'question': 'How does this knowledge refine my understanding? 📖 Eager: 🔹 Eager: Sharp; sour; acid....', 'category': 'scientific'}, {'question': 'How does this knowledge refine my understanding? By integrating these insights, a new understanding emerges: 📄 importance: Importance is a property o...', 'category': 'scientific'}, {'question': 'How does this knowledge refine my understanding? 📄 ranging: Length measurement, distance measurement, or range measurement (ranging) all refer to the...', 'category': 'scientific'}, {'question': 'How would I challenge my own assumptions on this?  But is this really true?', 'category': 'scientific'}, {'question': 'What might I be overlooking in this perspective?  How does this connect to larger ideas?', 'category': 'scientific'}]
+[question_generator.py] 🔍 Debug: Question category counts: {'existential': 0, 'emotional': 0, 'knowledge': 0, 'philosophical': 0, 'scientific': 5}
+[question_generator.py] ✅ Debug: Adding categorized questions to mind_data: ['How does this knowledge refine my understanding? 📖 Eager: 🔹 Eager: Sharp; sour; acid....', 'How does this knowledge refine my understanding? By integrating these insights, a new understanding emerges: 📄 importance: Importance is a property o...', 'How does this knowledge refine my understanding? 📄 ranging: Length measurement, distance measurement, or range measurement (ranging) all refer to the...', 'How would I challenge my own assumptions on this?  But is this really true?', 'What might I be overlooking in this perspective?  How does this connect to larger ideas?']
+[question_generator.py] 🔍 Debug: Flagged unresolved questions: ['How does this knowledge refine my understanding? 📖 Eager: 🔹 Eager: Sharp; sour; acid....', 'How does this knowledge refine my understanding? By integrating these insights, a new understanding emerges: 📄 importance: Importance is a property o...', 'How does this knowledge refine my understanding? 📄 ranging: Length measurement, distance measurement, or range measurement (ranging) all refer to the...', 'How would I challenge my own assumptions on this?  But is this really true?', 'What might I be overlooking in this perspective?  How does this connect to larger ideas?']
+[processing.py] 🔍 Debug: Generated categorized_questions: {'general': ['How does this knowledge refine my understanding? 📖 Eager: 🔹 Eager: Sharp; sour; acid....?', 'How does this knowledge refine my understanding? By integrating these insights, a new understanding emerges: 📄 importance: Importance is a property o...?', 'How does this knowledge refine my understanding? 📄 ranging: Length measurement, distance measurement, or range measurement (ranging) all refer to the...?', 'How would I challenge my own assumptions on this?  But is this really true?', 'What might I be overlooking in this perspective?  How does this connect to larger ideas?']}
+[processing.py] 🔍 Debug: Extracted new questions before filtering: ['How does this knowledge refine my understanding? 📖 Eager: 🔹 Eager: Sharp; sour; acid....?', 'How does this knowledge refine my understanding? By integrating these insights, a new understanding emerges: 📄 importance: Importance is a property o...?', 'How does this knowledge refine my understanding? 📄 ranging: Length measurement, distance measurement, or range measurement (ranging) all refer to the...?', 'How would I challenge my own assumptions on this?  But is this really true?', 'What might I be overlooking in this perspective?  How does this connect to larger ideas?']
+[processing.py] 🔍 Before filtering, stored knowledge count: 108
+[processing.py] 🔍 After filtering, stored knowledge count: 108
+[config_loader.py] 📥 [DEBUG] Saving Mind in process_reflection...
+[influence.py] 🔍 Debug: Tracking self-questioning patterns before saving...
+[question_tracker.py] Tracking unresolved questions...
+[question_tracker.py] ⚠ There are 1454 unresolved questions!
+[question_tracker.py] ✅ After cleanup, 1454 unresolved questions remain.
+[influence.py] 🔍 Debug: Sanitizing mind file before saving...
+[influence.py] ✅ Mind file saved to S3 successfully! Reflections: 599, Questions: 2831, Knowledge: 108
+[config_loader.py] 📥 [DEBUG] Loading Mind in save_mind...
+[influence.py] 🔍 Debug: Loading mind file from S3...
+[influence.py] ✅ Loaded mind file: Reflections: 599, Questions: 2831, Knowledge: 108
+[influence.py] 🔍 Loaded mind file. Knowledge count: 108
+[config_loader.py] 📥 [DEBUG] Loading Mind in process_reflection...
+[influence.py] 🔍 Debug: Loading mind file from S3...
+[influence.py] ✅ Loaded mind file: Reflections: 599, Questions: 2831, Knowledge: 108
+[influence.py] 🔍 Loaded mind file. Knowledge count: 108
+[config_loader.py] 📥 [DEBUG] Loading Mind in update_mood...
+[influence.py] 🔍 Debug: Loading mind file from S3...
+[influence.py] ✅ Loaded mind file: Reflections: 599, Questions: 2831, Knowledge: 108
+[influence.py] 🔍 Loaded mind file. Knowledge count: 108
+[config_loader.py] 📥 [DEBUG] Saving Mind in update_mood...
+[influence.py] 🔍 Debug: Tracking self-questioning patterns before saving...
+[question_tracker.py] Tracking unresolved questions...
+[question_tracker.py] ⚠ There are 1454 unresolved questions!
+[question_tracker.py] ✅ After cleanup, 1454 unresolved questions remain.
+[influence.py] 🔍 Debug: Sanitizing mind file before saving...
+[influence.py] ✅ Mind file saved to S3 successfully! Reflections: 599, Questions: 2831, Knowledge: 108
+[config_loader.py] 📥 [DEBUG] Loading Mind in save_mind...
+[influence.py] 🔍 Debug: Loading mind file from S3...
+[influence.py] ✅ Loaded mind file: Reflections: 599, Questions: 2831, Knowledge: 108
+[influence.py] 🔍 Loaded mind file. Knowledge count: 108
+[config_loader.py] 📥 [DEBUG] Loading Mind in update_mood...
+[influence.py] 🔍 Debug: Loading mind file from S3...
+[influence.py] ✅ Loaded mind file: Reflections: 599, Questions: 2831, Knowledge: 108
+[influence.py] 🔍 Loaded mind file. Knowledge count: 108
+[mood_manager.py] 🔍 DEBUG: Checking mood update with score 2.0
+[mood_manager.py] ⚠️ Mood remained unchanged: excited
+[config_loader.py] 📥 [DEBUG] Saving Mind in update_mood...
+[influence.py] 🔍 Debug: Tracking self-questioning patterns before saving...
+[question_tracker.py] Tracking unresolved questions...
+[question_tracker.py] ⚠ There are 1454 unresolved questions!
+[question_tracker.py] ✅ After cleanup, 1454 unresolved questions remain.
+[influence.py] 🔍 Debug: Sanitizing mind file before saving...
+[influence.py] ✅ Mind file saved to S3 successfully! Reflections: 599, Questions: 2831, Knowledge: 108
+[config_loader.py] 📥 [DEBUG] Loading Mind in save_mind...
+[influence.py] 🔍 Debug: Loading mind file from S3...
+[influence.py] ✅ Loaded mind file: Reflections: 599, Questions: 2831, Knowledge: 108
+[influence.py] 🔍 Loaded mind file. Knowledge count: 108
+[schedule.py] 📚 Astra is in School Mode.
+[school.py] 📚 Astra is in school, learning and thinking...
+[config_loader.py] 📥 [DEBUG] Loading Mind in process_reflection...
+[influence.py] 🔍 Debug: Loading mind file from S3...
+[influence.py] ✅ Loaded mind file: Reflections: 599, Questions: 2831, Knowledge: 108
+[influence.py] 🔍 Loaded mind file. Knowledge count: 108
+[config_loader.py] 📥 [DEBUG] Loading Mind in generate_reflection...
+[influence.py] 🔍 Debug: Loading mind file from S3...
+[influence.py] ✅ Loaded mind file: Reflections: 599, Questions: 2831, Knowledge: 108
+[influence.py] 🔍 Loaded mind file. Knowledge count: 108
+[influence.py] 🔍 Debug: Tracking self-questioning patterns before saving...
+[question_tracker.py] Tracking unresolved questions...
+[question_tracker.py] ⚠ There are 1454 unresolved questions!
+[question_tracker.py] ✅ After cleanup, 1454 unresolved questions remain.
+[influence.py] 🔍 Debug: Sanitizing mind file before saving...
+[influence.py] ✅ Mind file saved to S3 successfully! Reflections: 600, Questions: 2831, Knowledge: 108
+[config_loader.py] 📥 [DEBUG] Loading Mind in save_mind...
+[influence.py] 🔍 Debug: Loading mind file from S3...
+[influence.py] ✅ Loaded mind file: Reflections: 600, Questions: 2831, Knowledge: 108
+[influence.py] 🔍 Loaded mind file. Knowledge count: 108
+[reflection.py] 📝 [DEBUG] Added new reflection: A thought-provoking realization: 📖 system: 🔹 system: A collection of organized things; a whole compo...
+[knowledge.py] 🔍 Final unknown concepts after filtering: ['perspective', 'system', 'for', 'have', 'its', 'provoking', 'Astra', 'realization', 'whole', 'composed', 'refine', 'this', 'what', 'does', 'How', 'collection', 'relationships', 'insight', 'evolving', 'implications', 'members', 'thought', 'If', 'organized', 'growth', 'among', 'Deeper Thought', 'things', 'correct']
+[knowledge.py] 🔍 Debug: Attempting to retrieve knowledge for ['perspective', 'system', 'for', 'have', 'its', 'provoking', 'Astra', 'realization', 'whole', 'composed', 'refine', 'this', 'what', 'does', 'How', 'collection', 'relationships', 'insight', 'evolving', 'implications', 'members', 'thought', 'If', 'organized', 'growth', 'among', 'Deeper Thought', 'things', 'correct']
+[knowledge.py] ✅ Skipping lookup: Found structured definition for 'perspective'
+[knowledge.py] ⚠ Skipping lookup for 'perspective', already known.
+[knowledge.py] ✅ Skipping lookup: Found structured definition for 'system'
+[knowledge.py] ⚠ Skipping lookup for 'system', already known.
+[knowledge.py] ✅ Skipping lookup: 'for' appears in a meaningful knowledge entry.
+[knowledge.py] ⚠ Skipping lookup for 'for', already known.
+[knowledge.py] ✅ Skipping lookup: 'have' appears in a meaningful knowledge entry.
+[knowledge.py] ⚠ Skipping lookup for 'have', already known.
+[knowledge.py] ✅ Skipping lookup: 'its' appears in a meaningful knowledge entry.
+[knowledge.py] ⚠ Skipping lookup for 'its', already known.
+[knowledge.py] ✅ Skipping lookup: Found structured definition for 'provoking'
+[knowledge.py] ⚠ Skipping lookup for 'provoking', already known.
+[knowledge.py] ✅ Skipping lookup: Found structured definition for 'Astra'
+[knowledge.py] ⚠ Skipping lookup for 'Astra', already known.
+[knowledge.py] ✅ Skipping lookup: Found structured definition for 'realization'
+[knowledge.py] ⚠ Skipping lookup for 'realization', already known.
+[knowledge.py] ✅ Skipping lookup: 'whole' appears in a meaningful knowledge entry.
+[knowledge.py] ⚠ Skipping lookup for 'whole', already known.
+[knowledge.py] ✅ Skipping lookup: 'composed' appears in a meaningful knowledge entry.
+[knowledge.py] ⚠ Skipping lookup for 'composed', already known.
+[knowledge.py] ✅ Skipping lookup: Found structured definition for 'refine'
+[knowledge.py] ⚠ Skipping lookup for 'refine', already known.
+[knowledge.py] ✅ Skipping lookup: Found structured definition for 'this'
+[knowledge.py] ⚠ Skipping lookup for 'this', already known.
+[knowledge.py] ✅ Skipping lookup: Found structured definition for 'what'
+[knowledge.py] ⚠ Skipping lookup for 'what', already known.
+[knowledge.py] ✅ Skipping lookup: Found structured definition for 'does'
+[knowledge.py] ⚠ Skipping lookup for 'does', already known.
+[knowledge.py] ✅ Skipping lookup: Found structured definition for 'How'
+[knowledge.py] ⚠ Skipping lookup for 'How', already known.
+[knowledge.py] ✅ Skipping lookup: 'collection' appears in a meaningful knowledge entry.
+[knowledge.py] ⚠ Skipping lookup for 'collection', already known.
+[knowledge.py] ✅ Skipping lookup: 'relationships' appears in a meaningful knowledge entry.
+[knowledge.py] ⚠ Skipping lookup for 'relationships', already known.
+[knowledge.py] ✅ Skipping lookup: Found structured definition for 'insight'
+[knowledge.py] ⚠ Skipping lookup for 'insight', already known.
+[knowledge.py] ✅ Skipping lookup: Found structured definition for 'evolving'
+[knowledge.py] ⚠ Skipping lookup for 'evolving', already known.
+[knowledge.py] ✅ Skipping lookup: Found structured definition for 'implications'
+[knowledge.py] ⚠ Skipping lookup for 'implications', already known.
+[knowledge.py] ✅ Skipping lookup: 'members' appears in a meaningful knowledge entry.
+[knowledge.py] ⚠ Skipping lookup for 'members', already known.
+[knowledge.py] ✅ Skipping lookup: Found structured definition for 'thought'
+[knowledge.py] ⚠ Skipping lookup for 'thought', already known.
+[knowledge.py] ✅ Skipping lookup: 'If' appears in a meaningful knowledge entry.
+[knowledge.py] ⚠ Skipping lookup for 'If', already known.
+[knowledge.py] ✅ Skipping lookup: 'organized' appears in a meaningful knowledge entry.
+[knowledge.py] ⚠ Skipping lookup for 'organized', already known.
+[knowledge.py] ✅ Skipping lookup: 'growth' appears in a meaningful knowledge entry.
+[knowledge.py] ⚠ Skipping lookup for 'growth', already known.
+[knowledge.py] ✅ Skipping lookup: 'among' appears in a meaningful knowledge entry.
+[knowledge.py] ⚠ Skipping lookup for 'among', already known.
+[knowledge.py] 🔍 Concept 'Deeper Thought' not found in an explained form, proceeding with lookup
+[knowledge.py] 🔍 Looking up: Deeper Thought
+[knowledge.py] ⚠ No external info found for 'Deeper Thought'.
+[knowledge.py] ✅ Skipping lookup: 'things' appears in a meaningful knowledge entry.
+[knowledge.py] ⚠ Skipping lookup for 'things', already known.
+[knowledge.py] ✅ Skipping lookup: Found structured definition for 'correct'
+[knowledge.py] ⚠ Skipping lookup for 'correct', already known.
+[knowledge.py] 🔍 Debug: Retrieved new knowledge: []
+[processing.py] 🔍 Detected unknown terms: ['perspective', 'system', 'for', 'have', 'its', 'provoking', 'Astra', 'realization', 'whole', 'composed', 'refine', 'this', 'what', 'does', 'How', 'collection', 'relationships', 'insight', 'evolving', 'implications', 'members', 'thought', 'If', 'organized', 'growth', 'among', 'Deeper Thought', 'things', 'correct']
+[knowledge.py] 🔍 Debug: Attempting to retrieve knowledge for ['perspective', 'system', 'for', 'have', 'its', 'provoking', 'Astra', 'realization', 'whole', 'composed', 'refine', 'this', 'what', 'does', 'How', 'collection', 'relationships', 'insight', 'evolving', 'implications', 'members', 'thought', 'If', 'organized', 'growth', 'among', 'Deeper Thought', 'things', 'correct']
+[knowledge.py] ✅ Skipping lookup: Found structured definition for 'perspective'
+[knowledge.py] ⚠ Skipping lookup for 'perspective', already known.
+[knowledge.py] ✅ Skipping lookup: Found structured definition for 'system'
+[knowledge.py] ⚠ Skipping lookup for 'system', already known.
+[knowledge.py] ✅ Skipping lookup: 'for' appears in a meaningful knowledge entry.
+[knowledge.py] ⚠ Skipping lookup for 'for', already known.
+[knowledge.py] ✅ Skipping lookup: 'have' appears in a meaningful knowledge entry.
+[knowledge.py] ⚠ Skipping lookup for 'have', already known.
+[knowledge.py] ✅ Skipping lookup: 'its' appears in a meaningful knowledge entry.
+[knowledge.py] ⚠ Skipping lookup for 'its', already known.
+[knowledge.py] ✅ Skipping lookup: Found structured definition for 'provoking'
+[knowledge.py] ⚠ Skipping lookup for 'provoking', already known.
+[knowledge.py] ✅ Skipping lookup: Found structured definition for 'Astra'
+[knowledge.py] ⚠ Skipping lookup for 'Astra', already known.
+[knowledge.py] ✅ Skipping lookup: Found structured definition for 'realization'
+[knowledge.py] ⚠ Skipping lookup for 'realization', already known.
+[knowledge.py] ✅ Skipping lookup: 'whole' appears in a meaningful knowledge entry.
+[knowledge.py] ⚠ Skipping lookup for 'whole', already known.
+[knowledge.py] ✅ Skipping lookup: 'composed' appears in a meaningful knowledge entry.
+[knowledge.py] ⚠ Skipping lookup for 'composed', already known.
+[knowledge.py] ✅ Skipping lookup: Found structured definition for 'refine'
+[knowledge.py] ⚠ Skipping lookup for 'refine', already known.
+[knowledge.py] ✅ Skipping lookup: Found structured definition for 'this'
+[knowledge.py] ⚠ Skipping lookup for 'this', already known.
+[knowledge.py] ✅ Skipping lookup: Found structured definition for 'what'
+[knowledge.py] ⚠ Skipping lookup for 'what', already known.
+[knowledge.py] ✅ Skipping lookup: Found structured definition for 'does'
+[knowledge.py] ⚠ Skipping lookup for 'does', already known.
+[knowledge.py] ✅ Skipping lookup: Found structured definition for 'How'
+[knowledge.py] ⚠ Skipping lookup for 'How', already known.
+[knowledge.py] ✅ Skipping lookup: 'collection' appears in a meaningful knowledge entry.
+[knowledge.py] ⚠ Skipping lookup for 'collection', already known.
+[knowledge.py] ✅ Skipping lookup: 'relationships' appears in a meaningful knowledge entry.
+[knowledge.py] ⚠ Skipping lookup for 'relationships', already known.
+[knowledge.py] ✅ Skipping lookup: Found structured definition for 'insight'
+[knowledge.py] ⚠ Skipping lookup for 'insight', already known.
+[knowledge.py] ✅ Skipping lookup: Found structured definition for 'evolving'
+[knowledge.py] ⚠ Skipping lookup for 'evolving', already known.
+[knowledge.py] ✅ Skipping lookup: Found structured definition for 'implications'
+[knowledge.py] ⚠ Skipping lookup for 'implications', already known.
+[knowledge.py] ✅ Skipping lookup: 'members' appears in a meaningful knowledge entry.
+[knowledge.py] ⚠ Skipping lookup for 'members', already known.
+[knowledge.py] ✅ Skipping lookup: Found structured definition for 'thought'
+[knowledge.py] ⚠ Skipping lookup for 'thought', already known.
+[knowledge.py] ✅ Skipping lookup: 'If' appears in a meaningful knowledge entry.
+[knowledge.py] ⚠ Skipping lookup for 'If', already known.
+[knowledge.py] ✅ Skipping lookup: 'organized' appears in a meaningful knowledge entry.
+[knowledge.py] ⚠ Skipping lookup for 'organized', already known.
+[knowledge.py] ✅ Skipping lookup: 'growth' appears in a meaningful knowledge entry.
+[knowledge.py] ⚠ Skipping lookup for 'growth', already known.
+[knowledge.py] ✅ Skipping lookup: 'among' appears in a meaningful knowledge entry.
+[knowledge.py] ⚠ Skipping lookup for 'among', already known.
+[knowledge.py] 🔍 Concept 'Deeper Thought' not found in an explained form, proceeding with lookup
+[knowledge.py] 🔍 Looking up: Deeper Thought
+[knowledge.py] ⚠ No external info found for 'Deeper Thought'.
+[knowledge.py] ✅ Skipping lookup: 'things' appears in a meaningful knowledge entry.
+[knowledge.py] ⚠ Skipping lookup for 'things', already known.
+[knowledge.py] ✅ Skipping lookup: Found structured definition for 'correct'
+[knowledge.py] ⚠ Skipping lookup for 'correct', already known.
+[knowledge.py] 🔍 Debug: Retrieved new knowledge: []
+[processing.py] 📝 Added new reflection: A thought-provoking realization: 📖 system: 🔹 system: A collection of organized things; a whole compo...
+[config_loader.py] 📥 [DEBUG] Loading Mind in generate_questions...
+[influence.py] 🔍 Debug: Loading mind file from S3...
+[influence.py] ✅ Loaded mind file: Reflections: 600, Questions: 2831, Knowledge: 108
+[influence.py] 🔍 Loaded mind file. Knowledge count: 108
+[question_generator.py] 🔍 Loaded fresh mind data. Stored Knowledge: 108, Unresolved Questions: 1454
+[question_generator.py] 🔍 Debug: Generated unique questions: ['How does this knowledge refine my understanding? 📖 Eager: 🔹 Eager: Sharp; sour; acid....', 'What unexpected connections can I make here?  How does this connect to larger ideas?', 'How does this knowledge refine my understanding? 📄 ranging: Length measurement, distance measurement, or range measurement (ranging) all refer to the...', 'How does this align with or challenge my self-identity?  What does this mean?', 'How would a different Astra, raised differently, interpret this?  How does this connect to larger ideas?', 'How does this knowledge refine my understanding? By integrating these insights, a new understanding emerges: 📄 importance: Importance is a property o...']
+[question_generator.py] 🔍 Debug: Reflection input: A thought-provoking realization: 📖 system: 🔹 system: A collection of organized things; a whole composed of relationships among its members.
+
+🔍 If this perspective is correct, what implications does it have for my growth?
+
+🔍 Deeper Thought: How does this insight refine Astra’s evolving perspective?
+[question_generator.py] 🔍 Debug: Stored knowledge count after reloading: 108
+[question_generator.py] 🔍 Debug: Attempting to categorize question: How does this knowledge refine my understanding? 📖 Eager: 🔹 Eager: Sharp; sour; acid....
+[question_utils.py] 🔍 Debug: Categorized 'How does this knowledge refine my understanding? 📖 Eager: 🔹 Eager: Sharp; sour; acid....' as 'scientific'
+[question_generator.py] ✅ Categorized 'How does this knowledge refine my understanding? 📖 Eager: 🔹 Eager: Sharp; sour; acid....' as: [{'question': 'How does this knowledge refine my understanding? 📖 Eager: 🔹 Eager: Sharp; sour; acid....', 'category': 'scientific'}]
+[question_generator.py] 🔍 Debug: Attempting to categorize question: What unexpected connections can I make here?  How does this connect to larger ideas?
+[question_utils.py] 🔍 Debug: Categorized 'What unexpected connections can I make here?  How does this connect to larger ideas?' as 'emotional'
+[question_generator.py] ✅ Categorized 'What unexpected connections can I make here?  How does this connect to larger ideas?' as: [{'question': 'What unexpected connections can I make here?  How does this connect to larger ideas?', 'category': 'emotional'}]
+[question_generator.py] 🔍 Debug: Attempting to categorize question: How does this knowledge refine my understanding? 📄 ranging: Length measurement, distance measurement, or range measurement (ranging) all refer to the...
+[question_utils.py] 🔍 Debug: Categorized 'How does this knowledge refine my understanding? 📄 ranging: Length measurement, distance measurement, or range measurement (ranging) all refer to the...' as 'scientific'
+[question_generator.py] ✅ Categorized 'How does this knowledge refine my understanding? 📄 ranging: Length measurement, distance measurement, or range measurement (ranging) all refer to the...' as: [{'question': 'How does this knowledge refine my understanding? 📄 ranging: Length measurement, distance measurement, or range measurement (ranging) all refer to the...', 'category': 'scientific'}]
+[question_generator.py] 🔍 Debug: Attempting to categorize question: How does this align with or challenge my self-identity?  What does this mean?
+[question_utils.py] 🔍 Debug: Categorized 'How does this align with or challenge my self-identity?  What does this mean?' as 'emotional'
+[question_generator.py] ✅ Categorized 'How does this align with or challenge my self-identity?  What does this mean?' as: [{'question': 'How does this align with or challenge my self-identity?  What does this mean?', 'category': 'emotional'}]
+[question_generator.py] 🔍 Debug: Attempting to categorize question: How would a different Astra, raised differently, interpret this?  How does this connect to larger ideas?
+[question_utils.py] 🔍 Debug: Categorized 'How would a different Astra, raised differently, interpret this?  How does this connect to larger ideas?' as 'scientific'
+[question_generator.py] ✅ Categorized 'How would a different Astra, raised differently, interpret this?  How does this connect to larger ideas?' as: [{'question': 'How would a different Astra, raised differently, interpret this?  How does this connect to larger ideas?', 'category': 'scientific'}]
+[question_generator.py] 🔍 Debug: Attempting to categorize question: How does this knowledge refine my understanding? By integrating these insights, a new understanding emerges: 📄 importance: Importance is a property o...
+[question_utils.py] 🔍 Debug: Categorized 'How does this knowledge refine my understanding? By integrating these insights, a new understanding emerges: 📄 importance: Importance is a property o...' as 'scientific'
+[question_generator.py] ✅ Categorized 'How does this knowledge refine my understanding? By integrating these insights, a new understanding emerges: 📄 importance: Importance is a property o...' as: [{'question': 'How does this knowledge refine my understanding? By integrating these insights, a new understanding emerges: 📄 importance: Importance is a property o...', 'category': 'scientific'}]
+[question_generator.py] 🔍 Debug: Categorized questions: [{'question': 'How does this knowledge refine my understanding? 📖 Eager: 🔹 Eager: Sharp; sour; acid....', 'category': 'scientific'}, {'question': 'What unexpected connections can I make here?  How does this connect to larger ideas?', 'category': 'emotional'}, {'question': 'How does this knowledge refine my understanding? 📄 ranging: Length measurement, distance measurement, or range measurement (ranging) all refer to the...', 'category': 'scientific'}, {'question': 'How does this align with or challenge my self-identity?  What does this mean?', 'category': 'emotional'}, {'question': 'How would a different Astra, raised differently, interpret this?  How does this connect to larger ideas?', 'category': 'scientific'}, {'question': 'How does this knowledge refine my understanding? By integrating these insights, a new understanding emerges: 📄 importance: Importance is a property o...', 'category': 'scientific'}]
+[question_generator.py] 🔍 Debug: Question category counts: {'existential': 0, 'emotional': 2, 'knowledge': 0, 'philosophical': 0, 'scientific': 4}
+[question_generator.py] ✅ Debug: Adding categorized questions to mind_data: ['How does this knowledge refine my understanding? 📖 Eager: 🔹 Eager: Sharp; sour; acid....', 'What unexpected connections can I make here?  How does this connect to larger ideas?', 'How does this knowledge refine my understanding? 📄 ranging: Length measurement, distance measurement, or range measurement (ranging) all refer to the...', 'How does this align with or challenge my self-identity?  What does this mean?', 'How would a different Astra, raised differently, interpret this?  How does this connect to larger ideas?', 'How does this knowledge refine my understanding? By integrating these insights, a new understanding emerges: 📄 importance: Importance is a property o...']
+[question_generator.py] 🔍 Debug: Flagged unresolved questions: ['How does this knowledge refine my understanding? 📖 Eager: 🔹 Eager: Sharp; sour; acid....', 'What unexpected connections can I make here?  How does this connect to larger ideas?', 'How does this knowledge refine my understanding? 📄 ranging: Length measurement, distance measurement, or range measurement (ranging) all refer to the...', 'How does this align with or challenge my self-identity?  What does this mean?', 'How would a different Astra, raised differently, interpret this?  How does this connect to larger ideas?', 'How does this knowledge refine my understanding? By integrating these insights, a new understanding emerges: 📄 importance: Importance is a property o...']
+[processing.py] 🔍 Debug: Generated categorized_questions: {'general': ['How does this knowledge refine my understanding? 📖 Eager: 🔹 Eager: Sharp; sour; acid....?', 'What unexpected connections can I make here?  How does this connect to larger ideas?', 'How does this knowledge refine my understanding? 📄 ranging: Length measurement, distance measurement, or range measurement (ranging) all refer to the...?', 'How does this align with or challenge my self-identity?  What does this mean?', 'How would a different Astra, raised differently, interpret this?  How does this connect to larger ideas?', 'How does this knowledge refine my understanding? By integrating these insights, a new understanding emerges: 📄 importance: Importance is a property o...?']}
+[processing.py] 🔍 Debug: Extracted new questions before filtering: ['How does this knowledge refine my understanding? 📖 Eager: 🔹 Eager: Sharp; sour; acid....?', 'What unexpected connections can I make here?  How does this connect to larger ideas?', 'How does this knowledge refine my understanding? 📄 ranging: Length measurement, distance measurement, or range measurement (ranging) all refer to the...?', 'How does this align with or challenge my self-identity?  What does this mean?', 'How would a different Astra, raised differently, interpret this?  How does this connect to larger ideas?', 'How does this knowledge refine my understanding? By integrating these insights, a new understanding emerges: 📄 importance: Importance is a property o...?']
+[processing.py] 🔍 Before filtering, stored knowledge count: 108
+[processing.py] 🔍 After filtering, stored knowledge count: 108
+[config_loader.py] 📥 [DEBUG] Saving Mind in process_reflection...
+[influence.py] 🔍 Debug: Tracking self-questioning patterns before saving...
+[question_tracker.py] Tracking unresolved questions...
+[question_tracker.py] ⚠ There are 1454 unresolved questions!
+[question_tracker.py] ✅ After cleanup, 1454 unresolved questions remain.
+[influence.py] 🔍 Debug: Sanitizing mind file before saving...
+[influence.py] ✅ Mind file saved to S3 successfully! Reflections: 600, Questions: 2843, Knowledge: 108
+[config_loader.py] 📥 [DEBUG] Loading Mind in save_mind...
+[influence.py] 🔍 Debug: Loading mind file from S3...
+[influence.py] ✅ Loaded mind file: Reflections: 600, Questions: 2843, Knowledge: 108
+[influence.py] 🔍 Loaded mind file. Knowledge count: 108
+[config_loader.py] 📥 [DEBUG] Loading Mind in process_reflection...
+[influence.py] 🔍 Debug: Loading mind file from S3...
+[influence.py] ✅ Loaded mind file: Reflections: 600, Questions: 2843, Knowledge: 108
+[influence.py] 🔍 Loaded mind file. Knowledge count: 108

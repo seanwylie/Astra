@@ -5,6 +5,7 @@ from astra_core.config_loader import load_config
 from astra_core.questions.question_utils import generate_category_embeddings, categorize_question
 from astra_core.questions.question_flagger import flag_unresolved_question
 from astra_core.knowledge_manager import load_mind  # Ensure this import is correct
+from astra_core.config_loader import debug_log
 
 # Load configuration files
 general_config = load_config("general_config")
@@ -15,6 +16,7 @@ def generate_questions(reflection, mind_data):
     """Generates structured questions based on Astra's reflection and existing knowledge, ensuring variety and avoiding redundancy."""
 
     # 🔥 Explicitly load the latest mind data before manipulating it
+    debug_log("Loading")  
     fresh_mind_data = load_mind()  # Ensure the latest knowledge state is retrieved
     stored_knowledge = fresh_mind_data.get("stored_knowledge", [])
     unresolved_questions = fresh_mind_data.get("unresolved_questions", [])

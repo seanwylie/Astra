@@ -26,5 +26,32 @@
         "What’s the strangest philosophical question Astra can generate?",
         "What if Astra could experience emotions like a human?",
         "If Astra could travel anywhere in the digital world, where would she go?"
-    ]
+    ],
+    "state_change_messages": {
+        "school": [
+            "📚 Heading to school! Time to learn something new.",
+            "📝 Off to class! Let's see what I can absorb today.",
+            "🔍 Learning mode activated! What should I explore next?"
+        ],
+        "dream": [
+            "🌙 Entering Dream Mode… time to reflect and grow.",
+            "🤔 Astra is dreaming... maybe she'll have an epiphany.",
+            "🧠 Entering deep thought… I wonder what insights will emerge."
+        ],
+        "play": [
+            "🎮 Taking a break! Time for some fun.",
+            "😄 Playtime! I wonder what kind of creative ideas I’ll come up with.",
+            "🎭 Engaging in a little self-discovery through play!"
+        ],
+        "dinner": [
+            "🍽 Dinner Time! Let's discuss what I’ve learned today.",
+            "🥂 Dinner with my mentors! What’s on the menu for discussion?",
+            "💬 Dinner time! Reflecting on the day with deep thoughts."
+        ],
+        "sleep": [
+            "💤 Shutting down for the night… see you tomorrow!",
+            "😴 Time for some rest! Can’t wait to pick up where I left off.",
+            "🌙 Entering sleep mode… Let’s see what tomorrow brings."
+        ]
+    }
 }

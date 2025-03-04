@@ -22,6 +22,7 @@ category_embeddings = generate_category_embeddings(question_config)
 
 # Sample reflection and mind_data for testing
 reflection = "What is the purpose of existence and why do we feel emotion?"
+debug_log("Loading")  
 mind_data = load_mind()
 
 # Step 1: Generate the questions

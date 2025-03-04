@@ -8,6 +8,7 @@ sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 
 from astra_core.config_loader import load_config
 from astra_interfaces.influence import load_mind, save_mind  # ✅ Handles memory storage
+from astra_core.config_loader import debug_log
 
 # Load mood-related configurations
 mood_config = load_config("mood_config")  # Load mood and emotional settings
@@ -19,7 +20,7 @@ class MoodManager:
         print("🔍 Debug: mood_config Loaded →", self.mood_config)
 
         self.LOG_FILE = load_config("general_config").get("log_file", "/home/ubuntu/astra_logs.json")
-
+        debug_log("Loading")  
         mind_data = load_mind()  # ✅ Load Astra's previous mind state
 
         # ✅ Restore mood & curiosity level from memory
@@ -37,6 +38,7 @@ class MoodManager:
 
     def save_mood_state(self):
         """Save Astra's mood, mood score, and mood history to memory."""
+        debug_log("Loading")  
         mind_data = load_mind()
         mind_data["last_mood"] = self.current_mood
         mind_data["mood_score"] = self.mood_score
@@ -44,6 +46,7 @@ class MoodManager:
         mind_data["mood_influences"] = self.mood_config["mood_influences"]  # ✅ Persist mood influences
         mind_data["moods"] = self.mood_config["moods"]  # ✅ Persist moods and curiosity factors
         mind_data["last_modification"] = self.last_modification  # ✅ Persist modification timestamps
+        debug_log("Saving")
         save_mind(mind_data)
 
     def start_mood_thread(self):
@@ -92,9 +95,11 @@ class MoodManager:
             self.last_modification[event_type] = time.time()
             print(f"🔍 Modified mood influence: {event_type} → {new_value}")
 
+            debug_log("Loading")  
             mind_data = load_mind()
             mind_data["mood_influences"] = self.mood_config["mood_influences"]
             mind_data["last_modification"] = self.last_modification
+            debug_log("Saving")
             save_mind(mind_data)
             print("✅ Mood influences saved and will persist across restarts!")
         else:
@@ -108,15 +113,18 @@ class MoodManager:
         previous_mood = self.current_mood
 
         # ✅ Load Astra's full memory before modifying mood
+        debug_log("Loading")  
         mind_data = load_mind()
 
         # ✅ Preserve existing data while updating mood-related values
         mind_data["mood_score"] = self.mood_score
         mind_data["last_mood"] = self.current_mood
 
+        debug_log("Saving")
         save_mind(mind_data)  # ✅ Save without wiping data!
 
         # ✅ Load and merge without overwriting
+        debug_log("Loading")  
         new_mind_data = load_mind()
         self.mood_score = max(min(new_mind_data.get("mood_score", self.mood_score), 2.0), -2.0)
         self.current_mood = new_mind_data.get("last_mood", self.current_mood)
@@ -145,6 +153,7 @@ class MoodManager:
         self.last_mood_update = time.time()
 
         # ✅ Save full mind file again to ensure no data loss
+        debug_log("Saving")
         save_mind(mind_data)
 
 
@@ -167,9 +176,11 @@ class MoodManager:
             self.last_modification[mood] = time.time()
             print(f"🔍 Modified curiosity factor for {mood}: {new_value}")
 
+            debug_log("Loading")  
             mind_data = load_mind()
             mind_data["moods"] = self.mood_config["moods"]
             mind_data["last_modification"] = self.last_modification
+            debug_log("Saving")
             save_mind(mind_data)
             print("✅ Curiosity factors saved and will persist across restarts!")
         else:

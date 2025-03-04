@@ -6,6 +6,7 @@ import boto3
 from datetime import datetime, timedelta
 from astra_interfaces.influence import load_mind, save_mind
 from astra_core.config_loader import load_config
+from astra_core.config_loader import debug_log
 
 # Load general configuration
 general_config = load_config("general_config")
@@ -176,6 +177,7 @@ def check_health(mind_data):
 
 def check_up():
     """Runs Astra’s checkup and uploads a snapshot."""
+    debug_log("Loading")  
     mind_data = load_mind()
     logs = load_logs()
 
