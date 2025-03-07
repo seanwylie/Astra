@@ -1,10 +1,9 @@
 import random
 import os
 import sys
-import asyncio
-from fuzzywuzzy import fuzz
+from fuzzywuzzy import fuzz  # ✅ Re-added missing fuzzy matching import
 
-# ✅ Ensure Python knows where to find Astra’s core modules
+# ✅ Ensure Python knows where to find `astra_schedule`
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 
 from astra_core.knowledge import knowledge_manager
@@ -12,10 +11,11 @@ from astra_core.reflection import generate_reflection
 from astra_core.questions.question_manager import generate_questions
 from astra_core.expansion import refine_knowledge
 from astra_interfaces.influence import load_mind, save_mind
-from astra_core.config_loader import load_config
+from astra_core.config_loader import load_config  # ✅ Load configs dynamically
 from astra_core.config_loader import debug_log
 
-general_config = load_config("general_config")
+
+general_config = load_config("general_config")  # ✅ Load general settings
 
 
 # ✅ Function: Ensure Mind Structure
@@ -26,55 +26,66 @@ def validate_mind_structure(mind_data):
     mind_data.setdefault("stored_knowledge", [])
 
 
-async def process_reflection():
-    """Generate, refine, and deepen Astra's reflections while ensuring responsiveness."""
+def process_reflection():
+    """Generate, refine, and deepen Astra's reflections while ensuring questions are generated & answered."""
     debug_log("Loading")  
     mind_data = load_mind()
     validate_mind_structure(mind_data)
 
-    # ✅ Limit reflection processing
-    recent_reflections = " ".join(mind_data["self_reflections"][-3:]) if mind_data["self_reflections"] else ""
-    if len(recent_reflections) > 2500:
-        recent_reflections = recent_reflections[:2500]
-
-    # ✅ Extract unknown terms
-    unknown_terms = knowledge_manager.extract_unknown_terms(recent_reflections)
+    # ✅ Extract unknown terms first
+    unknown_terms = knowledge_manager.extract_unknown_terms(mind_data["self_reflections"])
     if unknown_terms:
+        print(f"🔍 Detected unknown terms: {unknown_terms}")
         found_new_knowledge = knowledge_manager.retrieve_external_knowledge(unknown_terms)
+
         if found_new_knowledge:
+            print(f"✅ New knowledge added from external lookup: {found_new_knowledge}")
+
+            # ✅ **Store knowledge immediately before anything else**
             for knowledge in found_new_knowledge:
                 if knowledge not in mind_data["stored_knowledge"]:
                     mind_data["stored_knowledge"].append(knowledge)
-            save_mind(mind_data)
 
-            # ✅ Reload mind
+            debug_log("Saving")
+            save_mind(mind_data)  # 🔥 Save before continuing
+
+            # ✅ **Force Reload and Verify**
             reloaded_mind_data = load_mind()
             missing_knowledge = set(found_new_knowledge) - set(reloaded_mind_data["stored_knowledge"])
             if missing_knowledge:
+                print(f"🚨 WARNING: Some knowledge was lost after save! Restoring: {missing_knowledge}")
                 mind_data["stored_knowledge"].extend(missing_knowledge)
-                save_mind(mind_data)
+                save_mind(mind_data)  # 🔥 Force re-save
 
+    # ✅ Generate & expand reflection AFTER knowledge is stored
     new_reflection = generate_reflection(mind_data["stored_knowledge"], mind_data["self_reflections"])
-
-    # 🔍 Debug: Check what we are returning
-    if isinstance(new_reflection, dict):
-        print(f"🚨 process_reflection() is returning a dict! {new_reflection}")
-    elif not isinstance(new_reflection, str):
-        print(f"🚨 process_reflection() returned an unexpected type: {type(new_reflection)}")
-
-    # ✅ Ensure return is **always** a string
-    if not new_reflection or not isinstance(new_reflection, str) or len(new_reflection.strip()) < 10:
-        return "🤖 I'm still thinking... Try again in a moment!"
-
     expanded_reflection = expand_reflection(new_reflection)
 
+    # ✅ Store reflection if it's new
     if expanded_reflection not in mind_data["self_reflections"]:
         mind_data["self_reflections"].append(expanded_reflection)
+        print(f"📝 Added new reflection: {expanded_reflection[:100]}...")
 
+    # ✅ Generate new questions
+    categorized_questions, category_counts = generate_questions(expanded_reflection, mind_data)
+    new_questions = []
+    for category, questions in categorized_questions.items():
+        if isinstance(questions, list):
+            new_questions.extend(questions)
+    mind_data["self_questions"].extend(new_questions)
+
+    # ✅ Merge and filter knowledge
+    refined_idea = refine_knowledge(mind_data["stored_knowledge"], mind_data)
+    if refined_idea and refined_idea not in mind_data["stored_knowledge"]:
+        mind_data["stored_knowledge"].append(refined_idea)
+        print(f"🔹 Refined knowledge added: {refined_idea[:150]}...")
+
+    filtered_knowledge = filter_knowledge(mind_data["stored_knowledge"])
+    mind_data["stored_knowledge"] = list(set(mind_data["stored_knowledge"]) | set(filtered_knowledge))
+
+    # ✅ Save again after all processing
+    debug_log("Saving")
     save_mind(mind_data)
-
-    print(f"🔍 Debug: process_reflection() final return type: {type(expanded_reflection)}")
-    return str(expanded_reflection)  # ✅ Ensure we **always** return a string
 
 
 
@@ -93,36 +104,38 @@ def expand_reflection(reflection):
 
     return expanded_reflection
 
-
 def filter_knowledge(knowledge_list):
     """Ensure Astra keeps valuable knowledge while avoiding excessive duplicates."""
     filtered_knowledge = []
     seen = set()
 
     for entry in knowledge_list:
-        if len(entry) < 10:
-            continue  # ✅ Ignore very short junk entries
+        if len(entry) < 5:  # Ignore tiny junk entries
+            continue
 
         key = entry.lower().strip()
 
-        is_duplicate = False
+        # ✅ Log what is being filtered before removing
         for existing in seen:
             similarity = fuzz.ratio(key, existing)
 
-            if similarity >= 99:  # 🔥 Adjusted from 100% → 98% to allow slight variations
-                is_duplicate = True
-                break
+            # 🔥 Only remove **exact** duplicates or near-exact ones (99% match)
+            if similarity > 99:
+                # print(f"⚠ [FILTERED] Removing near-duplicate knowledge: {entry[:100]} (Similarity: {similarity}%)")
+                break  # Skip this entry if it's a near-duplicate
 
-        if not is_duplicate:
+        else:
             seen.add(key)
             filtered_knowledge.append(entry)
 
+    # ✅ 🚨 FIX: If too much knowledge is lost, **restore original data**
     lost_percentage = (1 - (len(filtered_knowledge) / len(knowledge_list))) * 100
 
-    if lost_percentage > 5:  # 🔥 Adjusted from 3% → 5% tolerance
+    if lost_percentage > 2:  # 🔥 Ensure at least 98% knowledge persists
         print(f"🚨 WARNING: Excessive filtering detected! Restoring original knowledge. Lost: {lost_percentage:.2f}%")
         return knowledge_list  # 🚀 Restore original knowledge if too much was removed
 
+    print(f"🔍 Debug: Knowledge before filtering: {len(knowledge_list)}, after filtering: {len(filtered_knowledge)} items remaining.")
     return filtered_knowledge
 
 
@@ -135,9 +148,8 @@ def track_mind_data_changes(operation, mind_data):
         print(f"✅ `mind_data` is a dictionary. Keys: {list(mind_data.keys())}")
 
 
-# ✅ Import `astra_schedule` only when running as the main script
+# ✅ Import `astra_schedule` only when running as main script
 if __name__ == "__main__":
     print("🧠 Astra is thinking...")
-    from astra_core.astra_schedule.schedule import astra_schedule
-    asyncio.run(process_reflection())  # ✅ Ensure async function is properly executed
-
+    from astra_core.astra_schedule.schedule import astra_schedule  # ✅ Import late to avoid early execution issues
+    astra_schedule()

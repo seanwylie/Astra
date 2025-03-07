@@ -1,0 +1,11 @@
+{
+    "watch_files": [
+      "astra_core/processing.py",
+      "astra_core/discord_astra.py"
+    ],
+    "backup_directory": "astra_core/evolution/backups",
+    "sandbox_test_script": "astra_core/evolution/sandbox/test_script.py",
+    "allow_auto_fix": false,
+    "change_threshold": 5
+  }
+  

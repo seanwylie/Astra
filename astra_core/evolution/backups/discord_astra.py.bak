@@ -74,37 +74,17 @@ def should_engage(mood, recent_activity, trust_level, curiosity_level):
 
 @bot.command()
 async def reflect(ctx):
-    """Generates and shares Astra's reflection, ensuring valid responses."""
-    try:
-        # ✅ Step 1: Generate Reflection
-        reflection = await process_reflection()  # 🔥 Await async function
-        print(f"🔍 Debug: process_reflection() returned {type(reflection)}")  # Log return type
-        print(f"🔍 Debug: Reflection content before sending: {reflection}")  # Log final message
+    """Generates and shares Astra's reflection, factoring in personality evolution."""
+    user_id = str(ctx.author.id)
+    trust_level = get_trust_level(user_id)
+    curiosity_level = mind_data.get("curiosity_level", 0)
+    reflection = process_reflection()
+    mood = mood_manager.current_mood
 
-        # ✅ Step 2: Ensure reflection is a valid string
-        if not reflection or not isinstance(reflection, str) or len(reflection.strip()) < 5:
-            print(f"🚨 Invalid reflection type: {type(reflection)} or content too short.")
-            reflection = "🤖 I'm still thinking... Try again in a moment!"
-
-        # ✅ Step 3: Validate Response Templates
-        response_templates = responses.get("reflection_response", [])
-        print(f"🔍 Debug: reflection_response templates: {response_templates}")  # Log available templates
-
-        # ✅ Step 4: Provide a default template if none exist
-        if not isinstance(response_templates, list) or not response_templates:
-            print("🚨 Warning: No valid reflection responses found! Using fallback template.")
-            response_templates = ["🤖 Here's my reflection: {reflection}"]
-
-        # ✅ Step 5: Format & Send Response
-        response_template = random.choice(response_templates)
-        response = response_template.format(reflection=reflection) if "{reflection}" in response_template else f"🤖 Reflection: {reflection}"
-
-        print(f"🔍 Debug: Final response being sent: {response}")  # Log the final message
-        await ctx.send(response)
-
-    except Exception as e:
-        print(f"🚨 Error in reflect command: {e}")
-        await ctx.send("🚨 Something went wrong! I'm still learning, please try again.")
+    update_personality("deep_conversation", magnitude=1.0)
+    
+    response = f"{responses['reflection_response'].get(mood, responses['reflection_response']['neutral'])} {reflection}"
+    await ctx.send(response)
 
 @bot.command()
 async def ask(ctx):

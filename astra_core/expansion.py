@@ -1,6 +1,7 @@
 import random
 import wikipedia
 import time
+from fuzzywuzzy import fuzz
 from bs4 import BeautifulSoup
 
 from astra_core.config_loader import load_config  # ✅ Load configs dynamically
@@ -9,84 +10,103 @@ general_config = load_config("general_config")  # ✅ Load schedule settings
 
 def refine_knowledge(existing_ideas, mind_data):
     """Merge and refine knowledge, ensuring only true redundancy is removed."""
+    
     if len(existing_ideas) < 2:
-        return None  # Not enough data to merge
+        return None  # ✅ Not enough data to merge
 
     selected_pair = None
+    retry_attempts = 5  # 🔥 Reduce attempts for better efficiency
 
-    # ✅ Select two related insights that aren't trivial
-    for _ in range(5):  # Try up to 5 times to find a relevant match
+    for _ in range(retry_attempts):
         concept_1, concept_2 = random.sample(existing_ideas, 2)
 
-        # ✅ Ensure they are not completely unrelated topics
-        if is_related(concept_1, concept_2) and len(concept_1) > 50 and len(concept_2) > 50:
+        if not isinstance(concept_1, str) or not isinstance(concept_2, str):
+            continue
+        if len(concept_1) < 20 or len(concept_2) < 20:
+            continue
+
+        if is_related(concept_1, concept_2):
             selected_pair = (concept_1, concept_2)
-            break  # ✅ Found a suitable pair
+            break  
 
     if not selected_pair:
-        return None  # No valid pair found
+        return None  
 
     concept_1, concept_2 = selected_pair
 
-    # ✅ Prevent merging concepts that are too similar
+    # ✅ Prevent merging near-identical concepts
     if concept_1[:50] in concept_2 or concept_2[:50] in concept_1:
         return None
 
-    # 🔹 Generate a natural knowledge integration phrase
     connection_phrases = general_config["connection_phrases"]
-    new_concept = f"{random.choice(connection_phrases)} {concept_1} and {concept_2}."
+    merged_idea = f"{random.choice(connection_phrases)} {concept_1} and {concept_2}."
 
     # ✅ Ensure no duplication
-    if new_concept not in mind_data["stored_knowledge"]:
-        mind_data["stored_knowledge"].append(new_concept)
-
-        # ✅ Debug: Show refined knowledge added
+    if merged_idea not in mind_data["stored_knowledge"]:
+        mind_data["stored_knowledge"].append(merged_idea)
         print(f"🔹 Refined knowledge added. New count: {len(mind_data['stored_knowledge'])}")
 
-        # 🔥 PRUNING LOGIC: Ensure we are only removing redundant knowledge
-        MAX_REMOVAL_PERCENT = 0.05  # ⬇ Lower from 10% → 5%
+        # ✅ Limit pruning to 3% of knowledge
+        MAX_REMOVAL_PERCENT = 0.03
         max_removal_count = max(3, int(len(mind_data["stored_knowledge"]) * MAX_REMOVAL_PERCENT))
 
-        # 🚨 SAFEGUARD: If knowledge drops below 80, stop pruning
-        MIN_KNOWLEDGE_THRESHOLD = 80
+        # ✅ Prevent over-pruning if too little knowledge remains
+        MIN_KNOWLEDGE_THRESHOLD = 100
         if len(mind_data["stored_knowledge"]) <= MIN_KNOWLEDGE_THRESHOLD:
             print(f"🚨 Too little knowledge remaining! Skipping pruning. Count: {len(mind_data['stored_knowledge'])}")
-            return new_concept
+            return merged_idea
 
-        redundant_pairs = [
-            (c1, c2) for c1 in mind_data["stored_knowledge"] for c2 in mind_data["stored_knowledge"]
-            if c1 != c2 and is_related(c1, c2) and len(c1) < len(new_concept) and len(c2) < len(new_concept)
-        ]
-
+        # ✅ Optimize redundant comparisons
         removed_items = []
         removal_count = 0
+        redundant_items = set()
 
-        for c1, c2 in redundant_pairs:
-            if c1 in mind_data["stored_knowledge"] and c2 in mind_data["stored_knowledge"]:
-                if removal_count < max_removal_count:
+        for c1, c2 in [(c1, c2) for c1 in mind_data["stored_knowledge"] for c2 in mind_data["stored_knowledge"] if c1 != c2]:
+            if removal_count >= max_removal_count:
+                break
+
+            if is_related(c1, c2):
+                if c1 not in redundant_items:
                     mind_data["stored_knowledge"].remove(c1)
+                    removed_items.append(c1[:50])
+                    redundant_items.add(c1)
                     removal_count += 1
-                if removal_count < max_removal_count:
-                    mind_data["stored_knowledge"].remove(c2)
-                    removal_count += 1
-                removed_items.append(c1[:50])
-                removed_items.append(c2[:50])
 
-        # ✅ Debug: Show what was removed
+                if c2 not in redundant_items and removal_count < max_removal_count:
+                    mind_data["stored_knowledge"].remove(c2)
+                    removed_items.append(c2[:50])
+                    redundant_items.add(c2)
+                    removal_count += 1
+
         if removed_items:
             print(f"🗑 Pruned {removal_count} knowledge items. Remaining count: {len(mind_data['stored_knowledge'])}")
 
-    return new_concept
+    return merged_idea
+
 
 
 def is_related(concept_1, concept_2):
-    """Determines if two concepts are related based on shared keywords."""
-    keywords_1 = set(concept_1.lower().split()[:8])  # ⬆ Use only the first 8 words (down from 10)
-    keywords_2 = set(concept_2.lower().split()[:8])
+    """Determine if two concepts are related using fuzzy matching."""
+    
+    # ✅ Ensure both inputs are strings
+    if not isinstance(concept_1, str) or not isinstance(concept_2, str):
+        print(f"🚨 Warning: Non-string input detected! {type(concept_1)} vs {type(concept_2)}")
+        return False
 
-    common_words = keywords_1.intersection(keywords_2)
+    # ✅ Prevent fuzzy matching on massive text blocks
+    concept_1 = concept_1[:250]
+    concept_2 = concept_2[:250]
 
-    return len(common_words) > 3  # ⬆ Increase threshold (was 2)
+    try:
+        similarity = fuzz.ratio(concept_1, concept_2)
+    except Exception as e:
+        print(f"🚨 Error computing similarity: {e}")
+        return False
+
+    return similarity > 30  # 🔥 Adjusted to require at least 30% similarity
+
+
+
 
 def deepen_reflection(reflection):
     """Expands on a reflection by adding depth or new questions."""

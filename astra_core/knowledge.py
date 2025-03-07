@@ -7,6 +7,8 @@ from astra_interfaces.influence import load_mind, save_mind  # ✅ Handles memor
 from astra_core.config_loader import debug_log
 
 class KnowledgeManager:
+    COMMON_WORDS = {"the", "a", "and", "is", "in", "with", "to", "from", "for", "on", "as", "it", "by", "this", "of", "that", "which", "at"}
+    IGNORE_TERMS = {"deeper thought", "🔍 reflection", "🔍 deeper thought"}
     def __init__(self):
         """Initialize Astra's knowledge system with configurable lookup sources."""
         print("🔍 Debug: Loading knowledge settings...")
@@ -35,21 +37,21 @@ class KnowledgeManager:
         ]
         
         if existing_definitions:
-            print(f"✅ Skipping lookup: Found structured definition for '{concept}'")
+            # print(f"✅ Skipping lookup: Found structured definition for '{concept}'")
             return False  # ✅ Proper definition exists, no need to look it up
 
         # ✅ Check if the concept is mentioned in stored knowledge in an *explanatory* way
         for entry in self.mind_data["stored_knowledge"]:
             if concept_lower in entry.lower():
                 if ":" in entry[:40] or len(entry.split()) > 10:
-                    print(f"✅ Skipping lookup: '{concept}' appears in a meaningful knowledge entry.")
+                    # print(f"✅ Skipping lookup: '{concept}' appears in a meaningful knowledge entry.")
                     return False  # ✅ Found an explanation, so skip lookup
 
         # ✅ Use fuzzy matching as a last check for similar explanations
         for entry in self.mind_data["stored_knowledge"]:
             similarity = fuzz.partial_ratio(concept_lower, entry.lower())
             if similarity > 90:
-                print(f"✅ Skipping lookup: Found related explanation '{entry}' (similarity: {similarity}%)")
+                # print(f"✅ Skipping lookup: Found related explanation '{entry}' (similarity: {similarity}%)")
                 return False  # ✅ A related concept is well explained
 
         print(f"🔍 Concept '{concept}' not found in an explained form, proceeding with lookup")
@@ -88,7 +90,7 @@ class KnowledgeManager:
 
         for concept in search_terms:
             if not self.should_lookup_concept(concept, force=force):
-                print(f"⚠ Skipping lookup for '{concept}', already known.")
+                # print(f"⚠ Skipping lookup for '{concept}', already known.")
                 continue
 
             print(f"🔍 Looking up: {concept}")
@@ -137,39 +139,50 @@ class KnowledgeManager:
 
         return retrieved_anything
 
-    def extract_unknown_terms(self, reflection):
-        """Extract potential unknown concepts and force an external lookup *before* generating more self-questions."""
-        known_terms = set(self.mind_data.get("stored_knowledge", []))  # ✅ Use a set for fast lookup
 
-        # ✅ Ensure reflection is a string before regex processing
+
+
+    def extract_unknown_terms(self, reflection):
+        """Extract meaningful unknown concepts while filtering out noise."""
+        
+        # 🔍 Debugging input
+        print(f"🔍 Debug: Reflection Type: {type(reflection)}, Length: {len(reflection) if isinstance(reflection, str) else 'N/A'}")
+
+        # ✅ Convert list to last 5 reflections (avoiding memory overload)
         if isinstance(reflection, list):
-            reflection = " ".join(reflection)  # Convert list to a single string
+            reflection = " ".join(reflection[-5:])
         elif not isinstance(reflection, str):
-            print(f"🚨 Error: Expected `reflection` to be str, got {type(reflection)}")
             return []
 
+        # ✅ Trim excessive length to avoid processing issues
+        if len(reflection) > 5000:
+            print(f"⚠ WARNING: Reflection is too long ({len(reflection)} chars)! Trimming...")
+            reflection = reflection[:5000]
+
+        # ✅ Extract potential unknown phrases (Proper Names, Key Concepts)
         phrase_pattern = r'\b(?:[A-Z][a-z]+(?:\s+[A-Z][a-z]+)*)\b'
-        found_phrases = re.findall(phrase_pattern, reflection)
+        found_phrases = set(re.findall(phrase_pattern, reflection))
+        
+        # ✅ Extract individual words & filter common ones
+        words = set(re.findall(r'\b\w+\b', reflection))
+        filtered_words = {word.lower() for word in words if len(word) > 2 and word.lower() not in self.COMMON_WORDS}  # ✅ FIXED
 
-        words = re.findall(r'\b\w+\b', reflection)
-        found_words = [word.lower() for word in words if len(word) > 2]
+        # ✅ Remove words that are already part of a larger phrase
+        final_terms = (found_phrases | filtered_words) - self.IGNORE_TERMS  # ✅ Also fixed here
+        unknown_terms = [term for term in final_terms if term not in self.mind_data["stored_knowledge"]]
 
-        filtered_words = [word for word in found_words if not any(phrase.lower().startswith(word) for phrase in found_phrases)]
+        print(f"🔍 Debug: Final unknown concepts after filtering: {unknown_terms}")
 
-        all_terms = set(found_phrases + filtered_words)
-        unknown_terms = [term for term in all_terms if term not in known_terms]
-
-        print(f"🔍 Final unknown concepts after filtering: {unknown_terms}")
-
+        # ✅ External Lookup if unknowns exist
         if unknown_terms:
+            print("🔍 Debug: Attempting external knowledge lookup...")
             found_new_knowledge = self.retrieve_external_knowledge(unknown_terms)
-
-            # ✅ If new knowledge was found, return empty (no need for self-questions)
             if found_new_knowledge:
                 print("✅ External knowledge retrieved, skipping question generation.")
                 return []
 
-        return unknown_terms  # ✅ If nothing was found, allow question generation
+        return unknown_terms
+
 
 
 # ✅ Initialize knowledge manager instance
