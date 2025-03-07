@@ -66,6 +66,7 @@ def categorize_question(questions, category_embeddings):
         categorized_questions.append({"question": question, "category": best_category})
 
     return categorized_questions  # ✅ Ensures a flat list of dictionaries
+    # return questions
 
 
 def filter_questions(mind_data, new_questions):

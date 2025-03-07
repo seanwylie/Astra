@@ -1,6 +1,3 @@
-import sys
-import os
-import random
 from astra_core.config_loader import load_config
 from astra_core.questions.question_generator import generate_questions  # Generates raw questions
 from astra_core.questions.question_utils import filter_questions, categorize_question

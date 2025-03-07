@@ -1,5 +1,3 @@
-import sys
-import os
 import random
 from astra_core.config_loader import load_config
 from astra_core.questions.question_utils import generate_category_embeddings, categorize_question
@@ -102,7 +100,7 @@ def generate_questions(reflection, mind_data):
         print(f"✅ Debug: Adding categorized questions to mind_data: {categorized_question_list}")
         mind_data["self_questions"].extend(categorized_question_list)
     else:
-        print(f"⚠ Warning: No categorized questions were added to mind_data!")
+        print("⚠ Warning: No categorized questions were added to mind_data!")
 
     ### ✅ **Step 7: Flag Unresolved Questions**
     flagged_questions = flag_unresolved_question(categorized_question_list, fresh_mind_data) or []

@@ -1,7 +1,6 @@
 import smtplib
 import os
 import random
-import unicodedata
 from dotenv import load_dotenv
 from astra_core.config_loader import load_config
 

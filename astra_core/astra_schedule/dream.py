@@ -1,9 +1,6 @@
 import time
-import random
 from astra_core.config_loader import load_config
 from astra_interfaces.influence import load_mind, save_mind
-from astra_core.questions.question_manager import manage_questions
-from astra_core.questions.question_tracker import track_question_patterns
 from astra_core.knowledge import knowledge_manager
 from astra_core.processing import process_reflection
 from astra_core.config_loader import debug_log

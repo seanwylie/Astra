@@ -1,8 +1,6 @@
 import random
-import numpy as np
 from astra_interfaces.influence import load_mind, save_mind
 from astra_core.config_loader import load_config
-from astra_core.mood.mood_manager import mood_manager
 from fuzzywuzzy import fuzz
 from astra_core.config_loader import debug_log
 
@@ -27,7 +25,6 @@ def generate_reflection(knowledge=None, recent_reflections=None, *args, **kwargs
     if not knowledge:
         return "Astra is still learning and has no stored knowledge yet."
 
-    mood = mood_manager.current_mood
     reflection_style = general_config["reflection_templates"]
     deeper_thought_templates = general_config["deeper_thought_templates"]
 

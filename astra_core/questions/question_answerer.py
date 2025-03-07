@@ -7,7 +7,6 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../../'
 
 # astra_core/questions/question_answerer.py
 from astra_interfaces.influence import save_mind  # Import save_mind from influence.py
-from astra_core.questions.question_flagger import can_answer_question
 
 def self_answer_questions(mind_data):
     """Store all questions as unresolved without attempting to answer them."""

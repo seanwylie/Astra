@@ -8,11 +8,10 @@ sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 
 from astra_core.knowledge import knowledge_manager
 from astra_core.reflection import generate_reflection
-from astra_core.questions.question_manager import generate_questions, track_question_patterns
+from astra_core.questions.question_manager import generate_questions
 from astra_core.expansion import refine_knowledge
 from astra_interfaces.influence import load_mind, save_mind
 from astra_core.config_loader import load_config  # ✅ Load configs dynamically
-from astra_core.questions.question_manager import manage_questions
 from astra_core.config_loader import debug_log
 
 
@@ -33,63 +32,61 @@ def process_reflection():
     mind_data = load_mind()
     validate_mind_structure(mind_data)
 
-    # ✅ Generate & expand reflection
-    new_reflection = generate_reflection(mind_data["stored_knowledge"], mind_data["self_reflections"])
-    expanded_reflection = expand_reflection(new_reflection)
-
-    # 🔍 **Extract unknown terms before generating questions**
-    unknown_terms = knowledge_manager.extract_unknown_terms(expanded_reflection)
+    # ✅ Extract unknown terms first
+    unknown_terms = knowledge_manager.extract_unknown_terms(mind_data["self_reflections"])
     if unknown_terms:
         print(f"🔍 Detected unknown terms: {unknown_terms}")
         found_new_knowledge = knowledge_manager.retrieve_external_knowledge(unknown_terms)
-        if found_new_knowledge:
-            print(f"✅ New knowledge added from external lookup: {unknown_terms}")
-            debug_log("Saving")
-            save_mind(mind_data)  # 🛑 **Save immediately after knowledge is retrieved**
 
+        if found_new_knowledge:
+            print(f"✅ New knowledge added from external lookup: {found_new_knowledge}")
+
+            # ✅ **Store knowledge immediately before anything else**
+            for knowledge in found_new_knowledge:
+                if knowledge not in mind_data["stored_knowledge"]:
+                    mind_data["stored_knowledge"].append(knowledge)
+
+            debug_log("Saving")
+            save_mind(mind_data)  # 🔥 Save before continuing
+
+            # ✅ **Force Reload and Verify**
+            reloaded_mind_data = load_mind()
+            missing_knowledge = set(found_new_knowledge) - set(reloaded_mind_data["stored_knowledge"])
+            if missing_knowledge:
+                print(f"🚨 WARNING: Some knowledge was lost after save! Restoring: {missing_knowledge}")
+                mind_data["stored_knowledge"].extend(missing_knowledge)
+                save_mind(mind_data)  # 🔥 Force re-save
+
+    # ✅ Generate & expand reflection AFTER knowledge is stored
+    new_reflection = generate_reflection(mind_data["stored_knowledge"], mind_data["self_reflections"])
+    expanded_reflection = expand_reflection(new_reflection)
 
     # ✅ Store reflection if it's new
     if expanded_reflection not in mind_data["self_reflections"]:
         mind_data["self_reflections"].append(expanded_reflection)
         print(f"📝 Added new reflection: {expanded_reflection[:100]}...")
 
-    # ✅ Generate new questions using Astra's enhanced system
+    # ✅ Generate new questions
     categorized_questions, category_counts = generate_questions(expanded_reflection, mind_data)
-    print(f"🔍 Debug: Generated categorized_questions: {categorized_questions}")
-
     new_questions = []
     for category, questions in categorized_questions.items():
         if isinstance(questions, list):
             new_questions.extend(questions)
-
-    print(f"🔍 Debug: Extracted new questions before filtering: {new_questions}")
-
     mind_data["self_questions"].extend(new_questions)
 
-    # ✅ Merge knowledge & filter
+    # ✅ Merge and filter knowledge
     refined_idea = refine_knowledge(mind_data["stored_knowledge"], mind_data)
     if refined_idea and refined_idea not in mind_data["stored_knowledge"]:
         mind_data["stored_knowledge"].append(refined_idea)
         print(f"🔹 Refined knowledge added: {refined_idea[:150]}...")
 
-    print(f"🔍 Before filtering, stored knowledge count: {len(mind_data['stored_knowledge'])}")
+    filtered_knowledge = filter_knowledge(mind_data["stored_knowledge"])
+    mind_data["stored_knowledge"] = list(set(mind_data["stored_knowledge"]) | set(filtered_knowledge))
 
-    # filtered_knowledge = filter_knowledge(mind_data["stored_knowledge"])
-    # mind_data["stored_knowledge"] = list(set(mind_data["stored_knowledge"]) | set(filtered_knowledge))
-
-    print(f"🔍 After filtering, stored knowledge count: {len(mind_data['stored_knowledge'])}")
-
-    pre_save_knowledge = set(mind_data["stored_knowledge"])
+    # ✅ Save again after all processing
     debug_log("Saving")
     save_mind(mind_data)
-    debug_log("Loading")  
-    post_save_knowledge = set(load_mind()["stored_knowledge"])
 
-    lost_knowledge = pre_save_knowledge - post_save_knowledge
-    if lost_knowledge:
-        print(f"⚠ WARNING: {len(lost_knowledge)} knowledge items were lost: {lost_knowledge}")
-
-    return expanded_reflection
 
 
 def expand_reflection(reflection):
@@ -118,17 +115,28 @@ def filter_knowledge(knowledge_list):
 
         key = entry.lower().strip()
 
-        # ✅ Only remove near-duplicates if the similarity is **very high** (>85%)
-        if any(fuzz.ratio(key, existing) > 85 for existing in seen):
-            print(f"⚠ [FILTERED] Removing near-duplicate knowledge: {entry[:100]}")
-            continue  # Avoid near-duplicates but allow slight variations
+        # ✅ Log what is being filtered before removing
+        for existing in seen:
+            similarity = fuzz.ratio(key, existing)
 
-        seen.add(key)
-        filtered_knowledge.append(entry)
+            # 🔥 Only remove **exact** duplicates or near-exact ones (99% match)
+            if similarity > 99:
+                print(f"⚠ [FILTERED] Removing near-duplicate knowledge: {entry[:100]} (Similarity: {similarity}%)")
+                break  # Skip this entry if it's a near-duplicate
 
+        else:
+            seen.add(key)
+            filtered_knowledge.append(entry)
+
+    # ✅ 🚨 FIX: If too much knowledge is lost, **restore original data**
+    lost_percentage = (1 - (len(filtered_knowledge) / len(knowledge_list))) * 100
+
+    if lost_percentage > 2:  # 🔥 Ensure at least 98% knowledge persists
+        print(f"🚨 WARNING: Excessive filtering detected! Restoring original knowledge. Lost: {lost_percentage:.2f}%")
+        return knowledge_list  # 🚀 Restore original knowledge if too much was removed
+
+    print(f"🔍 Debug: Knowledge before filtering: {len(knowledge_list)}, after filtering: {len(filtered_knowledge)} items remaining.")
     return filtered_knowledge
-
-
 
 
 # ✅ Debugging Function

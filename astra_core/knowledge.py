@@ -20,12 +20,14 @@ class KnowledgeManager:
             print("🚨 Fixing `stored_knowledge`, ensuring it's a list!")
             self.mind_data["stored_knowledge"] = []
 
-
-
-    def should_lookup_concept(self, concept):
+    def should_lookup_concept(self, concept, force=False):
         """Determine if Astra should look up a concept based on meaningful stored knowledge."""
+        if force:
+            print(f"⚠ Force lookup enabled for '{concept}', overriding existing checks.")
+            return True  # ✅ Force lookup even if known
+
         concept_lower = concept.lower()
-        
+
         # ✅ Check for formal definitions first (📖 or 📄)
         existing_definitions = [
             entry for entry in self.mind_data["stored_knowledge"]
@@ -39,24 +41,19 @@ class KnowledgeManager:
         # ✅ Check if the concept is mentioned in stored knowledge in an *explanatory* way
         for entry in self.mind_data["stored_knowledge"]:
             if concept_lower in entry.lower():
-                # 🔍 Ensure it’s not just a *passing mention* but part of an actual explanation
-                if ":" in entry[:40] or len(entry.split()) > 10:  # Entry is likely an explanation, not a simple mention
+                if ":" in entry[:40] or len(entry.split()) > 10:
                     print(f"✅ Skipping lookup: '{concept}' appears in a meaningful knowledge entry.")
                     return False  # ✅ Found an explanation, so skip lookup
 
         # ✅ Use fuzzy matching as a last check for similar explanations
         for entry in self.mind_data["stored_knowledge"]:
             similarity = fuzz.partial_ratio(concept_lower, entry.lower())
-            if similarity > 90:  # 🔥 Adjust threshold as needed
+            if similarity > 90:
                 print(f"✅ Skipping lookup: Found related explanation '{entry}' (similarity: {similarity}%)")
                 return False  # ✅ A related concept is well explained
 
         print(f"🔍 Concept '{concept}' not found in an explained form, proceeding with lookup")
         return True  # 🔍 No explanation found, look it up
-
-
-
-
 
     def lookup_dictionary_definition(self, word):
         """Fetch definitions using the dictionary API."""
@@ -82,19 +79,18 @@ class KnowledgeManager:
             print(f"⚠ Wikipedia lookup failed for '{concept}': {e}")
         return None
 
-
-    def retrieve_external_knowledge(self, search_terms):
-        """Fetch knowledge from external sources and update stored knowledge *before* generating new questions."""
+    def retrieve_external_knowledge(self, search_terms, force=False):
+        """Fetch knowledge from external sources and update stored knowledge."""
         new_knowledge = []
-        retrieved_anything = False  # ✅ Track whether anything was found
+        retrieved_anything = False
 
         print(f"🔍 Debug: Attempting to retrieve knowledge for {search_terms}")
 
         for concept in search_terms:
-            if not self.should_lookup_concept(concept):
+            if not self.should_lookup_concept(concept, force=force):
                 print(f"⚠ Skipping lookup for '{concept}', already known.")
                 continue
-            
+
             print(f"🔍 Looking up: {concept}")
             dictionary_info = self.lookup_dictionary_definition(concept)
             wiki_info = self.fetch_wikipedia_summary(concept)
@@ -112,19 +108,14 @@ class KnowledgeManager:
 
         if new_knowledge:
             retrieved_anything = True
-
-            # ✅ Ensure knowledge is added BEFORE saving
             pre_save_count = len(self.mind_data["stored_knowledge"])
             self.mind_data["stored_knowledge"].extend(new_knowledge)
 
             print(f"🔍 Debug: Before saving, knowledge count: {pre_save_count} -> {len(self.mind_data['stored_knowledge'])}")
 
             save_mind(self.mind_data)
-
-            # ✅ Wait for save completion before reloading (adjust sleep time as needed)
             time.sleep(0.5)
 
-            # ✅ First reload
             debug_log("Loading")  
             reloaded_mind = load_mind()
 
@@ -134,7 +125,6 @@ class KnowledgeManager:
 
             print(f"🔍 Debug: After first reload, knowledge count: {post_save_count}")
 
-            # ✅ Double-check consistency and reload again if necessary
             if post_save_count < len(self.mind_data["stored_knowledge"]):
                 print("🚨 WARNING: Knowledge count mismatch! Reloading again to verify data integrity.")
                 time.sleep(0.5)
@@ -142,15 +132,21 @@ class KnowledgeManager:
                 post_save_count = len(reloaded_mind["stored_knowledge"])
                 print(f"🔍 Debug: After second reload, knowledge count: {post_save_count}")
 
-            # ✅ Update memory with the verified data
             self.mind_data["stored_knowledge"] = reloaded_mind["stored_knowledge"]
+            print(f"new knowledge {new_knowledge}")
 
         return retrieved_anything
-
 
     def extract_unknown_terms(self, reflection):
         """Extract potential unknown concepts and force an external lookup *before* generating more self-questions."""
         known_terms = set(self.mind_data.get("stored_knowledge", []))  # ✅ Use a set for fast lookup
+
+        # ✅ Ensure reflection is a string before regex processing
+        if isinstance(reflection, list):
+            reflection = " ".join(reflection)  # Convert list to a single string
+        elif not isinstance(reflection, str):
+            print(f"🚨 Error: Expected `reflection` to be str, got {type(reflection)}")
+            return []
 
         phrase_pattern = r'\b(?:[A-Z][a-z]+(?:\s+[A-Z][a-z]+)*)\b'
         found_phrases = re.findall(phrase_pattern, reflection)
@@ -170,12 +166,10 @@ class KnowledgeManager:
 
             # ✅ If new knowledge was found, return empty (no need for self-questions)
             if found_new_knowledge:
-                print(f"✅ External knowledge retrieved, skipping question generation.")
+                print("✅ External knowledge retrieved, skipping question generation.")
                 return []
 
         return unknown_terms  # ✅ If nothing was found, allow question generation
-
-
 
 
 # ✅ Initialize knowledge manager instance

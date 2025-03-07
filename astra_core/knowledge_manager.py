@@ -4,7 +4,7 @@ import os
 from collections import OrderedDict
 from fuzzywuzzy import fuzz
 from utils.json_loader import load_json_file
-from astra_interfaces.influence import load_mind, save_mind, save_to_s3
+from astra_interfaces.influence import load_mind, save_to_s3
 from astra_core.config_loader import debug_log
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))

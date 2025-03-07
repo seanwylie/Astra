@@ -1,8 +1,6 @@
 import os
 import random
 import discord
-import time
-import json
 from discord.ext import commands
 from astra_core.knowledge import knowledge_manager  # ✅ Re-enable knowledge lookup
 from dotenv import load_dotenv
@@ -155,7 +153,7 @@ async def assist(ctx):
         "**!mood** - Check Astra's current mood",
         "**!personality** - View Astra's personality traits"
     ]
-    await ctx.send(f"📜 **Astra's Commands:**\n" + "\n".join(commands_list))
+    await ctx.send("📜 **Astra's Commands:**\n" + "\n".join(commands_list))
 
 @bot.command()
 async def lookup(ctx, *, concept):
