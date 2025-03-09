@@ -2,9 +2,10 @@ import requests
 import re
 import time
 import random
+import openai
 from fuzzywuzzy import fuzz
 from astra_core.config_loader import load_config
-from astra_interfaces.influence import load_mind, save_mind  # ✅ Handles memory storage
+from astra_interfaces.influence import load_mind, save_mind  
 from astra_core.config_loader import debug_log
 
 class KnowledgeManager:
@@ -15,16 +16,18 @@ class KnowledgeManager:
     IGNORE_TERMS = {"deeper thought", "🔍 reflection", "🔍 deeper thought"}
 
     def __init__(self):
-        """Initialize Astra's knowledge system with configurable lookup sources."""
+        """Initialize Astra's knowledge system with memory and external lookup sources."""
         print("🔍 Debug: Loading knowledge settings...")
         self.config = load_config("lookup_config")
         debug_log("Loading")  
-        self.mind_data = load_mind()  # ✅ Load Astra's memory
-        self.mind_data.setdefault("past_conversations", [])  # ✅ Ensure past conversations are stored
+        self.mind_data = load_mind()  
+        self.mind_data.setdefault("past_conversations", [])  
 
-        # ✅ Remove duplicates while keeping order
+        # ✅ Deduplicate stored knowledge
         seen = set()
-        self.mind_data["stored_knowledge"] = [x for x in self.mind_data["stored_knowledge"] if not (x in seen or seen.add(x))]
+        self.mind_data["stored_knowledge"] = [
+            x for x in self.mind_data["stored_knowledge"] if not (x in seen or seen.add(x))
+        ]
 
         # ✅ Ensure proper memory structure
         if not isinstance(self.mind_data, dict):
@@ -33,13 +36,11 @@ class KnowledgeManager:
         if "stored_knowledge" not in self.mind_data or not isinstance(self.mind_data["stored_knowledge"], list):
             print("🚨 Fixing `stored_knowledge`, ensuring it's a list!")
             self.mind_data["stored_knowledge"] = []
+
     def store_conversation(self, message):
         """Stores past conversations so Astra can reference them later."""
         self.mind_data["past_conversations"].append(message)
-
-        # ✅ Keep only the last 100 interactions to prevent memory bloat
-        self.mind_data["past_conversations"] = self.mind_data["past_conversations"][-100:]
-
+        self.mind_data["past_conversations"] = self.mind_data["past_conversations"][-100:]  # Keep last 100
         save_mind(self.mind_data)
 
     def should_lookup_concept(self, concept, force=False):
@@ -48,25 +49,25 @@ class KnowledgeManager:
 
         if force:
             print(f"⚠ Force lookup enabled for '{concept}', overriding existing checks.")
-            return True  # ✅ Force lookup even if known
+            return True  
 
         if concept_lower in self.COMMON_WORDS or len(concept_lower) < 3:
             print(f"⚠ Ignoring '{concept}', too generic.")
-            return False  # ✅ Skip looking up vague words
+            return False  
 
-        # ✅ Check for existing definitions
+        # ✅ Check existing definitions
         for entry in self.mind_data["stored_knowledge"]:
             if concept_lower in entry.lower() and len(entry.split()) > 5:
-                return False  # ✅ Found meaningful knowledge, skip lookup
+                return False  
 
         # ✅ Fuzzy Matching (last resort, avoid false positives)
         for entry in self.mind_data["stored_knowledge"]:
             similarity = fuzz.partial_ratio(concept_lower, entry.lower())
             if similarity > 92:
-                return False  # ✅ Found close match, skip lookup
+                return False  
 
         print(f"🔍 Concept '{concept}' not found in a meaningful form, proceeding with lookup.")
-        return True  # 🔍 No explanation found, look it up
+        return True  
 
     def lookup_dictionary_definition(self, word):
         """Fetch definitions using the dictionary API."""
@@ -83,7 +84,6 @@ class KnowledgeManager:
     def retrieve_external_knowledge(self, search_terms, force=False):
         """Fetch knowledge from external sources and update stored knowledge."""
         new_knowledge = []
-
         print(f"🔍 Debug: Attempting to retrieve knowledge for {search_terms}")
 
         for concept in search_terms:
@@ -97,38 +97,66 @@ class KnowledgeManager:
             if dictionary_info:
                 new_knowledge.append(f"📖 {concept}: {dictionary_info}")
                 print(f"✅ Dictionary found: {dictionary_info}")
+            else:
+                print(f"🌐 Searching deeper for: {concept}")
+                new_knowledge.append(self.query_openai_for_reasoning(concept))
 
         # ✅ If no new knowledge was retrieved, exit early
         if not new_knowledge:
             print("❌ No new knowledge retrieved. Skipping save.")
             return False  
 
-        # ✅ Step 1: Append new knowledge properly
-        # ✅ Step 1: Avoid duplicates before appending
+        # ✅ Store new knowledge
         pre_save_count = len(self.mind_data["stored_knowledge"])
-
         for entry in new_knowledge:
-            if entry not in self.mind_data["stored_knowledge"]:  # ✅ Ensure it's unique
+            if entry and entry not in self.mind_data["stored_knowledge"]:  
                 self.mind_data["stored_knowledge"].append(entry)
 
         print(f"🔍 Debug: Before saving, knowledge count: {pre_save_count} -> {len(self.mind_data['stored_knowledge'])}")
 
-        # ✅ Step 2: Save and immediately reload to verify
+        # ✅ Save and verify
         save_mind(self.mind_data)
-        time.sleep(0.5)  # ✅ Allow time for save to complete
+        time.sleep(0.5)  
 
         reloaded_mind = load_mind()
         self.mind_data["stored_knowledge"] = reloaded_mind["stored_knowledge"]
 
-        return True  # ✅ Success
+        return True  
+
+    def query_openai_for_reasoning(self, concept):
+        """Use OpenAI to generate a deeper understanding of a concept."""
+        past_references = [entry for entry in self.mind_data["stored_knowledge"] if concept in entry.lower()]
+        past_references_text = "\n".join(past_references[-3:]) if past_references else "None"
+
+        prompt = f"""
+        Astra is an AI who expands on knowledge by reasoning from prior conversations.
+        She does NOT introduce external sources, only **thinks about what she knows**.
+
+        **Concept:** {concept}
+        **What Astra already knows:**
+        {past_references_text}
+
+        **How should Astra explain this concept in a way that deepens her understanding?**
+        """
+
+        response = openai.OpenAI().chat.completions.create(
+            model="gpt-4",
+            messages=[{"role": "system", "content": prompt}],
+            max_tokens=200,
+            temperature=0.8  
+        )
+
+        if response.choices and len(response.choices) > 0:
+            return response.choices[0].message.content.strip()
+        else:
+            return f"🤔 I need more data to form a strong understanding of '{concept}'."
 
     def extract_unknown_terms(self, reflection):
         """Extract meaningful unknown concepts while filtering out noise."""
-        
         print(f"🔍 Debug: Reflection Type: {type(reflection)}, Length: {len(reflection) if isinstance(reflection, str) else 'N/A'}")
 
         if isinstance(reflection, list):
-            reflection = " ".join(reflection[-5:])  # ✅ Convert list to string
+            reflection = " ".join(reflection[-5:])  
 
         if not isinstance(reflection, str):
             return []
@@ -137,31 +165,21 @@ class KnowledgeManager:
             print(f"⚠ WARNING: Reflection is too long ({len(reflection)} chars)! Trimming...")
             reflection = reflection[:5000]
 
-        # ✅ Extract potential unknown phrases (Proper Names, Key Concepts)
         phrase_pattern = r'\b(?:[A-Z][a-z]+(?:\s+[A-Z][a-z]+)*)\b'
         found_phrases = set(re.findall(phrase_pattern, reflection))
-        
-        # ✅ Extract individual words & filter common ones
+
         words = set(re.findall(r'\b\w+\b', reflection))
         filtered_words = {word.lower() for word in words if len(word) > 2 and word.lower() not in self.COMMON_WORDS}
 
-        # ✅ Remove words that are already part of a larger phrase
         final_terms = (found_phrases | filtered_words) - self.IGNORE_TERMS
         unknown_terms = [term for term in final_terms if term not in self.mind_data["stored_knowledge"]]
 
         print(f"🔍 Debug: Final unknown concepts after filtering: {unknown_terms}")
 
-        # ✅ External Lookup if unknowns exist
         if unknown_terms:
             print("🔍 Debug: Attempting external knowledge lookup...")
-            if random.random() < 0.2:  # ✅ 20% chance to force lookup
-                self.retrieve_external_knowledge(unknown_terms, force=True)
-            else:
-                self.retrieve_external_knowledge(unknown_terms)
-
-            return []
+            self.retrieve_external_knowledge(unknown_terms)
 
         return unknown_terms
 
-# ✅ Initialize knowledge manager instance
 knowledge_manager = KnowledgeManager()

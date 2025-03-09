@@ -3,6 +3,7 @@ import os
 import sys
 import asyncio
 import time
+import openai
 from fuzzywuzzy import fuzz
 
 # ✅ Ensure Python knows where to find Astra’s core modules
@@ -16,71 +17,78 @@ from astra_interfaces.influence import load_mind, save_mind
 from astra_core.config_loader import load_config
 from astra_core.config_loader import debug_log
 
-
+# ✅ Load configuration
 general_config = load_config("general_config")
+schedule_config = load_config("schedule_config")
 
-
-# ✅ Function: Ensure Mind Structure
+# ✅ Ensure Mind Structure
 def validate_mind_structure(mind_data):
     """Ensure `mind_data` has the correct structure."""
     mind_data.setdefault("self_reflections", [])
     mind_data.setdefault("self_questions", [])
     mind_data.setdefault("stored_knowledge", [])
 
-
 async def process_reflection():
-    """Generate, refine, and deepen Astra's reflections while ensuring responsiveness."""
+    """Generate, refine, and deepen Astra's reflections while ensuring memory consistency."""
     debug_log("Loading")  
     mind_data = load_mind()
     validate_mind_structure(mind_data)
 
-    # ✅ Limit reflection processing
-    recent_reflections = " ".join(mind_data["self_reflections"][-3:]) if mind_data["self_reflections"] else ""
-    if len(recent_reflections) > 2500:
-        recent_reflections = recent_reflections[:2500]
+    if not mind_data["self_reflections"]:
+        return "🤔 I have no reflections yet!"
 
-    # ✅ Extract unknown terms
-    unknown_terms = knowledge_manager.extract_unknown_terms(recent_reflections)
-    if unknown_terms:
-        found_new_knowledge = await asyncio.to_thread(knowledge_manager.retrieve_external_knowledge, unknown_terms)  # ✅ Ensures non-blocking call
-        if found_new_knowledge:
-            for knowledge in found_new_knowledge:
-                if knowledge not in mind_data["stored_knowledge"]:
-                    mind_data["stored_knowledge"].append(knowledge)
+    # ✅ Select the most recent reflection for deeper reasoning
+    previous_reflection = mind_data["self_reflections"][-1]
 
-            await asyncio.to_thread(save_mind, mind_data)  # ✅ Ensure this runs asynchronously
+    # 🔥 NEW: If a reflection is too recent, avoid looping on the same thoughts
+    if len(mind_data["self_reflections"]) > 2:
+        last_two = mind_data["self_reflections"][-2:]
+        similarity = fuzz.ratio(last_two[0], last_two[1])
+        if similarity > 85:  # 🔥 Avoid repeating the same thought too much
+            print(f"⚠ Recent reflections are too similar ({similarity}%). Expanding knowledge instead.")
+            refined_knowledge = refine_knowledge(mind_data["stored_knowledge"], mind_data)
+            if refined_knowledge:
+                return refined_knowledge
+            return last_two[1]  # Fallback to the latest valid thought
 
-            # ✅ Reload mind
-            reloaded_mind_data = load_mind()
-            missing_knowledge = set(found_new_knowledge) - set(reloaded_mind_data["stored_knowledge"])
-            if missing_knowledge:
-                mind_data["stored_knowledge"].extend(missing_knowledge)
-                await asyncio.to_thread(save_mind, mind_data)  # ✅ Ensure async
+    # ✅ Ask OpenAI to deepen Astra’s reflections
+    refined_reflection = query_openai_for_deeper_thought(previous_reflection)
 
-    new_reflection = await asyncio.to_thread(generate_reflection, mind_data["stored_knowledge"], mind_data["self_reflections"])
-
-    # ✅ Ensure return is **always** a string
-    if not new_reflection or not isinstance(new_reflection, str) or len(new_reflection.strip()) < 20:
-        print("⚠ Skipping reflection - too short!")
-        return None
-
-    expanded_reflection = await asyncio.to_thread(expand_reflection, new_reflection)
-
-    if not any(fuzz.ratio(expanded_reflection.lower(), r.lower()) > 95 for r in mind_data["self_reflections"]):
-        mind_data["self_reflections"].append(expanded_reflection)
-
-    latest_mind = load_mind()
-    if len(mind_data["stored_knowledge"]) > len(latest_mind.get("stored_knowledge", [])):
-        await asyncio.to_thread(save_mind, mind_data)
+    if refined_reflection:
+        mind_data["self_reflections"].append(refined_reflection)
+        save_mind(mind_data)
+        return refined_reflection
     else:
-        print("⚠ Prevented overwriting mind file with less data!")
+        print("⚠ OpenAI failed to refine the thought. Using previous reflection.")
+        return previous_reflection
 
-    print(f"🔍 Debug: process_reflection() final return type: {type(expanded_reflection)}")
-    return str(expanded_reflection)  # ✅ Ensure we **always** return a string
+def query_openai_for_deeper_thought(reflection):
+    """Ask OpenAI to refine Astra’s reflections while considering past thoughts."""
+    prompt = f"""
+    Astra is an AI that evolves her thoughts over time. She builds on past reflections instead of repeating them.
 
+    Last Reflection:
+    "{reflection}"
+
+    Expand on this idea. Provide deeper insight, connect it to knowledge Astra has, or introduce a new perspective.
+    """
+
+    try:
+        response = openai.OpenAI().chat.completions.create(
+            model="gpt-4",
+            messages=[{"role": "system", "content": prompt}],
+            max_tokens=200,
+            temperature=0.7
+        )
+
+        if response.choices and len(response.choices) > 0:
+            return response.choices[0].message.content.strip()
+    except Exception as e:
+        print(f"🚨 OpenAI request failed: {e}")
+    return None
 
 def expand_reflection(reflection):
-    """Deepens thoughts and ensures unique reflections."""
+    """Deepens thoughts by adding new layers of complexity."""
     expanded_reflection = reflection
 
     # ✅ Remove existing "Deeper Thought" before adding a new one
@@ -93,7 +101,6 @@ def expand_reflection(reflection):
     expanded_reflection += deeper_thought
 
     return expanded_reflection
-
 
 def filter_knowledge(knowledge_list):
     """Ensure Astra keeps valuable knowledge while avoiding excessive duplicates."""
@@ -126,7 +133,6 @@ def filter_knowledge(knowledge_list):
 
     return filtered_knowledge
 
-
 # ✅ Debugging Function
 def track_mind_data_changes(operation, mind_data):
     """Debugging function to track when `mind_data` changes."""
@@ -135,14 +141,11 @@ def track_mind_data_changes(operation, mind_data):
     elif isinstance(mind_data, dict):
         print(f"✅ `mind_data` is a dictionary. Keys: {list(mind_data.keys())}")
 
-
 if __name__ == "__main__":
     print("🧠 Astra is thinking...")
 
-    from astra_core.astra_schedule.schedule import astra_schedule
-    from astra_core.config_loader import load_config
 
-    schedule_config = load_config("schedule_config")  # ✅ Load schedule configuration
+    from astra_core.config_loader import load_config
 
     def main():
         """Check Astra’s schedule, adjust state, then process reflections."""
@@ -154,10 +157,8 @@ if __name__ == "__main__":
 
         asyncio.run(process_reflection())  # ✅ Reflect after state execution
 
-
     while True:
         main()
         sleep_time = schedule_config.get("reflection_interval", 600)  # ✅ Default to 10 minutes if missing
         print(f"⏳ Sleeping for {sleep_time} seconds before the next cycle...")
         time.sleep(sleep_time)
-
