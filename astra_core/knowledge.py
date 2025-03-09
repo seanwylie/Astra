@@ -20,6 +20,7 @@ class KnowledgeManager:
         self.config = load_config("lookup_config")
         debug_log("Loading")  
         self.mind_data = load_mind()  # ✅ Load Astra's memory
+        self.mind_data.setdefault("past_conversations", [])  # ✅ Ensure past conversations are stored
 
         # ✅ Remove duplicates while keeping order
         seen = set()
@@ -32,6 +33,14 @@ class KnowledgeManager:
         if "stored_knowledge" not in self.mind_data or not isinstance(self.mind_data["stored_knowledge"], list):
             print("🚨 Fixing `stored_knowledge`, ensuring it's a list!")
             self.mind_data["stored_knowledge"] = []
+    def store_conversation(self, message):
+        """Stores past conversations so Astra can reference them later."""
+        self.mind_data["past_conversations"].append(message)
+
+        # ✅ Keep only the last 100 interactions to prevent memory bloat
+        self.mind_data["past_conversations"] = self.mind_data["past_conversations"][-100:]
+
+        save_mind(self.mind_data)
 
     def should_lookup_concept(self, concept, force=False):
         """Determine if Astra should look up a concept based on meaningful stored knowledge."""

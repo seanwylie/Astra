@@ -38,51 +38,44 @@ def refine_knowledge(existing_ideas, mind_data):
     if concept_1[:50] in concept_2 or concept_2[:50] in concept_1:
         return None
 
-    connection_phrases = general_config["connection_phrases"]
-    merged_idea = f"{random.choice(connection_phrases)} {concept_1} and {concept_2}."
+    # ✅ Ask OpenAI to reason about these concepts
+    reasoning = query_openai_for_knowledge_merge(concept_1, concept_2)
+
+    merged_idea = reasoning if reasoning else f"{concept_1} and {concept_2} are related concepts."
 
     # ✅ Ensure no duplication
     if merged_idea not in mind_data["stored_knowledge"]:
         mind_data["stored_knowledge"].append(merged_idea)
         print(f"🔹 Refined knowledge added. New count: {len(mind_data['stored_knowledge'])}")
 
-        # ✅ Limit pruning to 3% of knowledge
-        MAX_REMOVAL_PERCENT = 0.03
-        max_removal_count = max(3, int(len(mind_data["stored_knowledge"]) * MAX_REMOVAL_PERCENT))
-
-        # ✅ Prevent over-pruning if too little knowledge remains
-        MIN_KNOWLEDGE_THRESHOLD = 100
-        if len(mind_data["stored_knowledge"]) <= MIN_KNOWLEDGE_THRESHOLD:
-            print(f"🚨 Too little knowledge remaining! Skipping pruning. Count: {len(mind_data['stored_knowledge'])}")
-            return merged_idea
-
-        # ✅ Optimize redundant comparisons
-        removed_items = []
-        removal_count = 0
-        redundant_items = set()
-
-        for c1, c2 in [(c1, c2) for c1 in mind_data["stored_knowledge"] for c2 in mind_data["stored_knowledge"] if c1 != c2]:
-            if removal_count >= max_removal_count:
-                break
-
-            if is_related(c1, c2):
-                if c1 not in redundant_items:
-                    mind_data["stored_knowledge"].remove(c1)
-                    removed_items.append(c1[:50])
-                    redundant_items.add(c1)
-                    removal_count += 1
-
-                if c2 not in redundant_items and removal_count < max_removal_count:
-                    mind_data["stored_knowledge"].remove(c2)
-                    removed_items.append(c2[:50])
-                    redundant_items.add(c2)
-                    removal_count += 1
-
-        if removed_items:
-            print(f"🗑 Pruned {removal_count} knowledge items. Remaining count: {len(mind_data['stored_knowledge'])}")
-
     return merged_idea
 
+def query_openai_for_knowledge_merge(concept_1, concept_2):
+    """Use OpenAI to help Astra reason about merging knowledge concepts."""
+    print(f"🤖 Merging knowledge via OpenAI: {concept_1} & {concept_2}")
+
+    prompt = f"""
+    Astra is an AI learning to merge knowledge efficiently.
+    Given these two concepts: 
+    - {concept_1}
+    - {concept_2}
+
+    Explain how they are related in a way that deepens Astra’s understanding.
+    Keep the explanation concise and insightful.
+    """
+
+    response = openai.OpenAI().chat.completions.create(
+        model="gpt-4",
+        messages=[{"role": "system", "content": prompt}],
+        max_tokens=150,
+        temperature=0.7
+    )
+
+    if response.choices and len(response.choices) > 0:
+        return response.choices[0].message.content.strip()
+    else:
+        print(f"⚠ OpenAI reasoning failed for '{concept_1}' & '{concept_2}'.")
+        return None
 
 
 def is_related(concept_1, concept_2):
@@ -114,42 +107,61 @@ def deepen_reflection(reflection):
     deeper_question = random.choice(expansion_templates)
     return f"{reflection}\n\n🔍 Deeper Thought: {deeper_question}"
 
-def fetch_wikipedia_summary(query):
-    """Fetch a Wikipedia summary while handling disambiguation, rate limits, and missing pages."""
-    try:
-        print(f"🌐 Searching Wikipedia for: {query}")
-        summary = wikipedia.summary(query, sentences=2)
+import openai  # ✅ Add OpenAI for tertiary reasoning
+import os
+from dotenv import load_dotenv
+load_dotenv()
+
+class KnowledgeExpander:
+    def __init__(self):
+        self.client = openai.OpenAI(api_key=os.getenv("OPENAI_API_KEY"))  # ✅ Load API key properly
+
+    def fetch_wikipedia_summary(self, query):
+        """Fetch a Wikipedia summary while handling disambiguation, rate limits, and missing pages."""
+        try:
+            print(f"🌐 Searching Wikipedia for: {query}")
+            summary = wikipedia.summary(query, sentences=2)
+            return summary
         
-        # ✅ Ensure response is always a string
-        soup = BeautifulSoup(summary, "html.parser")
-        summary = soup.get_text()
+        except wikipedia.exceptions.DisambiguationError as e:
+            print(f"⚠ Wikipedia disambiguation triggered for '{query}', checking alternatives...")
+            for option in e.options:
+                if "philosophy" in option or "science" in option or "concept" in option:
+                    print(f"🔍 Trying refined match: {option}")
+                    return self.fetch_wikipedia_summary(option)
 
-        return summary
-    
-    except wikipedia.exceptions.DisambiguationError as e:
-        print(f"⚠ Wikipedia disambiguation triggered for '{query}', checking alternatives...")
-        # ✅ Look for the best match instead of picking the first option blindly
-        for option in e.options:
-            if "philosophy" in option or "science" in option or "concept" in option:
-                print(f"🔍 Trying refined match: {option}")
-                return fetch_wikipedia_summary(option)
+            print(f"⚠ No strong Wikipedia match found for '{query}'. Skipping.")
+            return None
+
+        except wikipedia.exceptions.PageError:
+            print(f"⚠ No Wikipedia page found for '{query}'. Trying OpenAI reasoning...")
+            return self.query_openai_for_explanation(query)  # ✅ NEW: Ask OpenAI when Wikipedia fails
+
+        except Exception as e:
+            print(f"⚠ Wikipedia lookup failed: {e}")
+            return None
+
+    def query_openai_for_explanation(self, concept):
+        """Query OpenAI when Wikipedia and dictionary lookups fail."""
+        print(f"🤖 Asking OpenAI about: {concept}")
+
+        prompt = f"""
+        Astra is an AI trying to learn about the world. She wants to understand concepts logically. 
+        Explain the term '{concept}' in a concise and insightful way, as if teaching a curious AI.
+        """
         
-        print(f"⚠ No strong Wikipedia match found for '{query}'. Skipping.")
-        return None
+        response = self.client.chat.completions.create(
+            model="gpt-4",
+            messages=[{"role": "system", "content": prompt}],
+            max_tokens=100,
+            temperature=0.7
+        )
 
-    except wikipedia.exceptions.PageError:
-        print(f"⚠ No Wikipedia page found for '{query}'. Skipping.")
-        return None
-
-    except wikipedia.exceptions.HTTPTimeoutError:
-        print("⚠ Wikipedia request timed out. Retrying...")
-        time.sleep(2)
-        return fetch_wikipedia_summary(query)
-
-    except wikipedia.exceptions.WikipediaException as e:
-        print(f"⚠ Wikipedia lookup failed: {e}")
-        return None
-
+        if response.choices and len(response.choices) > 0:
+            return response.choices[0].message.content.strip()
+        else:
+            print(f"⚠ OpenAI response missing for '{concept}'.")
+            return None
 
 
 def is_term_or_phrase(concept):

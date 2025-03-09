@@ -77,6 +77,9 @@ async def on_message(message):
     user_message = message.content
     user_id = str(message.author.id)
 
+    # ✅ Store the conversation
+    knowledge_manager.store_conversation(f"{message.author.name}: {user_message}")
+
     # ✅ Get trust level, mood, and curiosity
     trust_level = get_trust_level(user_id)
     mood = mood_manager.current_mood
@@ -87,12 +90,14 @@ async def on_message(message):
     trust_adjustment = values["trust_based_mood_adjustment"]["high_trust"] if trust_level > 0 else values["trust_based_mood_adjustment"]["low_trust"]
     curiosity_boost = values["curiosity_response_boost"] if curiosity > values["curiosity_threshold"] else 0
 
-    # ✅ Final engagement probability calculation
     engagement_probability = min(1.0, base_engagement_chance * trust_adjustment + curiosity_boost)
 
     if random.random() > engagement_probability:
         print(f"🤖 Skipping response (Trust: {trust_level}, Mood: {mood}, Engagement Probability: {engagement_probability:.2f})")
         return  # Astra **chooses** not to engage
+
+    # ✅ Retrieve past conversations for context
+    past_conversations = knowledge_manager.mind_data.get("past_conversations", [])
 
     # ✅ Generate & Send a Thoughtful Response
     internal_state = {
@@ -101,7 +106,12 @@ async def on_message(message):
         "personality": get_personality_state().get("active_traits", ["thoughtful"])
     }
 
-    response = message_generator.generate_message(user_message=user_message, internal_state=internal_state)
+    response = message_generator.generate_message(
+        user_message=user_message, 
+        internal_state=internal_state, 
+        past_conversations=past_conversations
+    )
+
     await message.channel.send(response)
 
 
@@ -175,14 +185,18 @@ async def on_ready():
     """Astra is now online and sends an intelligent startup message."""
     channel = bot.get_channel(CHANNEL_ID)
     if channel:
+        past_conversations = knowledge_manager.mind_data.get("past_conversations", [])
         intro_message = message_generator.generate_message(
-            user_message="Astra is online!", 
+            user_message="Astra is online and ready!", 
             internal_state={
                 "mood": mood_manager.current_mood,
                 "curiosity": values.get("curiosity_level", 1.0),
-                "personality": get_personality_state().get("active_traits", ["thoughtful"])
-            }
+                "personality": get_personality_state().get("active_traits", ["thoughtful"]),
+                "trust_level": get_trust_level("system")  # ✅ Allow Astra to adapt based on server-wide trust
+            },
+            past_conversations=past_conversations
         )
+
         await channel.send(intro_message)
 
 bot.run(TOKEN)
