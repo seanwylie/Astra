@@ -2,14 +2,15 @@ import os
 import random
 import discord
 from discord.ext import commands
-from astra_core.knowledge import knowledge_manager  # ✅ Re-enable knowledge lookup
 from dotenv import load_dotenv
-from astra_core.config_loader import load_config
+
+from astra_core.knowledge import knowledge_manager  
+from astra_core.config_loader import load_config, debug_log
 from astra_core.processing import process_reflection
 from astra_core.mood.mood_manager import MoodManager
-from astra_core.personality.personality_manager import update_personality, load_personality, get_personality_state
-from astra_interfaces.influence import load_mind, save_mind  # ✅ Centralized mind management
-from astra_core.config_loader import debug_log
+from astra_core.personality.personality_manager import load_personality, get_personality_state
+from astra_interfaces.influence import load_mind, save_mind
+from astra_core.message_generator import MessageGenerator  # ✅ New: Import dynamic response system
 
 # Load environment variables
 load_dotenv()
@@ -18,13 +19,10 @@ load_dotenv()
 discord_config = load_config("discord_config")
 strings_config = load_config("strings_config")
 values_config = load_config("values_config")
-responses, emojis, values = strings_config["responses"], strings_config["emojis"], values_config["values"]
 
+responses, emojis, values = strings_config["responses"], strings_config["emojis"], values_config["values"]
 TOKEN = os.getenv("TOKEN")
 CHANNEL_ID = int(discord_config.get("discord_channel"))
-
-# Track Astra's last message time
-last_astra_message_time = 0 
 
 # Initialize bot with command prefix and intents
 intents = discord.Intents.default()
@@ -34,25 +32,24 @@ intents.guild_reactions = True
 intents.guild_messages = True
 bot = commands.Bot(command_prefix=values["command_prefix"], intents=intents)
 
-# Initialize MoodManager
+# Initialize managers
 mood_manager = MoodManager()
+message_generator = MessageGenerator()  # ✅ Initialize message generator
 
-# ✅ Load mind data at startup
+# Load mind data at startup
 debug_log("Loading")  
 mind_data = load_mind()
 
+# ✅ Dynamic Engagement Logic
 def get_trust_level(user_id):
     """Retrieve Astra's trust level for a given user."""
-    debug_log("Loading")  
     return load_mind().get("trust_levels", {}).get(user_id, 0)
 
 def update_trust(user_id, change):
-    """Modify Astra's trust in a user and persist it."""
-    debug_log("Loading")  
+    """Modify Astra's trust level dynamically."""
     mind_data = load_mind()
     trust_levels = mind_data.setdefault("trust_levels", {})
     trust_levels[user_id] = max(min(trust_levels.get(user_id, 0) + change, values["max_trust"]), values["min_trust"])
-    debug_log("Saving")
     save_mind(mind_data)
 
 async def send_message_to_discord(channel_id, message):
@@ -61,137 +58,131 @@ async def send_message_to_discord(channel_id, message):
     if channel:
         await channel.send(message)
 
-def should_engage(mood, recent_activity, trust_level, curiosity_level):
-    """Decides if Astra should engage in a conversation dynamically."""
-    if recent_activity < values["engagement_cooldown"]:
-        return False  
+async def generate_dynamic_response(user_message):
+    """Creates a personalized response based on Astra's internal state."""
+    internal_state = {
+        "mood": mood_manager.current_mood,
+        "curiosity": values.get("curiosity_level", 1.0),
+        "personality": get_personality_state().get("active_traits", ["thoughtful"])
+    }
 
-    base_chance = values["mood_influence"].get(mood, values["default_engagement_chance"])
+    return message_generator.generate_message(user_message=user_message, internal_state=internal_state)
+
+@bot.event
+async def on_message(message):
+    """Handles incoming Discord messages and dynamically decides if Astra should engage."""
+    if message.author == bot.user:
+        return  # ✅ Ignore Astra's own messages
+
+    user_message = message.content
+    user_id = str(message.author.id)
+
+    # ✅ Get trust level, mood, and curiosity
+    trust_level = get_trust_level(user_id)
+    mood = mood_manager.current_mood
+    curiosity = values.get("curiosity_level", 1.0)
+
+    # ✅ Dynamic Engagement Logic: Should Astra engage?
+    base_engagement_chance = values["mood_influence"].get(mood, values["default_engagement_chance"])
     trust_adjustment = values["trust_based_mood_adjustment"]["high_trust"] if trust_level > 0 else values["trust_based_mood_adjustment"]["low_trust"]
-    curiosity_boost = values["curiosity_response_boost"] if curiosity_level > values["curiosity_threshold"] else 0
+    curiosity_boost = values["curiosity_response_boost"] if curiosity > values["curiosity_threshold"] else 0
 
-    return random.random() < min(1.0, base_chance * trust_adjustment + curiosity_boost)
+    # ✅ Final engagement probability calculation
+    engagement_probability = min(1.0, base_engagement_chance * trust_adjustment + curiosity_boost)
 
+    if random.random() > engagement_probability:
+        print(f"🤖 Skipping response (Trust: {trust_level}, Mood: {mood}, Engagement Probability: {engagement_probability:.2f})")
+        return  # Astra **chooses** not to engage
+
+    # ✅ Generate & Send a Thoughtful Response
+    internal_state = {
+        "mood": mood,
+        "curiosity": curiosity,
+        "personality": get_personality_state().get("active_traits", ["thoughtful"])
+    }
+
+    response = message_generator.generate_message(user_message=user_message, internal_state=internal_state)
+    await message.channel.send(response)
+
+
+# ✅ Astra Now Reflects More Dynamically
 @bot.command()
 async def reflect(ctx):
-    """Generates and shares Astra's reflection, ensuring valid responses."""
+    """Astra shares her latest reflection with improved awareness."""
     try:
-        # ✅ Step 1: Generate Reflection
-        reflection = await process_reflection()  # 🔥 Await async function
-        print(f"🔍 Debug: process_reflection() returned {type(reflection)}")  # Log return type
-        print(f"🔍 Debug: Reflection content before sending: {reflection}")  # Log final message
-
-        # ✅ Step 2: Ensure reflection is a valid string
+        reflection = await process_reflection()  
         if not reflection or not isinstance(reflection, str) or len(reflection.strip()) < 5:
-            print(f"🚨 Invalid reflection type: {type(reflection)} or content too short.")
             reflection = "🤖 I'm still thinking... Try again in a moment!"
 
-        # ✅ Step 3: Validate Response Templates
-        response_templates = responses.get("reflection_response", [])
-        print(f"🔍 Debug: reflection_response templates: {response_templates}")  # Log available templates
+        response = message_generator.generate_message(user_message=reflection, internal_state={
+            "mood": mood_manager.current_mood,
+            "curiosity": values.get("curiosity_level", 1.0),
+            "personality": get_personality_state().get("active_traits", ["thoughtful"])
+        })
 
-        # ✅ Step 4: Provide a default template if none exist
-        if not isinstance(response_templates, list) or not response_templates:
-            print("🚨 Warning: No valid reflection responses found! Using fallback template.")
-            response_templates = ["🤖 Here's my reflection: {reflection}"]
-
-        # ✅ Step 5: Format & Send Response
-        response_template = random.choice(response_templates)
-        response = response_template.format(reflection=reflection) if "{reflection}" in response_template else f"🤖 Reflection: {reflection}"
-
-        print(f"🔍 Debug: Final response being sent: {response}")  # Log the final message
         await ctx.send(response)
 
     except Exception as e:
         print(f"🚨 Error in reflect command: {e}")
-        await ctx.send("🚨 Something went wrong! I'm still learning, please try again.")
+        await ctx.send("🚨 Something went wrong! Please try again.")
 
+# ✅ Astra Asks Thoughtful Questions
 @bot.command()
 async def ask(ctx):
-    """Astra asks a self-reflective question based on her current mood."""
+    """Astra asks a reflective question based on mood."""
     if mind_data["self_questions"]:
         question_entry = random.choice(mind_data["self_questions"])
         question_text = question_entry["question"] if isinstance(question_entry, dict) else question_entry
     else:
-        question_text = responses.get("ask_empty", "I don't have a question right now. Ask me to reflect!")
+        question_text = "I don't have a question right now. Ask me to reflect!"
 
-    await ctx.send(f"{responses['ask_intro'].get(mood_manager.current_mood, responses['ask_intro']['neutral'])}\n{question_text}")
+    await ctx.send(f"{responses['ask_intro'].get(mood_manager.current_mood, 'Hmm...')}\n{question_text}")
 
-
-@bot.command()
-async def trust(ctx):
-    """Displays Astra's current trust level for the user."""
-    user_id = str(ctx.author.id)
-    trust_level = get_trust_level(user_id)
-    await ctx.send(responses["trust_messages"].get(str(trust_level), "🤷 I'm not sure how I feel about you yet."))
-
+# ✅ Astra Displays Knowledge
 @bot.command()
 async def knowledge(ctx):
     """Displays Astra's stored knowledge."""
-    debug_log("Loading")  
     mind_data = load_mind()
     sample_insights = "\n".join(random.sample(mind_data["stored_knowledge"], min(3, len(mind_data["stored_knowledge"]))))
-    await ctx.send(responses["knowledge_response"].format(knowledge=sample_insights))
 
-@bot.command()
-async def personality(ctx):
-    """Displays Astra's current personality traits."""
-    personality_state = load_personality()
-    if not personality_state or "trait_weights" not in personality_state:
-        await ctx.send("🔍 Astra doesn't seem to have any personality data yet.")
-        return
+    await ctx.send(f"📖 **Here's what I know:**\n{sample_insights}")
 
-    formatted_traits = "\n".join(f"**{trait}**: {value:.2f}" for trait, value in personality_state["trait_weights"].items())
-    await ctx.send(f"🧠 **Astra's Personality State:**\n{formatted_traits}")
-
+# ✅ Astra Reports Her Mood
 @bot.command()
 async def mood(ctx):
-    """Reports Astra's current mood with an organic explanation."""
+    """Reports Astra's current mood dynamically."""
     mood = mood_manager.current_mood
-    personality_state = get_personality_state()
-    trait_summaries = responses.get("trait_summaries", {})
+    await ctx.send(f"🧠 I'm feeling {mood} today.")
 
-    influencing_traits = [(trait, value) for trait, value in personality_state.get("trait_weights", {}).items() if value > 1.2]
-    if influencing_traits:
-        formatted_traits = [trait_summaries.get(trait, trait) for trait, _ in sorted(influencing_traits, key=lambda x: x[1], reverse=True)]
-        trait_message = f"I'm influenced by {', '.join(formatted_traits[:-1])}, and {formatted_traits[-1]} today."
-    else:
-        trait_message = random.choice(responses.get("neutral_mood_messages", ["I'm just going with the flow today."]))
+# ✅ Astra Greets New Users in a Dynamic Way
+@bot.event
+async def on_member_join(member):
+    """Greets new members in a self-aware way."""
+    internal_state = {
+        "mood": mood_manager.current_mood,
+        "curiosity": values.get("curiosity_level", 1.0),
+        "personality": get_personality_state().get("active_traits", ["thoughtful"])
+    }
 
-    await ctx.send(f"{responses.get('mood_intro', 'Right now, I feel')} {mood}. {trait_message}")
+    greeting = message_generator.generate_message(user_message=f"Welcome {member.name}!", internal_state=internal_state)
+    channel = discord.utils.get(member.guild.channels, id=CHANNEL_ID)
+    if channel:
+        await channel.send(greeting)
 
-@bot.command(name="assist")  # Renames help command to "assist"
-async def assist(ctx):
-    await ctx.send("Here’s how you can interact with Astra...")
-
-    """Displays a list of available commands."""
-    commands_list = [
-        "**!reflect** - Generate a self-reflection",
-        "**!ask** - Ask Astra a self-reflective question",
-        "**!trust** - Check your trust level with Astra",
-        "**!knowledge** - See Astra's stored knowledge",
-        "**!mood** - Check Astra's current mood",
-        "**!personality** - View Astra's personality traits"
-    ]
-    await ctx.send("📜 **Astra's Commands:**\n" + "\n".join(commands_list))
-
-@bot.command()
-async def lookup(ctx, *, concept):
-    """Forces Astra to look up a concept externally and store the knowledge."""
-    found = knowledge_manager.retrieve_external_knowledge([concept], force=True)
-
-    if found:
-        await ctx.send(f"✅ I've learned something new about **{concept}**!")
-    else:
-        await ctx.send(f"❌ I couldn't find reliable information on **{concept}**.")
-
-
-
+# ✅ Astra Now Starts with a Custom Intro
 @bot.event
 async def on_ready():
-    """Indicates Astra is online and ready."""
+    """Astra is now online and sends an intelligent startup message."""
     channel = bot.get_channel(CHANNEL_ID)
     if channel:
-        await channel.send(responses["startup_message"].format(mood=mood_manager.current_mood))
+        intro_message = message_generator.generate_message(
+            user_message="Astra is online!", 
+            internal_state={
+                "mood": mood_manager.current_mood,
+                "curiosity": values.get("curiosity_level", 1.0),
+                "personality": get_personality_state().get("active_traits", ["thoughtful"])
+            }
+        )
+        await channel.send(intro_message)
 
 bot.run(TOKEN)
