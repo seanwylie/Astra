@@ -1,6 +1,7 @@
 import time
 import json
 import random
+import asyncio
 from astra_schedule.dream import start_dreaming
 from astra_schedule.school import start_learning
 from astra_schedule.play import start_playtime
@@ -69,47 +70,54 @@ def get_random_notification(mode):
     return random.choice(messages) if messages else f"Astra is now in {mode} mode!"
 
 
-def astra_schedule():
-    """Manages Astra's daily routine and switches between states."""
-    from astra_core.reflection_helper import handle_reflection  # ✅ Prevent circular import
+async def astra_schedule():
+    """Manages Astra's daily routine and switches between states asynchronously."""
+    
+    # 🔥 Lazy import to break circular dependency
+    from astra_core.processing import process_reflection
 
     global last_state
 
     while True:
-        current_mode = get_current_mode()  # ✅ Get Astra's current mode
-        curiosity_level = set_curiosity_level(current_mode)  # ✅ Get curiosity level
+        current_mode = get_current_mode()
+        curiosity_level = set_curiosity_level(current_mode)
 
-        if current_mode != last_state:  # ✅ Notify only on state changes
+        print(f"🔄 Processing {current_mode} Mode | Curiosity: {curiosity_level}")
+
+        if current_mode != last_state:
             notification = get_random_notification(current_mode)
             send_sms(notification)
             print(f"📨 SMS Sent: {notification}")
             log_status(f"Astra is transitioning into {current_mode} mode.")
-            last_state = current_mode  # ✅ Track last known state
+            last_state = current_mode
 
         if current_mode == "dream":
             print("🌙 Astra is in Dream Mode.")
-            start_dreaming()
+            await start_dreaming()
 
         elif current_mode == "dinner":
             print("🍽️ Astra is in Dinner Time.")
-            start_dinner_time()
+            await start_dinner_time()
 
         elif current_mode == "school":
             print("📚 Astra is in School Mode.")
-            start_learning()
+            await start_learning()  # ✅ Ensure this is awaited
 
         elif current_mode == "play":
             print("🎮 Astra is in Playtime Mode.")
-            start_playtime()
+            await start_playtime()
 
         else:
             print("😴 Astra is in Sleep Mode. No active schedule detected.")
-            start_sleeping()
+            await start_sleeping()
 
         # ✅ Ensure curiosity level updates based on actual mode
         curiosity_level = set_curiosity_level(get_current_mode())
         print(f"🔍 Astra Curiosity Level: {curiosity_level} in {current_mode} mode")
 
-        # ✅ Run reflection processing at configured interval with curiosity adjustment
-        handle_reflection(curiosity_level)
-        time.sleep(schedule_config["reflection_interval"])  # ✅ Config-defined interval
+        if current_mode != "dream":
+            print(f"🔍 Debug: Calling handle_reflection({curiosity_level})")
+            await process_reflection()  # ✅ Now correctly imported
+
+        print(f"🔁 Sleeping for {schedule_config['reflection_interval']} seconds before next loop...")
+        await asyncio.sleep(schedule_config["reflection_interval"])  # ✅ Ensure async behavior

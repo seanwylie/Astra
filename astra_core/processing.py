@@ -2,6 +2,7 @@ import random
 import os
 import sys
 import asyncio
+import time
 from fuzzywuzzy import fuzz
 
 # ✅ Ensure Python knows where to find Astra’s core modules
@@ -14,6 +15,7 @@ from astra_core.expansion import refine_knowledge
 from astra_interfaces.influence import load_mind, save_mind
 from astra_core.config_loader import load_config
 from astra_core.config_loader import debug_log
+
 
 general_config = load_config("general_config")
 
@@ -40,42 +42,41 @@ async def process_reflection():
     # ✅ Extract unknown terms
     unknown_terms = knowledge_manager.extract_unknown_terms(recent_reflections)
     if unknown_terms:
-        found_new_knowledge = knowledge_manager.retrieve_external_knowledge(unknown_terms)
+        found_new_knowledge = await asyncio.to_thread(knowledge_manager.retrieve_external_knowledge, unknown_terms)  # ✅ Ensures non-blocking call
         if found_new_knowledge:
             for knowledge in found_new_knowledge:
                 if knowledge not in mind_data["stored_knowledge"]:
                     mind_data["stored_knowledge"].append(knowledge)
-            save_mind(mind_data)
+
+            await asyncio.to_thread(save_mind, mind_data)  # ✅ Ensure this runs asynchronously
 
             # ✅ Reload mind
             reloaded_mind_data = load_mind()
             missing_knowledge = set(found_new_knowledge) - set(reloaded_mind_data["stored_knowledge"])
             if missing_knowledge:
                 mind_data["stored_knowledge"].extend(missing_knowledge)
-                save_mind(mind_data)
+                await asyncio.to_thread(save_mind, mind_data)  # ✅ Ensure async
 
-    new_reflection = generate_reflection(mind_data["stored_knowledge"], mind_data["self_reflections"])
-
-    # 🔍 Debug: Check what we are returning
-    if isinstance(new_reflection, dict):
-        print(f"🚨 process_reflection() is returning a dict! {new_reflection}")
-    elif not isinstance(new_reflection, str):
-        print(f"🚨 process_reflection() returned an unexpected type: {type(new_reflection)}")
+    new_reflection = await asyncio.to_thread(generate_reflection, mind_data["stored_knowledge"], mind_data["self_reflections"])
 
     # ✅ Ensure return is **always** a string
-    if not new_reflection or not isinstance(new_reflection, str) or len(new_reflection.strip()) < 10:
-        return "🤖 I'm still thinking... Try again in a moment!"
+    if not new_reflection or not isinstance(new_reflection, str) or len(new_reflection.strip()) < 20:
+        print("⚠ Skipping reflection - too short!")
+        return None
 
-    expanded_reflection = expand_reflection(new_reflection)
+    expanded_reflection = await asyncio.to_thread(expand_reflection, new_reflection)
 
-    if expanded_reflection not in mind_data["self_reflections"]:
+    if not any(fuzz.ratio(expanded_reflection.lower(), r.lower()) > 95 for r in mind_data["self_reflections"]):
         mind_data["self_reflections"].append(expanded_reflection)
 
-    save_mind(mind_data)
+    latest_mind = load_mind()
+    if len(mind_data["stored_knowledge"]) > len(latest_mind.get("stored_knowledge", [])):
+        await asyncio.to_thread(save_mind, mind_data)
+    else:
+        print("⚠ Prevented overwriting mind file with less data!")
 
     print(f"🔍 Debug: process_reflection() final return type: {type(expanded_reflection)}")
     return str(expanded_reflection)  # ✅ Ensure we **always** return a string
-
 
 
 def expand_reflection(reflection):
@@ -135,9 +136,28 @@ def track_mind_data_changes(operation, mind_data):
         print(f"✅ `mind_data` is a dictionary. Keys: {list(mind_data.keys())}")
 
 
-# ✅ Import `astra_schedule` only when running as the main script
 if __name__ == "__main__":
     print("🧠 Astra is thinking...")
+
     from astra_core.astra_schedule.schedule import astra_schedule
-    asyncio.run(process_reflection())  # ✅ Ensure async function is properly executed
+    from astra_core.config_loader import load_config
+
+    schedule_config = load_config("schedule_config")  # ✅ Load schedule configuration
+
+    def main():
+        """Check Astra’s schedule, adjust state, then process reflections."""
+        from astra_core.astra_schedule.schedule import astra_schedule, get_current_mode
+
+        astra_schedule()  # ✅ Ensure Astra transitions properly
+        current_mode = get_current_mode()  # ✅ Fetch the current mode
+        print(f"🕒 Current Mode: {current_mode}")
+
+        asyncio.run(process_reflection())  # ✅ Reflect after state execution
+
+
+    while True:
+        main()
+        sleep_time = schedule_config.get("reflection_interval", 600)  # ✅ Default to 10 minutes if missing
+        print(f"⏳ Sleeping for {sleep_time} seconds before the next cycle...")
+        time.sleep(sleep_time)
 

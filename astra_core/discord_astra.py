@@ -178,7 +178,7 @@ async def assist(ctx):
 @bot.command()
 async def lookup(ctx, *, concept):
     """Forces Astra to look up a concept externally and store the knowledge."""
-    found = knowledge_manager.retrieve_external_knowledge([concept])
+    found = knowledge_manager.retrieve_external_knowledge([concept], force=True)
 
     if found:
         await ctx.send(f"✅ I've learned something new about **{concept}**!")

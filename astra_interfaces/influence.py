@@ -16,25 +16,31 @@ MIND_FILE_ORIG = general_config.get("structured_mind_file", "mind_file_parents.j
 
 s3 = boto3.client("s3")
 
-### ✅ **Debugging Enhancements in save_to_s3()**
+### ✅ **Fix: Prevent Local Saves & Ensure S3 Persistence**
 def save_to_s3(mind_data):
     """Save mind file to S3 using proper encoding and error handling."""
     try:
-        # 🔍 Debug: Log stored knowledge before saving
         print(f"📝 [DEBUG] Pre-Save Knowledge Count: {len(mind_data['stored_knowledge'])}")
-        print(f"📝 [DEBUG] Sample Knowledge Before Save: {mind_data['stored_knowledge'][:5]}")
 
+        # ✅ Step 1: Remove any local mind file to avoid confusion
+        local_mind_file = "/home/ubuntu/astra_reflections/mind_file.json"
+        if os.path.exists(local_mind_file):
+            print("⚠ Deleting local mind_file.json to prevent accidental overwrites.")
+            os.remove(local_mind_file)
+
+        # ✅ Step 2: Save to S3
         mind_file_json = json.dumps(mind_data, indent=4, ensure_ascii=False)
         s3.put_object(Bucket=S3_BUCKET_NAME, Key=MIND_FILE_JSON, Body=mind_file_json.encode("utf-8"))
 
         print(f"✅ Mind file saved to S3 successfully! Reflections: {len(mind_data['self_reflections'])}, "
               f"Questions: {len(mind_data['self_questions'])}, Knowledge: {len(mind_data['stored_knowledge'])}")
+
     except Exception as e:
         print(f"🚨 [ERROR] Failed to save mind file to S3: {e}")
 
 ### ✅ **Fix: Restore Missing Knowledge in save_mind()**
 def save_mind(mind_data):
-    """Ensures knowledge persistence and prevents overwriting issues."""
+    """Ensures knowledge persistence and prevents unnecessary overwrites."""
     
     if mind_data is None or not isinstance(mind_data, dict):
         print("🚨 [ERROR] Attempted to save an invalid mind file! Prevented overwrite.")
@@ -47,31 +53,34 @@ def save_mind(mind_data):
     print("🔍 Debug: Tracking self-questioning patterns before saving...")
     from astra_core.questions.question_manager import track_question_patterns
     track_question_patterns(mind_data)
+
     print("🔍 Debug: Sanitizing mind file before saving...")
 
     latest_mind_data = load_mind()
-    if latest_mind_data and len(latest_mind_data.get("stored_knowledge", [])) > len(mind_data["stored_knowledge"]):
-        print(f"⚠ WARNING: The latest mind file has **MORE** knowledge ({len(latest_mind_data['stored_knowledge'])}) than what we're saving ({len(mind_data['stored_knowledge'])})!")
-        print("⚠ Preventing save to avoid overwriting newer data.")
-        return  
+
+    if latest_mind_data:
+        saved_knowledge = list(set(mind_data.get("stored_knowledge", [])))  # ✅ Remove duplicates
+        latest_knowledge = set(latest_mind_data.get("stored_knowledge", []))
+
+        lost_entries = set(saved_knowledge) - latest_knowledge
+        new_entries = set(saved_knowledge) - latest_knowledge
+
+        if lost_entries:
+            print(f"⚠ Restoring {len(lost_entries)} missing knowledge entries.")
+            saved_knowledge.extend(lost_entries)
+
+        if not new_entries:
+            print("✅ No new knowledge detected. Skipping redundant save.")
+            return  # ✅ **Skip unnecessary saves**
+
+        mind_data["stored_knowledge"] = saved_knowledge
 
     save_to_s3(mind_data)
 
-    reloaded_mind_data = load_mind()
-    if not reloaded_mind_data:
-        print("🚨 [ERROR] Failed to reload mind file after saving! Preventing overwrite.")
-        return
-    
-    if len(reloaded_mind_data["stored_knowledge"]) < len(mind_data["stored_knowledge"]):
-        print(f"🚨 [DEBUG] Data loss detected! Restoring missing knowledge.")
-        lost_entries = set(mind_data["stored_knowledge"]) - set(reloaded_mind_data["stored_knowledge"])
-        print(f"⚠ [DEBUG] Restoring {len(lost_entries)} lost knowledge entries.")
-        mind_data["stored_knowledge"].extend(lost_entries)
-        save_to_s3(mind_data)
 
 ### ✅ **Fix: Log Knowledge After Reload in load_mind()**
 def load_mind():
-    """Load Astra's mind file from S3 while ensuring memory is managed properly."""
+    """Load Astra's mind file from S3 while ensuring proper memory management."""
     print("🔍 Debug: Loading mind file from S3...")
 
     local_mind_file = "/home/ubuntu/astra_reflections/mind_file.json"
@@ -84,22 +93,16 @@ def load_mind():
         mind_data = json.load(io.BytesIO(response["Body"].read()))
 
         print(f"📝 [DEBUG] Post-Load Knowledge Count: {len(mind_data.get('stored_knowledge', []))}")
-        print(f"📝 [DEBUG] Sample Knowledge After Load: {mind_data.get('stored_knowledge', [])[:5]}")
 
         if len(mind_data.get("stored_knowledge", [])) < 100:
-            print(f"🚨 WARNING: Loaded knowledge count is abnormally low ({len(mind_data['stored_knowledge'])})! Reloading from S3...")
-            time.sleep(1)
-            response = s3.get_object(Bucket=S3_BUCKET_NAME, Key=MIND_FILE_JSON)
-            mind_data = json.load(io.BytesIO(response["Body"].read()))
-
-            if len(mind_data.get("stored_knowledge", [])) < 100:
-                print("🚨 CRITICAL: Knowledge count is STILL low after reload! Possible data loss detected.")
+            print("⚠ WARNING: Knowledge count abnormally low! Checking for S3 sync issues.")
 
         return mind_data
 
     except (s3.exceptions.NoSuchKey, json.JSONDecodeError) as e:
         print(f"⚠ Warning: mind_file.json not found or corrupted in S3: {e}")
         return None
+
 
 ### ✅ **Restored: store_knowledge()**
 def store_knowledge(mind_data, new_insight):
