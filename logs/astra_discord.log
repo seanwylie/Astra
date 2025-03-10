@@ -43,21 +43,35 @@
 [config_loader.py] 📥 [DEBUG] Loading Mind in <module>...
 [influence.py] 🔍 Debug: Loading mind file from S3...
 [influence.py] 📝 [DEBUG] Post-Load Knowledge Count: 2306
-[2025-03-09 13:14:21] [INFO    ] discord.client: logging in using static token
-[2025-03-09 13:14:21] [INFO    ] discord.gateway: Shard ID None has connected to Gateway (Session ID: 2dff1828f693fee958b710b2d5dae66b).
-[influence.py] 🔍 Debug: Tracking self-questioning patterns before saving...
-[question_tracker.py] Tracking unresolved questions...
-[question_tracker.py] ⚠ There are 1454 unresolved questions!
-[question_tracker.py] ✅ After cleanup, 1454 unresolved questions remain.
-[influence.py] 🔍 Debug: Sanitizing mind file before saving...
-[influence.py] 🔍 Debug: Loading mind file from S3...
-[influence.py] 📝 [DEBUG] Post-Load Knowledge Count: 2306
-[influence.py] ✅ No new knowledge detected. Skipping redundant save.
-[influence.py] 🔍 Debug: Tracking self-questioning patterns before saving...
-[question_tracker.py] Tracking unresolved questions...
-[question_tracker.py] ⚠ There are 1454 unresolved questions!
-[question_tracker.py] ✅ After cleanup, 1454 unresolved questions remain.
-[influence.py] 🔍 Debug: Sanitizing mind file before saving...
-[influence.py] 🔍 Debug: Loading mind file from S3...
-[influence.py] 📝 [DEBUG] Post-Load Knowledge Count: 2306
-[influence.py] ✅ No new knowledge detected. Skipping redundant save.
+[2025-03-10 03:20:31] [INFO    ] discord.client: logging in using static token
+Traceback (most recent call last):
+  File "/home/ubuntu/astra_reflections/venv/lib/python3.10/site-packages/discord/http.py", line 828, in static_login
+    data = await self.request(Route('GET', '/users/@me'))
+  File "/home/ubuntu/astra_reflections/venv/lib/python3.10/site-packages/discord/http.py", line 762, in request
+    raise HTTPException(response, data)
+discord.errors.HTTPException: 401 Unauthorized (error code: 0): 401: Unauthorized
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/usr/lib/python3.10/runpy.py", line 196, in _run_module_as_main
+    return _run_code(code, main_globals, None,
+  File "/usr/lib/python3.10/runpy.py", line 86, in _run_code
+    exec(code, run_globals)
+  File "/home/ubuntu/astra_reflections/astra_core/discord_astra.py", line 216, in <module>
+    bot.run(TOKEN)
+  File "/home/ubuntu/astra_reflections/venv/lib/python3.10/site-packages/discord/client.py", line 906, in run
+    asyncio.run(runner())
+  File "/usr/lib/python3.10/asyncio/runners.py", line 44, in run
+    return loop.run_until_complete(main)
+  File "/usr/lib/python3.10/asyncio/base_events.py", line 649, in run_until_complete
+    return future.result()
+  File "/home/ubuntu/astra_reflections/venv/lib/python3.10/site-packages/discord/client.py", line 895, in runner
+    await self.start(token, reconnect=reconnect)
+  File "/home/ubuntu/astra_reflections/venv/lib/python3.10/site-packages/discord/client.py", line 823, in start
+    await self.login(token)
+  File "/home/ubuntu/astra_reflections/venv/lib/python3.10/site-packages/discord/client.py", line 652, in login
+    data = await self.http.static_login(token)
+  File "/home/ubuntu/astra_reflections/venv/lib/python3.10/site-packages/discord/http.py", line 832, in static_login
+    raise LoginFailure('Improper token has been passed.') from exc
+discord.errors.LoginFailure: Improper token has been passed.

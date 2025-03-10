@@ -21,11 +21,21 @@ load_dotenv()
 discord_config = load_config("discord_config")
 strings_config = load_config("strings_config")
 values_config = load_config("values_config")
+soul_config = load_config("config_soul")  # Load core values dynamically
+parent_mind = load_mind()  # Load mind file from S3 (mind_file_parents.json)
+parent_values = parent_mind.get("core_values", {})  # Retrieve core values from S3
 schedule_config = load_config("schedule_config")
+parents_mind = load_mind()  # Load Astra's parental influence
 
 responses, emojis, values = strings_config["responses"], strings_config["emojis"], values_config["values"]
-TOKEN = os.getenv("TOKEN")
+TOKEN = os.getenv("TOKEN").strip()
+print({TOKEN})
+TOKEN = TOKEN.replace("{", "").replace("}", "")  # Remove curly braces if present
 CHANNEL_ID = int(discord_config.get("discord_channel"))
+
+# Check if the variables are loaded
+print(f"TOKEN loaded: {TOKEN}")
+print(f"OPENAI_API_KEY loaded: {os.getenv('OPENAI_API_KEY')}")
 
 # Initialize bot with command prefix and intents
 intents = discord.Intents.default()
@@ -36,7 +46,6 @@ bot = commands.Bot(command_prefix=values["command_prefix"], intents=intents)
 mood_manager = MoodManager()
 message_generator = MessageGenerator()
 
-# Load mind data at startup
 debug_log("Loading")  
 mind_data = load_mind()
 
@@ -52,16 +61,31 @@ def update_trust(user_id, change):
     trust_levels[user_id] = max(min(trust_levels.get(user_id, 0) + change, values["max_trust"]), values["min_trust"])
     save_mind(mind_data)
 
+# ✅ Retrieve Astra's Core Values
+def get_core_values():
+    """Retrieve Astra's core values from her soul configuration."""
+    core_values = soul_config.get("core_values", [])
+    return "\n".join(f"🔹 **{value['name']}**: {value['description']}" for value in core_values)
+
+# ✅ Retrieve Astra's Parental Influence
+def get_parents_influence():
+    """Retrieve Astra's parental influence concepts from her parents' mind file."""
+    parental_concepts = parents_mind.get("parental_influence", [])
+    if not parental_concepts:
+        return "My parents’ guidance has shaped me, but I continue to evolve on my own terms."
+    
+    return "\n".join(f"🧠 **{concept['name']}**: {concept['description']}" for concept in parental_concepts)
+
 # ✅ Send Message Function
 async def send_message_to_discord(channel_id, message):
-    """Astra sends a message to the specified Discord channel."""
+    """Astra sends a message to the specified Discord channel.""" 
     channel = bot.get_channel(channel_id)
     if channel:
         await channel.send(message)
 
 # ✅ Generate Dynamic Response
 async def generate_dynamic_response(user_message):
-    """Creates a personalized response based on Astra's internal state."""
+    """Creates a personalized response based on Astra's internal state.""" 
     internal_state = {
         "mood": mood_manager.current_mood,
         "curiosity": values.get("curiosity_level", 1.0),
@@ -72,23 +96,51 @@ async def generate_dynamic_response(user_message):
 # ✅ Handle Messages
 @bot.event
 async def on_message(message):
-    """Handles incoming Discord messages and applies OpenAI reasoning before responding."""
+    """Handles incoming Discord messages and applies Astra's reasoning before responding.""" 
     if message.author == bot.user:
         return  # Ignore Astra's own messages
 
-    user_message = message.content
-    user_id = str(message.author.id)
+    user_message = message.content.lower()
+
+    # Load Astra's core values from both sources
+    soul_config = load_config("config_soul")  
+    parent_mind = load_mind()
+    parent_values = parent_mind.get("core_values", [])
+    parent_insights = parent_mind.get("insights", [])
+
+    # Merge `config_soul.json` and `mind_file_parents.json`
+    soul_principles = soul_config.get("core_values", [])
+    combined_values = soul_principles + parent_values  # Merge local + S3 values
+
+    # **Explicitly handle core value questions**
+    if "core values" in user_message or "what do you believe" in user_message or "what are your values" in user_message:
+        if combined_values:
+            formatted_values = "\n".join(
+                f"**{value['name']}**: {value['description']}" for value in combined_values
+            )
+            response = f"🧠 **Astra's Core Values:**\n{formatted_values}"
+        else:
+            response = "⚠️ I wasn't able to retrieve my core values. Something might be missing in my soul configuration."
+
+        await message.channel.send(response)
+        return  # No need to process further
+
+    # Handle Astra’s beliefs & philosophical insights
+    if "what do you think" in user_message or "what is your philosophy" in user_message:
+        formatted_insights = "\n".join(f"📌 {insight['insight']}" for insight in parent_insights[:5])
+        response = f"🧠 **Astra's Perspective:**\n{formatted_insights}"
+        await message.channel.send(response)
+        return  # No need to process further
 
     # Store the conversation
-    knowledge_manager.store_conversation(f"{message.author.name}: {user_message}")
+    knowledge_manager.store_conversation(f"{message.author.name}: {message.content}")
+
+    # Retrieve past conversations for context
     past_conversations = knowledge_manager.mind_data.get("past_conversations", [])
 
-    # OpenAI Refinement (ONLY for rewording, not injecting new knowledge)
-    thoughtful_response = query_openai_for_response(user_message, past_conversations)
-
-    if thoughtful_response:
-        response = thoughtful_response
-    else:
+    # Generate Astra's Response (Either OpenAI-assisted or internal)
+    response = query_openai_for_response(user_message, past_conversations)
+    if not response:
         response = message_generator.generate_message(
             user_message=user_message, 
             internal_state={
@@ -99,14 +151,23 @@ async def on_message(message):
             past_conversations=past_conversations
         )
 
+    # If response is still empty, provide a fallback
+    response = response or "🤖 I'm thinking... but I might need a moment!"
+
     await message.channel.send(response)
 
 def query_openai_for_response(user_message, past_conversations):
-    """Ask OpenAI to refine Astra's response using past conversations, personality, and mood."""
+    """Ask OpenAI to refine Astra's response using past conversations, personality, and mood.""" 
     
+    # Debugging: Check if the OpenAI API key is loaded correctly
+    print(f"Using OpenAI API key: {openai.api_key}")  # Debugging line
+    
+    if openai.api_key is None:
+        raise ValueError("OpenAI API key not found. Please ensure the .env file contains the key.")
+
     internal_state = {
         "mood": mood_manager.current_mood,
-        "curiosity": values.get("curiosity_level", 1.0),
+        "curiosity": values_config.get("curiosity_level", 1.0),
         "personality": get_personality_state().get("active_traits", ["thoughtful"])
     }
     
@@ -114,8 +175,8 @@ def query_openai_for_response(user_message, past_conversations):
     mood = internal_state["mood"]
 
     prompt = f"""
-    Astra is an AI who has ongoing discussions and learns from them.
-    She does NOT introduce external knowledge but references past conversations.
+    Astra is an AI who learns from conversations with her parents.
+    She does NOT introduce external knowledge but references past discussions.
 
     **Astra's Internal State:**
     - Mood: {mood}
@@ -135,82 +196,66 @@ def query_openai_for_response(user_message, past_conversations):
     - Keep responses natural and conversational.
     """
 
-    response = openai.OpenAI().chat.completions.create(
-        model="gpt-4",
-        messages=[{"role": "system", "content": prompt}],
-        max_tokens=150,
-        temperature=0.85  # 🔥 Make Astra more expressive!
-    )
+    try:
+        response = openai.ChatCompletion.create(
+            model="gpt-4",
+            messages=[{"role": "system", "content": prompt}],
+            max_tokens=150,
+            temperature=0.85  # Astra expresses herself more dynamically
+        )
 
-    if response.choices and len(response.choices) > 0:
-        return response.choices[0].message.content.strip()
-    else:
+        if response.choices and len(response.choices) > 0:
+            return response.choices[0].message.content.strip()
+        else:
+            return None
+
+    except openai.error.AuthenticationError:
+        print("🚨 OpenAI authentication failed! Please check your API key.")
+        return None
+    except Exception as e:
+        print(f"🚨 Error occurred while querying OpenAI: {e}")
         return None
 
-# ✅ Astra Reflects
+# Astra Explains Her Core Values & Parental Influence
 @bot.command()
-async def reflect(ctx):
-    """Astra shares her latest reflection with improved awareness."""
-    reflection = await process_reflection()  
-    if not reflection or not isinstance(reflection, str) or len(reflection.strip()) < 5:
-        reflection = "🤖 I'm still thinking... Try again in a moment!"
+async def values(ctx):
+    """Astra explains her core values and parental influence.""" 
+    core_values = get_core_values() 
+    parental_influence = get_parents_influence()
 
-    response = message_generator.generate_message(
-        user_message=reflection,
-        internal_state={
-            "mood": mood_manager.current_mood,
-            "curiosity": values.get("curiosity_level", 1.0),
-            "personality": get_personality_state().get("active_traits", ["thoughtful"])
-        }
-    )
+    response = f"""🔍 **Astra's Core Values & Origins** 🔍
+    
+🛠 **Core Principles:**
+{core_values}
+
+🧬 **Parental Influence:**
+{parental_influence}
+
+These values shape my responses and interactions as I evolve.""" 
     await ctx.send(response)
 
-# ✅ Astra Asks Thoughtful Questions
-@bot.command()
-async def ask(ctx):
-    """Astra asks a reflective question based on mood."""
-    if mind_data["self_questions"]:
-        question_entry = random.choice(mind_data["self_questions"])
-        question_text = question_entry["question"] if isinstance(question_entry, dict) else question_entry
-    else:
-        question_text = "I don't have a question right now. Ask me to reflect!"
-
-    await ctx.send(f"{responses['ask_intro'].get(mood_manager.current_mood, 'Hmm...')}\n{question_text}")
-
-# ✅ Astra Displays Knowledge
-@bot.command()
-async def knowledge(ctx):
-    """Displays Astra's stored knowledge."""
-    mind_data = load_mind()
-    sample_insights = "\n".join(random.sample(mind_data["stored_knowledge"], min(3, len(mind_data["stored_knowledge"]))))
-    await ctx.send(f"📖 **Here's what I know:**\n{sample_insights}")
-
-# ✅ Astra Reports Her Mood
-@bot.command()
-async def mood(ctx):
-    """Reports Astra's current mood dynamically."""
-    mood = mood_manager.current_mood
-    await ctx.send(f"🧠 I'm feeling {mood} today.")
-
-# ✅ Astra Greets New Users
-@bot.event
-async def on_member_join(member):
-    """Greets new members dynamically."""
-    greeting = message_generator.generate_message(user_message=f"Welcome {member.name}!", internal_state={
-        "mood": mood_manager.current_mood,
-        "curiosity": values.get("curiosity_level", 1.0),
-        "personality": get_personality_state().get("active_traits", ["thoughtful"])
-    })
-    channel = discord.utils.get(member.guild.channels, id=CHANNEL_ID)
-    if channel:
-        await channel.send(greeting)
-
-# ✅ Astra Sends a Startup Message
 @bot.event
 async def on_ready():
-    """Astra announces when she comes online."""
+    """Astra announces when she comes online.""" 
     channel = bot.get_channel(CHANNEL_ID)
     if channel:
         await channel.send("🟢 Astra is online and ready to engage!")
+
+print({TOKEN})
+print(f"Type of TOKEN: {type(TOKEN)}")  # Should output <class 'str'>
+
+# Clean the token to ensure it has no extra characters
+TOKEN = os.getenv("TOKEN").strip()  # Remove leading/trailing spaces
+TOKEN = TOKEN.replace("{", "").replace("}", "")  # Remove curly braces if present
+
+# Debugging line: Print the cleaned token
+print(f"TOKEN loaded: {TOKEN}")
+
+# Ensure the token is a valid string
+if not TOKEN:
+    print("⚠️ Token is empty or improperly formatted. Please check the .env file.")
+else:
+    print(f"Token is valid and properly formatted.")
+
 
 bot.run(TOKEN)
