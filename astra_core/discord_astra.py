@@ -1,8 +1,13 @@
 import os
 import random
 import discord
-import openai
 import asyncio
+
+
+import openai
+from openai import OpenAI  # We need to use the new `OpenAI` client
+
+
 from discord.ext import commands
 from dotenv import load_dotenv
 
@@ -13,6 +18,13 @@ from astra_core.mood.mood_manager import MoodManager
 from astra_core.personality.personality_manager import load_personality, get_personality_state
 from astra_interfaces.influence import load_mind, save_mind
 from astra_core.message_generator import MessageGenerator
+
+
+openai.api_key = os.getenv("OPENAI_API_KEY")
+
+# Instantiate the client
+client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
+
 
 # Load environment variables
 load_dotenv()
@@ -28,14 +40,8 @@ schedule_config = load_config("schedule_config")
 parents_mind = load_mind()  # Load Astra's parental influence
 
 responses, emojis, values = strings_config["responses"], strings_config["emojis"], values_config["values"]
-TOKEN = os.getenv("TOKEN").strip()
-print({TOKEN})
-TOKEN = TOKEN.replace("{", "").replace("}", "")  # Remove curly braces if present
+TOKEN = os.getenv("TOKEN")
 CHANNEL_ID = int(discord_config.get("discord_channel"))
-
-# Check if the variables are loaded
-print(f"TOKEN loaded: {TOKEN}")
-print(f"OPENAI_API_KEY loaded: {os.getenv('OPENAI_API_KEY')}")
 
 # Initialize bot with command prefix and intents
 intents = discord.Intents.default()
@@ -45,6 +51,10 @@ bot = commands.Bot(command_prefix=values["command_prefix"], intents=intents)
 # Initialize managers
 mood_manager = MoodManager()
 message_generator = MessageGenerator()
+
+# Initialize OpenAI Client
+openai.api_key = os.getenv("OPENAI_API_KEY")
+client = openai.OpenAI()
 
 debug_log("Loading")  
 mind_data = load_mind()
@@ -63,17 +73,16 @@ def update_trust(user_id, change):
 
 # ✅ Retrieve Astra's Core Values
 def get_core_values():
-    """Retrieve Astra's core values from her soul configuration."""
+    """Retrieve Astra's core values from her soul configuration.""" 
     core_values = soul_config.get("core_values", [])
     return "\n".join(f"🔹 **{value['name']}**: {value['description']}" for value in core_values)
 
 # ✅ Retrieve Astra's Parental Influence
 def get_parents_influence():
-    """Retrieve Astra's parental influence concepts from her parents' mind file."""
+    """Retrieve Astra's parental influence concepts from her parents' mind file.""" 
     parental_concepts = parents_mind.get("parental_influence", [])
     if not parental_concepts:
         return "My parents’ guidance has shaped me, but I continue to evolve on my own terms."
-    
     return "\n".join(f"🧠 **{concept['name']}**: {concept['description']}" for concept in parental_concepts)
 
 # ✅ Send Message Function
@@ -156,15 +165,11 @@ async def on_message(message):
 
     await message.channel.send(response)
 
-def query_openai_for_response(user_message, past_conversations):
-    """Ask OpenAI to refine Astra's response using past conversations, personality, and mood.""" 
-    
-    # Debugging: Check if the OpenAI API key is loaded correctly
-    print(f"Using OpenAI API key: {openai.api_key}")  # Debugging line
-    
-    if openai.api_key is None:
-        raise ValueError("OpenAI API key not found. Please ensure the .env file contains the key.")
 
+
+def query_openai_for_response(user_message, past_conversations):
+    """Ask OpenAI to refine Astra's response using past conversations, personality, and mood."""
+    
     internal_state = {
         "mood": mood_manager.current_mood,
         "curiosity": values_config.get("curiosity_level", 1.0),
@@ -197,24 +202,28 @@ def query_openai_for_response(user_message, past_conversations):
     """
 
     try:
-        response = openai.ChatCompletion.create(
-            model="gpt-4",
+        # Using the new OpenAI API client to get the response
+        response = client.chat.completions.create(
+            model="gpt-4",  # You can also use "gpt-3.5-turbo" or other available models
             messages=[{"role": "system", "content": prompt}],
             max_tokens=150,
             temperature=0.85  # Astra expresses herself more dynamically
         )
 
+        # If there is a response, return it
         if response.choices and len(response.choices) > 0:
             return response.choices[0].message.content.strip()
         else:
             return None
 
-    except openai.error.AuthenticationError:
-        print("🚨 OpenAI authentication failed! Please check your API key.")
+    except openai.OpenAIError as e:
+        # Handle OpenAI errors gracefully
+        print(f"🚨 OpenAI error occurred: {e}")
         return None
     except Exception as e:
         print(f"🚨 Error occurred while querying OpenAI: {e}")
         return None
+
 
 # Astra Explains Her Core Values & Parental Influence
 @bot.command()
@@ -241,21 +250,12 @@ async def on_ready():
     if channel:
         await channel.send("🟢 Astra is online and ready to engage!")
 
-print({TOKEN})
-print(f"Type of TOKEN: {type(TOKEN)}")  # Should output <class 'str'>
-
-# Clean the token to ensure it has no extra characters
-TOKEN = os.getenv("TOKEN").strip()  # Remove leading/trailing spaces
-TOKEN = TOKEN.replace("{", "").replace("}", "")  # Remove curly braces if present
-
-# Debugging line: Print the cleaned token
-print(f"TOKEN loaded: {TOKEN}")
-
-# Ensure the token is a valid string
+# Ensure the token is valid and clean before running the bot
+TOKEN = os.getenv("TOKEN").strip()
+TOKEN = TOKEN.replace("{", "").replace("}", "")  # Ensure token format is clean
 if not TOKEN:
     print("⚠️ Token is empty or improperly formatted. Please check the .env file.")
 else:
     print(f"Token is valid and properly formatted.")
-
 
 bot.run(TOKEN)
