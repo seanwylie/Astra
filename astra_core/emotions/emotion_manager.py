@@ -79,9 +79,37 @@ class EmotionManager:
         }
 
     def get_dominant_emotion(self):
-        """Return the strongest active emotion."""
+        """Return the strongest active emotion while ensuring correct prioritization and avoiding misclassification."""
         active_emotions = self.get_emotional_state()
-        return max(active_emotions, key=active_emotions.get, default=None)
+
+        if not active_emotions:
+            return None  # No strong emotions detected
+
+        # Sort emotions by intensity (highest first)
+        sorted_emotions = sorted(active_emotions.items(), key=lambda x: x[1], reverse=True)
+
+        # ✅ If obsession is above 100, prioritize it first
+        for emotion, intensity in sorted_emotions:
+            if emotion == "obsession" and intensity > 100:
+                return emotion
+
+        # ✅ If love is higher than anger by more than 20 points, prioritize love
+        if "love" in active_emotions and "anger" in active_emotions:
+            if active_emotions["love"] > active_emotions["anger"] + 20:
+                return "love"
+
+        # ✅ If hate is stronger than 90, prioritize it over anger
+        if "hate" in active_emotions and active_emotions["hate"] > 90:
+            return "hate"
+
+        # ✅ Prioritize anger only if it is **the highest emotion**
+        if sorted_emotions[0][0] == "anger":
+            return "anger"
+
+        # ✅ Otherwise, return the strongest remaining emotion
+        return sorted_emotions[0][0]
+
+
 
     def modify_emotion(self, emotion, intensity_change):
         """Manually modify an emotion's intensity (for external adjustments)."""

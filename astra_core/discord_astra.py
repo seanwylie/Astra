@@ -17,6 +17,7 @@ from astra_core.mood.mood_manager import MoodManager
 from astra_core.personality.personality_manager import load_personality, get_personality_state
 from astra_interfaces.influence import load_mind, save_mind
 from astra_core.message_generator import MessageGenerator
+from astra_core.emotions.emotion_manager import EmotionManager
 
 # Load environment variables
 load_dotenv()
@@ -43,6 +44,7 @@ bot = commands.Bot(command_prefix=values["command_prefix"], intents=intents)
 # Initialize managers
 mood_manager = MoodManager()
 message_generator = MessageGenerator()
+emotion_manager = EmotionManager()
 
 debug_log("Loading")  
 mind_data = load_mind()
@@ -87,10 +89,9 @@ def store_concept(term, definition):
     else:
         print(f"⚠ Concept '{term}' already exists in memory.")
 
-# ✅ Handle Messages & Fix TTS Cut-Off Issues
 @bot.event
 async def on_message(message):
-    """Handles incoming Discord messages and applies Astra's reasoning before responding.""" 
+    """Handles incoming Discord messages, applies Astra's emotional reasoning, and ensures smooth TTS delivery."""
     if message.author == bot.user:
         return  
 
@@ -98,23 +99,40 @@ async def on_message(message):
     await bot.process_commands(message)
 
     user_message = message.content
-    unknown_terms = extract_unknown_terms(user_message)
 
-    # Look up definitions and store new concepts
+    # ✅ Extract unknown terms and look up definitions
+    unknown_terms = extract_unknown_terms(user_message)
     for term in unknown_terms:
         definition = lookup_definition(term)
         if definition:
             store_concept(term, definition)
 
-    # Generate response
-    past_conversations = knowledge_manager.mind_data.get("past_conversations", [])
-    response = query_openai_for_response(user_message, past_conversations, unknown_terms)
+    # ✅ Retrieve Astra's **mood** & **emotions**
+    current_mood = mood_manager.current_mood  # ✅ Restoring mood
+    emotions = emotion_manager.get_emotional_state()
+    dominant_emotion = emotion_manager.get_dominant_emotion()
 
-    # ✅ Split response into logical chunks (200 chars max)
-    # ✅ Improved Chunking for TTS Readability
+    # ✅ Retrieve past conversations for context
+    past_conversations = knowledge_manager.mind_data.get("past_conversations", [])
+
+    # ✅ Set internal state with both **mood** & **emotions**
+    internal_state = {
+        "mood": current_mood,  # ✅ Restored mood tracking
+        "curiosity": 1.0,  # Placeholder until curiosity is dynamic
+        "personality": ["thoughtful"],
+        "emotions": emotions  # ✅ Now passing emotions alongside mood
+    }
+    print(internal_state)
+    response = message_generator.generate_message(
+        user_message=user_message,
+        internal_state=internal_state,
+        past_conversations=past_conversations
+    )
+
+    # ✅ Split response into logical chunks (200 chars max) for TTS
     chunk_size = 200
     response_chunks = []
-    sentences = re.split(r'(?<=[.!?]) ', response)  # Split by sentence boundaries
+    sentences = re.split(r'(?<=[.!?]) ', response)
 
     current_chunk = ""
     for sentence in sentences:
@@ -126,10 +144,11 @@ async def on_message(message):
 
     response_chunks.append(current_chunk.strip())  # Add the last chunk
 
-    # ✅ Send each chunk with a small delay
+    # ✅ Send each chunk with a small delay for better TTS readability
     for chunk in response_chunks:
         await message.channel.send(chunk, tts=True)
-        await asyncio.sleep(1.5)  # ✅ Prevents Discord rate limiting issues
+        await asyncio.sleep(1.5)  # ✅ Prevents Discord rate-limiting issues
+
 
 
 # ✅ Query OpenAI for Response with Speech Enhancements

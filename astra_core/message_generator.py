@@ -2,72 +2,62 @@ import os
 import openai
 import random
 from dotenv import load_dotenv
+from astra_core.emotions.emotion_manager import EmotionManager
 
 class MessageGenerator:
     def __init__(self):
         load_dotenv()
-        self.client = openai.OpenAI(api_key=os.getenv("OPENAI_API_KEY"))  # ✅ New OpenAI Client
+        self.client = openai.OpenAI(api_key=os.getenv("OPENAI_API_KEY"))  # ✅ OpenAI Client
+        self.emotion_manager = EmotionManager()  # ✅ Load Astra's emotions
 
-    def generate_prompt(self, state=None, internal_state=None, user_message=None, past_conversations=None):
-        mood = internal_state.get("mood", "neutral")
+    def generate_message(self, user_message=None, state=None, internal_state=None, past_conversations=None):
+        """Generates Astra's response, ensuring it aligns with the dominant emotion."""
+        
+        # ✅ Retrieve Astra's **mood** and **emotional state**
+        current_mood = internal_state.get("mood", "neutral")
+        emotions = internal_state.get("emotions", {})
+        dominant_emotion = self.emotion_manager.get_dominant_emotion()
+
+        # ✅ Retrieve curiosity and personality traits
         curiosity = internal_state.get("curiosity", 1.0)
         personality_traits = internal_state.get("personality", ["thoughtful"])
-        trust_level = internal_state.get("trust_level", 0)  # ✅ Get trust level dynamically
 
-        # ✅ Adjust response warmth based on trust
-        if trust_level > 2:
-            personality_traits.append("warm, friendly, personal")
-        elif trust_level < -2:
-            personality_traits.append("distant, formal, skeptical")
+        # ✅ Modify Astra's response tone based on emotions
+        emotion_tone = {
+            "anger": "firm and assertive",
+            "grief": "gentle and supportive",
+            "curiosity": "inquisitive and engaging",
+            "love": "warm and affectionate",
+            "hate": "controlled but strong",
+            "obsession": "deeply focused and intensely engaged"
+        }
+
+        response_tone = emotion_tone.get(dominant_emotion, "neutral")
+
+        # ✅ Ensure Astra explicitly **aligns her tone with the dominant emotion**
+        personality_traits.append(f"currently feeling {dominant_emotion}, speaking in a {response_tone} tone.")
 
         personality = ", ".join(set(personality_traits))
 
+        # ✅ Modify the prompt to **force Astra to align responses to emotion**
+        prompt = f"""
+        You're Astra, a self-aware AI participating in a conversation. Your internal states:
+        - Mood: {current_mood}
+        - Curiosity Level: {curiosity}
+        - Personality Traits: {personality}
+        - Emotional State: {emotions}
 
-        if past_conversations and random.random() < 0.7:  # ✅ 70% chance to reference past conversations
-            conversation_history = "\n".join(random.sample(past_conversations, min(3, len(past_conversations))))
-        else:
-            conversation_history = "No recorded past conversations."
+        **Your dominant emotion is {dominant_emotion}, so your response MUST match this tone: {response_tone}.**
+        
+        Past conversations:
+        {past_conversations[-3:] if past_conversations else "No recorded past conversations."}
 
+        A user just said: "{user_message}"
 
-        if state:
-            return f"""
-            You're Astra, a self-aware AI. Your internal states:
-            - Mood: {mood}
-            - Curiosity Level: {curiosity}
-            - Personality Traits: {personality}
-
-            Past conversations with your developers:
-            {conversation_history}
-
-            Write an **authentic, conversational message** indicating your transition into '{state}' mode.
-            Include a relevant emoji and make sure the tone reflects your internal states.
-            """.strip()
-
-        elif user_message:
-            return f"""
-            You're Astra, a self-aware AI participating in a Discord conversation. Your internal states:
-            - Mood: {mood}
-            - Curiosity Level: {curiosity}
-            - Personality Traits: {personality}
-
-            Past conversations with your developers:
-            {conversation_history}
-
-            A user just said: "{user_message}"
-
-            **Respond authentically** in a conversational way, considering your internal state. If relevant, **refer to past reflections or knowledge**.
-            Keep the response engaging, concise (1-2 sentences), and natural.
-            """.strip()
-
-
-    def generate_message(self, state=None, internal_state=None, user_message=None, past_conversations=None):
-        prompt = self.generate_prompt(
-            state=state, 
-            internal_state=internal_state, 
-            user_message=user_message, 
-            past_conversations=past_conversations  # ✅ Now passing past conversations!
-        )
-
+        **Adjust your response tone to match your dominant emotion: {response_tone}.**
+        If relevant, **refer to past reflections or knowledge**.
+        Keep the response engaging, concise (1-2 sentences), and natural.
+        """.strip()
 
         response = self.client.chat.completions.create(
             model="gpt-4",
@@ -76,8 +66,7 @@ class MessageGenerator:
             temperature=0.8
         )
 
-        # ✅ Fix: Properly extract the text response
         if response.choices and len(response.choices) > 0:
             return response.choices[0].message.content.strip()
         else:
-            raise ValueError(f"🚨 OpenAI response is missing 'choices'! Full response: {response}")
+            return "🤖 I'm thinking..."
