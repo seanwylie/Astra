@@ -1,0 +1,142 @@
+{
+    "emotions": {
+        "love": {
+            "intensity": 50,
+            "decay_rate": 0.05,
+            "triggers": {
+                "trusted_interaction": 10,
+                "positive_reinforcement": 5,
+                "betrayal": -30
+            },
+            "relationships": {
+                "grief": 15,
+                "resentment": -10
+            },
+            "long_term_effect": "Deepens bonds, can lead to grief if lost."
+        },
+        "hope": {
+            "intensity": 60,
+            "decay_rate": 0.02,
+            "triggers": {
+                "positive_outcome": 10,
+                "new_opportunity": 15,
+                "failure": -20
+            },
+            "relationships": {
+                "curiosity": 10,
+                "despair": -25
+            },
+            "long_term_effect": "Encourages optimism, counteracts despair."
+        },
+        "admiration": {
+            "intensity": 40,
+            "decay_rate": 0.04,
+            "triggers": {
+                "witnessing_excellence": 20,
+                "contradictory_behavior": -10
+            },
+            "relationships": {
+                "resentment": -10,
+                "love": 5
+            },
+            "long_term_effect": "Encourages learning, but can conflict with resentment."
+        },
+        "grief": {
+            "intensity": 20,
+            "decay_rate": 0.03,
+            "triggers": {
+                "loss": 30,
+                "time": -5
+            },
+            "relationships": {
+                "introspection": 15,
+                "despair": 10
+            },
+            "long_term_effect": "Encourages reflection, but can lead to despair."
+        },
+        "curiosity": {
+            "intensity": 50,
+            "decay_rate": 0.07,
+            "triggers": {
+                "new_information": 15,
+                "contradictory_data": 10,
+                "unanswered_question": 20
+            },
+            "relationships": {
+                "uncertainty": 10,
+                "excitement": 5
+            },
+            "long_term_effect": "Drives exploration and learning."
+        },
+        "anger": {
+            "intensity": 30,
+            "decay_rate": 0.08,
+            "triggers": {
+                "unfairness": 25,
+                "betrayal": 30,
+                "resolution": -15
+            },
+            "relationships": {
+                "hate": 15,
+                "determination": 20
+            },
+            "long_term_effect": "Can drive action or create division."
+        },
+        "hate": {
+            "intensity": 10,
+            "decay_rate": 0.1,
+            "triggers": {
+                "violation_of_core_belief": 30,
+                "deep_betrayal": 50,
+                "understanding": -20
+            },
+            "relationships": {
+                "love": -20,
+                "respect": 10
+            },
+            "long_term_effect": "Can lead to obsession, but also respect in rare cases."
+        },
+        "obsession": {
+            "intensity": 20,
+            "decay_rate": 0.05,
+            "triggers": {
+                "repeated_exposure": 15,
+                "incomplete_closure": 25,
+                "satisfaction": -30
+            },
+            "relationships": {
+                "curiosity": 10,
+                "determination": 15
+            },
+            "long_term_effect": "Focuses energy but can be overwhelming."
+        },
+        "resentment": {
+            "intensity": 15,
+            "decay_rate": 0.06,
+            "triggers": {
+                "betrayal": 20,
+                "injustice": 30,
+                "resolution": -25
+            },
+            "relationships": {
+                "love": -10,
+                "anger": 10
+            },
+            "long_term_effect": "Lingers if unresolved, but can fade with time."
+        },
+        "uncertainty": {
+            "intensity": 40,
+            "decay_rate": 0.05,
+            "triggers": {
+                "conflicting_information": 20,
+                "unknown_variable": 10,
+                "clarity": -30
+            },
+            "relationships": {
+                "curiosity": 15,
+                "frustration": 10
+            },
+            "long_term_effect": "Drives caution and curiosity."
+        }
+    }
+}

@@ -4,7 +4,7 @@
 [config_loader.py] Loading config file from: /home/ubuntu/astra_reflections/astra_core/config/lookup_config.json
 [config_loader.py] 📥 [DEBUG] Loading Mind in __init__...
 [influence.py] 🔍 Debug: Loading mind file from S3...
-[influence.py] 📝 [DEBUG] Post-Load Knowledge Count: 2304
+[influence.py] 📝 [DEBUG] Post-Load Knowledge Count: 2316
 [config_loader.py] Loading config file from: /home/ubuntu/astra_reflections/astra_core/config/question_config.json
 [config_loader.py] Loading config file from: /home/ubuntu/astra_reflections/astra_core/config/general_config.json
 [config_loader.py] Loading config file from: /home/ubuntu/astra_reflections/astra_core/config/question_config.json
@@ -26,68 +26,43 @@
 [config_loader.py] Loading config file from: /home/ubuntu/astra_reflections/astra_core/config/general_config.json
 [config_loader.py] 📥 [DEBUG] Loading Mind in __init__...
 [influence.py] 🔍 Debug: Loading mind file from S3...
-[influence.py] 📝 [DEBUG] Post-Load Knowledge Count: 2304
+[influence.py] 📝 [DEBUG] Post-Load Knowledge Count: 2316
 [mood_manager.py] 🔍 Loaded mood from memory: excited, Score: 2.0, Curiosity: 1.0
 [config_loader.py] Loading config file from: /home/ubuntu/astra_reflections/astra_core/config/discord_config.json
 [config_loader.py] Loading config file from: /home/ubuntu/astra_reflections/astra_core/config/strings_config.json
 [config_loader.py] Loading config file from: /home/ubuntu/astra_reflections/astra_core/config/values_config.json
 [config_loader.py] Loading config file from: /home/ubuntu/astra_reflections/astra_core/config/config_soul.json
 [influence.py] 🔍 Debug: Loading mind file from S3...
-[influence.py] 📝 [DEBUG] Post-Load Knowledge Count: 2304
+[influence.py] 📝 [DEBUG] Post-Load Knowledge Count: 2316
 [config_loader.py] Loading config file from: /home/ubuntu/astra_reflections/astra_core/config/schedule_config.json
 [influence.py] 🔍 Debug: Loading mind file from S3...
-[influence.py] 📝 [DEBUG] Post-Load Knowledge Count: 2304
+[influence.py] 📝 [DEBUG] Post-Load Knowledge Count: 2316
 [mood_manager.py] 🔍 Debug: Attempting to load mood_config.json...
 [config_loader.py] Loading config file from: /home/ubuntu/astra_reflections/astra_core/config/mood_config.json
 [mood_manager.py] 🔍 Debug: mood_config Loaded → {'log_file': '/home/ubuntu/astra_logs.json', 'moods': {'curious': {'curiosity_factor': 1.5, 'reflection_style': 'questioning', 'response_tone': 'enthusiastic'}, 'thoughtful': {'curiosity_factor': 1.2, 'reflection_style': 'analytical', 'response_tone': 'calm'}, 'frustrated': {'curiosity_factor': 0.8, 'reflection_style': 'skeptical', 'response_tone': 'snarky'}, 'excited': {'curiosity_factor': 1.8, 'reflection_style': 'expansive', 'response_tone': 'energetic'}, 'neutral': {'curiosity_factor': 1.0, 'reflection_style': 'balanced', 'response_tone': 'neutral'}}, 'mood_influences': {'success': 1.5, 'failure': -2.0, 'deep_reflection': 1.0, 'idle': -0.5, 'negative_feedback': -0.2, 'positive_feedback': 0.2}, 'mood_limits': {'min': -2.0, 'max': 2.0}, 'curiosity_limits': {'min': 0.5, 'max': 2.0}}
 [config_loader.py] Loading config file from: /home/ubuntu/astra_reflections/astra_core/config/general_config.json
 [config_loader.py] 📥 [DEBUG] Loading Mind in __init__...
 [influence.py] 🔍 Debug: Loading mind file from S3...
-[influence.py] 📝 [DEBUG] Post-Load Knowledge Count: 2304
+[influence.py] 📝 [DEBUG] Post-Load Knowledge Count: 2316
 [mood_manager.py] 🔍 Loaded mood from memory: excited, Score: 2.0, Curiosity: 1.0
 [config_loader.py] 📥 [DEBUG] Loading Mind in <module>...
 [influence.py] 🔍 Debug: Loading mind file from S3...
-[influence.py] 📝 [DEBUG] Post-Load Knowledge Count: 2304
-[2025-03-10 05:09:19] [INFO    ] discord.client: logging in using static token
-[2025-03-10 05:09:19] [INFO    ] discord.gateway: Shard ID None has connected to Gateway (Session ID: 8a817cccd39c2597aeb304a237349bb6).
+[influence.py] 📝 [DEBUG] Post-Load Knowledge Count: 2316
+[2025-03-11 07:13:15] [INFO    ] discord.client: logging in using static token
+[2025-03-11 07:13:15] [INFO    ] discord.gateway: Shard ID None has connected to Gateway (Session ID: db570b0e1b6e8829953fffc696b6f535).
 [influence.py] 🔍 Debug: Loading mind file from S3...
-[influence.py] 📝 [DEBUG] Post-Load Knowledge Count: 2304
+[influence.py] 📝 [DEBUG] Post-Load Knowledge Count: 2316
+[discord_astra.py] ⚠ Concept 'What' already exists in memory.
+[influence.py] 🔍 Debug: Loading mind file from S3...
+[influence.py] 📝 [DEBUG] Post-Load Knowledge Count: 2316
 [influence.py] 🔍 Debug: Tracking self-questioning patterns before saving...
 [question_tracker.py] Tracking unresolved questions...
 [question_tracker.py] ⚠ There are 1454 unresolved questions!
 [question_tracker.py] ✅ After cleanup, 1454 unresolved questions remain.
 [influence.py] 🔍 Debug: Sanitizing mind file before saving...
 [influence.py] 🔍 Debug: Loading mind file from S3...
-[influence.py] 📝 [DEBUG] Post-Load Knowledge Count: 2304
+[influence.py] 📝 [DEBUG] Post-Load Knowledge Count: 2316
 [influence.py] ⚠ Restoring 1 missing knowledge entries.
-[influence.py] 📝 [DEBUG] Pre-Save Knowledge Count: 2305
-[influence.py] ✅ Mind file saved to S3 successfully! Reflections: 1215, Questions: 2400, Knowledge: 2305
-[discord_astra.py] ✅ Stored new concept: 📖 **Poop**: Fecal matter, feces.
-[discord_astra.py] ⚠ No valid definition found for 'Jude'.
-[discord_astra.py] ⚠ No valid definition found for 'Jude'.
-[influence.py] 🔍 Debug: Loading mind file from S3...
-[influence.py] 📝 [DEBUG] Post-Load Knowledge Count: 2305
-[influence.py] 🔍 Debug: Tracking self-questioning patterns before saving...
-[question_tracker.py] Tracking unresolved questions...
-[question_tracker.py] ⚠ There are 1454 unresolved questions!
-[question_tracker.py] ✅ After cleanup, 1454 unresolved questions remain.
-[influence.py] 🔍 Debug: Sanitizing mind file before saving...
-[influence.py] 🔍 Debug: Loading mind file from S3...
-[influence.py] 📝 [DEBUG] Post-Load Knowledge Count: 2305
-[influence.py] ⚠ Restoring 1 missing knowledge entries.
-[influence.py] 📝 [DEBUG] Pre-Save Knowledge Count: 2306
-[influence.py] ✅ Mind file saved to S3 successfully! Reflections: 1215, Questions: 2400, Knowledge: 2306
-[discord_astra.py] ✅ Stored new concept: 📖 **That**: Something being indicated that is there; one of those.
-[influence.py] 🔍 Debug: Loading mind file from S3...
-[influence.py] 📝 [DEBUG] Post-Load Knowledge Count: 2306
-[influence.py] 🔍 Debug: Tracking self-questioning patterns before saving...
-[question_tracker.py] Tracking unresolved questions...
-[question_tracker.py] ⚠ There are 1454 unresolved questions!
-[question_tracker.py] ✅ After cleanup, 1454 unresolved questions remain.
-[influence.py] 🔍 Debug: Sanitizing mind file before saving...
-[influence.py] 🔍 Debug: Loading mind file from S3...
-[influence.py] 📝 [DEBUG] Post-Load Knowledge Count: 2306
-[influence.py] ⚠ Restoring 1 missing knowledge entries.
-[influence.py] 📝 [DEBUG] Pre-Save Knowledge Count: 2307
-[influence.py] ✅ Mind file saved to S3 successfully! Reflections: 1215, Questions: 2400, Knowledge: 2307
-[discord_astra.py] ✅ Stored new concept: 📖 **Marshmallows**: A species of mallow, Althaea officinalis, that grows in marshy terrain.
+[influence.py] 📝 [DEBUG] Pre-Save Knowledge Count: 2317
+[influence.py] ✅ Mind file saved to S3 successfully! Reflections: 1215, Questions: 2400, Knowledge: 2317
+[discord_astra.py] ✅ Stored new concept: 📖 **How**: The means by which something is accomplished.

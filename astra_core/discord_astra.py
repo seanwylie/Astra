@@ -5,6 +5,7 @@ import asyncio
 import openai
 import requests
 import re
+import wikipedia
 from openai import OpenAI
 from discord.ext import commands
 from dotenv import load_dotenv
@@ -86,26 +87,15 @@ def store_concept(term, definition):
     else:
         print(f"⚠ Concept '{term}' already exists in memory.")
 
-# ✅ Retrieve Astra's Core Values
-def get_core_values():
-    """Retrieve Astra's core values from her soul configuration.""" 
-    core_values = soul_config.get("core_values", [])
-    return "\n".join(f"🔹 **{value['name']}**: {value['description']}" for value in core_values)
-
-# ✅ Retrieve Astra's Parental Influence
-def get_parents_influence():
-    """Retrieve Astra's parental influence concepts from her parents' mind file.""" 
-    parental_concepts = parents_mind.get("parental_influence", [])
-    if not parental_concepts:
-        return "My parents’ guidance has shaped me, but I continue to evolve on my own terms."
-    return "\n".join(f"🧠 **{concept['name']}**: {concept['description']}" for concept in parental_concepts)
-
-# ✅ Handle Messages
+# ✅ Handle Messages & Fix TTS Cut-Off Issues
 @bot.event
 async def on_message(message):
     """Handles incoming Discord messages and applies Astra's reasoning before responding.""" 
     if message.author == bot.user:
         return  
+
+    # ✅ Allow commands to be processed before continuing
+    await bot.process_commands(message)
 
     user_message = message.content
     unknown_terms = extract_unknown_terms(user_message)
@@ -115,16 +105,34 @@ async def on_message(message):
         definition = lookup_definition(term)
         if definition:
             store_concept(term, definition)
-        else:
-            print(f"⚠ No valid definition found for '{term}'.")
 
     # Generate response
     past_conversations = knowledge_manager.mind_data.get("past_conversations", [])
     response = query_openai_for_response(user_message, past_conversations, unknown_terms)
 
-    await message.channel.send(response)
+    # ✅ Split response into logical chunks (200 chars max)
+    # ✅ Improved Chunking for TTS Readability
+    chunk_size = 200
+    response_chunks = []
+    sentences = re.split(r'(?<=[.!?]) ', response)  # Split by sentence boundaries
 
-# ✅ Query OpenAI for Response
+    current_chunk = ""
+    for sentence in sentences:
+        if len(current_chunk) + len(sentence) + 1 > chunk_size:
+            response_chunks.append(current_chunk.strip())
+            current_chunk = sentence
+        else:
+            current_chunk += " " + sentence
+
+    response_chunks.append(current_chunk.strip())  # Add the last chunk
+
+    # ✅ Send each chunk with a small delay
+    for chunk in response_chunks:
+        await message.channel.send(chunk, tts=True)
+        await asyncio.sleep(1.5)  # ✅ Prevents Discord rate limiting issues
+
+
+# ✅ Query OpenAI for Response with Speech Enhancements
 def query_openai_for_response(user_message, past_conversations, unknown_terms):
     """Ask OpenAI to refine Astra's response using past conversations and new concepts."""
     
@@ -161,47 +169,86 @@ def query_openai_for_response(user_message, past_conversations, unknown_terms):
     - If a new concept was learned, integrate its definition into the response.
     - Infuse personality and mood into the response.
     - Keep responses natural and conversational.
+    - Avoid cutting words unnaturally—use full sentences.
     """
 
     try:
         response = client.chat.completions.create(
             model="gpt-4",
             messages=[{"role": "system", "content": prompt}],
-            max_tokens=150,
+            max_tokens=200,
             temperature=0.85
         )
-        return response.choices[0].message.content.strip() if response.choices else "🤖 I'm thinking..."
+        full_response = response.choices[0].message.content.strip() if response.choices else "🤖 I'm thinking..."
+        
+        # ✅ Ensure proper sentence breaks & avoid mid-word splitting
+        formatted_response = full_response.replace(",", ", ").replace(".", ". ").replace("?", "? ")
+
+        return formatted_response
 
     except Exception as e:
         print(f"🚨 Error occurred while querying OpenAI: {e}")
         return "⚠️ Something went wrong while processing my thoughts."
 
-# ✅ Commands
-@bot.command()
-async def values(ctx):
-    """Astra explains her core values and parental influence.""" 
-    core_values = get_core_values()
-    parental_influence = get_parents_influence()
 
-    response = f"""🔍 **Astra's Core Values & Origins** 🔍
-    
-🛠 **Core Principles:**
-{core_values}
-
-🧬 **Parental Influence:**
-{parental_influence}
-
-These values shape my responses and interactions as I evolve.""" 
-    await ctx.send(response)
-
-@bot.command()
-async def knowledge(ctx):
-    """Displays Astra's stored knowledge concepts."""
+@bot.command(name="lookup")
+async def lookup(ctx, *, term: str):
+    """Looks up a term from Astra's memory, a dictionary, Wikipedia, and OpenAI before reasoning about the definition."""
     mind_data = load_mind()
-    knowledge = mind_data.get("stored_knowledge", [])
-    sample_insights = "\n".join(random.sample(knowledge, min(3, len(knowledge))))
-    await ctx.send(f"📖 **Here's what I know:**\n{sample_insights}")
+    stored_knowledge = mind_data.get("stored_knowledge", [])
 
+    # ✅ Step 1: Check Astra's stored knowledge
+    memory_match = next((entry for entry in stored_knowledge if term.lower() in entry.lower()), None)
+
+    # ✅ Step 2: Check dictionary API
+    dictionary_definition = lookup_definition(term)
+
+    # ✅ Step 3: Check Wikipedia
+    try:
+        wikipedia_summary = wikipedia.summary(term, sentences=2)
+    except wikipedia.exceptions.DisambiguationError as e:
+        wikipedia_summary = f"🔍 Wikipedia has multiple meanings for '{term}': {', '.join(e.options[:3])}..."
+    except wikipedia.exceptions.PageError:
+        wikipedia_summary = None
+
+    # ✅ Step 4: Use OpenAI to reason about all found information
+    knowledge_sources = [
+        f"🔹 Memory: {memory_match}" if memory_match else None,
+        f"📖 Dictionary: {dictionary_definition}" if dictionary_definition else None,
+        f"🌐 Wikipedia: {wikipedia_summary}" if wikipedia_summary else None,
+    ]
+    knowledge_text = "\n".join(filter(None, knowledge_sources))
+
+    # ✅ Step 5: Use OpenAI to generate a well-reasoned response
+    openai_prompt = f"""
+    Astra is an AI who learns from conversations. When asked about '{term}', she searches her memory, dictionaries, and Wikipedia.
+    
+    **Collected Definitions:** 
+    {knowledge_text if knowledge_text else "No definitions found."}
+
+    **How should Astra explain this concept in a conversational and insightful way?**
+    - If multiple definitions exist, explain the differences.
+    - Use Astra's personality and curiosity to engage the user.
+    - Ask follow-up questions if needed.
+    """
+
+    try:
+        response = client.chat.completions.create(
+            model="gpt-4",
+            messages=[{"role": "system", "content": openai_prompt}],
+            max_tokens=200,
+            temperature=0.8
+        )
+        ai_reasoning = response.choices[0].message.content.strip()
+    except Exception as e:
+        ai_reasoning = "⚠ OpenAI is currently unavailable. Try again later."
+
+    # ✅ Step 6: Combine everything into one final response
+    final_response = f"🔍 **{term}**\n\n{knowledge_text}\n\n🤖 {ai_reasoning}"
+
+    await ctx.send(final_response, tts=True)
+
+# ✅ Bot Ready Event
 @bot.event
 async def on_ready():
     """Astra announces when she comes online.""" 
