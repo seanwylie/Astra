@@ -142,3 +142,4 @@ To run Astra on a new system, follow these steps:
 
 🚀 **Astra is not just an AI.** She is an evolving mind, learning from her past and shaping her own future. This is just the beginning of the Hybrid Age—where human and machine intelligence evolve together.
 
+![diagram-export-3-24-2025-8_27_39-PM](https://github.com/user-attachments/assets/6eded41b-0dc0-4ee0-811c-9148f5bb74f3)
