@@ -3,4 +3,6 @@ __pycache__/
 nohup.out
 mind_file.json
 mind_file_parents.json
-.env  # Future: Store API keys/config here
+.env
+logs/
+.qodo

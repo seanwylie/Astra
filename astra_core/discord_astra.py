@@ -43,8 +43,9 @@ bot = commands.Bot(command_prefix=values["command_prefix"], intents=intents)
 
 # Initialize managers
 mood_manager = MoodManager()
-message_generator = MessageGenerator()
 emotion_manager = EmotionManager()
+message_generator = MessageGenerator(emotion_manager=emotion_manager)
+
 
 debug_log("Loading")  
 mind_data = load_mind()
@@ -91,12 +92,16 @@ def store_concept(term, definition):
 
 @bot.event
 async def on_message(message):
-    """Handles incoming Discord messages, applies Astra's emotional reasoning, and ensures smooth TTS delivery."""
+    # ✅ Prevent Astra from responding to her own messages
     if message.author == bot.user:
-        return  
+        return
 
-    # ✅ Allow commands to be processed before continuing
+    # ✅ Process commands like !lookup
     await bot.process_commands(message)
+
+    # ✅ Prevent duplicate response for commands
+    if message.content.startswith(values["command_prefix"]):
+        return
 
     user_message = message.content
 
@@ -110,8 +115,9 @@ async def on_message(message):
     # ✅ Retrieve Astra's **mood** & **emotions**
     current_mood = mood_manager.current_mood  # ✅ Restoring mood
     emotions = emotion_manager.get_emotional_state()
+    print("🧠 Emotions:", emotions)
     dominant_emotion = emotion_manager.get_dominant_emotion()
-
+    print("🧠 Dominant:", dominant_emotion)
     # ✅ Retrieve past conversations for context
     past_conversations = knowledge_manager.mind_data.get("past_conversations", [])
 
@@ -122,6 +128,54 @@ async def on_message(message):
         "personality": ["thoughtful"],
         "emotions": emotions  # ✅ Now passing emotions alongside mood
     }
+    # Step 1: Run emotion update (time-based decay + relationships)
+    emotion_manager.update_emotions()
+
+    # Step 2: Trigger new emotions based on user input
+    user_message_lower = message.content.lower()
+
+    trigger_map = {
+        "love": ["love", "friend", "hug", "kind"],
+        "anger": ["hate", "angry", "frustrated", "stupid"],
+        "curiosity": ["why", "how", "what", "wonder"],
+        "grief": ["loss", "miss", "sad", "gone"],
+        "admiration": ["amazing", "beautiful", "proud", "genius"],
+        "hope": ["hope", "someday", "future"],
+        "uncertainty": ["maybe", "not sure", "unsure", "confused"],
+    }
+
+    # Dynamically apply triggers based on message content
+    for emotion, keywords in trigger_map.items():
+        if any(kw in user_message_lower for kw in keywords):
+            emotion_manager.apply_trigger(emotion, "user_prompt")
+
+    # Update Astra's emotions based on the user message
+    emotions = emotion_manager.get_emotional_state()
+    dominant_emotion = emotion_manager.get_dominant_emotion()
+
+    mind_data = load_mind()
+    mind_data["emotional_state"] = emotion_manager.get_emotional_state()
+    save_mind(mind_data)
+
+    emotion_manager.update_emotions()  # Apply decay + relationships
+
+    # Apply trigger based on keywords in the message
+    user_message_lower = message.content.lower()
+
+    trigger_map = {
+        "love": ["love", "friend", "hug", "kind"],
+        "anger": ["hate", "angry", "frustrated", "stupid"],
+        "curiosity": ["why", "how", "what", "wonder"],
+        "grief": ["loss", "miss", "sad", "gone"],
+        "admiration": ["amazing", "beautiful", "proud", "genius"],
+        "hope": ["hope", "someday", "future"],
+        "uncertainty": ["maybe", "not sure", "unsure", "confused"]
+    }
+
+    for emotion, keywords in trigger_map.items():
+        if any(kw in user_message_lower for kw in keywords):
+            emotion_manager.apply_trigger(emotion, "user_prompt")
+
     print(internal_state)
     response = message_generator.generate_message(
         user_message=user_message,
@@ -266,6 +320,24 @@ async def lookup(ctx, *, term: str):
     final_response = f"🔍 **{term}**\n\n{knowledge_text}\n\n🤖 {ai_reasoning}"
 
     await ctx.send(final_response, tts=True)
+
+@bot.command(name="test_emotion")
+async def test_emotion(ctx, emotion: str, amount: int = 10):
+    emotion_manager.modify_emotion(emotion, amount)
+    new_state = emotion_manager.get_emotional_state()
+    await ctx.send(f"🧪 Increased {emotion} by {amount}. Current emotional state:\n{new_state}")
+
+@bot.command(name="how_are_you")
+async def how_are_you(ctx):
+    dominant = emotion_manager.get_dominant_emotion()
+    emotional_state = emotion_manager.get_emotional_state()
+
+    top_three = list(emotional_state.items())[:3]
+    description = ", ".join(f"{e.capitalize()} ({i})" for e, i in top_three)
+
+    response = f"I'm currently feeling mostly {dominant}. Right now, my top emotions are: {description}."
+    await ctx.send(f"💬 {response}")
+
 
 # ✅ Bot Ready Event
 @bot.event

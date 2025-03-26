@@ -29,15 +29,15 @@ SMTP_PORT = 587
 
 last_sent_state = None
 
-def remove_non_ascii(text):
+def remove_non_ascii(text: str) -> str:
     """Remove non-ASCII characters to ensure compatibility with SMS gateways."""
     return ''.join(c for c in text if ord(c) < 128)
 
-def send_sms(state):
+def send_sms(state: str) -> bool:
     """Send a random SMS notification when Astra transitions into a new state."""
     global last_sent_state
 
-    if not SENDER_EMAIL or not SENDER_PASSWORD or not TO_NUMBER or not CARRIER:
+    if not all([SENDER_EMAIL, SENDER_PASSWORD, TO_NUMBER, CARRIER]):
         print("⚠ Missing environment variables for SMS setup!")
         return False
 
@@ -59,11 +59,10 @@ def send_sms(state):
     clean_message = remove_non_ascii(message)
 
     try:
-        server = smtplib.SMTP(SMTP_SERVER, SMTP_PORT)
-        server.starttls()
-        server.login(SENDER_EMAIL, SENDER_PASSWORD)
-        server.sendmail(SENDER_EMAIL, sms_address, clean_message.encode("utf-8"))  # Ensure UTF-8 encoding
-        server.quit()
+        with smtplib.SMTP(SMTP_SERVER, SMTP_PORT) as server:
+            server.starttls()
+            server.login(SENDER_EMAIL, SENDER_PASSWORD)
+            server.sendmail(SENDER_EMAIL, sms_address, clean_message.encode("utf-8"))  # Ensure UTF-8 encoding
         print(f"✅ SMS Sent: {clean_message}")
         last_sent_state = state  # ✅ Update last sent state
         return True

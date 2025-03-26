@@ -36,11 +36,12 @@ loggers["general"].info("✅ Log rotation is active for all log files.")
 
 # ✅ Override `print` to use general logger
 original_print = builtins.print
+
 def custom_print(*args, **kwargs):
     """Override print to include filename and log to appropriate log file."""
     frame = inspect.currentframe().f_back
     filename = os.path.basename(frame.f_code.co_filename)
-    log_message = f"[{filename}] " + " ".join(str(arg) for arg in args)
+    log_message = f"[{filename}] " + " ".join(map(str, args))
 
     # Default to general log
     loggers["general"].info(log_message)
@@ -49,7 +50,7 @@ def custom_print(*args, **kwargs):
 builtins.print = custom_print  # 🚀 Apply global override
 
 # ✅ Debugging Functions
-def debug_log(action, log_type="general"):
+def debug_log(action: str, log_type: str = "general"):
     """Prints a debug statement with the function name automatically."""
     caller_function = inspect.stack()[1].function
     log_message = f"📥 [DEBUG] {action} Mind in {caller_function}..."
@@ -66,7 +67,7 @@ print(f"Config directory: {CONFIG_DIR}")
 CONFIG_CACHE = {}
 
 # ✅ Config Loading Functions
-def load_config(filename):
+def load_config(filename: str) -> dict:
     """Load a JSON config file dynamically, ensuring it always appends `.json`."""
     if not filename.endswith(".json"):
         filename += ".json"  # Ensure file has the `.json` extension
@@ -90,7 +91,7 @@ def load_config(filename):
     CONFIG_CACHE[filename] = {}  # Prevent repeated failures
     return CONFIG_CACHE[filename]
 
-def get_config(key, default=None, config_file="general_config.json"):
+def get_config(key: str, default=None, config_file: str = "general_config.json"):
     """Retrieve a key from a given config file, ensuring it exists."""
     config = load_config(config_file)
 

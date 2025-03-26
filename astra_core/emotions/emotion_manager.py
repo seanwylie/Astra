@@ -1,15 +1,30 @@
 import json
 import os
 import time
+from astra_interfaces.influence import save_mind, load_mind
 
 CONFIG_PATH = os.path.join(os.path.dirname(__file__), "../config/emotion_config.json")
 
-
 class EmotionManager:
     def __init__(self):
+        self.last_update_time = time.time()  # ✅ Add this line first
         self.emotions = {}
-        self.last_update_time = time.time()
         self.load_emotions()
+
+        # Merge emotional intensities from memory
+        mind_data = load_mind()
+        saved = mind_data.get("emotional_state", {})
+        for emotion, state in self.emotions.items():
+            if emotion in saved:
+                state["intensity"] = saved[emotion]
+        
+        print("🧠 Emotional state loaded:", self.get_emotional_state())
+
+
+    def save_emotions_to_memory(self):
+        mind_data = load_mind()
+        mind_data["emotional_state"] = self.get_emotional_state()
+        save_mind(mind_data)
 
     def load_emotions(self):
         """Load emotions from the config file."""
@@ -28,6 +43,11 @@ class EmotionManager:
                 }
         except Exception as e:
             print(f"Error loading emotion config: {e}")
+
+    def normalize_emotions(self):
+        for emotion, data in self.emotions.items():
+            if data["intensity"] > 100:
+                data["intensity"] = 100
 
     def update_emotions(self):
         """Decay emotions over time and apply inter-emotion relationships with stronger decay at high levels."""
@@ -56,12 +76,19 @@ class EmotionManager:
 
                     # Reduce relationship impact if the emotion is already high
                     intensity_factor = max(0, (100 - self.emotions[related_emotion]["intensity"]) / 100)
-                    relationship_effect *= intensity_factor ** 2  # **Stronger damping at high levels**
+                    relationship_effect *= intensity_factor ** 2  # Stronger damping at high levels
 
                     self.emotions[related_emotion]["intensity"] += relationship_effect
                     self.emotions[related_emotion]["intensity"] = max(0, min(100, self.emotions[related_emotion]["intensity"]))
 
+        # ✅ Step 3: Normalize Emotion Intensities
+        for emotion, data in self.emotions.items():
+            if data["intensity"] > 100:
+                data["intensity"] = 100
+
         self.last_update_time = current_time
+        self.save_emotions_to_memory()
+
 
 
     def apply_trigger(self, emotion, trigger):
@@ -79,35 +106,40 @@ class EmotionManager:
         }
 
     def get_dominant_emotion(self):
-        """Return the strongest active emotion while ensuring correct prioritization and avoiding misclassification."""
+        """Return the most dominant emotion, with positive-weighted conflict resolution."""
         active_emotions = self.get_emotional_state()
-
         if not active_emotions:
-            return None  # No strong emotions detected
+            return "curiosity"
 
-        # Sort emotions by intensity (highest first)
         sorted_emotions = sorted(active_emotions.items(), key=lambda x: x[1], reverse=True)
+        top_emotion, top_intensity = sorted_emotions[0]
 
-        # ✅ If obsession is above 100, prioritize it first
-        for emotion, intensity in sorted_emotions:
-            if emotion == "obsession" and intensity > 100:
-                return emotion
+        # Special override: obsession if it's overwhelmingly strong
+        if "obsession" in active_emotions and active_emotions["obsession"] > 120:
+            return "obsession"
 
-        # ✅ If love is higher than anger by more than 20 points, prioritize love
-        if "love" in active_emotions and "anger" in active_emotions:
-            if active_emotions["love"] > active_emotions["anger"] + 20:
-                return "love"
+        # Define emotional conflicts (antagonists)
+        opposites = {
+            "hate": "love",
+            "anger": "compassion",
+            "grief": "hope",
+            "resentment": "forgiveness",
+            "uncertainty": "confidence"
+        }
 
-        # ✅ If hate is stronger than 90, prioritize it over anger
+        # Conflict logic: if the opposite of a negative emotion is higher, prefer the positive one
+        for neg, pos in opposites.items():
+            if neg in active_emotions and pos in active_emotions:
+                if active_emotions[pos] > active_emotions[neg] + 2:
+                    return pos
+
+        # Override hate dominance unless it is *truly* the highest
         if "hate" in active_emotions and active_emotions["hate"] > 90:
+            if top_emotion != "hate" and top_intensity > active_emotions["hate"]:
+                return top_emotion
             return "hate"
 
-        # ✅ Prioritize anger only if it is **the highest emotion**
-        if sorted_emotions[0][0] == "anger":
-            return "anger"
-
-        # ✅ Otherwise, return the strongest remaining emotion
-        return sorted_emotions[0][0]
+        return top_emotion
 
 
 
