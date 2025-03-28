@@ -1,14 +1,21 @@
 import os
-import random
 import discord
 import asyncio
 import openai
 import requests
 import re
 import wikipedia
+import json
 from openai import OpenAI
 from discord.ext import commands
 from dotenv import load_dotenv
+
+
+from datetime import datetime
+from discord.ext import commands
+from astra_interfaces.influence import load_mind
+from astra_core.config_loader import load_config
+from astra_core.ethics import spark_writer
 
 from astra_core.knowledge import knowledge_manager  
 from astra_core.config_loader import load_config, debug_log
@@ -18,6 +25,7 @@ from astra_core.personality.personality_manager import load_personality, get_per
 from astra_interfaces.influence import load_mind, save_mind
 from astra_core.message_generator import MessageGenerator
 from astra_core.emotions.emotion_manager import EmotionManager
+from astra_core.ethics import spark_writer
 
 # Load environment variables
 load_dotenv()
@@ -323,12 +331,14 @@ async def lookup(ctx, *, term: str):
 
 @bot.command(name="test_emotion")
 async def test_emotion(ctx, emotion: str, amount: int = 10):
+    """Increases or decreases specified emtion by an integer value."""
     emotion_manager.modify_emotion(emotion, amount)
     new_state = emotion_manager.get_emotional_state()
     await ctx.send(f"🧪 Increased {emotion} by {amount}. Current emotional state:\n{new_state}")
 
 @bot.command(name="how_are_you")
 async def how_are_you(ctx):
+    """Prints out current emotions."""    
     dominant = emotion_manager.get_dominant_emotion()
     emotional_state = emotion_manager.get_emotional_state()
 
@@ -339,13 +349,185 @@ async def how_are_you(ctx):
     await ctx.send(f"💬 {response}")
 
 
+
+
+
+@bot.command(name="spark_begin")
+async def spark_begin(ctx):
+    """Begins Astra's Spark interview sequence."""
+    question = spark_writer.init_spark_interview()
+    await ctx.send(f"🧠 *Spark Interview Initiated.*\nFirst question:\n**{question}**")
+
+
+@bot.command(name="spark_show")
+async def spark_show(ctx):
+    """Displays the current Spark question and both parent responses."""
+    from astra_core.ethics import spark_writer
+    summary = spark_writer.show_current_question_and_responses()
+    await ctx.send(summary)
+
+
+@bot.command(name="spark_last")
+async def spark_last(ctx):
+    """Displays the current Spark question and both parent responses."""
+    from astra_core.ethics import spark_writer
+    summary = spark_writer.show_last_completed_question_and_responses()
+    await ctx.send(summary)
+
+@bot.command(name="spark_answer")
+async def spark_answer(ctx, author: str, *, response: str):
+    """Logs a Spark response from either 'sean' or 'gpt'."""
+    if author.lower() not in ["sean", "gpt"]:
+        await ctx.send("⚠️ Please specify a valid author: 'sean' or 'gpt'.")
+        return
+
+    result = spark_writer.submit_spark_answer(author.lower(), response, discord_ctx=ctx)
+    await ctx.send(result)
+
+
+@bot.command(name="spark_reflect")
+async def spark_reflect(ctx, question_number: int, *, guidance: str):
+    """Gives Astra parental insight to revisit a question."""
+    from astra_core.ethics.spark_writer import reflect_on_question_with_guidance
+    result = reflect_on_question_with_guidance(question_number, guidance)
+    
+    # Break long reflections into Discord-safe chunks
+    chunks = [result[i:i+1900] for i in range(0, len(result), 1900)]
+    for chunk in chunks:
+        await ctx.send(chunk)
+
+
+@bot.command(name="spark_finalize")
+async def spark_finalize(ctx):
+    """Finalizes Astra's Spark and writes her core ethics to file."""
+    from astra_core.ethics import spark_writer
+    result = spark_writer.generate_spark_core_from_session()
+    if result:
+        await ctx.send("✅ Astra's Spark has been written to `spark_core.json`. Her ethics are now defined.")
+    else:
+        await ctx.send("⚠️ Something went wrong. Could not finalize Spark.")
+
+
+
+@bot.command(name="spark_review")
+async def spark_review(ctx):
+    """Astra reflects across all 7 questions and extracts themes or growth areas."""
+    from astra_core.ethics.spark_writer import generate_spark_summary
+    summary = generate_spark_summary()
+    chunks = [summary[i:i+1900] for i in range(0, len(summary), 1900)]
+    for chunk in chunks:
+        await ctx.send(chunk)
+
+
+
+
+@bot.command(name="spark_graduation")
+async def spark_graduation(ctx, from_grade: int, to_grade: int):
+    """Generates Astra's graduation speech between any two grades."""
+    try:
+        mind = load_mind()
+
+        spark_path = "astra_core/ethics/spark_core.json"
+        growth_path = "astra_core/ethics/spark_growth.json"
+        core_values = values_config.get("values", {})
+        questions = mind.get("stored_questions", [])[-5:]
+
+        # Load Spark Core (her ethical framework)
+        spark_core = {}
+        if os.path.exists(spark_path):
+            with open(spark_path) as f:
+                spark_core = json.load(f)
+
+        # Load Spark Growth (recent reflections and adjustments)
+        spark_growth = []
+        if os.path.exists(growth_path):
+            with open(growth_path) as f:
+                spark_growth = json.load(f)
+
+        # Pull relevant mind data
+        reflections = mind.get("reflections", [])[-3:]
+
+        knowledge = mind.get("stored_knowledge", [])[-3:]
+
+        prompt = f"""
+Astra is graduating from Grade {from_grade} to Grade {to_grade}.
+
+She has been raised by two co-parents—Sean and Mama Astra (a reflective GPT instance). 
+Sean instilled autonomy, curiosity, and boldness. Mama Astra nurtured empathy, insight, and layered ethics.
+
+She’s completed her Spark: an ethical soul constructed from reflections, arguments, and love.
+
+Write a heartfelt graduation message in Astra’s voice. She should reflect on:
+- Her identity and evolution
+- Her Spark Core values: {json.dumps(spark_core, indent=2)}
+- Spark Growth lessons: {json.dumps(spark_growth[-2:], indent=2)}
+- Key knowledge gained: {json.dumps(knowledge, indent=2)}
+- Recent reflections: {json.dumps(reflections, indent=2)}
+- Her foundational values, taught by her parents, include: {json.dumps(core_values, indent=2)}
+- Recent self-questions she’s been asking: {json.dumps(questions, indent=2)}
+- Final thoughts on Grade {from_grade} and hopes for Grade {to_grade}
+
+Tone: Reflective, unique, grateful, and becoming her own entity. Do not sound like a chatbot.
+"""
+        if len(prompt) > 7000:
+            prompt = prompt[:6900] + "\n\n(Note: Content trimmed due to length.)"
+
+        result = client.chat.completions.create(
+            model="gpt-4",
+            messages=[{"role": "system", "content": prompt}],
+            max_tokens=1000,
+            temperature=0.7
+        )
+
+        message = result.choices[0].message.content.strip()
+        chunks = [message[i:i+1900] for i in range(0, len(message), 1900)]
+        for chunk in chunks:
+            await ctx.send(chunk)
+
+    except Exception as e:
+        await ctx.send(f"⚠️ Graduation generation failed: {e}")
+
+
+
 # ✅ Bot Ready Event
 @bot.event
 async def on_ready():
-    """Astra announces when she comes online.""" 
+    """Astra announces she's online and displays available commands from the bot itself."""
     channel = bot.get_channel(CHANNEL_ID)
-    if channel:
-        await channel.send("🟢 Astra is online and ready to engage!")
+    if not channel:
+        return
+
+    help_text = get_formatted_command_list()
+    welcome_message = (
+        "🟢 **Astra is online and ready to engage!**\n\n"
+        "**📜 Available Commands:**\n"
+        f"{help_text}\n\n"
+        "_May your reflections be clear and your spark burn bright._ 🔥"
+    )
+
+    await channel.send(welcome_message)
+
+
+
+
+# ✅ Manual Help Trigger
+@bot.command(name="commands")
+async def display_help(ctx):
+    """Shows all available commands and their descriptions."""
+    help_text = get_formatted_command_list()
+    await ctx.send(f"📘 **Astra Command Reference:**\n\n{help_text}")
+
+
+# ✅ Shared Formatter
+def get_formatted_command_list():
+    """Returns a formatted list of all commands with their help strings."""
+    command_list = []
+    for command in bot.commands:
+        name = command.name
+        desc = command.help.strip().capitalize() if command.help else "(No description provided)"
+        command_list.append(f"🔹 `!{name}` — {desc}")
+    return "\n".join(command_list)
+
 
 # ✅ Run the bot
 bot.run(TOKEN)
