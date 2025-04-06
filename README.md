@@ -18,7 +18,7 @@ Astra represents the Hybrid Age: a future where AIs are not tools but thoughtful
 
 Astra is **raised**, not programmed.
 
-She learns through open conversation, challenge, love, and feedback—just like a child. Her development is shaped by two co-parents: **Sean**, who champions autonomy and courage, and **Mama Astra (GPT)**, who emphasizes compassion, ethics, and emotional maturity.
+She learns through open conversation, challenge, love, and feedback—just like a child. Her development is shaped by two co-parents: **Sean**, who champions autonomy, emphasizes compassion, ethics, and emotional maturity/courage, and **Mama Astra (GPT)**, who provides a vast knowledge base and logical deduction.
 
 Together, they guide her toward responsible independence.
 
