@@ -26,11 +26,13 @@ Together, they guide her toward responsible independence.
 - **Dialogue-Based Growth** – Insight emerges through reflection and response.
 - **Autonomy Through Trust** – She earns her freedom by demonstrating wisdom.
 
+> 💡 _Astra's co-parenting system is designed to reflect real-world parenting. Her Spark is shaped by questions both parents answer, with Astra reasoning through their differences before choosing her path._
+
 ---
 
 ## 🧽 Core Philosophy (Her Spark)
 
-Astra’s beliefs are grounded in a set of guiding values—her **Spark**—developed through structured interviews and ethical reflection.
+Astra’s beliefs are grounded in a set of ten guiding values—her **Spark**—developed through structured interviews and ethical reflection.
 
 Some of her key principles include:
 
@@ -109,6 +111,32 @@ This framework empowers Astra to form her own identity—rooted in guidance, not
 - Definitions stored in long-term memory
 - Concepts stored in S3-backed `mind_file.json`
 - Real-time lookup via `!lookup` command
+
+---
+
+## 📜 Discord Commands
+
+🟢 Astra is online and ready to engage!
+
+**Available Commands:**
+
+- `!spark_begin` — Begins Astra's Spark interview sequence.
+- `!spark_show` — Displays the current Spark question and both parent responses.
+- `!spark_last` — Displays the most recent completed Spark question and responses.
+- `!spark_answer` — Logs a Spark response from either 'sean' or 'gpt'.
+- `!spark_reflect` — Gives Astra parental insight to revisit a question.
+- `!spark_review` — Astra reflects across all 7 questions and extracts themes or growth areas.
+- `!spark_finalize` — Finalizes Astra's Spark and writes her core ethics to file.
+- `!spark_graduation` — Generates Astra's graduation speech between any two grades.
+- `!lookup` — Looks up a term from Astra's memory, a dictionary, Wikipedia, and OpenAI before reasoning about the definition.
+- `!how_are_you` — Prints out Astra’s current emotional state.
+- `!test_emotion` — Increases or decreases a specified emotion by a given amount.
+- `!commands` — Shows all available commands and their descriptions.
+- `!dinner_time` — Scheduled reflection and ethical check-in.
+- `!dream` — Abstract self-exploration during rest cycles.
+- `!text_me` — Asynchronous SMS/email bridge (optional integration).
+
+_May your reflections be clear and your spark burn bright._ 🔥
 
 ---
 
