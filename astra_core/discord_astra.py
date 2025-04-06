@@ -1,7 +1,6 @@
 import os
 import discord
 import asyncio
-import openai
 import requests
 import re
 import wikipedia
@@ -9,23 +8,17 @@ import json
 from openai import OpenAI
 from discord.ext import commands
 from dotenv import load_dotenv
-
-
-from datetime import datetime
-from discord.ext import commands
 from astra_interfaces.influence import load_mind
 from astra_core.config_loader import load_config
 from astra_core.ethics import spark_writer
 
 from astra_core.knowledge import knowledge_manager  
-from astra_core.config_loader import load_config, debug_log
-from astra_core.processing import process_reflection
+from astra_core.config_loader import debug_log
 from astra_core.mood.mood_manager import MoodManager
-from astra_core.personality.personality_manager import load_personality, get_personality_state
-from astra_interfaces.influence import load_mind, save_mind
+from astra_core.personality.personality_manager import get_personality_state
+from astra_interfaces.influence import save_mind
 from astra_core.message_generator import MessageGenerator
 from astra_core.emotions.emotion_manager import EmotionManager
-from astra_core.ethics import spark_writer
 
 # Load environment variables
 load_dotenv()

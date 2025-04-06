@@ -1,7 +1,6 @@
 import requests
 import re
 import time
-import random
 import openai
 from fuzzywuzzy import fuzz
 from astra_core.config_loader import load_config
