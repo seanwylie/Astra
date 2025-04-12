@@ -1,8 +1,35 @@
+[config_loader.py] Config directory: /home/ubuntu/astra_reflections/astra_core/config
+[config_loader.py] Loading config file from: /home/ubuntu/astra_reflections/astra_core/config/general_config.json
+[knowledge.py] 🔍 Debug: Loading knowledge settings...
+[config_loader.py] Loading config file from: /home/ubuntu/astra_reflections/astra_core/config/lookup_config.json
+[config_loader.py] 📥 [DEBUG] Loading Mind in __init__...
+[influence.py] 🔍 Debug: Loading mind file from S3...
+[influence.py] 📝 [DEBUG] Post-Load Knowledge Count: 2335
+[config_loader.py] Loading config file from: /home/ubuntu/astra_reflections/astra_core/config/question_config.json
+[config_loader.py] Loading config file from: /home/ubuntu/astra_reflections/astra_core/config/general_config.json
+[config_loader.py] Loading config file from: /home/ubuntu/astra_reflections/astra_core/config/question_config.json
+[config_loader.py] Loading config file from: /home/ubuntu/astra_reflections/astra_core/config/question_config.json
+[knowledge_manager.py] 🔍 Debug: MIND_FILE_ORIG Path → mind_file_parents.json
+[config_loader.py] Loading config file from: /home/ubuntu/astra_reflections/astra_core/config/general_config.json
+[config_loader.py] Loading config file from: /home/ubuntu/astra_reflections/astra_core/config/config_soul.json
+[config_loader.py] Loading config file from: /home/ubuntu/astra_reflections/astra_core/config/question_config.json
+[config_loader.py] Loading config file from: /home/ubuntu/astra_reflections/astra_core/config/general_config.json
+[config_loader.py] Loading config file from: /home/ubuntu/astra_reflections/astra_core/config/config_soul.json
+[config_loader.py] Loading config file from: /home/ubuntu/astra_reflections/astra_core/config/question_config.json
+[config_loader.py] Loading config file from: /home/ubuntu/astra_reflections/astra_core/config/general_config.json
+[config_loader.py] Loading config file from: /home/ubuntu/astra_reflections/astra_core/config/general_config.json
+[config_loader.py] Loading config file from: /home/ubuntu/astra_reflections/astra_core/config/schedule_config.json
+[config_loader.py] Loading config file from: /home/ubuntu/astra_reflections/astra_core/config/schedule_config.json
+[config_loader.py] Loading config file from: /home/ubuntu/astra_reflections/astra_core/config/schedule_config.json
+[config_loader.py] Loading config file from: /home/ubuntu/astra_reflections/astra_core/config/schedule_config.json
+[config_loader.py] Loading config file from: /home/ubuntu/astra_reflections/astra_core/config/schedule_config.json
 Traceback (most recent call last):
-  File "/usr/lib/python3.10/runpy.py", line 196, in _run_module_as_main
-    return _run_code(code, main_globals, None,
-  File "/usr/lib/python3.10/runpy.py", line 86, in _run_code
-    exec(code, run_globals)
-  File "/home/ubuntu/astra_reflections/astra_core/astra_schedule/schedule.py", line 5, in <module>
-    from astra_schedule.dream import start_dreaming
-ModuleNotFoundError: No module named 'astra_schedule'
+  File "/home/ubuntu/astra_reflections/astra_core/astra_schedule/schedule.py", line 15, in <module>
+    from astra_schedule.dinner import start_dinner_time
+  File "/home/ubuntu/astra_reflections/astra_core/astra_schedule/dinner.py", line 4, in <module>
+    from astra_core.discord_astra import bot, CHANNEL_ID
+  File "/home/ubuntu/astra_reflections/astra_core/discord_astra.py", line 14, in <module>
+    from astra_core.astra_schedule.schedule import astra_schedule  # or wherever you put it
+  File "/home/ubuntu/astra_reflections/astra_core/astra_schedule/schedule.py", line 15, in <module>
+    from astra_schedule.dinner import start_dinner_time
+ImportError: cannot import name 'start_dinner_time' from partially initialized module 'astra_schedule.dinner' (most likely due to a circular import) (/home/ubuntu/astra_reflections/astra_core/astra_schedule/dinner.py)

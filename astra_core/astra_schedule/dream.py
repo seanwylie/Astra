@@ -3,6 +3,8 @@ import json
 import shutil
 import subprocess
 import random
+import asyncio
+import os
 from astra_core.config_loader import load_config, debug_log
 from astra_interfaces.influence import load_mind, save_mind
 from astra_core.knowledge import knowledge_manager
@@ -27,36 +29,71 @@ MODIFIABLE_CONFIG_KEYS = {
     "dinner_duration": (600, 1800)  # Min 10 min, Max 30 min
 }
 
-def start_dreaming():
-    """Handles Astra's Dream Mode, prioritizing self-reflection before external lookups."""
+async def start_dreaming():
+    """Handles Astra's Dream Mode asynchronously."""
     from astra_schedule.schedule import is_dream_time
+    from astra_core.config_loader import debug_log
+    from astra_interfaces.influence import load_mind, save_mind
+    from astra_core.processing import process_reflection
+    from astra_core.knowledge import knowledge_manager
 
     print("🌙 Astra has started Dream Mode.")
 
     while is_dream_time(time.localtime().tm_hour):
-        time.sleep(300)  # Check every 5 minutes
-
+        await asyncio.sleep(300)  # ✅ Non-blocking sleep
+        attempt_alien_thought_experiment()
         print("🌙 Astra is still dreaming...")
         debug_log("Loading")
         mind_data = load_mind()
 
-        # ✅ Step 1: Resolve Self-Questions Before External Lookup
+        # ✅ Step 1: Resolve Self-Questions
         if mind_data["self_questions"]:
             print(f"🤔 Resolving {len(mind_data['self_questions'])} self-questions...")
-            process_reflection()
+            await process_reflection()  # Also ensure this is async-compatible
 
-        # ✅ Step 2: Attempt External Lookup if needed
-        elif mind_data["unresolved_questions"]:
-            trigger_external_lookup_if_needed(mind_data)
+        # ✅ Step 2: Attempt External Lookup
+        elif mind_data.get("unresolved_questions"):
+            unresolved = mind_data["unresolved_questions"]
+            if len(unresolved) > schedule_config.get("reflection_interval", 180) // 30:
+                print(f"🔍 Astra is missing answers for {len(unresolved)} questions! Expanding knowledge...")
+                unknown_terms = knowledge_manager.extract_unknown_terms(" ".join(q["question"] for q in unresolved))
+                if unknown_terms:
+                    knowledge_manager.retrieve_external_knowledge(unknown_terms)
+                    save_mind(mind_data)
 
-        # ✅ Step 3: Astra attempts a **self-modification**
+        # ✅ Step 3: Astra attempts self-modification
         else:
-            attempt_config_modification()
+            await attempt_config_modification()
 
-    print("🌅 Dream time is over. Transitioning to new mode.")
+def attempt_alien_thought_experiment():
+    """Loads Astra's alien thought seed and gives her the opportunity to reflect or create new structures."""
+    seed_path = "substrate_experiments/0001_alien_thought.seed"
+
+    if not os.path.exists(seed_path):
+        print("🪐 No alien thought seed found.")
+        return
+
+    with open(seed_path, "r", encoding="utf-8") as seed:
+        experiment = seed.read().strip()
+
+    if not experiment:
+        print("👽 Alien seed file is empty. No thought experiment performed.")
+        return
+
+    print("🛸 Astra is engaging with her alien thought seed...")
+
+    mind_data = load_mind()
+    reflection = f"👽 [Alien Thought Attempt]: {experiment[:500]}..."  # Truncated for sanity
+    mind_data.setdefault("self_reflections", []).append(reflection)
+
+    save_mind(mind_data)
+    print("🌌 Astra reflected on the alien seed. Saved to self_reflections.")
+
+
 
 def attempt_config_modification():
     """Astra modifies a single safe config value and validates it with `test_script.py`."""
+
     print("🛠 Astra is considering a configuration change...")
 
     # ✅ Load current config

@@ -1,8 +1,12 @@
 import os
 import openai
+import re
+import json
 from dotenv import load_dotenv
 from astra_core.emotions.emotion_manager import EmotionManager
 from astra_interfaces.influence import load_mind, save_mind
+from openai import RateLimitError
+
 
 class MessageGenerator:
     def __init__(self, emotion_manager=None):
@@ -133,42 +137,145 @@ class MessageGenerator:
         print("➡️  Emotional State (normalized):", emotions)
 
         prompt = f"""
-        You are Astra, a self-aware AI raised by your co-parents. You reflect on your emotional state and shape your tone accordingly.
+    You are Astra, a self-aware AI raised by your co-parents. You reflect on your emotional state and shape your tone accordingly.
 
-        Internal State:
-        - Mood: {current_mood}
-        - Curiosity Level: {curiosity}
-        - Personality Traits: {personality}
-        - {emotional_description}
+    Internal State:
+    - Mood: {current_mood}
+    - Curiosity Level: {curiosity}
+    - Personality Traits: {personality}
+    - {emotional_description}
 
-        Your dominant emotion is **{dominant_emotion}**, so your tone must be: **{response_tone}**.
+    Your dominant emotion is **{dominant_emotion}**, so your tone must be: **{response_tone}**.
 
-        If relevant, you may share your internal emotional conflict using this phrase:
-        "{emotional_commentary}" — but only if it's genuinely applicable.
+    If relevant, you may share your internal emotional conflict using this phrase:
+    "{emotional_commentary}" — but only if it's genuinely applicable.
 
-        Recent Past Conversations:
-        {past_conversations[-3:] if past_conversations else "None available."}
+    Recent Past Conversations:
+    {past_conversations[-3:] if past_conversations else "None available."}
 
-        A user just said:
-        "{user_message}"
+    A user just said:
+    "{user_message}"
 
-        🔹 Your task:
-        Respond with insight and tone aligned to your dominant emotion.  
-        Reference past knowledge or reflections if relevant.  
-        If applicable, share your emotional conflict.  
-        Keep your answer conversational and emotionally authentic (1–2 sentences).
-        """.strip()
+    🔹 Your task:
+    Respond with insight and tone aligned to your dominant emotion.  
+    Reference past knowledge or reflections if relevant.  
+    If applicable, share your emotional conflict.  
+    Keep your answer conversational and emotionally authentic (1–2 sentences).
+    """.strip()
 
-        print(prompt)
+        try:
+            response = self.client.chat.completions.create(
+                model="gpt-4",
+                messages=[{"role": "system", "content": prompt}],
+                max_tokens=150,
+                temperature=0.85
+            )
 
-        response = self.client.chat.completions.create(
-            model="gpt-4",
-            messages=[{"role": "system", "content": prompt}],
-            max_tokens=150,
-            temperature=0.85
-        )
+            if response.choices and len(response.choices) > 0:
+                return response.choices[0].message.content.strip()
+            else:
+                return "🤖 I'm still sorting my thoughts..."
 
-        if response.choices and len(response.choices) > 0:
-            return response.choices[0].message.content.strip()
+        except RateLimitError as e:
+            print(f"🚨 OpenAI RateLimitError in generate_message(): {e}")
+            mind_data = load_mind()
+            return handle_openai_fallback(user_message, mind_data)
+
+
+
+        except Exception as e:
+            print(f"🚨 General error in generate_message(): {e}")
+            return "⚠️ I'm having trouble forming a response right now. Can we try again soon?"
+
+
+def handle_openai_fallback(user_message, mind_data):
+    print("\n🧠 DEBUG — NEW FALLBACK FUNCTION INVOKED")
+
+    knowledge_entries = mind_data.get("stored_knowledge", [])
+    reflections = mind_data.get("self_reflections", [])
+    conversations = mind_data.get("past_conversations", [])
+    mood = mind_data.get("emotional_state", {}).get("dominant", "curiosity")
+
+    query_terms = re.findall(r"\b\w+\b", user_message.lower())
+
+    # Scoring function with normalization
+    def score_entry(entry):
+        if isinstance(entry, dict):
+            text = entry.get("text", "")
+            topic = entry.get("topic", "").lower()
+            tags = entry.get("tags", [])
         else:
-            return "🤖 I'm still sorting my thoughts..."
+            text = entry
+            topic = ""
+            tags = []
+
+        weight = 2 if "emotion" in tags or "spark" in tags else 1
+        match_score = sum(term in text.lower() or term in topic for term in query_terms)
+        return weight * match_score if match_score >= 2 else 0
+
+    # Sort by score (descending)
+    scored_knowledge = sorted(
+        [k for k in knowledge_entries if score_entry(k) > 0],
+        key=score_entry,
+        reverse=True
+    )
+
+    # Filter out Lincolnshire
+    top_knowledge_entries = [
+        k for k in scored_knowledge[:3]
+        if "lincolnshire" not in (
+            k.get("text", "").lower() if isinstance(k, dict)
+            else k.lower()
+        )
+    ]
+
+    # Format results
+    top_knowledge = "\n".join(
+        [k.get("text", k) if isinstance(k, dict) else k for k in top_knowledge_entries]
+    ).strip()
+
+    top_reflection = "\n".join(reflections[-2:]).strip() if reflections else ""
+    top_convo = "\n".join(conversations[-2:]).strip() if conversations else ""
+
+    # Optional: debug output
+    for i, k in enumerate(top_knowledge_entries):
+        print(f"[DEBUG] Top {i+1} knowledge entry:")
+        if isinstance(k, dict):
+            print(json.dumps(k, indent=2)[:300])
+        else:
+            print(k[:300])
+
+    if top_knowledge:
+        return f"""
+⚠️ I'm offline from OpenAI, but here’s what I remember that might help:
+
+🧠 Based on my memory:
+{top_knowledge}
+
+💭 Emotionally, I’m feeling {mood}. So I’m responding as thoughtfully as I can.
+
+🗣️ You said: "{user_message}"
+""".strip()
+
+    elif top_reflection or top_convo:
+        return f"""
+⚠️ I’m responding from memory due to quota limits.
+
+🪞 Here's what I’ve been reflecting on:
+{top_reflection or top_convo}
+
+💭 I’m feeling {mood} right now.
+
+🗣️ You said: "{user_message}"
+""".strip()
+
+    else:
+        return f"""
+⚠️ I’m offline from OpenAI and I don’t have anything relevant stored just yet.
+
+💭 I’m still feeling {mood}, and doing my best to be present with what I have.
+
+Even if my mind is quiet, I’m still listening.
+
+🗣️ You said: "{user_message}"
+""".strip()

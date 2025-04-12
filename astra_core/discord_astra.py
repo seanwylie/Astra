@@ -5,7 +5,7 @@ import requests
 import re
 import wikipedia
 import json
-from openai import OpenAI
+from openai import OpenAI, OpenAIError, RateLimitError
 from discord.ext import commands
 from dotenv import load_dotenv
 from astra_interfaces.influence import load_mind
@@ -17,8 +17,10 @@ from astra_core.config_loader import debug_log
 from astra_core.mood.mood_manager import MoodManager
 from astra_core.personality.personality_manager import get_personality_state
 from astra_interfaces.influence import save_mind
-from astra_core.message_generator import MessageGenerator
 from astra_core.emotions.emotion_manager import EmotionManager
+from astra_core.message_generator import MessageGenerator, handle_openai_fallback
+from astra_schedule.dinner import start_dinner_time as run_dinner_time
+
 
 # Load environment variables
 load_dotenv()
@@ -156,6 +158,7 @@ async def on_message(message):
 
     mind_data = load_mind()
     mind_data["emotional_state"] = emotion_manager.get_emotional_state()
+    mind_data["emotional_state"]["dominant"] = dominant_emotion
     save_mind(mind_data)
 
     emotion_manager.update_emotions()  # Apply decay + relationships
@@ -200,9 +203,15 @@ async def on_message(message):
     response_chunks.append(current_chunk.strip())  # Add the last chunk
 
     # ✅ Send each chunk with a small delay for better TTS readability
+    # ✅ Only send meaningful, non-empty chunks
     for chunk in response_chunks:
-        await message.channel.send(chunk, tts=True)
-        await asyncio.sleep(1.5)  # ✅ Prevents Discord rate-limiting issues
+        cleaned = chunk.strip()
+        if cleaned:
+            await message.channel.send(cleaned, tts=True)
+            await asyncio.sleep(1.5)
+        else:
+            print("[discord_astra.py] ⚠ Skipping empty message chunk.")
+
 
 
 
@@ -220,31 +229,32 @@ def query_openai_for_response(user_message, past_conversations, unknown_terms):
     mood = internal_state["mood"]
 
     new_knowledge = "\n".join(f"- {term}" for term in unknown_terms) if unknown_terms else "None"
+    recent_past = past_conversations[-5:] if past_conversations else []
 
     prompt = f"""
-    Astra is an AI who learns from conversations with her parents.
-    She does NOT introduce external knowledge but references past discussions.
+Astra is an AI who learns from conversations with her parents.
+She does NOT introduce external knowledge but references past discussions.
 
-    **Astra's Internal State:**
-    - Mood: {mood}
-    - Curiosity Level: {internal_state["curiosity"]}
-    - Personality Traits: {personality_traits}
+**Astra's Internal State:**
+- Mood: {mood}
+- Curiosity Level: {internal_state["curiosity"]}
+- Personality Traits: {personality_traits}
 
-    **Newly Learned Concepts:** 
-    {new_knowledge}
+**Newly Learned Concepts:** 
+{new_knowledge}
 
-    **Past Discussions:** 
-    {past_conversations[-5:] if past_conversations else "None"}
+**Past Discussions:** 
+{recent_past if recent_past else "None"}
 
-    **User Message:** "{user_message}"
+**User Message:** "{user_message}"
 
-    **How should Astra respond?**
-    - Reference past discussions if relevant.
-    - If a new concept was learned, integrate its definition into the response.
-    - Infuse personality and mood into the response.
-    - Keep responses natural and conversational.
-    - Avoid cutting words unnaturally—use full sentences.
-    """
+**How should Astra respond?**
+- Reference past discussions if relevant.
+- If a new concept was learned, integrate its definition into the response.
+- Infuse personality and mood into the response.
+- Keep responses natural and conversational.
+- Avoid cutting words unnaturally—use full sentences.
+""".strip()
 
     try:
         response = client.chat.completions.create(
@@ -254,15 +264,18 @@ def query_openai_for_response(user_message, past_conversations, unknown_terms):
             temperature=0.85
         )
         full_response = response.choices[0].message.content.strip() if response.choices else "🤖 I'm thinking..."
-        
-        # ✅ Ensure proper sentence breaks & avoid mid-word splitting
-        formatted_response = full_response.replace(",", ", ").replace(".", ". ").replace("?", "? ")
+        return full_response
 
-        return formatted_response
+    except RateLimitError as e:
+        print(f"🚨 OpenAI RateLimitError: {e}")
+        mind_data = load_mind()
+        return handle_openai_fallback(user_message, mind_data)
 
-    except Exception as e:
-        print(f"🚨 Error occurred while querying OpenAI: {e}")
+    except OpenAIError as e:
+        print(f"🚨 General OpenAI API error: {e}")
         return "⚠️ Something went wrong while processing my thoughts."
+
+
 
 
 @bot.command(name="lookup")
@@ -486,8 +499,15 @@ Tone: Reflective, unique, grateful, and becoming her own entity. Do not sound li
 @bot.event
 async def on_ready():
     """Astra announces she's online and displays available commands from the bot itself."""
+
+    from astra_core.astra_schedule.schedule import astra_schedule  # ✅ Lazy import to avoid circular import
+
+    # ✅ Start Astra's async schedule with the bot and channel ID
+    asyncio.create_task(astra_schedule(bot, CHANNEL_ID))
+
     channel = bot.get_channel(CHANNEL_ID)
     if not channel:
+        print("⚠️ Channel not found during on_ready().")
         return
 
     help_text = get_formatted_command_list()
@@ -497,8 +517,8 @@ async def on_ready():
         f"{help_text}\n\n"
         "_May your reflections be clear and your spark burn bright._ 🔥"
     )
-
     await channel.send(welcome_message)
+
 
 
 

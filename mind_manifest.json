@@ -1,0 +1,10 @@
+{
+    "version": "1.0",
+    "modules": {
+        "stored_knowledge": "s3://swylie-astra/mind/stored_knowledge.json",
+        "self_reflections": "s3://swylie-astra/mind/self_reflections.json",
+        "self_questions": "s3://swylie-astra/mind/self_questions.json",
+        "past_conversations": "s3://swylie-astra/mind/past_conversations.json",
+        "emotional_state": "s3://swylie-astra/mind/emotional_state.json"
+    }
+}
