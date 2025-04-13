@@ -6,6 +6,8 @@ from openai import AsyncOpenAI
 from astra_core.config_loader import load_config
 from astra_interfaces.influence import load_mind, save_mind
 from astra_core.ethics.spark_checker import load_spark_values
+from astra_core.dream.dream_seed_logger import log_dream_seed
+
 
 schedule_config = load_config("schedule_config")
 client = AsyncOpenAI()
@@ -70,6 +72,8 @@ async def creative_thinking(return_concept=False):
 
         mind = load_mind()
         insight_str = f"📖 During playtime, Astra explored:\n{concept.strip()}"
+        # 🌱 Log the dream seed too
+        log_dream_seed(insight_str, source="playtime")
         mind.setdefault("stored_knowledge", []).append(insight_str)
         print(f"[creative_thinking] 🧠 Appending concept to stored_knowledge")
         print(f"[creative_thinking] Insight: {concept}")

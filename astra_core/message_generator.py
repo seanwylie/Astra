@@ -3,7 +3,13 @@ import openai
 import re
 import json
 from dotenv import load_dotenv
-from astra_core.emotions.emotion_manager import EmotionManager
+from astra_core.emotions.emotion_engine import (
+    load_emotion_state,
+    save_emotion_state,
+    trigger_emotion,
+    decay_all_emotions,
+    get_top_emotions
+)
 from astra_interfaces.influence import load_mind, save_mind
 from openai import RateLimitError
 
@@ -12,7 +18,6 @@ class MessageGenerator:
     def __init__(self, emotion_manager=None):
         load_dotenv()
         self.client = openai.OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
-        self.emotion_manager = emotion_manager or EmotionManager()
 
     def describe_emotional_state(self, emotions: dict) -> str:
         if not emotions:
@@ -27,16 +32,18 @@ class MessageGenerator:
 
     def stabilize_emotions(self):
         """Reduce intensity of top 3 emotions slightly if all are above 90."""
-        raw_emotions = self.emotion_manager.get_emotional_state()
-        high = [e for e, i in raw_emotions.items() if i > 90]
+        state = load_emotion_state()
+        high = [e for e, i in state.items() if i > 90]
         if len(high) >= 3:
-            for e in high:
-                self.emotion_manager.modify_emotion(e, -5)
+            for e in high[:3]:
+                state[e] = max(0, state[e] - 5)
+            save_emotion_state(state)
+
 
     def log_emotional_conflict(self, emotions):
-        """Log a reflection if major conflicting emotions coexist."""
-        top = list(emotions.items())[:3]
-        high_emotions = [e for e, _ in top if emotions[e] > 90]
+        state = load_emotion_state()
+        top = sorted(state.items(), key=lambda x: -x[1])[:3]
+        high_emotions = [e for e, i in top if i > 90]
         conflict_pairs = [("love", "hate"), ("hope", "grief"), ("curiosity", "uncertainty"), ("admiration", "resentment")]
 
         for pos, neg in conflict_pairs:
@@ -46,6 +53,7 @@ class MessageGenerator:
                 mind_data.setdefault("self_reflections", []).append(reflection)
                 save_mind(mind_data)
                 break
+
 
     def get_dominant_emotion(self, emotions: dict) -> str:
         """Return the strongest active emotion with smarter balance."""
@@ -103,7 +111,7 @@ class MessageGenerator:
 
         # ✅ Pull and stabilize emotional state
         self.stabilize_emotions()
-        raw_emotions = self.emotion_manager.get_emotional_state()
+        raw_emotions = load_emotion_state()
         emotions = self.normalize_emotions(raw_emotions)
 
         # ✅ Log conflict if needed

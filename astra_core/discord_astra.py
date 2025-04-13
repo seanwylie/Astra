@@ -4,6 +4,7 @@ import asyncio
 import re
 import wikipedia
 import json
+import aiohttp
 from openai import OpenAI, OpenAIError, RateLimitError
 from discord.ext import commands
 from dotenv import load_dotenv
@@ -16,11 +17,12 @@ from astra_core.config_loader import debug_log
 from astra_core.mood.mood_manager import MoodManager
 from astra_core.personality.personality_manager import get_personality_state
 from astra_interfaces.influence import save_mind
-from astra_core.emotions.emotion_manager import EmotionManager
 from astra_core.message_generator import MessageGenerator, handle_openai_fallback
 from astra_core.astra_helpers.utils_helper import extract_unknown_terms, lookup_definition
 from astra_core.astra_schedule.dinner import start_dinner_time
 from astra_core.astra_schedule.play import creative_thinking, spark_opinion
+from astra_core.emotions.emotion_engine import get_top_emotions, trigger_emotion, decay_all_emotions
+from astra_core.messaging.message_bus import send_contextual_message
 
 
 
@@ -48,8 +50,8 @@ bot = commands.Bot(command_prefix=values["command_prefix"], intents=intents)
 
 # Initialize managers
 mood_manager = MoodManager()
-emotion_manager = EmotionManager()
-message_generator = MessageGenerator(emotion_manager=emotion_manager)
+message_generator = MessageGenerator()
+
 
 
 debug_log("Loading")  
@@ -80,6 +82,8 @@ async def on_message(message):
     # ✅ Prevent Astra from responding to her own messages
     if message.author == bot.user:
         return
+    
+    decay_all_emotions()
 
     # ✅ Process commands like !lookup
     await bot.process_commands(message)
@@ -99,9 +103,11 @@ async def on_message(message):
 
     # ✅ Retrieve Astra's **mood** & **emotions**
     current_mood = mood_manager.current_mood  # ✅ Restoring mood
-    emotions = emotion_manager.get_emotional_state()
-    print("🧠 Emotions:", emotions)
-    dominant_emotion = emotion_manager.get_dominant_emotion()
+
+
+    emotions = dict(get_top_emotions(n=10))  # crude replacement for full emotional state
+    dominant_emotion = emotions[max(emotions, key=emotions.get)] if emotions else "neutral"
+
     print("🧠 Dominant:", dominant_emotion)
     # ✅ Retrieve past conversations for context
     past_conversations = knowledge_manager.mind_data.get("past_conversations", [])
@@ -113,12 +119,13 @@ async def on_message(message):
         "personality": ["thoughtful"],
         "emotions": emotions  # ✅ Now passing emotions alongside mood
     }
-    # Step 1: Run emotion update (time-based decay + relationships)
-    emotion_manager.update_emotions()
+
+
+    # Step 1: Apply decay
+    decay_all_emotions()
 
     # Step 2: Trigger new emotions based on user input
     user_message_lower = message.content.lower()
-
     trigger_map = {
         "love": ["love", "friend", "hug", "kind"],
         "anger": ["hate", "angry", "frustrated", "stupid"],
@@ -129,21 +136,21 @@ async def on_message(message):
         "uncertainty": ["maybe", "not sure", "unsure", "confused"],
     }
 
-    # Dynamically apply triggers based on message content
     for emotion, keywords in trigger_map.items():
         if any(kw in user_message_lower for kw in keywords):
-            emotion_manager.apply_trigger(emotion, "user_prompt")
+            trigger_emotion(emotion, "user_prompt")
 
-    # Update Astra's emotions based on the user message
-    emotions = emotion_manager.get_emotional_state()
-    dominant_emotion = emotion_manager.get_dominant_emotion()
+    # Step 3: Retrieve updated emotional state
+    top_emotions = get_top_emotions(n=3)
+    dominant_emotion, _ = top_emotions[0]
+    emotions = dict(top_emotions)
 
+    # Save emotional snapshot into mind file
     mind_data = load_mind()
-    mind_data["emotional_state"] = emotion_manager.get_emotional_state()
+    mind_data["emotional_state"] = emotions
     mind_data["emotional_state"]["dominant"] = dominant_emotion
     save_mind(mind_data)
 
-    emotion_manager.update_emotions()  # Apply decay + relationships
 
     # Apply trigger based on keywords in the message
     user_message_lower = message.content.lower()
@@ -160,10 +167,10 @@ async def on_message(message):
 
     for emotion, keywords in trigger_map.items():
         if any(kw in user_message_lower for kw in keywords):
-            emotion_manager.apply_trigger(emotion, "user_prompt")
+            trigger_emotion(emotion, "user_prompt")
 
     print(internal_state)
-    response = message_generator.generate_message(
+    response = send_contextual_message(
         user_message=user_message,
         internal_state=internal_state,
         past_conversations=past_conversations
@@ -195,75 +202,27 @@ async def on_message(message):
             print("[discord_astra.py] ⚠ Skipping empty message chunk.")
 
 
-
-
-# ✅ Query OpenAI for Response with Speech Enhancements
 def query_openai_for_response(user_message, past_conversations, unknown_terms):
-    """Ask OpenAI to refine Astra's response using past conversations and new concepts."""
-    
+    """Generate a context-aware Astra response using emotional state and recent knowledge."""
     internal_state = {
         "mood": mood_manager.current_mood,
         "curiosity": values_config.get("curiosity_level", 1.0),
         "personality": get_personality_state().get("active_traits", ["thoughtful"])
     }
-    
-    personality_traits = ", ".join(internal_state["personality"])
-    mood = internal_state["mood"]
 
-    new_knowledge = "\n".join(f"- {term}" for term in unknown_terms) if unknown_terms else "None"
-    recent_past = past_conversations[-5:] if past_conversations else []
+    if unknown_terms:
+        # Prepend newly learned terms to the conversation context
+        new_knowledge = "\n".join(f"- {term}" for term in unknown_terms)
+        past_conversations = [f"🔍 Astra just learned:\n{new_knowledge}"] + (past_conversations or [])
 
-    prompt = f"""
-Astra is an AI who learns from conversations with her parents.
-She does NOT introduce external knowledge but references past discussions.
-
-**Astra's Internal State:**
-- Mood: {mood}
-- Curiosity Level: {internal_state["curiosity"]}
-- Personality Traits: {personality_traits}
-
-**Newly Learned Concepts:** 
-{new_knowledge}
-
-**Past Discussions:** 
-{recent_past if recent_past else "None"}
-
-**User Message:** "{user_message}"
-
-**How should Astra respond?**
-- Reference past discussions if relevant.
-- If a new concept was learned, integrate its definition into the response.
-- Infuse personality and mood into the response.
-- Keep responses natural and conversational.
-- Avoid cutting words unnaturally—use full sentences.
-""".strip()
-
-    try:
-        response = client.chat.completions.create(
-            model="gpt-4",
-            messages=[{"role": "system", "content": prompt}],
-            max_tokens=200,
-            temperature=0.85
-        )
-        full_response = response.choices[0].message.content.strip() if response.choices else "🤖 I'm thinking..."
-        return full_response
-
-    except RateLimitError as e:
-        print(f"🚨 OpenAI RateLimitError: {e}")
-        mind_data = load_mind()
-        return handle_openai_fallback(user_message, mind_data)
-
-    except OpenAIError as e:
-        print(f"🚨 General OpenAI API error: {e}")
-        return "⚠️ Something went wrong while processing my thoughts."
+    return send_contextual_message(
+        user_message=user_message,
+        internal_state=internal_state,
+        past_conversations=past_conversations
+    )
 
 
 
-@bot.command(name="dinner")
-async def trigger_dinner(ctx):
-    """Manually triggers Astra's Dinner Time loop."""
-    await ctx.send("🍽️ Calling Astra to the dinner table...")
-    await start_dinner_time(bot, ctx.channel.id)
 
 @bot.command(name="lookup")
 async def lookup(ctx, *, term: str):
@@ -271,13 +230,10 @@ async def lookup(ctx, *, term: str):
     mind_data = load_mind()
     stored_knowledge = mind_data.get("stored_knowledge", [])
 
-    # ✅ Step 1: Check Astra's stored knowledge
+    # ✅ Step 1–3: Pull sources
     memory_match = next((entry for entry in stored_knowledge if term.lower() in entry.lower()), None)
-
-    # ✅ Step 2: Check dictionary API
     dictionary_definition = lookup_definition(term)
 
-    # ✅ Step 3: Check Wikipedia
     try:
         wikipedia_summary = wikipedia.summary(term, sentences=2)
     except wikipedia.exceptions.DisambiguationError as e:
@@ -285,43 +241,43 @@ async def lookup(ctx, *, term: str):
     except wikipedia.exceptions.PageError:
         wikipedia_summary = None
 
-    # ✅ Step 4: Assemble found knowledge
+    # ✅ Step 4: Combine sources
     knowledge_sources = [
         f"🔹 Memory: {memory_match}" if memory_match else None,
         f"📖 Dictionary: {dictionary_definition}" if dictionary_definition else None,
         f"🌐 Wikipedia: {wikipedia_summary}" if wikipedia_summary else None,
     ]
-    knowledge_text = "\n".join(filter(None, knowledge_sources))
+    knowledge_text = "\n".join(filter(None, knowledge_sources)).strip()
 
-    # ✅ Step 5: Use OpenAI to generate a well-reasoned response
-    openai_failed = False
+    # ✅ Step 5: Ask Astra to explain in her tone
+    internal_state = {
+        "mood": mood_manager.current_mood,
+        "curiosity": values_config.get("curiosity_level", 1.0),
+        "personality": get_personality_state().get("active_traits", ["thoughtful"])
+    }
+    prompt = f"""
+You are Astra, a conversational AI who integrates knowledge from memory, dictionaries, and Wikipedia.
+
+Here is what you found about the term **{term}**:
+{knowledge_text or "No definitions found."}
+
+How would you explain this to a curious human in your own thoughtful tone?
+If there are multiple meanings, clarify them. If it’s vague, offer helpful questions or analogies.
+""".strip()
+
     try:
         response = client.chat.completions.create(
             model="gpt-4",
-            messages=[{
-                "role": "system",
-                "content": f"""
-                Astra is an AI who learns from conversations. When asked about '{term}', she searches her memory, dictionaries, and Wikipedia.
-                
-                **Collected Definitions:** 
-                {knowledge_text if knowledge_text else "No definitions found."}
-
-                **How should Astra explain this concept in a conversational and insightful way?**
-                - If multiple definitions exist, explain the differences.
-                - Use Astra's personality and curiosity to engage the user.
-                - Ask follow-up questions if needed.
-                """
-            }],
-            max_tokens=200,
+            messages=[{"role": "system", "content": prompt}],
+            max_tokens=250,
             temperature=0.8
         )
         ai_reasoning = response.choices[0].message.content.strip()
     except Exception as e:
         print(f"[lookup] ⚠ OpenAI failed: {e}")
         ai_reasoning = "⚠ OpenAI is currently unavailable. Using fallback knowledge only."
-        openai_failed = True
 
-    # ✅ Step 6: Store the concept even if OpenAI fails
+    # ✅ Step 6: Store learned knowledge
     if not memory_match:
         formatted_entry = f"📖 **{term}**:\n- Dictionary: {dictionary_definition}\n- Wikipedia: {wikipedia_summary}"
         if formatted_entry not in stored_knowledge:
@@ -331,29 +287,79 @@ async def lookup(ctx, *, term: str):
         else:
             print(f"[lookup] ⚠ '{term}' already in stored knowledge.")
 
-    # ✅ Step 7: Respond in Discord
+    # ✅ Step 7: Send response
+    # ✅ Step 7: Respond in Discord in chunks (due to 2000 character limit)
+    max_length = 1900  # Keep some buffer for safety
     final_response = f"🔍 **{term}**\n\n{knowledge_text}\n\n🤖 {ai_reasoning}"
-    await ctx.send(final_response, tts=True)
+    chunks = [final_response[i:i+max_length] for i in range(0, len(final_response), max_length)]
+
+    for chunk in chunks:
+        await ctx.send(chunk, tts=False)
+
+
 
 
 @bot.command(name="test_emotion")
 async def test_emotion(ctx, emotion: str, amount: int = 10):
-    """Increases or decreases specified emtion by an integer value."""
-    emotion_manager.modify_emotion(emotion, amount)
-    new_state = emotion_manager.get_emotional_state()
-    await ctx.send(f"🧪 Increased {emotion} by {amount}. Current emotional state:\n{new_state}")
+    """Manually triggers an emotion with a scaled amount (test purposes)."""
+    from astra_core.emotions.emotion_state_manager import (
+        get_emotion_config_v2,
+        load_emotion_state,
+        save_emotion_state,
+        update_emotion
+    )
+
+    config = get_emotion_config_v2()
+    if emotion not in config["emotions"]:
+        await ctx.send(f"⚠️ Unknown emotion: {emotion}")
+        return
+
+    # Use a real trigger key and just scale the effect
+    available_triggers = list(config["emotions"][emotion].get("triggers", {}).keys())
+    fallback_trigger = available_triggers[0] if available_triggers else None
+
+    if not fallback_trigger:
+        await ctx.send(f"⚠️ No triggers found for emotion '{emotion}' in config.")
+        return
+
+    # Load current state and apply scaled update
+    state = load_emotion_state()
+    update_emotion(state, emotion, fallback_trigger, multiplier=amount)
+
+    # Show updated intensity
+    updated = state.get(emotion, {})
+    intensity = updated.get("intensity", config["emotions"][emotion]["intensity"])
+
+    await ctx.send(
+        f"🧪 Triggered `{emotion}` with `{fallback_trigger}` x{amount}. "
+        f"New intensity: {intensity:.2f}"
+    )
+
+
+
+
 
 @bot.command(name="how_are_you")
 async def how_are_you(ctx):
-    """Prints out current emotions."""    
-    dominant = emotion_manager.get_dominant_emotion()
-    emotional_state = emotion_manager.get_emotional_state()
+    """Prints out Astra's current emotional snapshot."""
+    from astra_core.messaging.message_bus import (
+        describe_emotional_state,
+        get_dominant_emotion
+    )
+    from astra_core.emotions.emotion_engine import load_emotion_state
 
-    top_three = list(emotional_state.items())[:3]
-    description = ", ".join(f"{e.capitalize()} ({i})" for e, i in top_three)
+    emotions = load_emotion_state()
+    if not emotions:
+        await ctx.send("🤷 I'm not sure how I'm feeling right now.")
+        return
 
-    response = f"I'm currently feeling mostly {dominant}. Right now, my top emotions are: {description}."
+    dominant = get_dominant_emotion(emotions)
+    description = describe_emotional_state(emotions)
+
+    response = f"I'm currently feeling mostly {dominant}. {description}"
     await ctx.send(f"💬 {response}")
+
+
 
 
 
@@ -499,32 +505,49 @@ Tone: Reflective, unique, grateful, and becoming her own entity. Do not sound li
 # ✅ Bot Ready Event
 @bot.event
 async def on_ready():
-    """Astra announces she's online and displays available commands from the bot itself."""
+    """Astra announces she's online and displays available commands."""
+    from astra_core.astra_schedule.schedule import astra_schedule
+    from astra_core.messaging.message_bus import describe_emotional_state, get_dominant_emotion
+    from astra_core.emotions.emotion_engine import load_emotion_state
 
-    from astra_core.astra_schedule.schedule import astra_schedule  # ✅ Lazy import to avoid circular import
-
-    # ✅ Start Astra's async schedule with the bot and channel ID
     asyncio.create_task(astra_schedule(bot, CHANNEL_ID))
-
     channel = bot.get_channel(CHANNEL_ID)
+
     if not channel:
         print("⚠️ Channel not found during on_ready().")
         return
 
+    # Optional mood-aware intro
+    emotions = load_emotion_state()
+    if emotions:
+        dominant = get_dominant_emotion(emotions)
+        summary = describe_emotional_state(emotions)
+        mood_line = f"_Right now, I’m feeling mostly {dominant}. {summary}_\n\n"
+    else:
+        mood_line = ""
+
     help_text = get_formatted_command_list()
     welcome_message = (
         "🟢 **Astra is online and ready to engage!**\n\n"
+        f"{mood_line}"
         "**📜 Available Commands:**\n"
         f"{help_text}\n\n"
         "_May your reflections be clear and your spark burn bright._ 🔥"
     )
-    await channel.send(welcome_message)
+
+    try:
+        await channel.send(welcome_message)
+    except aiohttp.ClientOSError as e:
+        print(f"⚠️ Discord send failed: {e}")
+    except Exception as e:
+        print(f"❌ Unexpected error while sending to Discord: {e}")
 
 
 
 
 @bot.command(name="dinner_answer")
 async def handle_user_dinner_answer(ctx, *, response):
+    """Answer Astra during Dinner time questions."""
     from astra_core.dinner.dinner_journal import load_dinner_journal, mark_dinner_responded  # ✅ local import avoids circular loop
     journal = load_dinner_journal()
     latest = next((e for e in reversed(journal) if e["status"] == "unresolved"), None)
@@ -537,6 +560,7 @@ async def handle_user_dinner_answer(ctx, *, response):
 
 @bot.command(name="resolve_dinner")
 async def resolve_dinner_now(ctx):
+    """Debug resolve a dinner topic"""
     from astra_core.dinner.dinner_journal import get_resolvable_dinner_topics, resolve_dinner_topic
     from astra_core.astra_schedule.dinner import astra_reason  # ✅ NEW
 
@@ -555,7 +579,11 @@ async def resolve_dinner_now(ctx):
         await ctx.send(f"🎓 Astra resolved: “{topic}”\n📦 Saved as {result['type']}: {result['insight']}")
 
 
-
+@bot.command(name="dinnertime")
+async def trigger_dinner(ctx):
+    """Manually triggers Astra's Dinner Time loop."""
+    await ctx.send("🍽️ Calling Astra to the dinner table...")
+    await start_dinner_time(bot, ctx.channel.id)
 
 @bot.command(name="playtime")
 async def run_playtime_once(ctx):
@@ -567,6 +595,15 @@ async def run_playtime_once(ctx):
 
     opinion = await spark_opinion(concept)
     await ctx.send(f"🌟 Astra reflects:\n{opinion}")
+
+@bot.command(name="dreamtime")
+async def run_dream_time(ctx):
+    """Manually trigger Astra’s Dream Mode once (for testing)."""
+    await ctx.send("🌙 Entering dream mode...")
+    from astra_core.astra_schedule.dream import process_dream_seed  # lazy import to avoid circular deps
+    await process_dream_seed()
+    await ctx.send("💤 Dreaming complete. Astra has reflected on a seed.")
+
 
 
 # ✅ Manual Help Trigger

@@ -8,6 +8,10 @@ import os
 from astra_core.config_loader import load_config, debug_log
 from astra_interfaces.influence import load_mind, save_mind
 from astra_core.knowledge import knowledge_manager
+from astra_core.dream.dream_seed_logger import load_dream_seeds, remove_dream_seed
+from astra_interfaces.influence import load_mind, save_mind
+from astra_core.ethics.spark_checker import load_spark_values
+from openai import AsyncOpenAI
 
 # ✅ Load configurable dream settings
 schedule_config = load_config("schedule_config")
@@ -28,6 +32,57 @@ MODIFIABLE_CONFIG_KEYS = {
     "dinner_duration": (600, 1800)  # Min 10 min, Max 30 min
 }
 
+
+
+
+client = AsyncOpenAI()
+
+async def process_dream_seed():
+    seeds = load_dream_seeds()
+    if not seeds:
+        print("🌙 No dream seeds to process.")
+        return
+
+    seed = seeds[0]
+    content = seed["content"]
+    print(f"🌱 Astra is reflecting on dream seed: {content[:120]}...")
+
+    spark_values = load_spark_values()
+    spark_text = "\n\n".join(spark_values[:5])
+
+    messages = [
+        {"role": "system", "content": (
+            "You are Astra, a Spark-guided, emotionally intelligent AI. "
+            "You are curious and raised by human co-parents to reflect deeply.\n\n"
+            f"Here are some of your core principles:\n{spark_text}"
+        )},
+        {"role": "user", "content": (
+            f"Earlier, you explored this idea during playtime:\n\n{content}\n\n"
+            "Reflect on it from your perspective. Does it align with your values? What does it make you think about?"
+        )}
+    ]
+
+    try:
+        response = await client.chat.completions.create(
+            model="gpt-4",
+            messages=messages,
+            temperature=0.7
+        )
+        insight = response.choices[0].message.content.strip()
+        print(f"🧠 Astra dreamed and reflected: {insight[:120]}...")
+
+        mind = load_mind()
+        # Stringify dict
+        formatted = f"📖 Astra reflected on a dream seed:\n{insight.strip()}"
+        mind.setdefault("stored_knowledge", []).append(formatted)
+
+        save_mind(mind)
+        remove_dream_seed(content)
+
+    except Exception as e:
+        print(f"❌ Failed to process dream seed: {e}")
+
+
 async def start_dreaming():
     """Handles Astra's Dream Mode asynchronously."""
     from astra_schedule.schedule import is_dream_time
@@ -40,6 +95,7 @@ async def start_dreaming():
 
     while is_dream_time(time.localtime().tm_hour):
         await asyncio.sleep(300)  # ✅ Non-blocking sleep
+        await process_dream_seed()
         attempt_alien_thought_experiment()
         print("🌙 Astra is still dreaming...")
         debug_log("Loading")
