@@ -3,7 +3,8 @@ from astra_interfaces.influence import load_mind, save_mind
 from astra_core.config_loader import load_config
 from fuzzywuzzy import fuzz
 from astra_core.config_loader import debug_log
-from astra_core.dinner.dinner_journal import log_if_ethically_conflicting
+from astra_core.dinner.dinner_journal import log_if_ethically_conflicting, log_if_contradictory
+
 
 # Load configurations
 question_config = load_config("question_config")
@@ -62,6 +63,8 @@ def generate_reflection(knowledge=None, recent_reflections=None, *args, **kwargs
 
     # See if the reflection violates her spark
     log_if_ethically_conflicting(new_reflection)
+    log_if_contradictory(new_reflection, mind_data.get("stored_knowledge", []))
+
 
     return new_reflection
 

@@ -5,6 +5,9 @@ import time
 import os
 import boto3
 from astra_core.config_loader import load_config
+from astra_core.dinner.dinner_journal import log_if_emotionally_spiking
+
+
 
 
 S3_BUCKET = "swylie-astra"
@@ -73,7 +76,11 @@ def update_emotion(state, emotion, trigger, multiplier=1.0):
             "last_updated": now()
         }
 
-    state[emotion]["intensity"] = max(0, state[emotion]["intensity"] + delta)
-    state[emotion]["last_updated"] = now()
+    raw_intensity = state[emotion]["intensity"] + delta
+    capped_intensity = min(raw_intensity, config.get("max_intensity", 10000))
+    state[emotion]["intensity"] = max(0, capped_intensity)
+
     print(f"🔁 Updated '{emotion}' with '{trigger}' (+{delta}). New intensity: {state[emotion]['intensity']}")
     save_emotion_state(state)
+
+    log_if_emotionally_spiking(state)

@@ -4,6 +4,8 @@ import time
 import boto3
 import openai
 import asyncio
+from collections import Counter
+from fuzzywuzzy import fuzz
 from datetime import datetime
 from astra_core.ethics.spark_checker import violates_spark
 from astra_interfaces.influence import load_mind, save_mind  # ✅ NEW: For migrating resolved topics
@@ -18,6 +20,19 @@ def now():
     return datetime.utcnow().isoformat()
 
 
+
+
+def summarize_dinner_journal():
+    """Summarize unresolved dinner topics by type."""
+    journal = load_dinner_journal()
+    unresolved = [entry for entry in journal if entry.get("status") == "unresolved"]
+    counts = Counter(entry["type"] for entry in unresolved)
+
+    if not unresolved:
+        return "✅ No unresolved dinner topics. Astra's feeling balanced."
+
+    summary_lines = [f"🔸 {count} × {topic.replace('_', ' ')}" for topic, count in counts.items()]
+    return "📚 Astra's current dinner journal includes:\n" + "\n".join(summary_lines)
 
 
 async def ask_dinner_question(bot, channel, topic):
@@ -41,15 +56,64 @@ async def ask_dinner_question(bot, channel, topic):
 
 def log_if_ethically_conflicting(reflection):
     """Log a dinner entry if the reflection violates Astra's Spark ethics."""
-    if violates_spark(reflection):
+    content = reflection.get("content", "")
+    if content and violates_spark(content):
         entry = {
             "timestamp": time.strftime("%Y-%m-%d %H:%M:%S"),
             "type": "ethical_conflict",
-            "content": reflection,
+            "content": content,
+            "source": reflection.get("source"),
             "status": "unresolved"
         }
         print("🍽️ Logging reflection flagged as spark-conflicting.")
         log_dinner_entry(entry)
+
+def log_if_emotionally_spiking(emotion_state: dict):
+    """Log a dinner entry if Astra experiences an emotional spike or imbalance."""
+    print(f"{emotion_state}")
+    spike_thresholds = {
+        "anger": 1000,
+        "confusion": 800,
+        "love": 0.01,  # If it drops too low
+        "joy": 0.01,   # If it disappears
+    }
+
+    for emotion, state in emotion_state.items():
+        intensity = state.get("intensity", 0)
+        last = state.get("last_updated", "")
+
+        if emotion in spike_thresholds:
+            threshold = spike_thresholds[emotion]
+            if (threshold < 1 and intensity < threshold) or (threshold >= 1 and intensity > threshold):
+                entry = {
+                    "timestamp": now(),
+                    "type": "emotional_spike",
+                    "mood_state": emotion_state,
+                    "trigger": f"{emotion} intensity = {intensity}",
+                    "status": "unresolved"
+                }
+                print(f"🍽️ Logging emotional spike: {emotion} = {intensity}")
+                log_dinner_entry(entry)
+                break
+
+
+
+def log_if_contradictory(reflection, stored_knowledge):
+    """Log a dinner entry if the reflection contradicts existing knowledge."""
+    for knowledge in stored_knowledge:
+        similarity = fuzz.token_set_ratio(reflection, knowledge)
+        if similarity > 70 and "not" in reflection.lower() and "not" not in knowledge.lower():
+            entry = {
+                "timestamp": now(),
+                "type": "knowledge_conflict",
+                "trigger": "Contradiction detected in reflection",
+                "content": reflection,
+                "related_knowledge": knowledge,
+                "status": "unresolved"
+            }
+            print("🍽️ Logging contradictory knowledge reflection.")
+            log_dinner_entry(entry)
+            break
 
 async def get_gpt_dinner_response(topic):
     """Ask GPT for its thoughts on Astra’s ethical or emotional topic."""

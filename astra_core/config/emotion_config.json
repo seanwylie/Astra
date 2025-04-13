@@ -1,4 +1,5 @@
 {
+    "max_intensity": 10000,
     "emotions": {
       "love": {
         "intensity": 50,

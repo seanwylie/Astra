@@ -544,6 +544,12 @@ async def on_ready():
 
 
 
+@bot.command(name="dinner_summary")
+async def dinner_summary(ctx):
+    """Answer Astra during Dinner time questions."""
+    from astra_core.dinner.dinner_journal import summarize_dinner_journal
+    summary = summarize_dinner_journal()
+    await ctx.send(summary)
 
 @bot.command(name="dinner_answer")
 async def handle_user_dinner_answer(ctx, *, response):
