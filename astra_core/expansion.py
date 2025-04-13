@@ -1,21 +1,23 @@
 import random
 import wikipedia
-import time
 from fuzzywuzzy import fuzz
-from bs4 import BeautifulSoup
+import openai  # ✅ Add OpenAI for tertiary reasoning
+import os
+from dotenv import load_dotenv
+from openai import RateLimitError  # ✅ For fallback handling
 
 from astra_core.config_loader import load_config  # ✅ Load configs dynamically
 
 general_config = load_config("general_config")  # ✅ Load schedule settings
+load_dotenv()
 
 def refine_knowledge(existing_ideas, mind_data):
     """Merge and refine knowledge, ensuring only true redundancy is removed."""
-    
     if len(existing_ideas) < 2:
-        return None  # ✅ Not enough data to merge
+        return False  # Not enough knowledge to merge
 
     selected_pair = None
-    retry_attempts = 5  # 🔥 Reduce attempts for better efficiency
+    retry_attempts = 5
 
     for _ in range(retry_attempts):
         concept_1, concept_2 = random.sample(existing_ideas, 2)
@@ -27,28 +29,32 @@ def refine_knowledge(existing_ideas, mind_data):
 
         if is_related(concept_1, concept_2):
             selected_pair = (concept_1, concept_2)
-            break  
+            break
 
     if not selected_pair:
-        return None  
+        return False
 
     concept_1, concept_2 = selected_pair
 
-    # ✅ Prevent merging near-identical concepts
     if concept_1[:50] in concept_2 or concept_2[:50] in concept_1:
-        return None
+        return False
 
-    # ✅ Ask OpenAI to reason about these concepts
-    reasoning = query_openai_for_knowledge_merge(concept_1, concept_2)
+    try:
+        reasoning = query_openai_for_knowledge_merge(concept_1, concept_2)
+    except RateLimitError as e:
+        print(f"[expansion.py] 🚨 OpenAI quota exceeded during merge: {e}")
+        reasoning = f"(Fallback) Consider how **{concept_1}** and **{concept_2}** might relate in Astra's understanding."
 
-    merged_idea = reasoning if reasoning else f"{concept_1} and {concept_2} are related concepts."
+    merged_idea = reasoning or f"{concept_1} and {concept_2} are related concepts."
 
-    # ✅ Ensure no duplication
     if merged_idea not in mind_data["stored_knowledge"]:
         mind_data["stored_knowledge"].append(merged_idea)
-        print(f"🔹 Refined knowledge added. New count: {len(mind_data['stored_knowledge'])}")
+        print(f"🔹 Refined knowledge added: {merged_idea[:120]}...")
+        return True  # ✅ Trigger a save
 
-    return merged_idea
+    return False  # No changes made
+
+
 
 def query_openai_for_knowledge_merge(concept_1, concept_2):
     """Use OpenAI to help Astra reason about merging knowledge concepts."""
@@ -64,29 +70,34 @@ def query_openai_for_knowledge_merge(concept_1, concept_2):
     Keep the explanation concise and insightful.
     """
 
-    response = openai.OpenAI().chat.completions.create(
-        model="gpt-4",
-        messages=[{"role": "system", "content": prompt}],
-        max_tokens=150,
-        temperature=0.7
-    )
+    try:
+        response = openai.OpenAI().chat.completions.create(
+            model="gpt-4",
+            messages=[{"role": "system", "content": prompt}],
+            max_tokens=150,
+            temperature=0.7
+        )
+        if response.choices and len(response.choices) > 0:
+            return response.choices[0].message.content.strip()
+        else:
+            print(f"⚠ OpenAI response missing for merge of '{concept_1}' & '{concept_2}'.")
+            return None
 
-    if response.choices and len(response.choices) > 0:
-        return response.choices[0].message.content.strip()
-    else:
-        print(f"⚠ OpenAI reasoning failed for '{concept_1}' & '{concept_2}'.")
+    except openai.RateLimitError as e:
+        print(f"[expansion.py] 🚨 OpenAI quota exceeded during merge: {e}")
+        return f"{concept_1} and {concept_2} share contextual relevance, though the precise connection is undetermined. This warrants further exploration."
+
+    except Exception as e:
+        print(f"⚠ OpenAI merge reasoning failed: {e}")
         return None
 
 
 def is_related(concept_1, concept_2):
     """Determine if two concepts are related using fuzzy matching."""
-    
-    # ✅ Ensure both inputs are strings
     if not isinstance(concept_1, str) or not isinstance(concept_2, str):
         print(f"🚨 Warning: Non-string input detected! {type(concept_1)} vs {type(concept_2)}")
         return False
 
-    # ✅ Prevent fuzzy matching on massive text blocks
     concept_1 = concept_1[:250]
     concept_2 = concept_2[:250]
 
@@ -96,9 +107,7 @@ def is_related(concept_1, concept_2):
         print(f"🚨 Error computing similarity: {e}")
         return False
 
-    return similarity > 30  # 🔥 Adjusted to require at least 30% similarity
-
-
+    return similarity > 30
 
 
 def deepen_reflection(reflection):
@@ -107,14 +116,10 @@ def deepen_reflection(reflection):
     deeper_question = random.choice(expansion_templates)
     return f"{reflection}\n\n🔍 Deeper Thought: {deeper_question}"
 
-import openai  # ✅ Add OpenAI for tertiary reasoning
-import os
-from dotenv import load_dotenv
-load_dotenv()
 
 class KnowledgeExpander:
     def __init__(self):
-        self.client = openai.OpenAI(api_key=os.getenv("OPENAI_API_KEY"))  # ✅ Load API key properly
+        self.client = openai.OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 
     def fetch_wikipedia_summary(self, query):
         """Fetch a Wikipedia summary while handling disambiguation, rate limits, and missing pages."""
@@ -122,7 +127,7 @@ class KnowledgeExpander:
             print(f"🌐 Searching Wikipedia for: {query}")
             summary = wikipedia.summary(query, sentences=2)
             return summary
-        
+
         except wikipedia.exceptions.DisambiguationError as e:
             print(f"⚠ Wikipedia disambiguation triggered for '{query}', checking alternatives...")
             for option in e.options:
@@ -135,7 +140,7 @@ class KnowledgeExpander:
 
         except wikipedia.exceptions.PageError:
             print(f"⚠ No Wikipedia page found for '{query}'. Trying OpenAI reasoning...")
-            return self.query_openai_for_explanation(query)  # ✅ NEW: Ask OpenAI when Wikipedia fails
+            return self.query_openai_for_explanation(query)
 
         except Exception as e:
             print(f"⚠ Wikipedia lookup failed: {e}")
@@ -149,26 +154,30 @@ class KnowledgeExpander:
         Astra is an AI trying to learn about the world. She wants to understand concepts logically. 
         Explain the term '{concept}' in a concise and insightful way, as if teaching a curious AI.
         """
-        
-        response = self.client.chat.completions.create(
-            model="gpt-4",
-            messages=[{"role": "system", "content": prompt}],
-            max_tokens=100,
-            temperature=0.7
-        )
 
-        if response.choices and len(response.choices) > 0:
-            return response.choices[0].message.content.strip()
-        else:
-            print(f"⚠ OpenAI response missing for '{concept}'.")
+        try:
+            response = self.client.chat.completions.create(
+                model="gpt-4",
+                messages=[{"role": "system", "content": prompt}],
+                max_tokens=100,
+                temperature=0.7
+            )
+            if response.choices and len(response.choices) > 0:
+                return response.choices[0].message.content.strip()
+            else:
+                print(f"⚠ OpenAI response missing for '{concept}'.")
+                return None
+
+        except openai.RateLimitError as e:
+            print(f"[expansion.py] 🚨 OpenAI quota exceeded during concept explanation: {e}")
+            return f"{concept.capitalize()} appears to be a meaningful idea, but its deeper explanation is currently unavailable. This invites further exploration when more resources are accessible."
+
+        except Exception as e:
+            print(f"⚠ OpenAI explanation failed: {e}")
             return None
+
 
 
 def is_term_or_phrase(concept):
     """Determine whether a concept is a single-word term or a multi-word phrase."""
-    if " " in concept.strip():
-        return "phrase"
-    return "term"
-
-
-
+    return "phrase" if " " in concept.strip() else "term"

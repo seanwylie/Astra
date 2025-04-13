@@ -1,4 +1,3 @@
-import random
 from fuzzywuzzy import fuzz
 from sentence_transformers import SentenceTransformer, util
 from astra_core.config_loader import load_config

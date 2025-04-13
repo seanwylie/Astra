@@ -1,7 +1,6 @@
 from astra_core.config_loader import load_config, debug_log
 import random
 from astra_core.questions.question_utils import generate_category_embeddings, categorize_question
-from astra_core.questions.question_flagger import flag_unresolved_question
 from astra_core.knowledge_manager import load_mind
 
 # Load configuration files

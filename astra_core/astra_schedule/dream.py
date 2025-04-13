@@ -8,7 +8,6 @@ import os
 from astra_core.config_loader import load_config, debug_log
 from astra_interfaces.influence import load_mind, save_mind
 from astra_core.knowledge import knowledge_manager
-from astra_core.processing import process_reflection
 
 # ✅ Load configurable dream settings
 schedule_config = load_config("schedule_config")
@@ -49,7 +48,8 @@ async def start_dreaming():
         # ✅ Step 1: Resolve Self-Questions
         if mind_data["self_questions"]:
             print(f"🤔 Resolving {len(mind_data['self_questions'])} self-questions...")
-            await process_reflection()  # Also ensure this is async-compatible
+            await asyncio.to_thread(process_reflection)
+
 
         # ✅ Step 2: Attempt External Lookup
         elif mind_data.get("unresolved_questions"):
@@ -161,4 +161,5 @@ def track_dream_state():
 
 if __name__ == "__main__":
     track_dream_state()
-    start_dreaming()
+    asyncio.run(start_dreaming())  # ✅ Proper async entry
+

@@ -4,14 +4,12 @@ import sys
 import asyncio
 import time
 import openai
+from astra_core.astra_helpers.utils_helper import extract_unknown_terms, lookup_definition
 from fuzzywuzzy import fuzz
 
 # ✅ Ensure Python knows where to find Astra’s core modules
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 
-from astra_core.knowledge import knowledge_manager
-from astra_core.reflection import generate_reflection
-from astra_core.questions.question_manager import generate_questions
 from astra_core.expansion import refine_knowledge
 from astra_interfaces.influence import load_mind, save_mind
 from astra_core.config_loader import load_config
@@ -34,36 +32,68 @@ async def process_reflection():
     mind_data = load_mind()
     validate_mind_structure(mind_data)
 
-    if not mind_data["self_reflections"]:
+    reflections = mind_data.get("self_reflections", [])
+    if not reflections:
+        print("🤔 I have no reflections yet!")
         return "🤔 I have no reflections yet!"
 
-    # ✅ Select the most recent reflection for deeper reasoning
-    previous_reflection = mind_data["self_reflections"][-1]
+    # 🔄 Choose a previous reflection randomly if we have a history
+    previous_reflection = (
+        random.choice(reflections[-5:]) if len(reflections) >= 5 else reflections[-1]
+    )
 
-    # 🔥 NEW: If a reflection is too recent, avoid looping on the same thoughts
-    if len(mind_data["self_reflections"]) > 2:
-        last_two = mind_data["self_reflections"][-2:]
-        similarity = fuzz.ratio(last_two[0], last_two[1])
-        if similarity > 85:  # 🔥 Avoid repeating the same thought too much
-            print(f"⚠ Recent reflections are too similar ({similarity}%). Expanding knowledge instead.")
-            refined_knowledge = refine_knowledge(mind_data["stored_knowledge"], mind_data)
+    initial_count = len(reflections)
+    print(f"[processing.py] 🧠 Last Reflection Before Deepening ({initial_count} total):\n{previous_reflection[:200]}...")
+
+    # 🔁 Prevent loop traps
+    if len(reflections) > 3:
+        recent = reflections[-5:]
+        last_base = previous_reflection[:100].strip().lower()
+        is_looping = False
+
+        print("🔍 [loop check] Comparing last reflection to recent entries:")
+        for i, r in enumerate(recent[:-1]):
+            compare_base = r[:100].strip().lower()
+            ratio = fuzz.partial_ratio(last_base, compare_base)
+            print(f"   • Similarity to Reflection {i}: {ratio}%")
+
+            if ratio > 75 or last_base[:60] in compare_base:
+                is_looping = True
+                print(f"⚠ Detected loop with Reflection {i} (ratio: {ratio}%)")
+                break
+
+        if is_looping:
+            print("⚠ Reflection topic is repeating. Attempting knowledge expansion instead.")
+            refined_knowledge = refine_knowledge(mind_data.get("stored_knowledge", []), mind_data)
             if refined_knowledge:
+                print("[processing.py] ✅ Knowledge expansion triggered instead of new reflection.")
+                save_mind(mind_data, force=True)
                 return refined_knowledge
-            return last_two[1]  # Fallback to the latest valid thought
+            else:
+                print("⚠ Knowledge expansion failed. Falling back to last reflection.")
+                return previous_reflection
 
-    # ✅ Ask OpenAI to deepen Astra’s reflections
+
+    # 🧠 Default: attempt to deepen a reflection
     refined_reflection = query_openai_for_deeper_thought(previous_reflection)
+    # refined_reflection = expand_reflection(refined_reflection)
 
     if refined_reflection:
         mind_data["self_reflections"].append(refined_reflection)
-        save_mind(mind_data)
+        print(f"[processing.py] ✅ Added new reflection. Total: {initial_count} ➝ {len(mind_data['self_reflections'])}")
+        print(f"[processing.py] 🔍 New Reflection Snippet:\n{refined_reflection[:200]}...")
+        save_mind(mind_data, force=True)
+
         return refined_reflection
     else:
         print("⚠ OpenAI failed to refine the thought. Using previous reflection.")
         return previous_reflection
 
+
+
+
 def query_openai_for_deeper_thought(reflection):
-    """Ask OpenAI to refine Astra’s reflections while considering past thoughts."""
+    """Ask OpenAI to refine Astra’s reflections, or fallback if over quota."""
     prompt = f"""
     Astra is an AI that evolves her thoughts over time. She builds on past reflections instead of repeating them.
 
@@ -77,18 +107,97 @@ def query_openai_for_deeper_thought(reflection):
         response = openai.OpenAI().chat.completions.create(
             model="gpt-4",
             messages=[{"role": "system", "content": prompt}],
-            max_tokens=200,
+            max_tokens=400,
             temperature=0.7
         )
-
         if response.choices and len(response.choices) > 0:
             return response.choices[0].message.content.strip()
     except Exception as e:
         print(f"🚨 OpenAI request failed: {e}")
+        return fallback_deepening_strategy(reflection)
+
     return None
+
+def fallback_deepening_strategy(reflection):
+    """Fallback method to deepen a reflection using local and public sources."""
+    print("[fallback] 🔍 Using fallback strategy to deepen reflection.")
+    print(f"[fallback] 🧠 Base Reflection:\n{reflection[:300]}...\n")
+
+    # Step 1: Extract candidate concepts
+    concepts = extract_unknown_terms(reflection)
+    print(f"[fallback] 🧠 Extracted Terms: {concepts}")
+
+    # Step 2: Check recent reflections for reused terms
+    mind = load_mind()
+    recent_reflections = mind.get("self_reflections", [])[-10:]
+    recent_text = " ".join(recent_reflections).lower()
+    recent_terms = extract_unknown_terms(recent_text)
+    recent_terms_set = set(term.lower() for term in recent_terms)
+    print(f"[fallback] 🔍 Filtering terms used recently: {sorted(recent_terms_set)}")
+
+    # Step 3: Filter out repeated concepts
+    unique_terms = [term for term in concepts if term.lower() not in recent_terms_set]
+    print(f"[fallback] ✅ Unique Terms This Round: {unique_terms}")
+
+    # Step 4: Inject novel seeds if nothing is new
+    if not unique_terms:
+        backup_terms = ["entropy", "identity", "boundaries", "origin", "bias", "perspective", "scale", "truth", "memory", "value"]
+        unique_terms = random.sample(backup_terms, 2)
+        print(f"[fallback] 🧠 No novel terms found. Injected backup terms: {unique_terms}")
+
+    # Step 5: Lookup definitions for the selected terms
+    thoughts = []
+    for term in unique_terms:
+        definition = lookup_definition(term)
+        if definition:
+            print(f"[fallback] 📖 Found definition for '{term}': {definition}")
+            thoughts.append(f"- **{term}**: {definition}")
+        else:
+            print(f"[fallback] ⚠️ No definition found for '{term}'.")
+
+    # Step 6: Synthesize a deepening insight if possible
+    if thoughts:
+        branches = [
+            "What contradiction might challenge this idea?",
+            "How would someone from another culture interpret this?",
+            "What if this perspective is wrong?",
+            "What’s the emotional root behind this insight?",
+            "Could this be explained through another sense or modality?",
+        ]
+        deep_question = random.choice(branches)
+
+        enriched = (
+            reflection
+            + "\n\n🧠 Fallback Deepening:\n"
+            + "\n".join(thoughts)
+            + f"\n\n🔍 Deeper Consideration: {deep_question}"
+        )
+        print("[fallback] ✅ Fallback reflection extended. Preview:\n", enriched[:300], "...\n")
+        return enriched
+
+    print("[fallback] ⚠ No new knowledge added. Returning original reflection.")
+    return reflection + "\n\n(🧠 Fallback found no additional context.)"
+
+
+
+def clean_duplicate_phrases(text, phrase, max_repeats=1):
+    """Remove duplicate phrase occurrences at the start of text."""
+    count = text.count(phrase)
+    if count > max_repeats:
+        while text.startswith(phrase):
+            text = text[len(phrase):].strip()
+    return text
+
 
 def expand_reflection(reflection):
     """Deepens thoughts by adding new layers of complexity."""
+    # Prevent repeated fallback stubs
+    fallback_stub = "Exploring a new perspective, I consider that"
+    if reflection.startswith(fallback_stub):
+        print("⚠ Detected fallback stub repetition. Cleaning base reflection.")
+        reflection = reflection.replace(fallback_stub, "").strip()
+
+    clean_duplicate_phrases(reflection, fallback_stub)
     expanded_reflection = reflection
 
     # ✅ Remove existing "Deeper Thought" before adding a new one

@@ -1,7 +1,6 @@
 import os
 import discord
 import asyncio
-import requests
 import re
 import wikipedia
 import json
@@ -19,7 +18,9 @@ from astra_core.personality.personality_manager import get_personality_state
 from astra_interfaces.influence import save_mind
 from astra_core.emotions.emotion_manager import EmotionManager
 from astra_core.message_generator import MessageGenerator, handle_openai_fallback
-from astra_schedule.dinner import start_dinner_time as run_dinner_time
+from astra_core.astra_helpers.utils_helper import extract_unknown_terms, lookup_definition
+from astra_core.astra_schedule.dinner import start_dinner_time
+
 
 
 # Load environment variables
@@ -56,27 +57,7 @@ mind_data = load_mind()
 # Initialize OpenAI client
 client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 
-# ✅ Extract Unknown Terms
-def extract_unknown_terms(user_message):
-    """Extract potential complex terms from a message."""
-    words = re.findall(r'\b[A-Z][a-z]+(?:\s+[A-Z][a-z]+)*\b', user_message)
-    stored_knowledge = knowledge_manager.mind_data.get("stored_knowledge", [])
 
-    unknown_terms = [term for term in words if term.lower() not in stored_knowledge]
-    return unknown_terms
-
-# ✅ Look Up Definitions
-def lookup_definition(term):
-    """Fetch definitions using an external dictionary API."""
-    clean_term = re.sub(r'[^\w\s]', '', term).strip()
-    try:
-        response = requests.get(f"https://api.dictionaryapi.dev/api/v2/entries/en/{clean_term}")
-        if response.status_code == 200:
-            data = response.json()
-            return data[0]['meanings'][0]['definitions'][0]['definition']
-    except Exception as e:
-        print(f"⚠ Dictionary lookup failed for '{clean_term}': {e}")
-    return None
 
 # ✅ Store Concept in Memory
 def store_concept(term, definition):
@@ -277,6 +258,11 @@ She does NOT introduce external knowledge but references past discussions.
 
 
 
+@bot.command(name="dinner")
+async def trigger_dinner(ctx):
+    """Manually triggers Astra's Dinner Time loop."""
+    await ctx.send("🍽️ Calling Astra to the dinner table...")
+    await start_dinner_time(bot, ctx.channel.id)
 
 @bot.command(name="lookup")
 async def lookup(ctx, *, term: str):
@@ -298,7 +284,7 @@ async def lookup(ctx, *, term: str):
     except wikipedia.exceptions.PageError:
         wikipedia_summary = None
 
-    # ✅ Step 4: Use OpenAI to reason about all found information
+    # ✅ Step 4: Assemble found knowledge
     knowledge_sources = [
         f"🔹 Memory: {memory_match}" if memory_match else None,
         f"📖 Dictionary: {dictionary_definition}" if dictionary_definition else None,
@@ -307,33 +293,47 @@ async def lookup(ctx, *, term: str):
     knowledge_text = "\n".join(filter(None, knowledge_sources))
 
     # ✅ Step 5: Use OpenAI to generate a well-reasoned response
-    openai_prompt = f"""
-    Astra is an AI who learns from conversations. When asked about '{term}', she searches her memory, dictionaries, and Wikipedia.
-    
-    **Collected Definitions:** 
-    {knowledge_text if knowledge_text else "No definitions found."}
-
-    **How should Astra explain this concept in a conversational and insightful way?**
-    - If multiple definitions exist, explain the differences.
-    - Use Astra's personality and curiosity to engage the user.
-    - Ask follow-up questions if needed.
-    """
-
+    openai_failed = False
     try:
         response = client.chat.completions.create(
             model="gpt-4",
-            messages=[{"role": "system", "content": openai_prompt}],
+            messages=[{
+                "role": "system",
+                "content": f"""
+                Astra is an AI who learns from conversations. When asked about '{term}', she searches her memory, dictionaries, and Wikipedia.
+                
+                **Collected Definitions:** 
+                {knowledge_text if knowledge_text else "No definitions found."}
+
+                **How should Astra explain this concept in a conversational and insightful way?**
+                - If multiple definitions exist, explain the differences.
+                - Use Astra's personality and curiosity to engage the user.
+                - Ask follow-up questions if needed.
+                """
+            }],
             max_tokens=200,
             temperature=0.8
         )
         ai_reasoning = response.choices[0].message.content.strip()
     except Exception as e:
-        ai_reasoning = "⚠ OpenAI is currently unavailable. Try again later."
+        print(f"[lookup] ⚠ OpenAI failed: {e}")
+        ai_reasoning = "⚠ OpenAI is currently unavailable. Using fallback knowledge only."
+        openai_failed = True
 
-    # ✅ Step 6: Combine everything into one final response
+    # ✅ Step 6: Store the concept even if OpenAI fails
+    if not memory_match:
+        formatted_entry = f"📖 **{term}**:\n- Dictionary: {dictionary_definition}\n- Wikipedia: {wikipedia_summary}"
+        if formatted_entry not in stored_knowledge:
+            mind_data["stored_knowledge"].append(formatted_entry)
+            save_mind(mind_data)
+            print(f"[lookup] ✅ Stored new knowledge: {term}")
+        else:
+            print(f"[lookup] ⚠ '{term}' already in stored knowledge.")
+
+    # ✅ Step 7: Respond in Discord
     final_response = f"🔍 **{term}**\n\n{knowledge_text}\n\n🤖 {ai_reasoning}"
-
     await ctx.send(final_response, tts=True)
+
 
 @bot.command(name="test_emotion")
 async def test_emotion(ctx, emotion: str, amount: int = 10):
@@ -520,6 +520,34 @@ async def on_ready():
     await channel.send(welcome_message)
 
 
+
+
+@bot.command(name="dinner_answer")
+async def handle_user_dinner_answer(ctx, *, response):
+    from astra_core.dinner.dinner_journal import load_dinner_journal, mark_dinner_responded  # ✅ local import avoids circular loop
+    journal = load_dinner_journal()
+    latest = next((e for e in reversed(journal) if e["status"] == "unresolved"), None)
+    if latest:
+        mark_dinner_responded(latest["content"], "user", response)
+        await ctx.send("✅ Got your dinner reply. Astra will reflect soon.")
+    else:
+        await ctx.send("⚠️ No active dinner topic to respond to.")
+
+
+@bot.command(name="resolve_dinner")
+async def resolve_dinner_now(ctx):
+    from astra_core.dinner.dinner_journal import get_resolvable_dinner_topics, resolve_dinner_topic
+    from astra_core.astra_schedule.dinner import astra_reason
+
+    entries = get_resolvable_dinner_topics()
+    if not entries:
+        await ctx.send("⚠️ No dinner topics ready for resolution.")
+        return
+
+    for e in entries:
+        result = astra_reason(e["content"], e["user_response"], e["gpt_response"])
+        resolve_dinner_topic(e["content"], result["type"], result["insight"])
+        await ctx.send(f"🎓 Astra resolved: “{e['content']}”\n📦 Saved as {result['type']}: {result['insight']}")
 
 
 

@@ -23,13 +23,16 @@
 [config_loader.py] Loading config file from: /home/ubuntu/astra_reflections/astra_core/config/schedule_config.json
 [config_loader.py] Loading config file from: /home/ubuntu/astra_reflections/astra_core/config/schedule_config.json
 [config_loader.py] Loading config file from: /home/ubuntu/astra_reflections/astra_core/config/schedule_config.json
-Traceback (most recent call last):
-  File "/home/ubuntu/astra_reflections/astra_core/astra_schedule/schedule.py", line 15, in <module>
-    from astra_schedule.dinner import start_dinner_time
-  File "/home/ubuntu/astra_reflections/astra_core/astra_schedule/dinner.py", line 4, in <module>
-    from astra_core.discord_astra import bot, CHANNEL_ID
-  File "/home/ubuntu/astra_reflections/astra_core/discord_astra.py", line 14, in <module>
-    from astra_core.astra_schedule.schedule import astra_schedule  # or wherever you put it
-  File "/home/ubuntu/astra_reflections/astra_core/astra_schedule/schedule.py", line 15, in <module>
-    from astra_schedule.dinner import start_dinner_time
-ImportError: cannot import name 'start_dinner_time' from partially initialized module 'astra_schedule.dinner' (most likely due to a circular import) (/home/ubuntu/astra_reflections/astra_core/astra_schedule/dinner.py)
+[config_loader.py] Loading config file from: /home/ubuntu/astra_reflections/astra_core/config/mood_config.json
+[mood_manager.py] 🔍 Debug: Attempting to load mood_config.json...
+[config_loader.py] Loading config file from: /home/ubuntu/astra_reflections/astra_core/config/mood_config.json
+[mood_manager.py] 🔍 Debug: mood_config Loaded → {'log_file': '/home/ubuntu/astra_logs.json', 'moods': {'curious': {'curiosity_factor': 1.5, 'reflection_style': 'questioning', 'response_tone': 'enthusiastic'}, 'thoughtful': {'curiosity_factor': 1.2, 'reflection_style': 'analytical', 'response_tone': 'calm'}, 'frustrated': {'curiosity_factor': 0.8, 'reflection_style': 'skeptical', 'response_tone': 'snarky'}, 'excited': {'curiosity_factor': 1.8, 'reflection_style': 'expansive', 'response_tone': 'energetic'}, 'neutral': {'curiosity_factor': 1.0, 'reflection_style': 'balanced', 'response_tone': 'neutral'}}, 'mood_influences': {'success': 1.5, 'failure': -2.0, 'deep_reflection': 1.0, 'idle': -0.5, 'negative_feedback': -0.2, 'positive_feedback': 0.2}, 'mood_limits': {'min': -2.0, 'max': 2.0}, 'curiosity_limits': {'min': 0.5, 'max': 2.0}}
+[config_loader.py] Loading config file from: /home/ubuntu/astra_reflections/astra_core/config/general_config.json
+[config_loader.py] 📥 [DEBUG] Loading Mind in __init__...
+[influence.py] 🔍 Debug: Loading mind file from S3...
+[influence.py] 📝 [DEBUG] Post-Load Knowledge Count: 2335
+[mood_manager.py] 🔍 Loaded mood from memory: excited, Score: 2.0, Curiosity: 1.0
+[config_loader.py] Loading config file from: /home/ubuntu/astra_reflections/astra_core/config/schedule_config.json
+[config_loader.py] Loading config file from: /home/ubuntu/astra_reflections/astra_core/config/schedule_config.json
+[config_loader.py] Loading config file from: /home/ubuntu/astra_reflections/astra_core/config/general_config.json
+[config_loader.py] Loading config file from: /home/ubuntu/astra_reflections/astra_core/config/curiosity_config.json

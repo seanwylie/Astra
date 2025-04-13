@@ -9,7 +9,8 @@ schedule_config = load_config("schedule_config")  # ✅ Load schedule settings
 async def start_learning():
     print("📚 Astra is in school, learning and thinking...")
 
-    await process_reflection()  # ✅ Properly await reflection processing
+    await asyncio.to_thread(process_reflection)
+
 
     # ✅ Use config-based random sleep duration
     sleep_duration = random.randint(

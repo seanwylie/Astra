@@ -1,17 +1,13 @@
 import time
 import json
-import shutil
-import subprocess
 import random
-import os
 import asyncio
-from astra_core.config_loader import load_config, debug_log
-from astra_interfaces.influence import load_mind, save_mind
-from astra_core.knowledge import knowledge_manager
+from astra_core.config_loader import load_config
 from astra_core.processing import process_reflection
 from astra_schedule.dream import start_dreaming
 from astra_schedule.school import start_learning
 from astra_schedule.play import start_playtime
+from astra_schedule.dinner import start_dinner_time
 from astra_schedule.sleep import start_sleeping
 from astra_core.mood.mood_manager import mood_manager
 from astra_core.astra_helpers.sms_helper import send_sms
@@ -32,10 +28,14 @@ def is_playtime(hour): return schedule_config["play_time"][0] <= hour < schedule
 
 def get_current_mode():
     current_hour = time.localtime().tm_hour
-    if is_dream_time(current_hour): return "dream"
-    elif is_learning_time(current_hour): return "school"
-    elif is_playtime(current_hour): return "play"
-    elif is_dinner_time(current_hour): return "dinner"
+    if is_dream_time(current_hour): 
+        return "dream"
+    elif is_learning_time(current_hour): 
+        return "school"
+    elif is_playtime(current_hour): 
+        return "play"
+    elif is_dinner_time(current_hour): 
+        return "dinner"
     return "sleep"
 
 def set_curiosity_level(mode):
@@ -54,8 +54,7 @@ def log_status(message):
     except Exception as e:
         print(f"🚨 Log Error: {e}")
 
-async def astra_schedule(bot, channel_id):
-    from astra_schedule.dinner import start_dinner_time  # Lazy import to avoid circular issues
+async def astra_schedule(bot=None, channel_id=None):
     global last_state
 
     while True:
@@ -77,7 +76,7 @@ async def astra_schedule(bot, channel_id):
 
         elif current_mode == "dinner":
             print("🍽️ Astra is in Dinner Time.")
-            await start_dinner_time(bot, channel_id)
+            await start_dinner_time()
 
         elif current_mode == "school":
             print("📚 Astra is in School Mode.")
@@ -100,4 +99,5 @@ async def astra_schedule(bot, channel_id):
         print(f"🔁 Sleeping for {schedule_config['reflection_interval']} seconds before next loop...")
         await asyncio.sleep(schedule_config["reflection_interval"])
 
-# NOTE: Do not use asyncio.run() here to avoid runtime loop conflicts from Discord
+if __name__ == "__main__":
+    asyncio.run(astra_schedule())

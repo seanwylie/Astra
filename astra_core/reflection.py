@@ -3,6 +3,7 @@ from astra_interfaces.influence import load_mind, save_mind
 from astra_core.config_loader import load_config
 from fuzzywuzzy import fuzz
 from astra_core.config_loader import debug_log
+from astra_core.dinner.dinner_journal import log_if_ethically_conflicting
 
 # Load configurations
 question_config = load_config("question_config")
@@ -58,6 +59,10 @@ def generate_reflection(knowledge=None, recent_reflections=None, *args, **kwargs
         print(f"📝 [DEBUG] Stored new knowledge: {base_idea[:100]}...")
 
     save_mind(mind_data)
+
+    # See if the reflection violates her spark
+    log_if_ethically_conflicting(new_reflection)
+
     return new_reflection
 
 def enforce_novelty(reflection, past_reflections):
