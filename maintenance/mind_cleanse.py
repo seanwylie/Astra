@@ -22,20 +22,27 @@ def upload(data, key):
 def clean(data):
     def dedupe(entries, label):
         seen, out = set(), []
+        duplicates = 0
         for i, e in enumerate(entries):
             if not isinstance(e, str):
                 print(f"❌ [Invalid {label}] [{i}] Non-string entry: {e}")
                 continue
             norm = e.strip().lower()
-            if norm not in seen and 10 < len(e) < 2000:
+            if norm in seen:
+                print(f"⚠️ [Duplicate {label}] [{i}]")
+                duplicates += 1
+                continue
+            if 10 < len(e) < 2000:
                 seen.add(norm)
                 out.append(e)
+        print(f"🧹 [Clean {label}] Original: {len(entries)} ➝ Cleaned: {len(out)} | Duplicates removed: {duplicates}")
         return out
 
     data["self_reflections"] = dedupe(data.get("self_reflections", []), "reflection")
     data["self_questions"] = dedupe(data.get("self_questions", []), "question")
     data["stored_knowledge"] = dedupe(data.get("stored_knowledge", []), "knowledge")
     return data
+
 
 def main():
     original = download()

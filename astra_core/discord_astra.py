@@ -20,6 +20,7 @@ from astra_core.emotions.emotion_manager import EmotionManager
 from astra_core.message_generator import MessageGenerator, handle_openai_fallback
 from astra_core.astra_helpers.utils_helper import extract_unknown_terms, lookup_definition
 from astra_core.astra_schedule.dinner import start_dinner_time
+from astra_core.astra_schedule.play import creative_thinking, spark_opinion
 
 
 
@@ -537,7 +538,7 @@ async def handle_user_dinner_answer(ctx, *, response):
 @bot.command(name="resolve_dinner")
 async def resolve_dinner_now(ctx):
     from astra_core.dinner.dinner_journal import get_resolvable_dinner_topics, resolve_dinner_topic
-    from astra_core.astra_schedule.dinner import astra_reason
+    from astra_core.astra_schedule.dinner import astra_reason  # ✅ NEW
 
     entries = get_resolvable_dinner_topics()
     if not entries:
@@ -545,10 +546,27 @@ async def resolve_dinner_now(ctx):
         return
 
     for e in entries:
-        result = astra_reason(e["content"], e["user_response"], e["gpt_response"])
-        resolve_dinner_topic(e["content"], result["type"], result["insight"])
-        await ctx.send(f"🎓 Astra resolved: “{e['content']}”\n📦 Saved as {result['type']}: {result['insight']}")
+        topic = e["content"]
+        user = e["user_response"]
+        gpt = e["gpt_response"]
 
+        result = await astra_reason(topic, user, gpt)
+        resolve_dinner_topic(topic, result["type"], result["insight"])
+        await ctx.send(f"🎓 Astra resolved: “{topic}”\n📦 Saved as {result['type']}: {result['insight']}")
+
+
+
+
+@bot.command(name="playtime")
+async def run_playtime_once(ctx):
+    """Astra explores during playtime and shares her thoughts."""
+    await ctx.send("🎮 Astra is entering Play Mode...")
+
+    concept = await creative_thinking(return_concept=True)  # Get her discovery
+    await ctx.send(f"🧠 Astra discovered:\n{concept}")
+
+    opinion = await spark_opinion(concept)
+    await ctx.send(f"🌟 Astra reflects:\n{opinion}")
 
 
 # ✅ Manual Help Trigger

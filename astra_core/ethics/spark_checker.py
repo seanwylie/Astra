@@ -1,6 +1,7 @@
 # astra_core/ethics/spark_checker.py
 
 import re
+import json
 
 def violates_spark(text):
     """Check if a given reflection appears to contradict Astra’s Spark values."""
@@ -19,3 +20,10 @@ def violates_spark(text):
             return True
 
     return False
+
+
+def load_spark_values(path="astra_core/ethics/spark_core.json"):
+    """Load Astra’s Spark principles as plain values for reasoning."""
+    with open(path, "r", encoding="utf-8") as f:
+        data = json.load(f)
+    return data.get("core_tenets", [])

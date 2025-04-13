@@ -48,7 +48,7 @@ async def start_dreaming():
         # ✅ Step 1: Resolve Self-Questions
         if mind_data["self_questions"]:
             print(f"🤔 Resolving {len(mind_data['self_questions'])} self-questions...")
-            await asyncio.to_thread(process_reflection)
+            await process_reflection()
 
 
         # ✅ Step 2: Attempt External Lookup

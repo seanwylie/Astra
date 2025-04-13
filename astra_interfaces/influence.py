@@ -113,6 +113,7 @@ def save_mind(mind_data, force=False):
         if not isinstance(entry, str):
             malformed.append(str(entry))
             continue
+
         key = entry.strip().lower()
         if key in seen:
             continue
@@ -120,12 +121,16 @@ def save_mind(mind_data, force=False):
 
         if len(entry) < 10:
             too_short.append(entry)
+            continue
         elif len(entry) > 1000:
             too_long.append(entry)
-        elif not any(token in entry.lower() for token in ["📖", "📄", "🔹"]):
+            continue
+        elif not any(token in key for token in ["📖", "📄", "🔹"]):
             malformed.append(entry)
+            continue  # ✅ This is the missing piece
 
         cleaned_knowledge.append(entry)
+
 
     if too_short:
         print(f"⚠️ [save_mind] {len(too_short)} very short knowledge entries skipped.")

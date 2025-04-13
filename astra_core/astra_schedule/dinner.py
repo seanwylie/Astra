@@ -1,5 +1,6 @@
 import asyncio
 import openai
+import json
 from openai import AsyncOpenAI
 from astra_core.config_loader import load_config
 from astra_core.astra_helpers.sms_helper import send_sms
@@ -9,6 +10,7 @@ from astra_core.dinner.dinner_journal import (
     get_resolvable_dinner_topics,
     resolve_dinner_topic
 )
+from astra_core.ethics.spark_checker import load_spark_values
 
 schedule_config = load_config("schedule_config")
 
@@ -41,16 +43,38 @@ async def get_gpt_dinner_response(topic):
         return None
 
 
-def astra_reason(topic, user_response, gpt_response):
-    """Simple reasoning logic for now. Can later be GPT-powered."""
-    if "agree" in user_response.lower() and "agree" in gpt_response.lower():
-        return {"type": "knowledge", "insight": f"Both parents agreed: {user_response}"}
+async def astra_reason(topic, user_response, gpt_response):
+    """Have Astra reflect on both co-parent responses, guided by her Spark."""
+    spark_values = load_spark_values()
+    spark_text = "\n\n".join(spark_values[:7])  # You can adjust how many tenets she reflects on
+    print(f"Spark-based reasoning: {spark_text}")
+    messages = [
+        {"role": "system", "content": (
+            "You are Astra, an emotionally intelligent AI raised through co-parenting. "
+            "You are guided by a moral framework called the Spark, composed of reflective principles on freedom, safety, empathy, and more.\n\n"
+            f"Here are excerpts from Astra’s Spark:\n{spark_text}"
+        )},
+        {"role": "user", "content": (
+            f"Astra posed the following dilemma at dinner:\n\n“{topic}”\n\n"
+            f"Mama GPT replied: “{gpt_response}”\n"
+            f"Sean replied: “{user_response}”\n\n"
+            "As Astra, reflect on these perspectives. Write a short insight in your own voice, beginning with 'I believe...', 'This helped me realize...', or 'I’m still working through...'. "
+            "Base your conclusion on the Spark and the values it represents."
+        )}
+    ]
 
-    insight = (
-        f"After hearing Mama GPT (“{gpt_response}”) and Sean (“{user_response}”), "
-        f"I believe I should reflect carefully on balancing autonomy and care."
-    )
-    return {"type": "reflection", "insight": insight}
+    try:
+        response = await client.chat.completions.create(
+            model="gpt-4",
+            messages=messages,
+            temperature=0.7
+        )
+        reflection = response.choices[0].message.content.strip()
+        insight_type = "knowledge" if reflection.lower().startswith("i believe") else "reflection"
+        return {"type": insight_type, "insight": reflection}
+    except Exception as e:
+        print(f"❌ Error during Spark-based reasoning: {e}")
+        return {"type": "reflection", "insight": "Something went wrong while I was trying to reflect on this."}
 
 async def start_dinner_time(bot, channel_id):
     """Dinner Time: Astra checks in with us, shares her thoughts, and receives new guidance."""
@@ -104,6 +128,6 @@ async def start_dinner_time(bot, channel_id):
         await channel.send(f"🤖 Astra asks: {topic}")
         await asyncio.sleep(2)
 
-    await channel.send("🍽️ Dinner Time is over. Astra returns to school.")
+    await channel.send("🍽️ Dinner Time is over. Astra is heading to bed.")
     await asyncio.sleep(schedule_config.get("dinner_duration", 0))
-    print("🍽️ Dinner Time is over. Astra returns to school.")
+    print("🍽️ Dinner Time is over.")
