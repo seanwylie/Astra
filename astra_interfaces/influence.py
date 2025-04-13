@@ -125,11 +125,12 @@ def save_mind(mind_data, force=False):
         elif len(entry) > 1000:
             too_long.append(entry)
             continue
-        elif not any(token in key for token in ["📖", "📄", "🔹"]):
-            malformed.append(entry)
-            continue  # ✅ This is the missing piece
 
+        if not any(token in entry.lower() for token in ["📖", "📄", "🔹"]):
+            entry = f"📖 {entry.strip()}"  # 🔧 Add default tag for formatting
+        
         cleaned_knowledge.append(entry)
+
 
 
     if too_short:
