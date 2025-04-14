@@ -9,9 +9,6 @@ from astra_core.emotions.emotion_engine import (
     get_top_emotions,
 )
 from astra_core.config_loader import load_config
-from astra_interfaces.mind_session import session
-
-
 
 load_dotenv()
 client = openai.OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
@@ -135,7 +132,7 @@ Keep your answer conversational and emotionally authentic (1–2 sentences).
 
     except Exception as e:
         print(f"[message_bus] 🚨 OpenAI error: {e}")
-        return fallback_message(user_message, session.load())
+        return fallback_message(user_message, load_mind())
 
 
 def fallback_message(user_message, mind_data):

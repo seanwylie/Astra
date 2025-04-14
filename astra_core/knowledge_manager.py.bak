@@ -6,8 +6,6 @@ from fuzzywuzzy import fuzz
 from utils.json_loader import load_json_file
 from astra_interfaces.influence import load_mind, save_to_s3
 from astra_core.config_loader import debug_log
-from astra_interfaces.mind_session import session
-
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
@@ -70,7 +68,7 @@ def merge_knowledge(existing_knowledge, new_knowledge):
 def merge_structured_knowledge():
     """Merge insights from structured data into Astra's memory safely without overwriting."""
     debug_log("Loading")  
-    mind_data = session.load()  # ✅ Load once before merging
+    mind_data = load_mind()  # ✅ Load once before merging
     structured_data = load_json_file(MIND_FILE_ORIG, {"insights": []})
 
     print(f"🔍 Before merging, stored knowledge count: {len(mind_data['stored_knowledge'])}")
@@ -85,7 +83,7 @@ def merge_structured_knowledge():
         
         print(f"🔍 Before merging, knowledge count: {len(mind_data['stored_knowledge'])}")
 
-        # ✅ Merge knowledge (no second `session.load()` call needed)
+        # ✅ Merge knowledge (no second `load_mind()` call needed)
         merged_knowledge = merge_knowledge(mind_data["stored_knowledge"], structured_knowledge)
 
         print(f"🔍 After merging, stored knowledge count: {len(mind_data['stored_knowledge'])}")

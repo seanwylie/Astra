@@ -52,7 +52,7 @@ class MessageGenerator:
                 mind_data = session.load()
                 reflection = f"I feel conflicted—I'm holding strong {pos} and {neg} at the same time. I need to explore why."
                 mind_data.setdefault("self_reflections", []).append(reflection)
-                session.maybe_save()
+                save_mind(mind_data)
                 break
 
 

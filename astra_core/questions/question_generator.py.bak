@@ -2,7 +2,6 @@ from astra_core.config_loader import load_config, debug_log
 import random
 from astra_core.questions.question_utils import generate_category_embeddings, categorize_question
 from astra_core.knowledge_manager import load_mind
-from astra_interfaces.mind_session import session
 
 # Load configuration files
 general_config = load_config("general_config")
@@ -13,7 +12,7 @@ def generate_questions(reflection: str, mind_data: dict) -> tuple:
     """Generates structured questions based on Astra's reflection while ensuring variety & avoiding redundancy."""
     
     debug_log("Loading")
-    fresh_mind_data = session.load()
+    fresh_mind_data = load_mind()
     stored_knowledge = fresh_mind_data.get("stored_knowledge", [])
     unresolved_questions = fresh_mind_data.get("unresolved_questions", [])
 

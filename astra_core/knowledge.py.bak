@@ -6,8 +6,6 @@ from fuzzywuzzy import fuzz
 from astra_core.config_loader import load_config
 from astra_interfaces.influence import load_mind, save_mind  
 from astra_core.config_loader import debug_log
-from astra_interfaces.mind_session import session
-
 
 class KnowledgeManager:
     COMMON_WORDS = {
@@ -21,7 +19,7 @@ class KnowledgeManager:
         print("🔍 Debug: Loading knowledge settings...")
         self.config = load_config("lookup_config")
         debug_log("Loading")  
-        self.mind_data = session.load()  
+        self.mind_data = load_mind()  
         self.mind_data.setdefault("past_conversations", [])  
 
         # ✅ Deduplicate stored knowledge
@@ -119,7 +117,7 @@ class KnowledgeManager:
         save_mind(self.mind_data)
         time.sleep(0.5)  
 
-        reloaded_mind = session.load()
+        reloaded_mind = load_mind()
         self.mind_data["stored_knowledge"] = reloaded_mind["stored_knowledge"]
 
         return True  

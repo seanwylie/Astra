@@ -13,24 +13,28 @@ class SmartMindSession:
         self.data = load_mind()
         self._original_hash = hash_mind(self.data) if self.data else None
 
-    def changed(self):
-        """Check if the current mind differs from the original loaded version."""
-        if not self.data or not self._original_hash:
-            return False
-        return hash_mind(self.data) != self._original_hash
+    def load(self):
+        """Return the current mind data."""
+        return self.data
 
-    def maybe_save(self, force=False):
-        if self.data is None:
-            print("🚫 [SmartMindSession] No mind data to save.")
-            return
-
+    def save(self, force=False):
+        """Save mind if forced or changed."""
         if force:
             print("💾 [SmartMindSession] Force saving mind...")
-            save_mind(self.data)
+            save_mind(self.data, force=True)
             return
 
-        if self.changed():
+        if self.has_changed():
             print("💾 [SmartMindSession] Mind has changed — saving now.")
             save_mind(self.data)
         else:
-            print("⏩ [SmartMindSession] No changes detected — skipping save.")
+            print("✅ [SmartMindSession] No changes detected. Save skipped.")
+
+    def maybe_save(self):
+        """Alias for save without forcing."""
+        self.save(force=False)
+
+    def has_changed(self):
+        """Check if current mind hash differs from the original."""
+        current_hash = hash_mind(self.data) if self.data else None
+        return current_hash != self._original_hash

@@ -75,7 +75,7 @@ def store_concept(term, definition):
 
     if formatted_entry not in mind_data["stored_knowledge"]:
         mind_data["stored_knowledge"].append(formatted_entry)
-        session.maybe_save()
+        save_mind(mind_data)
         print(f"✅ Stored new concept: {formatted_entry}")
     else:
         print(f"⚠ Concept '{term}' already exists in memory.")
@@ -157,7 +157,7 @@ async def on_message(message):
     mind_data = session.load()
     mind_data["emotional_state"] = emotions
     mind_data["emotional_state"]["dominant"] = dominant_emotion
-    session.maybe_save()
+    save_mind(mind_data)
 
 
     # Apply trigger based on keywords in the message
@@ -290,7 +290,7 @@ If there are multiple meanings, clarify them. If it’s vague, offer helpful que
         formatted_entry = f"📖 **{term}**:\n- Dictionary: {dictionary_definition}\n- Wikipedia: {wikipedia_summary}"
         if formatted_entry not in stored_knowledge:
             mind_data["stored_knowledge"].append(formatted_entry)
-            session.maybe_save()
+            save_mind(mind_data)
             print(f"[lookup] ✅ Stored new knowledge: {term}")
         else:
             print(f"[lookup] ⚠ '{term}' already in stored knowledge.")

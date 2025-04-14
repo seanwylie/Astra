@@ -7,7 +7,6 @@ from astra_core.config_loader import load_config
 from astra_interfaces.influence import load_mind, save_mind
 from astra_core.ethics.spark_checker import load_spark_values
 from astra_core.dream.dream_seed_logger import log_dream_seed
-from astra_interfaces.mind_session import session
 
 
 schedule_config = load_config("schedule_config")
@@ -71,7 +70,7 @@ async def creative_thinking(return_concept=False):
         concept = await idea_source()
         print(f"🎨 Astra explores: {concept}")
 
-        mind = session.load()
+        mind = load_mind()
         insight_str = f"📖 During playtime, Astra explored:\n{concept.strip()}"
         # 🌱 Log the dream seed too
         log_dream_seed(insight_str, source="playtime")

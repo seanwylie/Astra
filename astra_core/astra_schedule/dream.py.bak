@@ -126,7 +126,7 @@ async def start_dreaming():
                 unknown_terms = knowledge_manager.extract_unknown_terms(" ".join(q["question"] for q in unresolved))
                 if unknown_terms:
                     knowledge_manager.retrieve_external_knowledge(unknown_terms)
-                    session.maybe_save()
+                    save_mind(mind_data)
         else:
             await attempt_config_modification()
 
@@ -148,7 +148,7 @@ def attempt_alien_thought_experiment():
     mind_data = session.load()
     reflection = f"👽 [Alien Thought Attempt]: {experiment[:500]}..."
     mind_data.setdefault("self_reflections", []).append(reflection)
-    session.maybe_save()
+    save_mind(mind_data)
     print("🌌 Astra reflected on the alien seed.")
 
 

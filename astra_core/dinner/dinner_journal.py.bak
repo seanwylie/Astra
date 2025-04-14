@@ -233,7 +233,7 @@ def resolve_dinner_topic(topic_text, outcome_type, insight):
                     "insight": insight,
                     "timestamp": now()
                 })
-            session.maybe_save()
+            save_mind(mind_data)
             print(f"🧠 Insight saved to Astra’s mind as {outcome_type}.")
             migrated = True
         else:

@@ -60,7 +60,7 @@ def generate_reflection(knowledge=None, recent_reflections=None, *args, **kwargs
         mind_data["stored_knowledge"].append(base_idea)
         print(f"📝 [DEBUG] Stored new knowledge: {base_idea[:100]}...")
 
-    session.maybe_save()
+    save_mind(mind_data)
 
     # See if the reflection violates her spark
     log_if_ethically_conflicting(new_reflection)

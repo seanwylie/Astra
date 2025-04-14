@@ -37,5 +37,5 @@ def self_answer_questions(mind_data):
     mind_data["unresolved_questions"] = unresolved_questions  # ✅ Keep track of unresolved
 
     debug_log("Saving")
-    session.maybe_save()
+    save_mind(mind_data)
     return new_questions  # ✅ Return, but no processing

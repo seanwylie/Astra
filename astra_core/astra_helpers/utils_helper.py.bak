@@ -4,8 +4,6 @@ import re
 import requests
 import wikipedia
 from astra_interfaces.influence import load_mind
-from astra_interfaces.mind_session import session
-
 
 BLOCKED_TERMS = {
     "the", "a", "an", "and", "or", "in", "on", "with", "to", "from", "at", "by", 
@@ -67,7 +65,7 @@ def extract_unknown_terms(user_message):
     # Match Title-Cased single or multi-word terms
     words = re.findall(r'\b[A-Z][a-z]+(?:\s+[A-Z][a-z]+)*\b', user_message)
 
-    stored_knowledge = session.load().get("stored_knowledge", [])
+    stored_knowledge = load_mind().get("stored_knowledge", [])
     known_text = " ".join(stored_knowledge).lower()
 
     unknowns = []
