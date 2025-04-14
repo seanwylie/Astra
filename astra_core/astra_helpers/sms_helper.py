@@ -57,15 +57,15 @@ def send_sms(state: str) -> bool:
 
     # ✅ Ensure compatibility with SMS gateway
     clean_message = remove_non_ascii(message)
-
-    try:
-        with smtplib.SMTP(SMTP_SERVER, SMTP_PORT) as server:
-            server.starttls()
-            server.login(SENDER_EMAIL, SENDER_PASSWORD)
-            server.sendmail(SENDER_EMAIL, sms_address, clean_message.encode("utf-8"))  # Ensure UTF-8 encoding
-        print(f"✅ SMS Sent: {clean_message}")
-        last_sent_state = state  # ✅ Update last sent state
-        return True
-    except Exception as e:
-        print(f"❌ SMS Failed: {e}")
-        return False
+    # removing SMS as it will be turned off soon
+    #try:
+    #    with smtplib.SMTP(SMTP_SERVER, SMTP_PORT) as server:
+    #        server.starttls()
+    #        server.login(SENDER_EMAIL, SENDER_PASSWORD)
+    #        server.sendmail(SENDER_EMAIL, sms_address, clean_message.encode("utf-8"))  # Ensure UTF-8 encoding
+    #    print(f"✅ SMS Sent: {clean_message}")
+    #    last_sent_state = state  # ✅ Update last sent state
+    return True
+    # except Exception as e:
+    #    print(f"❌ SMS Failed: {e}")
+    #    return False

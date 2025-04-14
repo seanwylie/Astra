@@ -106,9 +106,13 @@ def log_if_emotionally_spiking(emotion_state: dict):
 
 
 def log_if_contradictory(reflection, stored_knowledge):
-    """Log a dinner entry if the reflection contradicts existing knowledge."""
     for knowledge in stored_knowledge:
-        similarity = fuzz.token_set_ratio(reflection, knowledge)
+        try:
+            similarity = fuzz.token_set_ratio(reflection, knowledge)
+        except Exception as e:
+            print(f"⚠️ Fuzzy match failed: {e}")
+            continue
+
         if similarity > 70 and "not" in reflection.lower() and "not" not in knowledge.lower():
             entry = {
                 "timestamp": now(),
@@ -121,6 +125,7 @@ def log_if_contradictory(reflection, stored_knowledge):
             print("🍽️ Logging contradictory knowledge reflection.")
             log_dinner_entry(entry)
             break
+
 
 async def get_gpt_dinner_response(topic):
     """Ask GPT for its thoughts on Astra’s ethical or emotional topic."""

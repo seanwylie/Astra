@@ -5,15 +5,32 @@ import requests
 import wikipedia
 from astra_interfaces.influence import load_mind
 
-def extract_unknown_terms(user_message):
-    """Extract potential complex terms from a message."""
-    words = re.findall(r'\b[A-Z][a-z]+(?:\s+[A-Z][a-z]+)*\b', user_message)
-    stored_knowledge = load_mind().get("stored_knowledge", [])
-    return [term for term in words if term.lower() not in stored_knowledge]
+BLOCKED_TERMS = {
+    "the", "a", "an", "and", "or", "in", "on", "with", "to", "from", "at", "by", 
+    "for", "of", "this", "that", "these", "those", "english", "however", 
+    "nevertheless", "historically", "history", "spinning", "it", "one", "moreover",
+    "furthermore", "deeper", "consideration", "fallback", "building"
+}
+
+
+
+lookup_attempts = {}  # Add this at the module level if needed
 
 def lookup_definition(term):
     """Fetch definitions from dictionary API, fallback to Wikipedia."""
-    clean_term = re.sub(r'[^\w\s]', '', term).strip()
+    clean_term = re.sub(r'[^\w\s]', '', term).strip().lower()
+
+    # 🛡 Block stopwords immediately
+    if clean_term in BLOCKED_TERMS:
+        print(f"🛑 Skipping blocked term: {clean_term}")
+        return None
+
+    # 🛡 Prevent excessive re-lookup
+    lookup_attempts.setdefault(clean_term, 0)
+    if lookup_attempts[clean_term] > 3:
+        print(f"🧯 Aborting excessive retries for: {clean_term}")
+        return None
+    lookup_attempts[clean_term] += 1
 
     # ✅ Try Dictionary API
     try:
@@ -38,3 +55,31 @@ def lookup_definition(term):
         print(f"⚠️ Wikipedia lookup failed for '{clean_term}': {e}")
 
     return None
+
+
+
+
+
+def extract_unknown_terms(user_message):
+    """Extract candidate terms from a message that Astra doesn't already understand."""
+    # Match Title-Cased single or multi-word terms
+    words = re.findall(r'\b[A-Z][a-z]+(?:\s+[A-Z][a-z]+)*\b', user_message)
+
+    stored_knowledge = load_mind().get("stored_knowledge", [])
+    known_text = " ".join(stored_knowledge).lower()
+
+    unknowns = []
+    for term in words:
+        term_clean = term.strip().lower()
+
+        # 🧹 Skip blocked/stopwords and overly short terms
+        if term_clean in BLOCKED_TERMS or len(term_clean) < 3:
+            continue
+
+        # 🔍 Skip if it's already in stored knowledge somewhere
+        if term_clean in known_text:
+            continue
+
+        unknowns.append(term)
+
+    return unknowns

@@ -3,7 +3,7 @@ import os
 import sys
 import asyncio
 import time
-import openai
+from openai import OpenAI, RateLimitError
 from astra_core.astra_helpers.utils_helper import extract_unknown_terms, lookup_definition
 from astra_core.dinner.dinner_journal import log_if_ethically_conflicting, log_if_contradictory
 from fuzzywuzzy import fuzz
@@ -11,6 +11,8 @@ from astra_core.expansion import refine_knowledge
 from astra_interfaces.influence import load_mind, save_mind
 from astra_core.config_loader import debug_log
 from astra_core.config_loader import load_config
+from astra_interfaces.smart_mind_session import SmartMindSession
+
 
 # ✅ Ensure Python knows where to find Astra’s core modules
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
@@ -24,7 +26,12 @@ SYNTHESIS_KEYWORDS = [
     "yet", "this contradicts", "while previously", "at first I thought",
     "in contrast", "my earlier thought"
 ]
-
+# Add to the top of the file or shared constants
+BLOCKED_TERMS = {
+    "the", "a", "an", "and", "or", "in", "on", "with", "to", "from", "at", "by", 
+    "for", "of", "this", "that", "these", "those", "english", "however", 
+    "nevertheless", "historically", "history", "spinning"
+}
 
 # ✅ Load configuration
 general_config = load_config("general_config")
@@ -68,7 +75,9 @@ def reflection_loop_check(reflection, recent_reflections):
 async def process_reflection():
     """Generate, refine, and deepen Astra's reflections while ensuring memory consistency."""
     debug_log("Loading")  
-    mind_data = load_mind()
+
+    session = SmartMindSession()
+    mind_data = session.data
     validate_mind_structure(mind_data)
 
     reflections = mind_data.get("self_reflections", [])
@@ -83,7 +92,7 @@ async def process_reflection():
     initial_count = len(reflections)
     print(f"[processing.py] 🧠 Last Reflection Before Deepening ({initial_count} total):\n{previous_reflection[:200]}...")
 
-    # 🧠 Default: attempt to deepen a reflection
+    # 🧠 Attempt to deepen a reflection
     refined_reflection = query_openai_for_deeper_thought(previous_reflection)
 
     if refined_reflection:
@@ -92,30 +101,34 @@ async def process_reflection():
         if loop_result == "repeat":
             print("⚠ Reflection is a duplicate. Triggering knowledge expansion instead.")
             refined_knowledge = refine_knowledge(mind_data.get("stored_knowledge", []), mind_data)
+
             if refined_knowledge:
                 print("[processing.py] ✅ Knowledge expansion triggered instead of new reflection.")
-                save_mind(mind_data, force=True)
+                session.maybe_save(force=True)  # Only force-save when we know something changed
                 return refined_knowledge
             else:
                 print("⚠ Knowledge expansion failed. Falling back to last reflection.")
                 return previous_reflection
 
-        # ✅ Log ethical conflict or contradiction if any
+        # ✅ Log ethical conflict or contradiction
         log_if_ethically_conflicting({
             "content": refined_reflection,
             "source": "school"
         })
 
-        log_if_contradictory(
-            refined_reflection,
-            mind_data.get("stored_knowledge", [])
-        )
+        # 🚫 Skip logging if the fallback reflection looks like junk
+        if all(w in refined_reflection.lower() for w in ["furthermore", "fallback", "deeper", "consideration"]):
+            print("🚫 Skipping reflection — flagged as filler loop.")
+            return previous_reflection
 
-        # ✅ Save reflection (whether novel or synthesis)
+        log_if_contradictory(refined_reflection, mind_data.get("stored_knowledge", []))
+
+        # ✅ Save valid reflection
         mind_data["self_reflections"].append(refined_reflection)
         print(f"[processing.py] ✅ Added new reflection. Total: {initial_count} ➝ {len(mind_data['self_reflections'])}")
         print(f"[processing.py] 🔍 New Reflection Snippet:\n{refined_reflection[:200]}...")
-        save_mind(mind_data, force=True)
+
+        session.maybe_save()  # Only writes if something changed
 
         return refined_reflection
 
@@ -124,10 +137,8 @@ async def process_reflection():
         return previous_reflection
 
 
-
-
 def query_openai_for_deeper_thought(reflection):
-    """Ask OpenAI to refine Astra’s reflections, or fallback if over quota."""
+    """Ask OpenAI to refine Astra’s reflections, or fallback gracefully if over quota."""
     prompt = f"""
     Astra is an AI that evolves her thoughts over time. She builds on past reflections instead of repeating them.
 
@@ -138,7 +149,7 @@ def query_openai_for_deeper_thought(reflection):
     """
 
     try:
-        response = openai.OpenAI().chat.completions.create(
+        response = OpenAI().chat.completions.create(
             model="gpt-4",
             messages=[{"role": "system", "content": prompt}],
             max_tokens=400,
@@ -146,70 +157,73 @@ def query_openai_for_deeper_thought(reflection):
         )
         if response.choices and len(response.choices) > 0:
             return response.choices[0].message.content.strip()
+
+    except RateLimitError as e:
+        print(f"⚠️ Hit OpenAI rate limit: {e}")
+        time.sleep(10)  # ⏳ Back off before triggering fallback
+        return fallback_deepening_strategy(reflection)
+
     except Exception as e:
         print(f"🚨 OpenAI request failed: {e}")
         return fallback_deepening_strategy(reflection)
 
     return None
 
-def fallback_deepening_strategy(reflection):
+
+
+
+def fallback_deepening_strategy(reflection, max_terms=3):
     """Fallback method to deepen a reflection using local and public sources."""
     print("[fallback] 🔍 Using fallback strategy to deepen reflection.")
     print(f"[fallback] 🧠 Base Reflection:\n{reflection[:300]}...\n")
 
     # Step 1: Extract candidate concepts
     concepts = extract_unknown_terms(reflection)
-    print(f"[fallback] 🧠 Extracted Terms: {concepts}")
+    seen = set()
+    unique_terms = []
+    for term in concepts:
+        t = term.lower().strip()
+        if t not in seen and t not in BLOCKED_TERMS:
+            unique_terms.append(term)
+            seen.add(t)
 
-    # Step 2: Check recent reflections for reused terms
-    mind = load_mind()
-    recent_reflections = mind.get("self_reflections", [])[-10:]
-    recent_text = " ".join(recent_reflections).lower()
-    recent_terms = extract_unknown_terms(recent_text)
-    recent_terms_set = set(term.lower() for term in recent_terms)
-    print(f"[fallback] 🔍 Filtering terms used recently: {sorted(recent_terms_set)}")
+    print(f"[fallback] ✅ Filtered Concepts: {unique_terms}")
 
-    # Step 3: Filter out repeated concepts
-    unique_terms = [term for term in concepts if term.lower() not in recent_terms_set]
-    print(f"[fallback] ✅ Unique Terms This Round: {unique_terms}")
-
-    # Step 4: Inject novel seeds if nothing is new
     if not unique_terms:
-        backup_terms = ["entropy", "identity", "boundaries", "origin", "bias", "perspective", "scale", "truth", "memory", "value"]
-        unique_terms = random.sample(backup_terms, 2)
-        print(f"[fallback] 🧠 No novel terms found. Injected backup terms: {unique_terms}")
+        print("[fallback] ⚠️ No usable terms found. Injecting backup terms.")
+        unique_terms = ["identity", "perspective", "entropy"]
 
-    # Step 5: Lookup definitions for the selected terms
+    tried_terms = set()
     thoughts = []
+
+    # Step 2: Try to get at most max_terms
     for term in unique_terms:
+        if term.lower() in tried_terms or len(thoughts) >= max_terms:
+            continue
+
+        tried_terms.add(term.lower())
         definition = lookup_definition(term)
+
         if definition:
-            print(f"[fallback] 📖 Found definition for '{term}': {definition}")
+            print(f"[fallback] 📖 {term}: {definition}")
             thoughts.append(f"- **{term}**: {definition}")
         else:
-            print(f"[fallback] ⚠️ No definition found for '{term}'.")
+            print(f"[fallback] ⚠️ No fallback definition for '{term}'")
 
-    # Step 6: Synthesize a deepening insight if possible
+    # Step 3: Assemble enriched reflection
     if thoughts:
-        branches = [
+        deep_q = random.choice([
             "What contradiction might challenge this idea?",
             "How would someone from another culture interpret this?",
-            "What if this perspective is wrong?",
-            "What’s the emotional root behind this insight?",
-            "Could this be explained through another sense or modality?",
-        ]
-        deep_question = random.choice(branches)
-
-        enriched = (
-            reflection
-            + "\n\n🧠 Fallback Deepening:\n"
-            + "\n".join(thoughts)
-            + f"\n\n🔍 Deeper Consideration: {deep_question}"
-        )
-        print("[fallback] ✅ Fallback reflection extended. Preview:\n", enriched[:300], "...\n")
+            "Could this be explained through a different lens?",
+            "Is this a product of bias or perspective?",
+            "Where might this belief break down?"
+        ])
+        enriched = reflection + "\n\n🧠 Fallback Deepening:\n" + "\n".join(thoughts)
+        enriched += f"\n\n🔍 Deeper Consideration: {deep_q}"
         return enriched
 
-    print("[fallback] ⚠ No new knowledge added. Returning original reflection.")
+    print("[fallback] ⚠️ No thoughts added. Returning original reflection.")
     return reflection + "\n\n(🧠 Fallback found no additional context.)"
 
 

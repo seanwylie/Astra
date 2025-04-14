@@ -68,28 +68,30 @@ CONFIG_CACHE = {}
 
 # ✅ Config Loading Functions
 def load_config(filename: str) -> dict:
-    """Load a JSON config file dynamically, ensuring it always appends `.json`."""
+    """Load a JSON config file with caching. Avoids repeated disk reads."""
     if not filename.endswith(".json"):
-        filename += ".json"  # Ensure file has the `.json` extension
+        filename += ".json"
 
     file_path = os.path.join(CONFIG_DIR, filename)
 
-    print(f"Loading config file from: {file_path}")
-
     if filename in CONFIG_CACHE:
-        return CONFIG_CACHE[filename]  # Return cached version if already loaded
+        print(f"✅ [CONFIG] Using cached config: {filename}")
+        return CONFIG_CACHE[filename]
+
+    print(f"📂 [CONFIG] Loading config file from: {file_path}")
 
     try:
         with open(file_path, "r", encoding="utf-8") as f:
-            CONFIG_CACHE[filename] = json.load(f)  # Store in cache for faster access
+            CONFIG_CACHE[filename] = json.load(f)
             return CONFIG_CACHE[filename]
     except FileNotFoundError:
         print(f"⚠ Warning: {filename} not found in {CONFIG_DIR}. Using defaults.")
     except json.JSONDecodeError:
         print(f"❌ Error: {filename} is corrupted. Using defaults.")
 
-    CONFIG_CACHE[filename] = {}  # Prevent repeated failures
+    CONFIG_CACHE[filename] = {}
     return CONFIG_CACHE[filename]
+
 
 def get_config(key: str, default=None, config_file: str = "general_config.json"):
     """Retrieve a key from a given config file, ensuring it exists."""
