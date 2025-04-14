@@ -2,12 +2,12 @@ import time
 from astra_core.config_loader import load_config
 from astra_interfaces.influence import load_mind, save_mind  # ✅ Handles memory storage
 from astra_core.config_loader import debug_log
-from astra_interfaces.smart_mind_session import SmartMindSession
+from astra_interfaces.mind_session import session
 
 class TrustManager:
     def __init__(self):
         """Initialize Astra's trust system with config-based trust parameters."""
-        print("\ud83d\udd0d Debug: Loading trust settings...")
+        print("Debug: Loading trust settings...")
         self.config = load_config("trust_config")
 
         debug_log("Loading")  
@@ -20,7 +20,7 @@ class TrustManager:
         # ✅ Track daily trust changes to prevent abuse
         self.daily_trust_log = {}  
 
-        print(f"\ud83d\udd0d Trust Initialized: General Trust Level → {self.general_trust}")
+        print(f"Trust Initialized: General Trust Level → {self.general_trust}")
 
     def get_trust_level(self, entity):
         """Retrieve Astra’s trust level for a given entity."""
@@ -58,14 +58,14 @@ class TrustManager:
 
             # 🚨 **Prevent trust from instantly dropping too low**
             if trust + change < -3:
-                print(f"\u23f3 Warning! Trust for {entity} dropping too fast. Slowing down...")
+                print(f"Warning! Trust for {entity} dropping too fast. Slowing down...")
                 change *= 0.5  
 
         # ✅ **Apply trust change & ensure it's within configured bounds**
         min_trust, max_trust = self.config["trust_bounds"]
         self.entity_trust[entity] = max(min_trust, min(trust + change, max_trust))
 
-        print(f"\ud83d\udd0d Trust Update: {entity} → {self.entity_trust[entity]} ({'\ud83d\udd3c' if change > 0 else '\ud83d\udd3d'} {reason})")
+
 
         self.save_trust_state()
 
@@ -74,7 +74,6 @@ class TrustManager:
         self.general_trust += change
         self.general_trust = max(0, min(self.general_trust, 1))
 
-        print(f"🌎 General Trust Update: {self.general_trust} ({'\ud83d\udd3c' if change > 0 else '\ud83d\udd3d'})")
 
         self.save_trust_state()
 
