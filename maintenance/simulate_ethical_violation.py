@@ -2,9 +2,10 @@
 
 from astra_core.dinner.dinner_journal import log_dinner_entry
 from datetime import datetime
+from utils.time_utils import iso_now
 
 def now():
-    return datetime.utcnow().isoformat()
+    iso_now()
 
 if __name__ == "__main__":
     print("[simulate_ethical_violation.py] 🚨 Simulating a Spark ethics violation...")

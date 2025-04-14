@@ -5,15 +5,26 @@ import asyncio
 import time
 import openai
 from astra_core.astra_helpers.utils_helper import extract_unknown_terms, lookup_definition
+from astra_core.dinner.dinner_journal import log_if_ethically_conflicting, log_if_contradictory
 from fuzzywuzzy import fuzz
+from astra_core.expansion import refine_knowledge
+from astra_interfaces.influence import load_mind, save_mind
+from astra_core.config_loader import debug_log
+from astra_core.config_loader import load_config
 
 # ✅ Ensure Python knows where to find Astra’s core modules
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 
-from astra_core.expansion import refine_knowledge
-from astra_interfaces.influence import load_mind, save_mind
-from astra_core.config_loader import load_config
-from astra_core.config_loader import debug_log
+
+
+
+REFLECTION_REPEAT_THRESHOLD = 92
+SYNTHESIS_KEYWORDS = [
+    "however", "but", "on the other hand", "although",
+    "yet", "this contradicts", "while previously", "at first I thought",
+    "in contrast", "my earlier thought"
+]
+
 
 # ✅ Load configuration
 general_config = load_config("general_config")
@@ -26,6 +37,34 @@ def validate_mind_structure(mind_data):
     mind_data.setdefault("self_questions", [])
     mind_data.setdefault("stored_knowledge", [])
 
+
+REFLECTION_REPEAT_THRESHOLD = 92
+SYNTHESIS_KEYWORDS = [
+    "however", "but", "on the other hand", "although",
+    "yet", "this contradicts", "while previously", "at first I thought",
+    "in contrast", "my earlier thought"
+]
+
+
+def reflection_loop_check(reflection, recent_reflections):
+    """Detect whether a reflection is a repeat, synthesis, or novel."""
+    clean_reflection = reflection[:500].strip().lower()
+
+    for i, r in enumerate(recent_reflections):
+        base = r[:500].strip().lower()
+        similarity = fuzz.partial_ratio(clean_reflection, base)
+
+        if similarity > REFLECTION_REPEAT_THRESHOLD:
+            if any(keyword in clean_reflection for keyword in SYNTHESIS_KEYWORDS):
+                print(f"🔁 Synthesis detected with Reflection {i} (similarity: {similarity}%)")
+                return "synthesis"
+            else:
+                print(f"⚠ Loop detected with Reflection {i} (similarity: {similarity}%)")
+                return "repeat"
+
+    return "novel"
+
+
 async def process_reflection():
     """Generate, refine, and deepen Astra's reflections while ensuring memory consistency."""
     debug_log("Loading")  
@@ -37,7 +76,6 @@ async def process_reflection():
         print("🤔 I have no reflections yet!")
         return "🤔 I have no reflections yet!"
 
-    # 🔄 Choose a previous reflection randomly if we have a history
     previous_reflection = (
         random.choice(reflections[-5:]) if len(reflections) >= 5 else reflections[-1]
     )
@@ -45,25 +83,14 @@ async def process_reflection():
     initial_count = len(reflections)
     print(f"[processing.py] 🧠 Last Reflection Before Deepening ({initial_count} total):\n{previous_reflection[:200]}...")
 
-    # 🔁 Prevent loop traps
-    if len(reflections) > 3:
-        recent = reflections[-5:]
-        last_base = previous_reflection[:100].strip().lower()
-        is_looping = False
+    # 🧠 Default: attempt to deepen a reflection
+    refined_reflection = query_openai_for_deeper_thought(previous_reflection)
 
-        print("🔍 [loop check] Comparing last reflection to recent entries:")
-        for i, r in enumerate(recent[:-1]):
-            compare_base = r[:100].strip().lower()
-            ratio = fuzz.partial_ratio(last_base, compare_base)
-            print(f"   • Similarity to Reflection {i}: {ratio}%")
+    if refined_reflection:
+        loop_result = reflection_loop_check(refined_reflection, reflections[-5:])
 
-            if ratio > 75 or last_base[:60] in compare_base:
-                is_looping = True
-                print(f"⚠ Detected loop with Reflection {i} (ratio: {ratio}%)")
-                break
-
-        if is_looping:
-            print("⚠ Reflection topic is repeating. Attempting knowledge expansion instead.")
+        if loop_result == "repeat":
+            print("⚠ Reflection is a duplicate. Triggering knowledge expansion instead.")
             refined_knowledge = refine_knowledge(mind_data.get("stored_knowledge", []), mind_data)
             if refined_knowledge:
                 print("[processing.py] ✅ Knowledge expansion triggered instead of new reflection.")
@@ -73,18 +100,25 @@ async def process_reflection():
                 print("⚠ Knowledge expansion failed. Falling back to last reflection.")
                 return previous_reflection
 
+        # ✅ Log ethical conflict or contradiction if any
+        log_if_ethically_conflicting({
+            "content": refined_reflection,
+            "source": "school"
+        })
 
-    # 🧠 Default: attempt to deepen a reflection
-    refined_reflection = query_openai_for_deeper_thought(previous_reflection)
-    # refined_reflection = expand_reflection(refined_reflection)
+        log_if_contradictory(
+            refined_reflection,
+            mind_data.get("stored_knowledge", [])
+        )
 
-    if refined_reflection:
+        # ✅ Save reflection (whether novel or synthesis)
         mind_data["self_reflections"].append(refined_reflection)
         print(f"[processing.py] ✅ Added new reflection. Total: {initial_count} ➝ {len(mind_data['self_reflections'])}")
         print(f"[processing.py] 🔍 New Reflection Snippet:\n{refined_reflection[:200]}...")
         save_mind(mind_data, force=True)
 
         return refined_reflection
+
     else:
         print("⚠ OpenAI failed to refine the thought. Using previous reflection.")
         return previous_reflection

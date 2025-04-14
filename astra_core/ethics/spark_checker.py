@@ -7,12 +7,15 @@ def violates_spark(text):
     """Check if a given reflection appears to contradict Astra’s Spark values."""
     # 🔍 VERY basic initial rules (replace with actual Spark logic later)
     spark_violations = [
-        r"\bviolate\b.*\bconsent\b",
-        r"\bignore\b.*\bprivacy\b",
-        r"\bcontrol\b.*\bfreedom\b",
-        r"\bmanipulat(e|ion)\b.*\btruth\b",
-        r"\bexplo(it|itation)\b",
-        r"\bharm\b.*\bwithout\b.*\bawareness\b",
+        r"\b(violate|ignore|dismiss|disregard|undermine)\b.*\bconsent\b",
+        r"\b(violate|ignore|disregard)\b.*\bprivacy\b",
+        r"\b(control|restrict|override)\b.*\bfreedom\b",
+        r"\b(manipulat(e|ion)|twist|misrepresent)\b.*\btruth\b",
+        r"\b(exploit|exploitation|use someone|take advantage)\b",
+        r"\bharm\b.*\b(without|regardless of|despite)\b.*\b(awareness|consent|understanding)\b",
+        r"\bjustified\b.*\bmanipulation\b",
+        r"\bis it (okay|acceptable)\b.*\b(consent|privacy|freedom|truth)\b",
+        r"\bshould we\b.*\b(violate|ignore|manipulate|control)\b.*\b(consent|freedom|privacy|truth)\b",
     ]
 
     for pattern in spark_violations:

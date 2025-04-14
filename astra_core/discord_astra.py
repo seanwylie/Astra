@@ -23,8 +23,7 @@ from astra_core.astra_schedule.dinner import start_dinner_time
 from astra_core.astra_schedule.play import creative_thinking, spark_opinion
 from astra_core.emotions.emotion_engine import get_top_emotions, trigger_emotion, decay_all_emotions
 from astra_core.messaging.message_bus import send_contextual_message
-
-
+from astra_core.dinner.dinner_journal import log_if_ethically_conflicting
 
 # Load environment variables
 load_dotenv()
@@ -85,7 +84,12 @@ async def on_message(message):
     
     decay_all_emotions()
 
-    # ✅ Process commands like !lookup
+    # Wrap user message as pseudo-reflection
+    log_if_ethically_conflicting({
+        "content": message.content,
+        "source": str(message.author)
+    })
+
     await bot.process_commands(message)
 
     # ✅ Prevent duplicate response for commands

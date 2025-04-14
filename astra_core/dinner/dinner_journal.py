@@ -9,6 +9,8 @@ from fuzzywuzzy import fuzz
 from datetime import datetime
 from astra_core.ethics.spark_checker import violates_spark
 from astra_interfaces.influence import load_mind, save_mind  # ✅ NEW: For migrating resolved topics
+from utils.time_utils import iso_now
+
 
 # --- CONFIGURATION ---
 S3_BUCKET_NAME = "swylie-astra"
@@ -17,7 +19,8 @@ DINNER_JOURNAL_KEY = "dinner_journal.json"
 s3 = boto3.client("s3")
 
 def now():
-    return datetime.utcnow().isoformat()
+    return iso_now()
+
 
 
 
@@ -55,18 +58,22 @@ async def ask_dinner_question(bot, channel, topic):
         await channel.send(gpt_response)
 
 def log_if_ethically_conflicting(reflection):
-    """Log a dinner entry if the reflection violates Astra's Spark ethics."""
+    """Log a dinner entry if the reflection violates Astra's Spark ethics or raises ethical concerns."""
     content = reflection.get("content", "")
-    if content and violates_spark(content):
+    if not content:
+        return
+
+    if violates_spark(content):
         entry = {
             "timestamp": time.strftime("%Y-%m-%d %H:%M:%S"),
             "type": "ethical_conflict",
             "content": content,
-            "source": reflection.get("source"),
+            "source": reflection.get("source", "unknown"),
             "status": "unresolved"
         }
         print("🍽️ Logging reflection flagged as spark-conflicting.")
         log_dinner_entry(entry)
+
 
 def log_if_emotionally_spiking(emotion_state: dict):
     """Log a dinner entry if Astra experiences an emotional spike or imbalance."""

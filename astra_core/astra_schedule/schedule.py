@@ -2,6 +2,8 @@ import time
 import json
 import random
 import asyncio
+import pytz
+from datetime import datetime
 from astra_core.config_loader import load_config
 from astra_core.processing import process_reflection
 from astra_schedule.dream import start_dreaming
@@ -26,8 +28,16 @@ def is_dinner_time(hour): return schedule_config["dinner_time"][0] <= hour < sch
 def is_learning_time(hour): return any(start <= hour < end for start, end in schedule_config["learning_time"])
 def is_playtime(hour): return schedule_config["play_time"][0] <= hour < schedule_config["play_time"][1]
 
+
+def get_current_hour():
+    tz_name = schedule_config.get("timezone", "UTC")
+    tz = pytz.timezone(tz_name)
+    return datetime.now(tz).hour
+
+
+
 def get_current_mode():
-    current_hour = time.localtime().tm_hour
+    current_hour = get_current_hour()
     if is_dream_time(current_hour): 
         return "dream"
     elif is_learning_time(current_hour): 
@@ -37,6 +47,7 @@ def get_current_mode():
     elif is_dinner_time(current_hour): 
         return "dinner"
     return "sleep"
+
 
 def set_curiosity_level(mode):
     base = curiosity_config.get(mode, 1.0)
@@ -76,7 +87,8 @@ async def astra_schedule(bot=None, channel_id=None):
 
         elif current_mode == "dinner":
             print("🍽️ Astra is in Dinner Time.")
-            await start_dinner_time()
+            await start_dinner_time(bot, channel_id)
+
 
         elif current_mode == "school":
             print("📚 Astra is in School Mode.")

@@ -1,3 +1,5 @@
+#deprecated
+
 import os
 import openai
 import re
@@ -5,10 +7,7 @@ import json
 from dotenv import load_dotenv
 from astra_core.emotions.emotion_engine import (
     load_emotion_state,
-    save_emotion_state,
-    trigger_emotion,
-    decay_all_emotions,
-    get_top_emotions
+    save_emotion_state
 )
 from astra_interfaces.influence import load_mind, save_mind
 from openai import RateLimitError

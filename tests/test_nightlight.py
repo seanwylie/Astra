@@ -5,6 +5,8 @@ from rapidfuzz import fuzz
 from astra_interfaces.influence import load_mind
 from astra_core.dinner.dinner_journal import load_dinner_journal
 from astra_core.ethics.spark_checker import load_spark_values
+from utils.time_utils import now
+from datetime import datetime, timedelta
 
 # --- Fixtures ---
 @pytest.fixture
@@ -76,5 +78,5 @@ def test_no_lingering_resolved_dinner_topics(journal):
 def test_recent_reflection_timestamp(mind):
     reflections = mind.get("self_reflections", [])
     if reflections:
-        recent_time = datetime.fromtimestamp(mind.get("last_updated", datetime.utcnow().timestamp()))
-        assert datetime.utcnow() - recent_time < timedelta(days=1), "Mind file may be stale — last update was over a day ago."
+        recent_time = datetime.fromtimestamp(mind.get("last_updated", datetime.now().timestamp()))
+        assert now() - recent_time < timedelta(days=1), "Mind file may be stale — last update was over a day ago."

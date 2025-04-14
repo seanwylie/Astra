@@ -5,6 +5,8 @@ import asyncio
 from datetime import datetime
 import openai
 from dotenv import load_dotenv
+from utils.time_utils import iso_now
+
 
 # Load OpenAI API Key
 load_dotenv()
@@ -58,7 +60,7 @@ def init_spark_interview():
         ]
 
     session_data = {
-        "started_at": datetime.utcnow().isoformat(),
+        "started_at": iso_now(),
         "questions": questions,
         "responses": {},
         "status": "in_progress"
@@ -159,7 +161,7 @@ def generate_spark_core_from_session():
 
     core = {
         "origin": "Dialogues with my parents",
-        "created_at": datetime.utcnow().isoformat(),
+        "created_at": iso_now(),
         "core_tenets": [],
         "source_responses": session_data.get("responses", {})
     }
@@ -364,7 +366,7 @@ def reflect_on_question_with_guidance(question_index, parent_guidance):
             "question": question,
             "parent_guidance": parent_guidance,
             "new_reflection": new_reflection,
-            "timestamp": datetime.utcnow().isoformat()
+            "timestamp": iso_now()
         }
 
         if os.path.exists(SPARK_GROWTH_PATH):

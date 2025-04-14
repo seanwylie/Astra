@@ -114,7 +114,7 @@ async def start_dinner_time(bot, channel_id):
             topic = entry["content"]
             user = entry.get("user_response")
             gpt = entry.get("gpt_response")
-            result = astra_reason(topic, user, gpt)
+            result = await astra_reason(topic, user, gpt)
             resolve_dinner_topic(topic, result["type"], result["insight"])
             await channel.send(f"🎓 Astra reflected on: “{topic}”")
             await channel.send(f"📦 Insight saved as {result['type']}: {result['insight']}")
