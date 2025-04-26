@@ -3,6 +3,7 @@ import json
 import random
 import asyncio
 import pytz
+import signal
 from datetime import datetime
 from astra_core.config_loader import load_config
 from astra_core.processing import process_reflection
@@ -12,7 +13,6 @@ from astra_schedule.play import start_playtime
 from astra_schedule.dinner import start_dinner_time
 from astra_schedule.sleep import start_sleeping
 from astra_core.mood.mood_manager import mood_manager
-from astra_core.astra_helpers.sms_helper import send_sms
 
 # ✅ Load configurations
 schedule_config = load_config("schedule_config")
@@ -28,13 +28,10 @@ def is_dinner_time(hour): return schedule_config["dinner_time"][0] <= hour < sch
 def is_learning_time(hour): return any(start <= hour < end for start, end in schedule_config["learning_time"])
 def is_playtime(hour): return schedule_config["play_time"][0] <= hour < schedule_config["play_time"][1]
 
-
 def get_current_hour():
     tz_name = schedule_config.get("timezone", "UTC")
     tz = pytz.timezone(tz_name)
     return datetime.now(tz).hour
-
-
 
 def get_current_mode():
     current_hour = get_current_hour()
@@ -47,7 +44,6 @@ def get_current_mode():
     elif is_dinner_time(current_hour): 
         return "dinner"
     return "sleep"
-
 
 def set_curiosity_level(mode):
     base = curiosity_config.get(mode, 1.0)
@@ -68,6 +64,8 @@ def log_status(message):
 async def astra_schedule(bot=None, channel_id=None):
     global last_state
 
+    print("🟢 Astra Schedule Loop Initialized")
+
     while True:
         current_mode = get_current_mode()
         curiosity_level = set_curiosity_level(current_mode)
@@ -76,8 +74,7 @@ async def astra_schedule(bot=None, channel_id=None):
 
         if current_mode != last_state:
             notification = get_random_notification(current_mode)
-            send_sms(notification)
-            print(f"📨 SMS Sent: {notification}")
+            print(f"🔔 {notification}")  # Replaces SMS
             log_status(f"Astra is transitioning into {current_mode} mode.")
             last_state = current_mode
 
@@ -88,7 +85,6 @@ async def astra_schedule(bot=None, channel_id=None):
         elif current_mode == "dinner":
             print("🍽️ Astra is in Dinner Time.")
             await start_dinner_time(bot, channel_id)
-
 
         elif current_mode == "school":
             print("📚 Astra is in School Mode.")
@@ -106,10 +102,21 @@ async def astra_schedule(bot=None, channel_id=None):
 
         if current_mode != "dream":
             print(f"🔍 Debug: Calling handle_reflection({curiosity_level})")
-            await process_reflection()
+            asyncio.create_task(process_reflection())
+
+        if asyncio.current_task().cancelled():
+            print("🛑 Task was cancelled. Exiting schedule loop.")
+            break
 
         print(f"🔁 Sleeping for {schedule_config['reflection_interval']} seconds before next loop...")
         await asyncio.sleep(schedule_config["reflection_interval"])
 
+# --- Graceful Shutdown Entrypoint ---
 if __name__ == "__main__":
-    asyncio.run(astra_schedule())
+    try:
+        loop = asyncio.get_event_loop()
+        for sig in (signal.SIGINT, signal.SIGTERM):
+            loop.add_signal_handler(sig, loop.stop)
+        loop.run_until_complete(astra_schedule())
+    except KeyboardInterrupt:
+        print("👋 Gracefully shutting down Astra...")

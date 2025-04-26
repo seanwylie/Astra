@@ -51,10 +51,15 @@ async def handle_message(bot, message: Message, values_config, values: dict):
     decay_all_emotions()
 
     # Log potential ethical conflict
-    log_if_ethically_conflicting({
-        "content": message.content,
-        "source": str(message.author)
-    })
+    # Log user-originated ethical conflict with actual sender
+    log_if_ethically_conflicting(
+        {
+            "content": message.content,
+            "source": str(message.author)  # e.g., Sean#1234
+        },
+        origin="user"
+    )
+
 
     # Let commands run first
     await bot.process_commands(message)

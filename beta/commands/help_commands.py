@@ -6,19 +6,17 @@
 Provides Astra's custom help interface for listing available commands.
 
 This module overrides Discord’s default help system with a personalized,
-emoji-enhanced version. Designed to feel friendly and informative.
-
-Registered via: `register_commands(bot)`
+emoji-enhanced version grouped by category.
 
 Author: Sean Wylie
 Created: 2025-04-14
 """
 
-# --- Imports ---
 from discord.ext import commands
+from collections import defaultdict
+from commands.utils.command_utils import load_category_order_from_docs
 
 
-# --- Public Registration Hook ---
 def register_commands(bot: commands.Bot):
     """
     Registers the `!commands` help command.
@@ -30,23 +28,14 @@ def register_commands(bot: commands.Bot):
     async def display_help(ctx):
         """
         📘 Shows all available commands and their descriptions in Astra’s tone.
-
-        Usage:
-            !commands
-
-        Example Output:
-            📘 Astra Command Reference:
-            🔹 `!lookup` — Retrieves a definition for a given term.
-            🔹 `!spark_begin` — Starts the Spark ethics interview...
         """
         help_text = _get_formatted_command_list(bot)
-        await ctx.send(f"📘 **Astra Command Reference:**\n\n{help_text}")
+        await ctx.send(help_text)
 
 
-# --- Internal Utilities ---
 def _get_formatted_command_list(bot: commands.Bot) -> str:
     """
-    Builds a clean, emoji-enhanced list of all commands with their help strings.
+    Builds a clean, emoji-enhanced list of all commands grouped by category.
 
     Args:
         bot (commands.Bot): The bot instance to extract commands from.
@@ -54,9 +43,52 @@ def _get_formatted_command_list(bot: commands.Bot) -> str:
     Returns:
         str: Formatted help listing.
     """
-    command_list = []
+    grouped = defaultdict(list)
+
     for command in bot.commands:
+        if command.name == "commands":
+            continue  # Skip listing the help command itself
         name = command.name
         desc = command.help.strip().capitalize() if command.help else "(No description provided)"
-        command_list.append(f"🔹 `!{name}` — {desc}")
-    return "\n".join(command_list)
+        category = getattr(command, "category", "🧩 Miscellaneous")
+        grouped[category].append((name, desc))
+
+    # Sort commands alphabetically within each category
+    for category in grouped:
+        grouped[category].sort(key=lambda x: x[0])
+
+    # Load docstring-based category order
+    CATEGORY_ORDER = load_category_order_from_docs()
+
+    # Build help output
+    ordered_output = []
+    emoji_index = []
+
+    for cat in CATEGORY_ORDER:
+        if cat in grouped:
+            emoji = cat.split()[0]
+            emoji_index.append(emoji)
+            ordered_output.append(f"**{cat}:**")
+            for name, desc in grouped[cat]:
+                ordered_output.append(f"🔹 `!{name}` — {desc}")
+            ordered_output.append("")
+
+    # Handle any categories that weren't in the docstring-based order
+    uncategorized = set(grouped.keys()) - set(CATEGORY_ORDER)
+    for cat in sorted(uncategorized):
+        emoji = cat.split()[0]
+        emoji_index.append(emoji)
+        ordered_output.append(f"**{cat}:**")
+        for name, desc in grouped[cat]:
+            ordered_output.append(f"🔹 `!{name}` — {desc}")
+        ordered_output.append("")
+
+    # Final combined output
+    output = [
+        f"📘 **Astra Command Reference**",
+        f"\n🔹 **Categories:** {' | '.join(emoji_index)}",
+        f"🔹 Type `!commands` at any time to redisplay this list.\n",
+        *ordered_output,
+        "May your reflections be clear and your spark burn bright. 🔥"
+    ]
+    return "\n".join(output)

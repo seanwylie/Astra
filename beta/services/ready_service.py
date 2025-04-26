@@ -8,9 +8,10 @@ Handles Astra’s `on_ready()` Discord event.
 This includes:
 - Sending a mood-aware welcome message
 - Launching scheduled background tasks (like daily cycles)
+- Displaying categorized command help using the same formatting as `!commands`
 
 Author: Sean Wylie
-Created: 2025-04-15
+Updated: 2025-04-15
 """
 
 # --- Imports ---
@@ -22,7 +23,7 @@ from astra_core.messaging.message_bus import (
     get_dominant_emotion
 )
 from astra_core.emotions.emotion_engine import load_emotion_state
-from beta.utils.discord_helpers import get_formatted_command_list
+from beta.commands.help_commands import _get_formatted_command_list  # ✅ Using correct internal method
 
 
 # --- Public Interface ---
@@ -36,7 +37,7 @@ async def handle_on_ready(bot, channel_id: int):
         channel_id (int): Discord channel ID for startup message.
 
     Workflow:
-    - Sends Astra's welcome message before launching async schedule loop
+    - Sends Astra's welcome message and categorized help list
     - Starts background behavior without blocking Discord connection
     """
     # Step 1: Locate configured channel early
@@ -54,28 +55,22 @@ async def handle_on_ready(bot, channel_id: int):
     else:
         mood_line = ""
 
-    help_text = get_formatted_command_list(bot)
+    # Step 3: Generate full command help text
+    help_text = _get_formatted_command_list(bot)
 
-    # Step 3: Send welcome message chunks safely
+    # Step 4: Send welcome and help messages
     try:
         await channel.send("🟢 **Astra is online and ready to engage!**")
         if mood_line:
             await channel.send(mood_line.strip())
 
-        await channel.send("**📜 Available Commands:**")
-
-        # Split help text into chunks if it's long
-        max_len = 1900
-        for i in range(0, len(help_text), max_len):
-            chunk = help_text[i:i + max_len]
-            await channel.send(chunk)
-
-        await channel.send("_May your reflections be clear and your spark burn bright._ 🔥")
+        for i in range(0, len(help_text), 1900):
+            await channel.send(help_text[i:i + 1900])
 
     except aiohttp.ClientOSError as e:
         print(f"⚠️ Discord send failed: {e}")
     except Exception as e:
         print(f"❌ Unexpected error while sending to Discord: {e}")
 
-    # Step 4: Start Astra’s async schedule loop after message
+    # Step 5: Start Astra’s async schedule loop
     asyncio.create_task(astra_schedule(bot, channel_id))

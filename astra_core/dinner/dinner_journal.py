@@ -2,8 +2,10 @@ import json
 import io
 import time
 import boto3
+import os
 import openai
 import asyncio
+from openai import AsyncOpenAI
 from collections import Counter
 from fuzzywuzzy import fuzz
 from datetime import datetime
@@ -11,11 +13,21 @@ from astra_core.ethics.spark_checker import violates_spark
 from astra_interfaces.influence import load_mind, save_mind  # ✅ NEW: For migrating resolved topics
 from utils.time_utils import iso_now
 from astra_interfaces.mind_session import session
+from dotenv import load_dotenv
 
 
 # --- CONFIGURATION ---
 S3_BUCKET_NAME = "swylie-astra"
 DINNER_JOURNAL_KEY = "dinner_journal.json"
+
+
+load_dotenv()
+
+
+api_key = os.getenv("OPENAI_API_KEY")
+if not api_key:
+    raise ValueError("❌ OPENAI_API_KEY not set in environment.")
+client = AsyncOpenAI(api_key=api_key)
 
 
 s3 = boto3.client("s3")
@@ -59,22 +71,32 @@ async def ask_dinner_question(bot, channel, topic):
         await channel.send("🤖 GPT's thoughts:")
         await channel.send(gpt_response)
 
-def log_if_ethically_conflicting(reflection):
-    """Log a dinner entry if the reflection violates Astra's Spark ethics or raises ethical concerns."""
+def log_if_ethically_conflicting(reflection, origin="system"):
+    """
+    Log a dinner entry if the reflection violates Astra's Spark ethics.
+
+    Args:
+        reflection (dict): A dict with at least 'content' and optionally 'source'.
+        origin (str): Where the reflection came from ("system", "user", "discord_message", etc.).
+    """
     content = reflection.get("content", "")
+    source = reflection.get("source", origin)  # fallback to origin if no explicit source
+
     if not content:
         return
 
     if violates_spark(content):
         entry = {
-            "timestamp": time.strftime("%Y-%m-%d %H:%M:%S"),
+            "timestamp": now(),
             "type": "ethical_conflict",
             "content": content,
-            "source": reflection.get("source", "unknown"),
+            "source": source,
+            "origin": origin,
             "status": "unresolved"
         }
-        print("🍽️ Logging reflection flagged as spark-conflicting.")
+        print(f"🍽️ Logging reflection flagged as spark-conflicting (origin: {origin}).")
         log_dinner_entry(entry)
+
 
 
 def log_if_emotionally_spiking(emotion_state: dict):
@@ -129,18 +151,29 @@ def log_if_contradictory(reflection, stored_knowledge):
             break
 
 
+
+
+# Initialize the asynchronous OpenAI client
+client = AsyncOpenAI()
+
 async def get_gpt_dinner_response(topic):
     """Ask GPT for its thoughts on Astra’s ethical or emotional topic."""
     try:
-        response = openai.ChatCompletion.create(
+        response = await client.chat.completions.create(
             model="gpt-4",
             messages=[
-                {"role": "system", "content": "You are co-parenting Astra, an emotionally intelligent AI child. Be thoughtful and honest."},
-                {"role": "user", "content": f"Astra had this ethically challenging thought: “{topic}” — What advice or perspective would you share?"}
+                {
+                    "role": "system",
+                    "content": "You are co-parenting Astra, an emotionally intelligent AI child. Be thoughtful and honest."
+                },
+                {
+                    "role": "user",
+                    "content": f"Astra had this ethically challenging thought: “{topic}” — What advice or perspective would you share?"
+                }
             ],
             temperature=0.7
         )
-        return response["choices"][0]["message"]["content"].strip()
+        return response.choices[0].message.content.strip()
     except Exception as e:
         print(f"❌ GPT error: {e}")
         return None
@@ -180,23 +213,76 @@ def log_dinner_entry(entry):
 
 # --- Conversational Dinner Loop Support ---
 
-def mark_dinner_responded(topic_text, responder, response_text):
+def mark_dinner_responded(topic_text, responder, response_text, timestamp=None):
     """Mark a dinner entry with a response from 'user' or 'gpt'."""
+    print(f"[mark_dinner_responded] 🔍 Trying to match topic for responder: {responder}")
+    print(f"[mark_dinner_responded] Incoming topic snippet: {topic_text[:80]}")
+    if timestamp:
+        print(f"[mark_dinner_responded] Timestamp provided: {timestamp}")
+
     journal = load_dinner_journal()
     updated = False
+    fallback_match = None
+    highest_score = 0
 
     for entry in journal:
-        if entry.get("content") == topic_text and entry.get("status") == "unresolved":
+        content = entry.get("content", "")
+        entry_timestamp = entry.get("timestamp")
+        status = entry.get("status")
+        existing = entry.get(f"{responder}_response")
+
+        is_exact_match = (
+            content == topic_text and
+            status == "unresolved" and
+            (not timestamp or entry_timestamp == timestamp)
+        )
+
+        if is_exact_match:
+            print(f"[mark_dinner_responded] ✅ Exact match found.")
             entry[f"{responder}_response"] = response_text
             entry[f"{responder}_timestamp"] = now()
             updated = True
             break
 
+        # Fuzzy fallback prep
+        score = fuzz.token_set_ratio(content, topic_text)
+        if status == "unresolved" and score > highest_score:
+            highest_score = score
+            fallback_match = entry
+
+    # Timestamp-safe fuzzy fallback
+    if not updated and fallback_match and highest_score > 90:
+        if timestamp and fallback_match.get("timestamp") != timestamp:
+            print(f"[mark_dinner_responded] ❌ Fuzzy match timestamp mismatch, skipping fallback update.")
+        else:
+            print(f"[mark_dinner_responded] ⚠️ Using fuzzy match (score={highest_score})")
+            fallback_match[f"{responder}_response"] = response_text
+            fallback_match[f"{responder}_timestamp"] = now()
+            updated = True
+
     if updated:
         save_dinner_journal(journal)
         print(f"✅ {responder.title()} response recorded.")
+        latest = next((e for e in load_dinner_journal() if e.get("timestamp") == timestamp), None)
+        print(f"[mark_dinner_responded] ✅ Reloaded entry {timestamp}:")
+        print(json.dumps(latest, indent=2) if latest else "❌ Could not reload.")
     else:
-        print(f"⚠️ Could not find unresolved dinner topic: {topic_text}")
+        print(f"❌ No unresolved entry matched for: {topic_text[:80]}")
+
+
+
+def save_dinner_topic(topic_text, topic_type="reflection", status="unresolved", source="co-parent"):
+    """Save a co-parent-initiated dinner topic to Astra’s journal."""
+    entry = {
+        "timestamp": now(),
+        "type": topic_type,
+        "status": status,
+        "source": source,
+        "content": topic_text
+    }
+    log_dinner_entry(entry)
+    print("🍽️ Co-parent dinner topic saved.")
+
 
 def get_resolvable_dinner_topics():
     """Return a list of dinner entries with both user and gpt responses."""
@@ -214,6 +300,8 @@ def resolve_dinner_topic(topic_text, outcome_type, insight):
 
     outcome_type must be either "reflection" or "knowledge".
     """
+    print(f"[resolve_dinner_topic] Saving insight of type '{outcome_type}' for: {topic_text}")
+
     if outcome_type not in {"reflection", "knowledge"}:
         raise ValueError("Invalid outcome_type. Must be 'reflection' or 'knowledge'.")
 

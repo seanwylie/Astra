@@ -1,8 +1,8 @@
 {
     "timezone": "Canada/Eastern",
     "dream_time": [3, 7],
+    "learning_time": [[6, 18], [19, 24]],
     "dinner_time": [18, 19],
-    "learning_time": [[6, 19], [19, 24]],
     "learning_interval_min": 90,
     "learning_interval_max": 300,
     "play_time": [22, 23],

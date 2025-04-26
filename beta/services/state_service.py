@@ -24,8 +24,15 @@ from astra_core.dinner.dinner_journal import (
     summarize_dinner_journal
 )
 from astra_core.astra_schedule.dinner import start_dinner_time, astra_reason
+from astra_core.astra_schedule.dinner import try_resolve_dinner_topic
 from astra_core.astra_schedule.play import creative_thinking, spark_opinion
 from astra_core.astra_schedule.dream import process_dream_seed
+from beta.utils.send_chunked_message import send_chunked_message
+
+
+# beta/services/state_service.py
+
+from beta.utils import send_chunked_message  # Ensure this exists or adapt if you use ctx.send directly
 
 
 def get_dinner_summary() -> str:
@@ -38,24 +45,23 @@ def get_dinner_summary() -> str:
     return summarize_dinner_journal()
 
 
+
+
+
+
+
 def submit_dinner_answer(user_response: str) -> str:
-    """
-    Records the user's reply to Astra's most recent unresolved dinner question.
-
-    Args:
-        user_response (str): The message content from the user.
-
-    Returns:
-        str: A success or failure response message.
-    """
+    """Records the user's reply to Astra's most recent unresolved dinner question."""
     journal = load_dinner_journal()
     latest = next((e for e in reversed(journal) if e["status"] == "unresolved"), None)
 
     if latest:
-        mark_dinner_responded(latest["content"], "user", user_response)
+        print(f"[submit_dinner_answer] Logging response for: {latest['content'][:60]}... @ {latest['timestamp']}")
+        mark_dinner_responded(latest["content"], "user", user_response, timestamp=latest["timestamp"])
         return "✅ Got your dinner reply. Astra will reflect soon."
     else:
         return "⚠️ No active dinner topic to respond to."
+
 
 
 async def resolve_all_dinner_topics(send_func):
@@ -72,11 +78,20 @@ async def resolve_all_dinner_topics(send_func):
 
     for entry in entries:
         topic = entry["content"]
+        timestamp = entry["timestamp"]
         user = entry["user_response"]
         gpt = entry["gpt_response"]
+
+        print(f"[resolve_all_dinner_topics] Resolving: {topic[:60]}... @ {timestamp}")
         result = await astra_reason(topic, user, gpt)
         resolve_dinner_topic(topic, result["type"], result["insight"])
-        await send_func(f"🎓 Astra resolved: “{topic}”\n📦 Saved as {result['type']}: {result['insight']}")
+
+        await send_chunked_message(
+            send_func,
+            result['insight'],
+            prefix=f"🎓 Astra resolved: “{topic}”\n📦 Saved as {result['type']}: "
+        )
+
 
 
 async def start_dinner(bot, channel_id):

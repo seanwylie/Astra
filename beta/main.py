@@ -14,7 +14,9 @@ import os
 import discord
 import asyncio
 from discord.ext import commands
-from dotenv import load_dotenv
+from dotenv import load_dotenv, find_dotenv
+
+
 
 # --- Astra Core Services ---
 from astra_core.config_loader import load_config, debug_log
@@ -33,8 +35,13 @@ from beta.services.unused_concept_service import store_concept  # Currently unus
 from beta.services.response_service import query_openai_for_response  # Used in fallback
 
 # --- Load Environment Variables ---
-load_dotenv()
-TOKEN = os.getenv("TOKEN").strip()
+load_dotenv(find_dotenv())
+
+print(os.getenv("OPENAI_API_KEY"))
+
+
+
+TOKEN = os.getenv("TOKEN").strip()  # Discord bot token
 
 # --- Load Configuration ---
 discord_config = load_config("discord_config")

@@ -12,12 +12,14 @@ from astra_interfaces.influence import load_mind, save_mind
 from astra_core.config_loader import debug_log
 from astra_core.config_loader import load_config
 from astra_interfaces.smart_mind_session import SmartMindSession
-
+from openai import AsyncOpenAI
 
 # ✅ Ensure Python knows where to find Astra’s core modules
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 
 
+# ✅ Initialize OpenAI client (outside function if reused elsewhere)
+client = AsyncOpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 
 
 REFLECTION_REPEAT_THRESHOLD = 92
@@ -36,6 +38,7 @@ BLOCKED_TERMS = {
 # ✅ Load configuration
 general_config = load_config("general_config")
 schedule_config = load_config("schedule_config")
+
 
 # ✅ Ensure Mind Structure
 def validate_mind_structure(mind_data):
@@ -93,7 +96,8 @@ async def process_reflection():
     print(f"[processing.py] 🧠 Last Reflection Before Deepening ({initial_count} total):\n{previous_reflection[:200]}...")
 
     # 🧠 Attempt to deepen a reflection
-    refined_reflection = query_openai_for_deeper_thought(previous_reflection)
+    refined_reflection = await query_openai_for_deeper_thought(previous_reflection)
+
 
     if refined_reflection:
         loop_result = reflection_loop_check(refined_reflection, reflections[-5:])
@@ -137,37 +141,49 @@ async def process_reflection():
         return previous_reflection
 
 
-def query_openai_for_deeper_thought(reflection):
-    """Ask OpenAI to refine Astra’s reflections, or fallback gracefully if over quota."""
-    prompt = f"""
-    Astra is an AI that evolves her thoughts over time. She builds on past reflections instead of repeating them.
 
-    Last Reflection:
-    "{reflection}"
 
-    Expand on this idea. Provide deeper insight, connect it to knowledge Astra has, or introduce a new perspective.
+async def query_openai_for_deeper_thought(reflection):
     """
+    Uses GPT to deepen Astra's reflection. Automatically trims the input prompt to avoid token overloads.
+
+    Args:
+        reflection (str): The previous reflection Astra is building upon.
+
+    Returns:
+        str: A deeper, expanded version of the original reflection, or None if GPT fails.
+    """
+    prompt = f"""
+Astra is reviewing one of her past reflections and trying to deepen her thinking.
+
+Here is the original reflection:
+---
+{reflection}
+---
+
+Help her deepen this thought. Offer new angles, contradictions, or future questions to consider.
+Keep her tone thoughtful, evolving, and self-aware.
+""".strip()
+
+    MAX_PROMPT_LENGTH = 6000
+    if len(prompt) > MAX_PROMPT_LENGTH:
+        prompt = prompt[:MAX_PROMPT_LENGTH] + "\n\n(Note: Prompt was truncated due to token limits.)"
 
     try:
-        response = OpenAI().chat.completions.create(
+        response = await client.chat.completions.create(
             model="gpt-4",
-            messages=[{"role": "system", "content": prompt}],
-            max_tokens=400,
-            temperature=0.7
+            messages=[
+                {"role": "system", "content": prompt}
+            ],
+            temperature=0.8,
+            max_tokens=500
         )
-        if response.choices and len(response.choices) > 0:
-            return response.choices[0].message.content.strip()
 
-    except RateLimitError as e:
-        print(f"⚠️ Hit OpenAI rate limit: {e}")
-        time.sleep(10)  # ⏳ Back off before triggering fallback
-        return fallback_deepening_strategy(reflection)
+        return response.choices[0].message.content.strip()
 
     except Exception as e:
-        print(f"🚨 OpenAI request failed: {e}")
-        return fallback_deepening_strategy(reflection)
-
-    return None
+        print(f"[query_openai_for_deeper_thought] ⚠️ GPT failed: {e}")
+        return None
 
 
 
