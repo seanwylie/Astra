@@ -103,10 +103,15 @@ def save_mind(mind_data, force=False):
         print("🚨 [save_mind] All core memory fields are empty! Skipping save to prevent overwrite.")
         return
 
-    from astra_core.questions.question_manager import track_question_patterns
-
-    print("🔍 [save_mind] Tracking self-questioning patterns before saving...")
-    track_question_patterns(mind_data)
+    # 💡 Try tracking self-questioning patterns only if dependencies are present
+    try:
+        from astra_core.questions.question_manager import track_question_patterns
+        print("🔍 [save_mind] Tracking self-questioning patterns before saving...")
+        track_question_patterns(mind_data)
+    except ModuleNotFoundError as e:
+        print("⚠️ [save_mind] Torch not installed — skipping question tracking.")
+    except Exception as e:
+        print(f"⚠️ [save_mind] Error while tracking question patterns: {e}")
 
     reflections = mind_data.get("self_reflections", [])
     questions = mind_data.get("self_questions", [])

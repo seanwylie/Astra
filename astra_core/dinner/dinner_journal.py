@@ -14,6 +14,9 @@ from astra_interfaces.influence import load_mind, save_mind  # ✅ NEW: For migr
 from utils.time_utils import iso_now
 from astra_interfaces.mind_session import session
 from dotenv import load_dotenv
+from fuzzywuzzy import fuzz
+from astra_interfaces.mind_session import SmartMindSession
+from utils.time_utils import iso_now
 
 
 # --- CONFIGURATION ---
@@ -204,8 +207,19 @@ def save_dinner_journal(data):
         print(f"❌ Failed to save dinner journal: {e}")
 
 def log_dinner_entry(entry):
-    """Append a new entry to Astra's dinner journal and save to S3."""
+    """Append a new entry to Astra's dinner journal and save to S3, avoiding near-duplicates."""
     journal = load_dinner_journal()
+    entry_content = entry.get("content", "").strip()
+
+    # Prevent near-duplicate dinner entries using fuzzy matching
+    for existing in journal:
+        if existing.get("status") != "unresolved":
+            continue
+        existing_content = existing.get("content", "").strip()
+        if fuzz.token_set_ratio(entry_content, existing_content) >= 92:
+            print("⚠️ Duplicate dinner topic detected (fuzzy match ≥92%). Skipping log.")
+            return
+
     journal.append(entry)
     save_dinner_journal(journal)
     print("📝 Dinner entry logged.")
@@ -260,25 +274,31 @@ def mark_dinner_responded(topic_text, responder, response_text, timestamp=None):
             fallback_match[f"{responder}_timestamp"] = now()
             updated = True
 
+    # After save_dinner_journal(journal)
     if updated:
         save_dinner_journal(journal)
         print(f"✅ {responder.title()} response recorded.")
-        latest = next((e for e in load_dinner_journal() if e.get("timestamp") == timestamp), None)
-        print(f"[mark_dinner_responded] ✅ Reloaded entry {timestamp}:")
+
+        # 🩹 Patch: fallback to fuzzy reload if no timestamp is given
+        if timestamp:
+            latest = next((e for e in load_dinner_journal() if e.get("timestamp") == timestamp), None)
+        else:
+            latest = next((e for e in load_dinner_journal() if e.get("content") == topic_text), None)
+
+        print(f"[mark_dinner_responded] ✅ Reloaded entry {timestamp or topic_text[:30]}:")
         print(json.dumps(latest, indent=2) if latest else "❌ Could not reload.")
-    else:
-        print(f"❌ No unresolved entry matched for: {topic_text[:80]}")
+
 
 
 
 def save_dinner_topic(topic_text, topic_type="reflection", status="unresolved", source="co-parent"):
-    """Save a co-parent-initiated dinner topic to Astra’s journal."""
+    """Save a co-parent-initiated dinner topic to Astra’s journal, avoiding near-duplicates."""
     entry = {
         "timestamp": now(),
         "type": topic_type,
         "status": status,
         "source": source,
-        "content": topic_text
+        "content": topic_text.strip()
     }
     log_dinner_entry(entry)
     print("🍽️ Co-parent dinner topic saved.")
@@ -294,13 +314,14 @@ def get_resolvable_dinner_topics():
         and entry.get("gpt_response")
     ]
 
+
+
 def resolve_dinner_topic(topic_text, outcome_type, insight):
     """
     Resolve a dinner topic and migrate it to mind_file.json.
-
     outcome_type must be either "reflection" or "knowledge".
     """
-    print(f"[resolve_dinner_topic] Saving insight of type '{outcome_type}' for: {topic_text}")
+    print(f"[resolve_dinner_topic] Saving insight of type '{outcome_type}' for: {topic_text[:60]}")
 
     if outcome_type not in {"reflection", "knowledge"}:
         raise ValueError("Invalid outcome_type. Must be 'reflection' or 'knowledge'.")
@@ -310,18 +331,20 @@ def resolve_dinner_topic(topic_text, outcome_type, insight):
     migrated = False
 
     for entry in journal:
-        if entry.get("content") == topic_text:
+        content = entry.get("content", "")
+        score = fuzz.token_set_ratio(content.strip(), topic_text.strip())
+        if score > 95 and entry.get("status") == "unresolved":
             # ⬇️ Save to Astra’s mind
-            mind_data = session.load()
+            mind_data = SmartMindSession().load()
             if outcome_type == "reflection":
                 mind_data.setdefault("self_reflections", []).append(insight)
             elif outcome_type == "knowledge":
                 mind_data.setdefault("stored_knowledge", []).append({
                     "source": "dinner",
                     "insight": insight,
-                    "timestamp": now()
+                    "timestamp": iso_now()
                 })
-            session.maybe_save()
+            SmartMindSession().maybe_save()
             print(f"🧠 Insight saved to Astra’s mind as {outcome_type}.")
             migrated = True
         else:
@@ -329,9 +352,10 @@ def resolve_dinner_topic(topic_text, outcome_type, insight):
 
     if migrated:
         save_dinner_journal(new_journal)
-        print(f"📤 Removed '{topic_text}' from dinner journal.")
+        print(f"📤 Removed '{topic_text[:60]}' from dinner journal.")
     else:
-        print(f"⚠️ Topic '{topic_text}' not found or already resolved.")
+        print(f"⚠️ Topic '{topic_text[:60]}' not found or already resolved.")
+
 
 
 # --- Example Usage ---

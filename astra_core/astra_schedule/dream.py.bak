@@ -1,5 +1,4 @@
 import time
-from astra_interfaces.mind_session import SmartMindSession
 import json
 import shutil
 import subprocess
@@ -57,9 +56,7 @@ def handle_dream_reflection(insight, source="dream"):
 
     log_if_ethically_conflicting({"content": insight, "source": source})
     log_if_contradictory(insight, mind["stored_knowledge"])
-    session = SmartMindSession()
-    session.data = mind
-    session.maybe_save()
+    save_mind(mind)
 
 
 async def process_dream_seed():

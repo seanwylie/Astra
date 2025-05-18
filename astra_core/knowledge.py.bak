@@ -1,5 +1,4 @@
 import requests
-from astra_interfaces.mind_session import SmartMindSession
 import re
 import time
 import openai
@@ -43,9 +42,7 @@ class KnowledgeManager:
         """Stores past conversations so Astra can reference them later."""
         self.mind_data["past_conversations"].append(message)
         self.mind_data["past_conversations"] = self.mind_data["past_conversations"][-100:]  # Keep last 100
-        session = SmartMindSession()
-        session.data = self.mind_data
-        session.maybe_save()
+        save_mind(self.mind_data)
 
     def should_lookup_concept(self, concept, force=False):
         """Determine if Astra should look up a concept based on meaningful stored knowledge."""
@@ -119,9 +116,7 @@ class KnowledgeManager:
         print(f"🔍 Debug: Before saving, knowledge count: {pre_save_count} -> {len(self.mind_data['stored_knowledge'])}")
 
         # ✅ Save and verify
-        session = SmartMindSession()
-        session.data = self.mind_data
-        session.maybe_save()
+        save_mind(self.mind_data)
         time.sleep(0.5)  
 
         reloaded_mind = session.load()

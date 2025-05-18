@@ -1,5 +1,4 @@
 import asyncio
-from astra_interfaces.mind_session import SmartMindSession
 import random
 import time
 import aiohttp
@@ -80,9 +79,7 @@ async def creative_thinking(return_concept=False):
         print(f"[creative_thinking] 🧠 Appending concept to stored_knowledge")
         print(f"[creative_thinking] Insight: {concept}")
         print(f"[creative_thinking] Total knowledge entries: {len(mind.get('stored_knowledge', []))}")
-        session = SmartMindSession()
-        session.data = mind
-        session.maybe_save()
+        save_mind(mind)
         print(f"[creative_thinking] ✅ Mind saved to S3")
 
         if return_concept:

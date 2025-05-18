@@ -1,5 +1,4 @@
 import time
-from astra_interfaces.mind_session import SmartMindSession
 from astra_core.config_loader import load_config
 from astra_interfaces.influence import load_mind, save_mind  # ✅ Handles memory storage
 from astra_core.config_loader import debug_log
@@ -83,9 +82,7 @@ class TrustManager:
         self.mind_data["entity_trust"] = self.entity_trust
         self.mind_data["general_trust"] = self.general_trust
         debug_log("Saving")
-        session = SmartMindSession()
-session.data = self.mind_data
-session.maybe_save()  # ✅ Ensure trust data is saved persistently
+        save_mind(self.mind_data)  # ✅ Ensure trust data is saved persistently
 
     def validate_interaction(self, entity, validation_type):
         """Determine trust effects based on interaction type."""

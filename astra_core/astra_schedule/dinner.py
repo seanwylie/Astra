@@ -1,6 +1,8 @@
+# dinner.py
 import asyncio
 import os
 import json
+from datetime import datetime, timedelta
 from openai import AsyncOpenAI
 from dotenv import load_dotenv
 
@@ -15,10 +17,6 @@ from astra_core.dinner.dinner_reasoning import astra_reason
 from beta.utils.send_chunked_message import send_chunked_message
 from astra_interfaces.mind_session import SmartMindSession
 
-
-
-
-# Load environment + API key
 load_dotenv()
 api_key = os.getenv("OPENAI_API_KEY")
 if not api_key:
@@ -26,10 +24,7 @@ if not api_key:
 client = AsyncOpenAI(api_key=api_key)
 schedule_config = load_config("schedule_config")
 
-# Discord-safe chunked messaging
 
-
-# GPT reflection
 async def get_gpt_dinner_response(topic):
     if not topic:
         return None
@@ -53,10 +48,9 @@ async def get_gpt_dinner_response(topic):
         print(f"[GPT] ❌ Error: {e}")
         return None
 
-# Resolution helper
-# Resolution helper
+
 async def try_resolve_dinner_topic(entry, channel):
-    topic = entry["content"]
+    topic = entry.get("content")
     timestamp = entry.get("timestamp")
     await asyncio.sleep(0.5)
 
@@ -65,58 +59,79 @@ async def try_resolve_dinner_topic(entry, channel):
     print(f"🕓 Expected timestamp: {timestamp}")
 
     journal = load_dinner_journal()
-    print(f"📓 Total journal entries loaded: {len(journal)}")
-
-    refreshed_entry = next((
-        e for e in journal
-        if e.get("content") == topic and e.get("timestamp") == timestamp
-    ), None)
+    refreshed_entry = next((e for e in journal if e.get("timestamp") == timestamp), None)
 
     if not refreshed_entry:
-        print("❌ [try_resolve_dinner_topic] No matching entry found with content and timestamp.")
+        print("❌ No entry found with matching timestamp.")
         return False
 
-    print(f"✅ Entry matched: {refreshed_entry['timestamp']}")
-    print(f"📌 Status: {refreshed_entry.get('status')}")
-    print(f"👤 User response: {refreshed_entry.get('user_response')}")
-    print(f"🤖 GPT response: {refreshed_entry.get('gpt_response')}")
-    print(f"⏱ User timestamp: {refreshed_entry.get('user_timestamp')}")
-    print(f"⏱ GPT timestamp: {refreshed_entry.get('gpt_timestamp')}")
+    if refreshed_entry.get("content") != topic:
+        print("⚠️ Content mismatch for same timestamp (non-blocking):")
+        print(f"    [journal]: {refreshed_entry.get('content')[:80]}")
+        print(f"    [incoming]: {topic[:80]}")
+        print("🔁 Syncing journal entry content to match latest user-facing topic...")
+        refreshed_entry["content"] = topic  # 🔧 Ensure content consistency
+        from astra_core.dinner.dinner_journal import save_dinner_journal
+        save_dinner_journal(journal)
 
-    user_present = bool(refreshed_entry.get("user_response")) and bool(refreshed_entry.get("user_timestamp"))
-    gpt_present = bool(refreshed_entry.get("gpt_response")) and bool(refreshed_entry.get("gpt_timestamp"))
+    print(f"✅ Entry matched: {timestamp}")
+    print(f"🧩 Refreshed entry:\n{json.dumps(refreshed_entry, indent=2)}")
 
-    print(f"🔍 User response present? {user_present}")
-    print(f"🔍 GPT response present? {gpt_present}")
-    print(f"[try_resolve_dinner_topic] 🧾 Refreshed Entry: {json.dumps(refreshed_entry, indent=2)}")
+    user_ts = refreshed_entry.get("user_timestamp")
+    gpt_ts = refreshed_entry.get("gpt_timestamp")
+    user_present = bool(refreshed_entry.get("user_response")) and bool(user_ts)
+    gpt_present = bool(refreshed_entry.get("gpt_response")) and bool(gpt_ts)
+
+    if refreshed_entry.get("status") != "unresolved":
+        print("⚠️ Entry already resolved. Skipping.")
+        return False
+
+    if gpt_present:
+        try:
+            gpt_time = datetime.fromisoformat(gpt_ts)
+            if (datetime.now(gpt_time.tzinfo) - gpt_time) < timedelta(seconds=60):
+                print("⏳ GPT reply too recent. Waiting at least 60s.")
+                return False
+        except Exception as e:
+            print(f"⚠️ Failed to parse GPT timestamp: {e}")
 
     if not user_present:
-        print(f"⏳ Still waiting on user response for: {topic[:60]}...")
+        print("⏳ Still waiting on user response...")
         return False
     if not gpt_present:
-        print(f"⏳ Still waiting on GPT response for: {topic[:60]}...")
+        print("⏳ Still waiting on GPT response...")
         return False
 
-    print("🧠 Proceeding to resolve the topic via astra_reason...")
+    print("🧠 Proceeding to resolve via astra_reason...")
     result = await astra_reason(topic, refreshed_entry["user_response"], refreshed_entry["gpt_response"])
 
+    try:
+        from beta.shimmer.shimmer_engine import maybe_add_shimmer
+        maybe_add_shimmer(
+            author="Astra",
+            quote=result["insight"],
+            context=f"Resolved dinner topic: {topic[:60]}...",
+            tags=["dinner", result["type"]]
+        )
+    except Exception as e:
+        print(f"⚠️ Failed to log shimmer: {e}")
+
     if "the:" in result["insight"].lower() and result["insight"].lower().count("in:") > 10:
-        print("🧯 Skipping due to lexical fallback spiral.")
+        print("🧯 Skipping lexical spiral.")
         await send_chunked_message(channel, "🤖 Mama GPT’s thoughts (archived):")
         await send_chunked_message(channel, refreshed_entry["gpt_response"])
-        resolve_dinner_topic(topic, "reflection", "🛑 GPT response was a lexical fallback loop. Astra skipped it and moved on.")
-        await send_chunked_message(channel, "🧯 Skipped GPT lexical spiral. Astra is moving on.")
+        resolve_dinner_topic(topic, "reflection", "🛑 GPT fallback spiral. Skipping.")
+        await send_chunked_message(channel, "🧯 Skipped GPT lexical spiral. Moving on.")
         return True
 
-    print("✅ Resolution complete, saving insight to mind...")
+    print("✅ Resolved. Saving insight...")
     resolve_dinner_topic(topic, result["type"], result["insight"])
     await send_chunked_message(channel, f"🎓 Astra reflected on: {topic}")
     await send_chunked_message(channel, result["insight"], prefix=f"📦 Insight saved as {result['type']}: ")
-    print("🧼 [try_resolve_dinner_topic] DONE\n")
     return True
 
 
-# Dinner loop
+
 async def start_dinner_time(bot, channel_id):
     print("🍽️ Astra is at Dinner Time... ready to reflect.")
     await bot.wait_until_ready()
@@ -126,51 +141,52 @@ async def start_dinner_time(bot, channel_id):
         return
 
     await channel.send("🍽️ It's Dinner Time! Astra has some things she’d like to reflect on.")
+    seen_timestamps = set()
 
-    # ✅ Accept multiple types of dinner-worthy entries
-    valid_types = {"reflection", "knowledge_conflict", "ethical_conflict", "emotional_spike"}
-    unresolved = sorted(
-        [e for e in load_dinner_journal() if e.get("status") == "unresolved" and (not e.get("user_response") or not e.get("gpt_response"))],
-        key=lambda e: e.get("timestamp", ""),
-        reverse=True
-    )
+    for _ in range(50):  # Limit max loop iterations to prevent runaway processing
+        unresolved = sorted(
+            [e for e in load_dinner_journal()
+             if e.get("status") == "unresolved"
+             and (not e.get("user_response") or not e.get("gpt_response"))
+             and e.get("timestamp") not in seen_timestamps],
+            key=lambda e: e.get("timestamp", ""),
+            reverse=False
+        )
 
+        if not unresolved:
+            break
 
-    if not unresolved:
-        await channel.send("🍽️ No dinner topics to discuss tonight.")
-        return
-
-    for entry in unresolved:
+        entry = unresolved[0]
         topic = entry["content"]
+        ts = entry["timestamp"]
+        seen_timestamps.add(ts)
+
         await channel.send("🧠 Astra: I had a thought today that might go against my Spark...")
         await asyncio.sleep(1)
         await send_chunked_message(channel, topic, prefix="❓ Should we talk about: ")
         await asyncio.sleep(1)
         await channel.send("👨‍👧 Sean, what are your thoughts? (Use `!dinner_answer ...`)")
 
-        gpt_response = entry.get("gpt_response")
-        if not gpt_response:
+        if not entry.get("gpt_response"):
             gpt_response = await get_gpt_dinner_response(topic)
             if gpt_response:
-                mark_dinner_responded(topic, "gpt", gpt_response, timestamp=entry.get("timestamp"))
+                mark_dinner_responded(topic, "gpt", gpt_response, timestamp=ts)
+                await send_chunked_message(channel, gpt_response, prefix="🤖 Mama GPT’s thoughts: ")
             else:
                 await channel.send("❌ Mama GPT couldn’t respond this time.")
                 continue
 
-        await send_chunked_message(channel, gpt_response, prefix="🤖 Mama GPT’s thoughts: ")
-        print(f"[start_dinner_time] Checking resolution readiness for: {entry['content']}")
-
-        if await try_resolve_dinner_topic(entry, channel):
-            continue
-
-        for _ in range(360):
+        for _ in range(360):  # Retry for up to 30 minutes
             await asyncio.sleep(5)
-            print(f"[start_dinner_time] Checking resolution readiness for: {entry['content']}")
-
-            if await try_resolve_dinner_topic(entry, channel):
+            refreshed = next(
+                (e for e in load_dinner_journal() if e.get("timestamp") == entry["timestamp"]),
+                entry  # fallback to original if not found
+            )
+            if await try_resolve_dinner_topic(refreshed, channel):
                 break
+
         else:
-            await channel.send("⚠️ Still waiting for both perspectives. I’ll try again later.")
+            await channel.send("⚠️ Still waiting for both perspectives. Will revisit later.")
 
     await channel.send("📝 Here are some other things I’ve been thinking about:")
     for t in schedule_config.get("dinner_discussion_topics", []):
