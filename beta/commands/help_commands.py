@@ -14,7 +14,7 @@ Created: 2025-04-14
 
 from discord.ext import commands
 from collections import defaultdict
-from commands.utils.command_utils import load_category_order_from_docs
+from beta.commands.utils.command_utils import load_category_order_from_docs
 
 
 def register_commands(bot: commands.Bot):

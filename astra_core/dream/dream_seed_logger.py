@@ -3,7 +3,11 @@ import io
 import time
 import boto3
 from datetime import datetime
-from utils.time_utils import iso_now
+# Use local iso_now function to avoid import issues
+from datetime import datetime
+
+def iso_now():
+    return datetime.now().isoformat()
 
 
 S3_BUCKET = "swylie-astra"

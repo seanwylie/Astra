@@ -1,7 +1,7 @@
 {
     "mind_file_path": "/home/ubuntu/astra_reflections/mind_file.json",
-    "mind_file_sean_path": "/home/ubuntu/astra_reflections/mind_file_parents.json",
-    "log_file": "/home/ubuntu/astra_reflections/astra_logs.json",
+    "mind_file_sean_path": "/home/ubuntu/astra_reflections/data/mind_file_parents.json",
+    "log_file": "/home/ubuntu/astra_reflections/data/astra_logs.json",
     "s3_bucket": "swylie-astra",
     "reflection_interval": 10,
     "max_stored_knowledge": 5000,

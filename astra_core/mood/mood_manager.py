@@ -21,7 +21,7 @@ class MoodManager:
         self.mood_config = load_config("mood_config")
         print("🔍 Debug: mood_config Loaded →", self.mood_config)
 
-        self.LOG_FILE = load_config("general_config").get("log_file", "/home/ubuntu/astra_logs.json")
+        self.LOG_FILE = load_config("general_config").get("log_file", "/home/ubuntu/astra_reflections/data/astra_logs.json")
         debug_log("Loading")  
         mind_data = session.load()  # ✅ Load Astra's previous mind state
 

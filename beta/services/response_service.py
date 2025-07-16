@@ -19,6 +19,7 @@ from astra_core.config_loader import load_config
 from astra_core.messaging.message_bus import send_contextual_message
 from astra_core.mood.mood_manager import MoodManager
 from astra_core.personality.personality_manager import get_personality_state
+from beta.services.personality_service import get_personality_traits, get_response_style
 
 # --- Config & State ---
 values_config = load_config("values_config")

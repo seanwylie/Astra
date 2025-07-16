@@ -11,12 +11,13 @@ from fuzzywuzzy import fuzz
 from datetime import datetime
 from astra_core.ethics.spark_checker import violates_spark
 from astra_interfaces.influence import load_mind, save_mind  # ✅ NEW: For migrating resolved topics
-from utils.time_utils import iso_now
 from astra_interfaces.mind_session import session
 from dotenv import load_dotenv
-from fuzzywuzzy import fuzz
 from astra_interfaces.mind_session import SmartMindSession
-from utils.time_utils import iso_now
+
+# Use our own iso_now function to avoid import issues
+def iso_now():
+    return datetime.now().isoformat()
 
 
 # --- CONFIGURATION ---

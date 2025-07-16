@@ -5,7 +5,11 @@ import asyncio
 from datetime import datetime
 import openai
 from dotenv import load_dotenv
-from utils.time_utils import iso_now
+# Use local iso_now function to avoid import issues
+from datetime import datetime
+
+def iso_now():
+    return datetime.now().isoformat()
 
 
 # Load OpenAI API Key
