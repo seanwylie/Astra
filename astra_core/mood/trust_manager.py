@@ -84,8 +84,8 @@ class TrustManager:
         self.mind_data["general_trust"] = self.general_trust
         debug_log("Saving")
         session = SmartMindSession()
-session.data = self.mind_data
-session.maybe_save()  # ✅ Ensure trust data is saved persistently
+        session.data = self.mind_data
+        session.maybe_save()  # ✅ Ensure trust data is saved persistently
 
     def validate_interaction(self, entity, validation_type):
         """Determine trust effects based on interaction type."""
