@@ -1,0 +1,15 @@
+---
+description: Adding new Python packages
+alwaysApply: false
+globs: requirements.txt,pyproject.toml,setup.py
+---
+
+# Dependencies
+
+When adding a new Python package:
+
+1. Add to `requirements.txt` (with version pin if needed)
+2. Add to `pyproject.toml` under `[project]` or `[project.optional-dependencies]` if dev-only
+3. Run `.venv/bin/pip install -r requirements.txt` (or `pip install -e ".[dev]"` for dev deps)
+
+Keep both files in sync so installs are reproducible.

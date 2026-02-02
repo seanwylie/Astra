@@ -154,6 +154,45 @@ def _check_for_coparent_perspective(topic: str, parent_id: str) -> Optional[Dict
     return None
 
 
+def _record_temporal_landmark_if_significant(
+    content: str,
+    author_entity: str,
+    emotional_impact: float,
+) -> None:
+    """Record a temporal landmark when the message is emotionally significant (Phase 2.4)."""
+    if emotional_impact < 0.4:
+        return
+    try:
+        topics = [w for w in content.lower().split() if len(w) > 3][:5]
+        temporal_self.record_landmark(
+            description=content[:80] + ("..." if len(content) > 80 else ""),
+            category="conversation",
+            emotional_weight=min(1.0, emotional_impact),
+            people_involved=[author_entity],
+            topics=topics,
+        )
+    except Exception as e:
+        logger.debug(f"Temporal landmark recording failed: {e}")
+
+
+def _trigger_self_model_update_if_significant(
+    content: str,
+    emotional_impact: float,
+    author_entity: str,
+) -> None:
+    """Trigger a light self-model update when the interaction is significant (Phase 2.3)."""
+    if emotional_impact < 0.3 and len(content) < 50:
+        return
+    try:
+        self_model.update_self_model(
+            trigger=f"Conversation with {author_entity}",
+            observed_behavior=None,
+            new_interest=None,
+        )
+    except Exception as e:
+        logger.debug(f"Self-model update trigger failed: {e}")
+
+
 async def handle_message(bot, message: Message, values_config, values: dict):
     """
     Core entrypoint for non-command Discord messages directed at Astra.
@@ -528,8 +567,13 @@ async def handle_message(bot, message: Message, values_config, values: dict):
                     k_text = knowledge.get("insight", str(knowledge)) if isinstance(knowledge, dict) else str(knowledge)
                     k_words = set(k_text.lower().split())
                     if len(user_words & k_words) >= 2:
-                        # Found a potential connection
-                        connection = f"This relates to something I learned: {k_text[:60]}..."
+                        # Found a potential connection — use topic only, not raw definition
+                        topic = k_text.lstrip("📄📖 \n*")
+                        if ":" in topic:
+                            topic = topic.split(":", 1)[0].strip().strip("*")
+                        if len(topic) > 50:
+                            topic = topic[:47] + "..."
+                        connection = f"This relates to something I learned about {topic}." if topic else "This relates to something I learned recently."
                         soc.generate_connection(connection)
                         internal_state["pending_connection"] = connection
                         break

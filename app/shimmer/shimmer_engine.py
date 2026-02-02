@@ -1,8 +1,11 @@
 import json
+import logging
 import random
 from pathlib import Path
 from fuzzywuzzy import fuzz  # or from rapidfuzz import fuzz
 from datetime import datetime
+
+logger = logging.getLogger(__name__)
 
 FUZZY_MATCH_THRESHOLD = 92
 SHIMMER_PATH = Path(__file__).parent / "shimmer.json"
@@ -15,20 +18,20 @@ def load_shimmers():
     except FileNotFoundError:
         return []
     except Exception as e:
-        print(f"⚠️ Error loading shimmers: {e}")
+        logger.warning("Error loading shimmers: %s", e)
         return []
 
 def save_shimmers(shimmers):
     try:
         with open(SHIMMER_PATH, 'w', encoding='utf-8') as f:
             json.dump({"shimmers": shimmers}, f, indent=2, ensure_ascii=False)
-        print("✅ Shimmer file saved.")
+        logger.info("Shimmer file saved.")
     except Exception as e:
-        print(f"❌ Failed to save shimmer: {e}")
+        logger.error("Failed to save shimmer: %s", e)
 
 def add_shimmer(author, quote, context, tags=None):
     if not author or not quote or not context:
-        print("❌ Missing required fields: author, quote, and context are mandatory.")
+        logger.warning("Missing required fields: author, quote, and context are mandatory.")
         return False
 
     quote = quote.strip()
@@ -38,7 +41,10 @@ def add_shimmer(author, quote, context, tags=None):
     for existing in shimmers:
         similarity = fuzz.ratio(existing["quote"].strip(), quote)
         if similarity >= FUZZY_MATCH_THRESHOLD:
-            print(f"⚠️ Duplicate or similar shimmer exists (match {similarity}%). Skipping.")
+            if similarity >= 100:
+                logger.debug("Exact duplicate shimmer already stored. Skipping.")
+            else:
+                logger.debug("Duplicate or similar shimmer exists (match %s%%). Skipping.", similarity)
             return False
 
     new_shimmer = {
@@ -51,7 +57,7 @@ def add_shimmer(author, quote, context, tags=None):
 
     shimmers.append(new_shimmer)
     save_shimmers(shimmers)
-    print("✨ Shimmer added.")
+    logger.info("Shimmer added.")
     return True
 
 def maybe_add_shimmer(author, quote, context="", tags=None, similarity_threshold=92):
@@ -61,7 +67,7 @@ def maybe_add_shimmer(author, quote, context="", tags=None, similarity_threshold
     """
     quote = quote.strip()
     if not quote or len(quote.split()) < 5:
-        print("⚠️ Shimmer skipped: too short or empty.")
+        logger.debug("Shimmer skipped: too short or empty.")
         return False
 
     tags = tags or []
@@ -70,7 +76,10 @@ def maybe_add_shimmer(author, quote, context="", tags=None, similarity_threshold
     for existing in shimmers:
         similarity = fuzz.token_set_ratio(existing["quote"].strip(), quote)
         if similarity >= similarity_threshold:
-            print(f"⚠️ Duplicate or similar shimmer exists (match {similarity}%). Skipping.")
+            if similarity >= 100:
+                logger.debug("Exact duplicate shimmer already stored. Skipping.")
+            else:
+                logger.debug("Duplicate or similar shimmer exists (match %s%%). Skipping.", similarity)
             return False
 
     new_shimmer = {
@@ -83,7 +92,7 @@ def maybe_add_shimmer(author, quote, context="", tags=None, similarity_threshold
 
     shimmers.append(new_shimmer)
     save_shimmers(shimmers)
-    print("✅ maybe_add_shimmer: Shimmer added.")
+    logger.info("maybe_add_shimmer: Shimmer added.")
     return True
 
 def dim_shimmer(partial_quote: str):
@@ -94,11 +103,11 @@ def dim_shimmer(partial_quote: str):
     filtered = [s for s in shimmers if partial_quote not in s["quote"].lower()]
 
     if len(filtered) == original_count:
-        print("⚠️ No shimmer matched for removal.")
+        logger.warning("No shimmer matched for removal.")
         return False
 
     save_shimmers(filtered)
-    print(f"🗑️ Removed {original_count - len(filtered)} shimmer(s).")
+    logger.info("Removed %s shimmer(s).", original_count - len(filtered))
     return True
 
 def should_add_shimmer(emotion=None, source=None, reflection_type=None):

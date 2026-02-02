@@ -1,0 +1,12 @@
+---
+description: Error handling with project exceptions
+globs: "**/*.py"
+alwaysApply: false
+---
+
+# Error Handling
+
+- Use project exceptions from `exceptions.py`: `CashStraException`, `QuestradeException`, `TradingException`, `StrategyException`, `ConfigurationException`, `DatabaseException`
+- Avoid bare `except:` or `except Exception:` without re-raising or proper handling
+- Prefer specific exception types; chain with `raise ... from e` when appropriate
+- Log at appropriate levels before re-raising

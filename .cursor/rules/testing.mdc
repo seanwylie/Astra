@@ -1,0 +1,28 @@
+---
+description: Testing conventions
+alwaysApply: false
+globs: tests/**/*
+---
+
+# Testing
+
+## Running tests
+
+Prefer `make test` when the venv is active. Otherwise:
+
+```bash
+PYTHONPATH=. .venv/bin/python -m pytest tests/ -v
+```
+
+## Integration tests
+
+Integration tests in `tests/integration/` may hit Questrade or other external services. They require:
+
+- `.env` configured (see `config/.env.template`)
+- Questrade token in `scripts/data/.questrade_token` or `QUESTRADE_REFRESH_TOKEN` for Questrade tests
+
+Run unit-only tests when integration setup is not available:
+
+```bash
+make test-unit
+```

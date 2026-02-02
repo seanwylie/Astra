@@ -1,0 +1,14 @@
+---
+description: Streamlit app conventions
+alwaysApply: false
+globs: app.py
+---
+
+# Streamlit Patterns
+
+For `app.py` and Streamlit pages:
+
+- Use `@st.cache_data` (or `@st.cache_resource` for long-lived objects) for expensive computations and data loading
+- Keep session state minimal; prefer URL params or form state where possible
+- Avoid mutable default arguments (e.g. `def f(x=[])`); use `None` and initialize inside
+- Place secrets in `.streamlit/secrets.toml` (gitignored), not in code

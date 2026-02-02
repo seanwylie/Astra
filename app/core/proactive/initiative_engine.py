@@ -309,9 +309,14 @@ class InitiativeEngine:
             
             if connections:
                 latest = connections[-1]
+                content = latest.content
+                # Don't paste raw knowledge/definition text (e.g. "📄 Jesus: Jesus, also referred to...")
+                if "📄" in content or "📖" in content or ("also referred to" in content and len(content) > 80):
+                    topic = content.lstrip("📄📖 \n*").split(":", 1)[0].strip().strip("*") if ":" in content else "something I learned"
+                    content = f"This relates to something I learned about {topic}." if topic else "I made a connection to something I learned."
                 return {
                     "trigger_type": "wonder_share",
-                    "message": f"I had a thought I wanted to share: {latest.content}",
+                    "message": f"I had a thought I wanted to share: {content}",
                     "context": {
                         "thought": latest.to_dict(),
                         "emotional_context": latest.emotional_context

@@ -1,0 +1,15 @@
+---
+description: Database schema changes and backups
+alwaysApply: false
+globs: models.py,**/models.py,**/storage.py,storage.py
+---
+
+# Database Changes
+
+Before modifying SQLAlchemy models or schema:
+
+1. **Backup**: Consider backing up `data/cashstra.db` (see `src/cashstra/utils/backup.py`)
+2. **Migrations**: SQLite + SQLAlchemy can auto-create tables; for destructive changes, document migration steps or use a migration tool
+3. **Testing**: Run tests after schema changes; integration tests may use the DB
+
+Avoid dropping columns or tables without a migration path for existing data.

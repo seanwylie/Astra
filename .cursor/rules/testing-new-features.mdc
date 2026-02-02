@@ -1,0 +1,14 @@
+---
+description: Add tests when adding features or fixing bugs
+alwaysApply: true
+---
+
+# Tests for New Behavior
+
+When adding features or fixing non-trivial bugs:
+
+- Add or update unit tests in `tests/unit/`
+- Add integration tests in `tests/integration/` when touching external services (Questrade, etc.)
+- Follow existing patterns in `conftest.py` and fixture modules
+
+Tests keep regressions from creeping back in.

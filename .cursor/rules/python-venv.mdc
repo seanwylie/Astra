@@ -1,0 +1,45 @@
+---
+description: Always run Python scripts in the project venv
+alwaysApply: true
+---
+
+# Python Environment
+
+When running Python scripts, tests, or tools in this project, **always use the project's virtualenv** (`.venv`).
+
+## Correct usage
+
+Prefer **Make targets** (they use venv + PYTHONPATH):
+
+```bash
+make test          # all tests
+make test-unit     # unit only
+make run           # bot one-shot
+make dashboard     # Streamlit
+make init-db       # init DB
+```
+
+Or explicitly:
+
+```bash
+# Run a script (PYTHONPATH so root modules import)
+PYTHONPATH=. .venv/bin/python scripts/run_cashstra.py
+
+# Run pytest
+PYTHONPATH=. .venv/bin/python -m pytest tests/ -v
+
+# Run a one-off command
+PYTHONPATH=. .venv/bin/python -c "from src.cashstra.data.storage import init_db; init_db()"
+```
+
+## Alternative: activate first
+
+```bash
+source .venv/bin/activate
+python scripts/run_cashstra.py
+```
+
+## Do not
+
+- Run `python` or `python3` directly unless the venv is already activated
+- Use system Python for project scripts or tests

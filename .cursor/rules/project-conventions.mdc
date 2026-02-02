@@ -1,0 +1,38 @@
+---
+description: CashStra project conventions and patterns
+alwaysApply: true
+---
+
+# Project Conventions
+
+## Import paths and PYTHONPATH
+
+When running scripts from project root, use `PYTHONPATH=.` so root modules are importable:
+
+```bash
+PYTHONPATH=. .venv/bin/python scripts/run_cashstra.py
+```
+
+The project has both root-level modules (`strategy.py`, `trading.py`) and `src/cashstra/` package. **Put new features in `src/cashstra/`**; root modules exist for compatibility.
+
+## Testing
+
+- Unit tests: `tests/unit/`
+- Integration tests: `tests/integration/`
+- Run: `make test` (preferred) or `.venv/bin/python -m pytest tests/ -v`
+
+## Makefile
+
+Use `make` targets when available: `make test`, `make run`, `make dashboard`, `make lint`, `make format`.
+
+## Configuration
+
+- Config: `config.py` and `.env` (see `config/.env.template`)
+- Never commit `.env` or secrets
+- Use `config.get_*` / env vars for API keys and thresholds
+
+## Database
+
+- SQLite at `data/cashstra.db`
+- Models in `models.py` and `src/cashstra/data/models.py`
+- Storage in `storage.py` / `src/cashstra/data/storage.py`

@@ -1,0 +1,15 @@
+---
+description: Root modules vs src/cashstra - keep in sync when editing
+alwaysApply: true
+---
+
+# Root vs src/cashstra
+
+The project has **dual structure**: root-level modules (`strategy.py`, `trading.py`, `models.py`, etc.) and `src/cashstra/` equivalents.
+
+When editing code in one location, check if the other needs the same change:
+
+- Root: `strategy.py`, `trading.py`, `tracker.py`, `models.py`, `storage.py`, `config.py`, etc.
+- Package: `src/cashstra/strategy/`, `src/cashstra/trading/`, `src/cashstra/data/`, etc.
+
+New features go in `src/cashstra/`; root modules may wrap or re-export for backward compatibility.

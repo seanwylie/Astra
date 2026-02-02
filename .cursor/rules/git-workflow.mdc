@@ -1,0 +1,16 @@
+---
+description: Git workflow - commit after large changes
+alwaysApply: true
+---
+
+# Git Workflow
+
+After making **huge or sweeping changes** (refactors, multi-file edits, new features), run:
+
+```bash
+git add -A
+git status   # review what will be committed
+git commit -m "Brief description of changes"
+```
+
+This keeps the working tree clean and creates logical checkpoints for revert or review.

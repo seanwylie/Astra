@@ -1,6 +1,6 @@
 from app.config.loader import load_config
 from app.core.questions.question_generator import generate_questions  # Generates raw questions
-from app.core.questions.question_utils import filter_questions, categorize_question
+from app.core.questions.question_utils import filter_questions, categorize_question, generate_category_embeddings
 from app.core.questions.question_flagger import flag_unresolved_question
 from app.core.questions.question_answerer import self_answer_questions
 from app.core.questions.question_tracker import track_question_patterns
@@ -61,11 +61,13 @@ def manage_questions(reflection, mind_data):
     filtered_questions = filter_questions(mind_data, unanswered_questions)
     unique_questions = deduplicate_questions(filtered_questions)
 
-    # Step 5: Categorize remaining questions
-    categorized_questions = {q: categorize_question(q['question']) for q in unique_questions}
-    
+    # Step 5: Categorize remaining questions (batch: list of texts + category_embeddings)
+    category_embeddings = generate_category_embeddings(question_config)
+    question_texts = [q['question'] for q in unique_questions]
+    categorized_questions = categorize_question(question_texts, category_embeddings)
+
     # Step 6: Flag only what cannot be answered
-    flagged_questions = flag_unresolved_question([q['question'] for q in categorized_questions], mind_data)
+    flagged_questions = flag_unresolved_question([c['question'] for c in categorized_questions], mind_data)
 
     # Step 7: Track patterns for long-term learning
     track_question_patterns(mind_data)

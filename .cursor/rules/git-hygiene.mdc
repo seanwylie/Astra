@@ -1,0 +1,16 @@
+---
+description: Git hygiene - never commit secrets or runtime data
+alwaysApply: true
+---
+
+# Git Hygiene
+
+Never commit:
+
+- **`.env`** – environment secrets, API keys, tokens
+- **`data/*.db`**, **`data/*.sqlite*`** – database files
+- **`data/live_orders.log`** – runtime logs
+- **`scripts/data/.questrade_token`** – Questrade refresh token
+- **`.streamlit/secrets.toml`** – Streamlit secrets
+
+These are in `.gitignore`; avoid `git add -f` or overrides that would add them.

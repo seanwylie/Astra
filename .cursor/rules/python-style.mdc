@@ -1,0 +1,22 @@
+---
+description: Python code style - Black, isort, flake8
+globs: "**/*.py"
+alwaysApply: false
+---
+
+# Python Style
+
+- **Type hints**: Add type hints for new functions and significant variables; mypy enforces them
+- **Before committing**, run:
+
+```bash
+make format   # black + isort
+make lint     # flake8 + mypy
+```
+
+- **Black**: code formatting
+- **isort**: import ordering
+- **flake8**: linting
+- **mypy**: type checking
+
+Fix lint/format issues before pushing.

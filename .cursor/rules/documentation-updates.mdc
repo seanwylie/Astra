@@ -1,0 +1,15 @@
+---
+description: Update docs when changing behavior
+alwaysApply: true
+---
+
+# Documentation Updates
+
+When changing behavior, setup, or config:
+
+- **README.md**: Update setup steps, commands, or feature descriptions
+- **config/.env.template**: Add new env vars with placeholder or example values
+- **docs/**: Update `docs/questrade_integration.md` or other guides if integration flow changes
+- **.kiro/steering/**: Consider updating tech.md or structure.md if architecture shifts
+
+Keep docs in sync so new contributors and future you aren't confused.
