@@ -12,7 +12,6 @@ from app.core.emotions.emotion_engine import (
 )
 from app.config.loader import load_config
 from app.interfaces.mind_session import session
-from app.services.memory_service import memory_service
 from app.core.mama_gpt import ask_mama_gpt_sync
 from app.core.struggle_log import append_struggle_log
 from app.logging_config import get_logger
@@ -1091,6 +1090,7 @@ def send_contextual_message(user_message, internal_state, past_conversations=Non
     user_memory_line = ""
     if author_entity:
         try:
+            from app.services.memory_service import memory_service
             snippet = memory_service.get_memory_snippet(author_entity, max_items=5)
             user_memory_line = f"\nWhat Astra remembers about this user: {snippet}."
         except Exception:
@@ -1420,6 +1420,14 @@ def send_contextual_message(user_message, internal_state, past_conversations=Non
 
     knowledge_block, reflections_block = _build_blocks(knowledge_slice, reflections_slice)
     conversation_summary = mind_data.get("conversation_summary", "") or "None yet."
+
+    curiosity_engagement_line = ""
+    try:
+        curiosity = internal_state.get("curiosity", 1.0)
+        if float(curiosity) > 1.2:
+            curiosity_engagement_line = "\nIf it feels natural, show curiosity or ask a brief follow-up question."
+    except (TypeError, ValueError):
+        pass
 
     soul_line = _soul_line_for_prompt()
     soul_block = f"\n{soul_line}\n" if soul_line else ""

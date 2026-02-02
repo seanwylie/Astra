@@ -20,7 +20,6 @@ from app.logging_config import get_logger
 try:
     from app.core.inner_life.stream_of_consciousness import stream_of_consciousness
     from app.core.inner_life.emotional_autobiography import emotional_autobiography
-    from app.core.inner_life.emotional_narrative import generate_emotional_narrative
     from app.core.self_awareness.self_model import self_model
     from app.core.self_awareness.temporal_self import temporal_self
     INNER_LIFE_AVAILABLE = True

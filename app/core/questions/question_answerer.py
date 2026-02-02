@@ -109,7 +109,7 @@ def self_answer_questions(mind_data: dict) -> list:
     else:
         knowledge_recent = " ".join(
             (k.get("insight", k) if isinstance(k, dict) else str(k) for k in mind_data.get("stored_knowledge", [])[-5:]
-        ).lower()
+        )).lower()
         reflections_recent = " ".join(str(r)[:200] for r in mind_data.get("self_reflections", [])[-3:]).lower()
         context_lower = (knowledge_recent + " " + reflections_recent).lower()
 

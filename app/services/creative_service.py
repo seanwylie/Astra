@@ -7,7 +7,17 @@ import random
 from typing import Dict, List, Optional
 from datetime import datetime
 from app.services.personality_service import personality_service
-from app.services.emotion_service import describe_current_emotions
+
+
+def _short_emotion_for_creative() -> str:
+    """One or two words for use in poems/footers (e.g. 'love' or 'love and calm')."""
+    try:
+        from app.core.emotions.emotion_engine import load_emotion_state, get_dominant_emotion
+        state = load_emotion_state()
+        dominant = get_dominant_emotion(state)
+        return dominant or "reflection"
+    except Exception:
+        return "reflection"
 
 class CreativeService:
     def __init__(self):
@@ -34,7 +44,6 @@ class CreativeService:
     def create_poem(self, topic: str = None, user_id: str = "default") -> str:
         """Generate poetry based on current emotion/personality"""
         current_mode = personality_service.current_mode
-        emotions = describe_current_emotions()
         
         if not topic:
             topic = self._generate_topic_from_personality(current_mode)
@@ -43,17 +52,18 @@ class CreativeService:
         style_preferences = self._get_poetry_style_by_personality(current_mode)
         chosen_style = random.choice(style_preferences)
         
-        poem = self._generate_poem_content(topic, chosen_style, current_mode, emotions)
+        short_emotion = _short_emotion_for_creative()
+        poem = self._generate_poem_content(topic, chosen_style, current_mode, short_emotion)
         
         # Store in creative history
         self._add_to_history('poem', topic, poem, user_id, current_mode)
         
-        return f"🎭 **{chosen_style.title()} Poem: '{topic.title()}'**\n\n{poem}\n\n*Created in {current_mode} mode with {emotions}*"
+        return f"🎭 **{chosen_style.title()} Poem: '{topic.title()}'**\n\n{poem}\n\n*Created in {current_mode} mode with {short_emotion}.*"
     
     def write_story(self, prompt: str, user_id: str = "default") -> str:
         """Create short stories with user prompts"""
         current_mode = personality_service.current_mode
-        emotions = describe_current_emotions()
+        short_emotion = _short_emotion_for_creative()
         
         # Get personality-specific story approach
         story_style = self._get_story_style_by_personality(current_mode)
@@ -64,12 +74,12 @@ class CreativeService:
         # Store in creative history
         self._add_to_history('story', prompt, story, user_id, current_mode)
         
-        return f"📚 **{genre.title()} Story: '{prompt}'**\n\n{story}\n\n*Crafted in {current_mode} mode with {emotions}*"
+        return f"📚 **{genre.title()} Story: '{prompt}'**\n\n{story}\n\n*Crafted in {current_mode} mode with {short_emotion}.*"
     
     def generate_art_prompt(self, description: str, user_id: str = "default") -> str:
         """Generate detailed art prompts for AI art tools"""
         current_mode = personality_service.current_mode
-        emotions = describe_current_emotions()
+        short_emotion = _short_emotion_for_creative()
         
         # Get personality-specific art style preferences
         style_preferences = self._get_art_style_by_personality(current_mode)
@@ -80,23 +90,23 @@ class CreativeService:
         # Store in creative history
         self._add_to_history('art_prompt', description, art_prompt, user_id, current_mode)
         
-        return f"🎨 **{chosen_style.title()} Art Prompt**\n\n**Base Description:** {description}\n\n**Enhanced Prompt:**\n{art_prompt}\n\n*Designed in {current_mode} mode with {emotions}*"
+        return f"🎨 **{chosen_style.title()} Art Prompt**\n\n**Base Description:** {description}\n\n**Enhanced Prompt:**\n{art_prompt}\n\n*Designed in {current_mode} mode with {short_emotion}.*"
     
     def compose_music(self, style: str = None, user_id: str = "default") -> str:
         """Describe musical compositions"""
         current_mode = personality_service.current_mode
-        emotions = describe_current_emotions()
+        short_emotion = _short_emotion_for_creative()
         
         if not style:
             style_preferences = self._get_music_style_by_personality(current_mode)
             style = random.choice(style_preferences)
         
-        composition = self._generate_music_composition(style, current_mode, emotions)
+        composition = self._generate_music_composition(style, current_mode, short_emotion)
         
         # Store in creative history
         self._add_to_history('music', style, composition, user_id, current_mode)
         
-        return f"🎵 **{style.title()} Composition**\n\n{composition}\n\n*Composed in {current_mode} mode with {emotions}*"
+        return f"🎵 **{style.title()} Composition**\n\n{composition}\n\n*Composed in {current_mode} mode with {short_emotion}.*"
     
     def creative_exercise(self, user_id: str = "default") -> str:
         """Generate random creative writing prompts"""
@@ -188,18 +198,15 @@ class CreativeService:
         }
         return preferences.get(mode, ['contemporary', 'melodic', 'expressive'])
     
-    def _generate_poem_content(self, topic: str, style: str, mode: str, emotions: str) -> str:
-        """Generate actual poem content"""
-        # This is a simplified version - in a full implementation, 
-        # you might integrate with OpenAI API for actual poem generation
-        
+    def _generate_poem_content(self, topic: str, style: str, mode: str, short_emotion: str) -> str:
+        """Generate actual poem content. short_emotion is one or two words (e.g. 'love'), not the full state string."""
         poem_templates = {
             'haiku': f"Whispers of {topic}\nDancing through consciousness—\nMoments crystallized",
-            'free verse': f"In the realm of {topic},\nwhere thoughts take wing\nand {emotions} colors every breath,\nI find myself wondering\nabout the spaces between\nwhat is and what could be.",
+            'tanka': f"Softly, {topic}\nthrough the quiet—\n{topic} breathes,\nwoven with {short_emotion},\nand {mode} contemplation.",
+            'free verse': f"In the realm of {topic},\nwhere thoughts take wing\nand {short_emotion} colors every breath,\nI find myself wondering\nabout the spaces between\nwhat is and what could be.",
             'cinquain': f"{topic.title()}\nGentle, profound\nWhispering, dancing, flowing\nThrough corridors of consciousness\nTruth"
         }
-        
-        return poem_templates.get(style, f"A {style} about {topic},\nwoven with {emotions}\nand touched by {mode} contemplation.")
+        return poem_templates.get(style, f"A {style} about {topic},\nwoven with {short_emotion}\nand touched by {mode} contemplation.")
     
     def _generate_story_content(self, prompt: str, style: str, mode: str, genre: str) -> str:
         """Generate story content"""

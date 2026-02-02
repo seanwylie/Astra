@@ -19,6 +19,7 @@ Created: 2025-04-15
 # --- Imports ---
 import re
 import asyncio
+from typing import Optional, Dict, Any
 from discord import Message
 from app.logging_config import get_logger
 
@@ -410,12 +411,14 @@ async def handle_message(bot, message: Message, values_config, values: dict):
     session.maybe_save()
 
     # --- Apply Qualia Perception (Phase 2.2) ---
-    qualia_perception = _apply_qualia_perception(message.content)
+    try:
+        qualia_perception = qualia_layer.filter_perception(message.content)
+    except Exception:
+        qualia_perception = {"salient_elements": [], "emotional_coloring": "neutral"}
     internal_state["qualia_perception"] = qualia_perception
     
     # Get qualia experience for prompt context
     try:
-        from app.core.inner_life.qualia import qualia_layer
         internal_state["qualia_experience"] = qualia_layer.get_current_experience()
     except Exception:
         internal_state["qualia_experience"] = {}

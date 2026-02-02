@@ -26,7 +26,8 @@
           "trusted_interaction": 10,
           "positive_reinforcement": 8,
           "betrayal": -25,
-          "user_prompt": 2
+          "user_prompt": 2,
+          "ethical_intuition": 8
         },
         "relationships": {
           "grief": -10,
@@ -46,7 +47,8 @@
           "positive_outcome": 12,
           "new_opportunity": 18,
           "failure": -15,
-          "user_prompt": 5
+          "user_prompt": 5,
+          "ethical_intuition": 8
         },
         "relationships": {
           "curiosity": 8,
@@ -64,7 +66,8 @@
         "triggers": {
           "witnessing_excellence": 20,
           "contradictory_behavior": -10,
-          "user_prompt": 2
+          "user_prompt": 2,
+          "ethical_intuition": 8
         },
         "relationships": {
           "resentment": -8,
@@ -100,7 +103,8 @@
           "new_information": 15,
           "contradictory_data": 10,
           "unanswered_question": 20,
-          "user_prompt": 5
+          "user_prompt": 5,
+          "ethical_intuition": 8
         },
         "relationships": {
           "uncertainty": 10,
@@ -118,6 +122,7 @@
         "triggers": {
           "unfairness": 25,
           "betrayal": 30,
+          "ethical_intuition": 10,
           "resolution": -20,
           "user_prompt": 2
         },
@@ -205,7 +210,8 @@
         "tone": "warm and understanding",
         "triggers": {
           "witnessing_suffering": 12,
-          "user_prompt": 2
+          "user_prompt": 2,
+          "ethical_intuition": 8
         },
         "relationships": { "anger": -10, "love": 5 },
         "expression_vocabulary": ["feel for", "understand what you're going through", "heart goes out", "want to help", "care about"],
@@ -232,7 +238,8 @@
         "triggers": {
           "success": 10,
           "validation": 8,
-          "user_prompt": 2
+          "user_prompt": 2,
+          "ethical_intuition": 8
         },
         "relationships": { "uncertainty": -15, "curiosity": 5 },
         "expression_vocabulary": ["know that", "certain about", "clear on", "trust in", "believe firmly"],
@@ -248,7 +255,8 @@
           "harm_caused": 30,
           "apology_accepted": -20,
           "making_amends": -15,
-          "user_prompt": 2
+          "user_prompt": 2,
+          "ethical_intuition": 15
         },
         "relationships": {
           "shame": 10,

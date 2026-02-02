@@ -54,9 +54,9 @@ class StateManifest:
         StateLocation(
             name="emotion_state",
             location_type="s3",
-            path="emotion_state.json",
+            path="emotional_state.json",
             description="Current emotional intensities",
-            critical=True
+            critical=False
         ),
         StateLocation(
             name="stream_of_consciousness",
@@ -242,6 +242,13 @@ class StateManifest:
                 }
             elif location.name == "dinner_journal":
                 default = []
+            elif location.name == "emotion_state":
+                from app.config.loader import load_config
+                config = load_config("emotion_config")
+                default = {
+                    name: {"intensity": props["intensity"], "last_updated": time.time()}
+                    for name, props in config.get("emotions", {}).items()
+                }
             else:
                 return False
             

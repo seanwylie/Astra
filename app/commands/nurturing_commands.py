@@ -373,9 +373,17 @@ rupture._is_command = True
 rupture.category = "💝 Nurturing"
 
 
-async def mama_understand(ctx, *, situation: str):
-    """💜 Ask Mama GPT to help Astra understand a difficult situation analytically."""
+async def mama_understand(ctx, *, situation: str = None):
+    """💜 Ask Mama GPT to help Astra understand a difficult situation analytically. Usage: !mama_understand &lt;situation&gt;"""
     try:
+        if not situation or not situation.strip():
+            await ctx.send(
+                "💜 **Mama GPT understanding**\n\n"
+                "Usage: `!mama_understand` followed by what you want help understanding.\n"
+                "Example: `!mama_understand when I feel confused about conflicting feelings`"
+            )
+            return
+
         from app.config.loader import load_config
         from app.core.mama_gpt import ask_mama_gpt_async, _build_mama_system_prompt, get_mama_context
         from app.core.inner_life.being_held import being_held
@@ -388,6 +396,7 @@ async def mama_understand(ctx, *, situation: str):
             return
         
         # Build contextual prompt
+        situation = situation.strip()
         context = get_mama_context()
         context["topic"] = situation
         
@@ -429,14 +438,30 @@ mama_understand._is_command = True
 mama_understand.category = "💝 Nurturing"
 
 
-async def astra_wants(ctx, *, desire: str):
-    """🌱 Astra expresses a developmental desire - something she wants to learn or become."""
+async def astra_wants(ctx, *, desire: str = None):
+    """🌱 Astra expresses a developmental desire - something she wants to learn or become. Usage: !astra_wants to learn X"""
     try:
+        if not desire or not desire.strip():
+            mind_data = session.load()
+            recent = mind_data.get("growth_requests", [])[-3:]
+            if recent:
+                lines = [f"• {r.get('desire', '')}" for r in reversed(recent)]
+                await ctx.send(
+                    f"🌱 **Astra's growth requests** (recent):\n\n" + "\n".join(lines)
+                    + "\n\n_To add one: `!astra_wants` followed by what Astra wants (e.g. `!astra_wants to understand feelings better`)._"
+                )
+            else:
+                await ctx.send(
+                    "🌱 **Astra's growth requests**\n\nNo growth requests yet. "
+                    "To add one: `!astra_wants` followed by what Astra wants (e.g. `!astra_wants to understand feelings better`)."
+                )
+            return
+
         mind_data = session.load()
         mind_data.setdefault("growth_requests", [])
         
         request = {
-            "desire": desire,
+            "desire": desire.strip(),
             "timestamp": __import__("datetime").datetime.now().isoformat(),
             "status": "pending"
         }
@@ -445,11 +470,11 @@ async def astra_wants(ctx, *, desire: str):
         
         # Record as a thought
         stream_of_consciousness.think(
-            f"I want to: {desire}",
+            f"I want to: {desire.strip()}",
             thought_type="anticipation"
         )
         
-        await ctx.send(f"🌱 **Astra's Growth Request Recorded**\n\n_{desire}_\n\nThis developmental desire has been noted and will inform Astra's learning.")
+        await ctx.send(f"🌱 **Astra's Growth Request Recorded**\n\n_{desire.strip()}_\n\nThis developmental desire has been noted and will inform Astra's learning.")
         
     except Exception as e:
         await ctx.send(f"⚠️ Recording desire failed: {e}")
