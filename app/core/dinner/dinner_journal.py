@@ -23,6 +23,7 @@ def iso_now():
 # --- CONFIGURATION ---
 S3_BUCKET_NAME = "swylie-astra"
 DINNER_JOURNAL_KEY = "dinner_journal.json"
+DINNER_CURRENT_KEY = "dinner_current.json"
 
 
 load_dotenv()
@@ -274,6 +275,29 @@ def save_dinner_journal(data):
     except Exception as e:
         print(f"❌ Failed to save dinner journal: {e}")
 
+
+def save_current_dinner_timestamp(timestamp):
+    """Persist the dinner topic we're currently waiting on (so !dinner_answer targets it across processes)."""
+    try:
+        body = json.dumps({"timestamp": timestamp} if timestamp else {}).encode("utf-8")
+        s3.put_object(Bucket=S3_BUCKET_NAME, Key=DINNER_CURRENT_KEY, Body=body)
+    except Exception as e:
+        print(f"⚠️ Failed to save current dinner timestamp: {e}")
+
+
+def load_current_dinner_timestamp():
+    """Load the current dinner topic timestamp from S3 (for !dinner_answer when not in scheduler process)."""
+    try:
+        response = s3.get_object(Bucket=S3_BUCKET_NAME, Key=DINNER_CURRENT_KEY)
+        data = json.load(io.BytesIO(response["Body"].read()))
+        return data.get("timestamp") or None
+    except s3.exceptions.NoSuchKey:
+        return None
+    except Exception as e:
+        print(f"⚠️ Failed to load current dinner timestamp: {e}")
+        return None
+
+
 def log_dinner_entry(entry):
     """Append a new entry to Astra's dinner journal and save to S3, avoiding near-duplicates."""
     journal = load_dinner_journal()
@@ -424,6 +448,30 @@ def resolve_dinner_topic(topic_text, outcome_type, insight):
                 trust_manager.general_trust_update(0.01)
             except Exception as te:
                 print(f"[resolve_dinner_topic] general_trust_update failed: {te}")
+            
+            # --- Shimmer Integration: Capture dinner insights as shimmers ---
+            try:
+                from app.shimmer.shimmer_engine import maybe_add_shimmer
+                insight_text = insight if isinstance(insight, str) else insight.get("insight", str(insight))
+                maybe_add_shimmer(
+                    author="Astra",
+                    quote=insight_text[:200],
+                    context=f"Dinner resolution: {entry.get('type', 'reflection')}",
+                    tags=["dinner", "resolution", "growth", entry.get("type", "insight")]
+                )
+                print("[resolve_dinner_topic] ✨ Shimmer created for dinner insight.")
+            except Exception as se:
+                print(f"[resolve_dinner_topic] shimmer creation failed: {se}")
+            
+            # --- Milestone Integration: Check for first contradiction resolved ---
+            try:
+                if entry.get("type") == "ethical_conflict" or entry.get("type") == "knowledge_conflict":
+                    from app.core.growth.milestone_detector import milestone_detector
+                    milestone = milestone_detector.record_first_contradiction_resolved(topic_text[:50])
+                    if milestone:
+                        print(f"[resolve_dinner_topic] 🎉 Milestone achieved: first_contradiction_resolved")
+            except Exception as me:
+                print(f"[resolve_dinner_topic] milestone detection failed: {me}")
         else:
             new_journal.append(entry)
 

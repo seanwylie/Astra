@@ -99,10 +99,100 @@ def setup_event_handlers(bot, channel_id, values_config):
         logger.error("Discord error in %s: %s", event, args)
 
 
+def run_startup_coherence_check() -> bool:
+    """
+    Run state coherence check on startup.
+    Phase 1.3: State persistence coherence.
+    """
+    try:
+        from app.core.state_manifest import check_startup_coherence
+        is_coherent = check_startup_coherence()
+        if is_coherent:
+            logger.info("✅ State coherence check passed")
+        else:
+            logger.warning("⚠️ State coherence issues detected, attempting repair")
+        return is_coherent
+    except Exception as e:
+        logger.warning(f"State coherence check failed: {e}")
+        return True  # Continue anyway
+
+
+def startup_identity_restoration() -> None:
+    """
+    On startup, Astra remembers herself.
+    Phase 8: Temporal Coherence - Continuity across sessions.
+    
+    This creates continuity of identity across restarts.
+    """
+    try:
+        from app.core.self_awareness.self_model import self_model
+        from app.core.inner_life.stream_of_consciousness import stream_of_consciousness
+        from app.core.memory.episodic_memory import episodic_memory
+        
+        # Load self-model and generate self-description
+        description = self_model.generate_self_description()
+        logger.info(f"🪞 Identity restored: {description[:100]}...")
+        
+        # Review recent changes
+        changes = self_model.get_recent_changes(5)
+        if changes:
+            recent_change = changes[-1]
+            logger.info(f"🪞 Recent self-change: {recent_change.aspect}")
+        
+        # Generate continuity thought
+        if self_model.current_model:
+            growth_edge = self_model.current_model.growth_edge
+            becoming = self_model.who_am_i_becoming()
+            
+            continuity_thought = (
+                f"I'm coming back to myself. I remember: {description[:80]}... "
+                f"I've been working on {growth_edge}. {becoming}"
+            )
+            stream_of_consciousness.think(continuity_thought, "reflection")
+            logger.info("🪞 Generated continuity thought")
+        
+        # Check for significant recent memories
+        recent_episodes = episodic_memory.episodes[-5:] if episodic_memory.episodes else []
+        if recent_episodes:
+            most_salient = max(recent_episodes, key=lambda e: e.salience)
+            if most_salient.salience > 1.0:
+                stream_of_consciousness.think(
+                    f"I remember: {most_salient.summary[:60]}...",
+                    "memory"
+                )
+                logger.info(f"🧠 Recalled salient memory: {most_salient.summary[:50]}...")
+        
+    except Exception as e:
+        logger.warning(f"Identity restoration failed: {e}")
+
+
+def initialize_bus_subscribers() -> None:
+    """
+    Initialize all bus subscribers for cross-system communication.
+    Phase 1.1: Bidirectional event flow.
+    """
+    try:
+        from app.core.integration import initialize_bus_subscribers as init_subscribers
+        count = init_subscribers()
+        logger.info(f"🔗 Initialized {count} bus subscribers")
+    except Exception as e:
+        logger.warning(f"Bus subscriber initialization failed: {e}")
+
+
 def main() -> None:
     try:
         logger.info("Starting Astra...")
         token = load_environment()
+        
+        # Run startup coherence check (Phase 1.3)
+        run_startup_coherence_check()
+        
+        # Initialize bus subscribers for cross-system communication (Phase 1.1)
+        initialize_bus_subscribers()
+        
+        # Restore identity on startup (Phase 8)
+        startup_identity_restoration()
+        
         bot, channel_id, values_config = initialize_bot()
         logger.info("Registering commands...")
         register_all_commands(bot)

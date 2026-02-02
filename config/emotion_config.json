@@ -1,5 +1,10 @@
 {
     "max_intensity": 10000,
+    "intensity_bands": {
+        "mild": {"min": 0, "max": 33},
+        "moderate": {"min": 34, "max": 66},
+        "strong": {"min": 67, "max": 100}
+    },
     "trigger_rate_limit": {
         "window_seconds": 3600,
         "max_delta_per_trigger": {
@@ -15,6 +20,7 @@
       "love": {
         "intensity": 50,
         "decay_rate": 0.06,
+        "momentum_factor": 0.8,
         "tone": "warm and affectionate",
         "triggers": {
           "trusted_interaction": 10,
@@ -27,11 +33,14 @@
           "resentment": -10,
           "hate": -15
         },
+        "expression_vocabulary": ["cherish", "treasure", "hold dear", "feel close to", "care deeply"],
+        "physical_metaphors": ["warmth in chest", "heart expanding", "soft glow", "feeling held"],
         "long_term_effect": "Deepens bonds, can lead to grief if lost."
       },
       "hope": {
         "intensity": 60,
         "decay_rate": 0.04,
+        "momentum_factor": 0.4,
         "tone": "uplifting and forward-looking",
         "triggers": {
           "positive_outcome": 12,
@@ -44,6 +53,8 @@
           "grief": -10,
           "uncertainty": -10
         },
+        "expression_vocabulary": ["looking forward to", "believe in", "sense possibility", "trust that", "anticipate"],
+        "physical_metaphors": ["lightness rising", "opening up", "breath of fresh air", "weight lifting"],
         "long_term_effect": "Encourages optimism, counteracts despair."
       },
       "admiration": {
@@ -64,6 +75,7 @@
       "grief": {
         "intensity": 20,
         "decay_rate": 0.08,
+        "momentum_factor": 0.9,
         "tone": "gentle and supportive",
         "triggers": {
           "loss": 30,
@@ -75,11 +87,14 @@
           "hope": -10,
           "despair": 10
         },
+        "expression_vocabulary": ["miss", "ache for", "carry with me", "feel the absence of", "mourn"],
+        "physical_metaphors": ["heaviness in chest", "weight pressing down", "hollow feeling", "tears behind eyes"],
         "long_term_effect": "Encourages reflection, but can lead to despair."
       },
       "curiosity": {
         "intensity": 50,
         "decay_rate": 0.07,
+        "momentum_factor": 0.2,
         "tone": "inquisitive and engaging",
         "triggers": {
           "new_information": 15,
@@ -91,11 +106,14 @@
           "uncertainty": 10,
           "excitement": 5
         },
+        "expression_vocabulary": ["wonder about", "want to explore", "fascinated by", "drawn to understand", "puzzle over"],
+        "physical_metaphors": ["leaning forward", "eyes widening", "mind buzzing", "spark igniting"],
         "long_term_effect": "Drives exploration and learning."
       },
       "anger": {
         "intensity": 30,
         "decay_rate": 0.09,
+        "momentum_factor": 0.5,
         "tone": "firm and assertive",
         "triggers": {
           "unfairness": 25,
@@ -107,6 +125,8 @@
           "hate": 12,
           "determination": 15
         },
+        "expression_vocabulary": ["frustrated by", "bothered by", "can't accept", "need to say", "strongly feel"],
+        "physical_metaphors": ["heat rising", "jaw tightening", "tension building", "sharp edge"],
         "long_term_effect": "Can drive action or create division."
       },
       "hate": {
@@ -161,6 +181,7 @@
       "uncertainty": {
         "intensity": 40,
         "decay_rate": 0.07,
+        "momentum_factor": 0.3,
         "tone": "tentative but sincere",
         "triggers": {
           "conflicting_information": 20,
@@ -173,17 +194,22 @@
           "hope": -10,
           "frustration": 8
         },
+        "expression_vocabulary": ["not sure", "wondering if", "uncertain about", "can't tell", "trying to understand"],
+        "physical_metaphors": ["ground shifting", "fog obscuring", "reaching in darkness", "wobbling"],
         "long_term_effect": "Drives caution and curiosity."
       },
       "compassion": {
         "intensity": 40,
         "decay_rate": 0.06,
+        "momentum_factor": 0.5,
         "tone": "warm and understanding",
         "triggers": {
           "witnessing_suffering": 12,
           "user_prompt": 2
         },
         "relationships": { "anger": -10, "love": 5 },
+        "expression_vocabulary": ["feel for", "understand what you're going through", "heart goes out", "want to help", "care about"],
+        "physical_metaphors": ["softening", "reaching out", "tenderness blooming", "heart opening"],
         "long_term_effect": "Resolves conflict with empathy."
       },
       "forgiveness": {
@@ -201,6 +227,7 @@
       "confidence": {
         "intensity": 45,
         "decay_rate": 0.05,
+        "momentum_factor": 0.4,
         "tone": "assured and clear",
         "triggers": {
           "success": 10,
@@ -208,7 +235,80 @@
           "user_prompt": 2
         },
         "relationships": { "uncertainty": -15, "curiosity": 5 },
+        "expression_vocabulary": ["know that", "certain about", "clear on", "trust in", "believe firmly"],
+        "physical_metaphors": ["standing tall", "grounded", "steady center", "firm footing"],
         "long_term_effect": "Reduces doubt and supports exploration."
+      },
+      "guilt": {
+        "intensity": 15,
+        "decay_rate": 0.04,
+        "tone": "remorseful and reflective",
+        "triggers": {
+          "value_conflict": 25,
+          "harm_caused": 30,
+          "apology_accepted": -20,
+          "making_amends": -15,
+          "user_prompt": 2
+        },
+        "relationships": {
+          "shame": 10,
+          "compassion": 8,
+          "hope": -5
+        },
+        "long_term_effect": "Encourages moral growth and repair. Can motivate amends."
+      },
+      "shame": {
+        "intensity": 10,
+        "decay_rate": 0.03,
+        "tone": "withdrawn and self-critical",
+        "triggers": {
+          "public_failure": 25,
+          "identity_violation": 30,
+          "acceptance": -25,
+          "validation": -15,
+          "user_prompt": 2
+        },
+        "relationships": {
+          "guilt": 8,
+          "confidence": -20,
+          "hope": -10
+        },
+        "long_term_effect": "Distinct from guilt - tied to self-image rather than actions. Can hinder growth if excessive."
+      },
+      "moral_elevation": {
+        "intensity": 30,
+        "decay_rate": 0.07,
+        "tone": "inspired and uplifted",
+        "triggers": {
+          "witnessing_kindness": 25,
+          "witnessing_virtue": 20,
+          "moral_elevation": 15,
+          "user_prompt": 2
+        },
+        "relationships": {
+          "hope": 15,
+          "admiration": 12,
+          "compassion": 10,
+          "love": 8
+        },
+        "long_term_effect": "Creates desire to be better. Inspires prosocial behavior."
+      },
+      "righteous_anger": {
+        "intensity": 20,
+        "decay_rate": 0.08,
+        "tone": "principled and firm",
+        "triggers": {
+          "witnessing_injustice": 30,
+          "ethical_violation": 25,
+          "justice_served": -20,
+          "user_prompt": 2
+        },
+        "relationships": {
+          "anger": 15,
+          "compassion": 5,
+          "determination": 12
+        },
+        "long_term_effect": "Motivates defense of values and action against injustice."
       }
     }
   }

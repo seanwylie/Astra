@@ -1,5 +1,6 @@
 # Project-specific files
 nohup.out
+scripts/.spawn-agents/
 mind_file.json
 data/mind_file_parents.json
 data/astra_logs.json

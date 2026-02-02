@@ -150,6 +150,17 @@ class MoodManager:
         if previous_mood != new_mood:
             print(f"🔄 Mood Shifted! {previous_mood} → {new_mood}")
             self.current_mood = new_mood
+            
+            # Publish to awareness bus (Phase 1.1)
+            try:
+                from app.core.awareness_bus import awareness_bus
+                awareness_bus.publish_mood_change(
+                    old_mood=previous_mood,
+                    new_mood=new_mood,
+                    mood_score=self.mood_score
+                )
+            except Exception:
+                pass  # Awareness bus may not be available
         else:
             print(f"⚠️ Mood remained unchanged: {self.current_mood}")
 

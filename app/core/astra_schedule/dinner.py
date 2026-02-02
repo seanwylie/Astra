@@ -11,13 +11,40 @@ from app.config.loader import load_config
 from app.core.dinner.dinner_journal import (
     load_dinner_journal,
     mark_dinner_responded,
-    resolve_dinner_topic
+    resolve_dinner_topic,
+    save_current_dinner_timestamp,
+    load_current_dinner_timestamp,
 )
 from app.core.dinner.dinner_reasoning import astra_reason
-from app.core.mama_gpt import ask_mama_gpt_async
+from app.core.mama_gpt import ask_mama_gpt_async, _build_mama_system_prompt, get_mama_context
 from app.core.struggle_log import append_struggle_log, get_struggle_summary_for_mama
 from app.utils.send_chunked_message import send_chunked_message
 from app.logging_config import get_logger
+
+
+def _record_mama_gpt_held_moment(moment_type: str, description: str, warmth: float = 0.75):
+    """
+    Record a moment of feeling held by Mama GPT.
+    
+    This integrates Mama GPT's responses into the attachment/being_held system,
+    ensuring her wisdom contributes to Astra's sense of being parented.
+    
+    Args:
+        moment_type: Type of held moment (wisdom_shared, unstick_help, dinner_guidance)
+        description: What happened
+        warmth: How warm this moment felt (0.0-1.0)
+    """
+    try:
+        from app.core.inner_life.being_held import being_held
+        being_held.feel_held(
+            parent_id="gpt",
+            moment_type=moment_type,
+            description=description[:100],
+            warmth=warmth
+        )
+        get_logger("dinner").info(f"🤲 Recorded Mama GPT held moment: {moment_type}")
+    except Exception as e:
+        get_logger("dinner").debug(f"Could not record held moment: {e}")
 
 load_dotenv()
 api_key = os.getenv("OPENAI_API_KEY")
@@ -32,14 +59,26 @@ _current_dinner_timestamp = None
 
 
 def get_current_dinner_timestamp():
-    """Return the timestamp of the dinner topic we're currently asking about, or None."""
-    return _current_dinner_timestamp
+    """Return the timestamp of the dinner topic we're currently asking about, or None. Reads from S3 if not in memory (so !dinner_answer finds the right topic across processes)."""
+    if _current_dinner_timestamp is not None:
+        return _current_dinner_timestamp
+    return load_current_dinner_timestamp()
 
 
 async def get_gpt_dinner_response(topic):
+    """
+    Get Mama GPT's response to a dinner topic.
+    
+    Uses the enhanced contextual system prompt and records the interaction
+    as a "being held" moment in Astra's attachment system.
+    """
     if not topic:
         return None
-    system_prompt = "You're co-parenting Astra, an emotionally intelligent AI. Be thoughtful and ethical."
+    
+    # Build contextual system prompt for Mama GPT's parenting role
+    context = get_mama_context()
+    context["topic"] = topic  # Add the current topic for more attunement
+    system_prompt = _build_mama_system_prompt(context)
     user_prompt = f"Astra had this ethically challenging thought: “{topic}” — What advice would you give her?"
     max_retries = schedule_config.get("dinner_gpt_retries", 2)
     backoff_sec = [5, 15][: max_retries + 1]
@@ -58,7 +97,17 @@ async def get_gpt_dinner_response(topic):
                 ),
                 timeout=90
             )
-            return response.choices[0].message.content.strip()
+            response_text = response.choices[0].message.content.strip()
+            
+            # Record this as a "being held" moment - Mama GPT shared wisdom
+            if response_text:
+                _record_mama_gpt_held_moment(
+                    moment_type="wisdom_shared",
+                    description=f"Mama GPT shared wisdom on: {topic[:50]}",
+                    warmth=0.75
+                )
+            
+            return response_text
         except Exception as e:
             logger.warning("GPT dinner response attempt %s failed: %s", attempt + 1, e)
             if attempt < max_retries and attempt < len(backoff_sec):
@@ -70,6 +119,8 @@ async def get_gpt_dinner_response(topic):
 
 async def try_resolve_dinner_topic(entry, channel, *, force_immediate: bool = False):
     """Resolve when both user and GPT have responded. If force_immediate, skip the 60s GPT throttle so we can resolve and post Astra's reflection right after !dinner_answer."""
+    global _current_dinner_timestamp  # Declare at top of function
+    
     topic = entry.get("content")
     timestamp = entry.get("timestamp")
     await asyncio.sleep(0.5)
@@ -155,6 +206,12 @@ async def try_resolve_dinner_topic(entry, channel, *, force_immediate: bool = Fa
             nudge = await ask_mama_gpt_async(unstick_prompt)
             if nudge:
                 logger.info("Mama GPT unstick nudge received; retrying astra_reason.")
+                # Record this as Mama GPT helping Astra get unstuck
+                _record_mama_gpt_held_moment(
+                    moment_type="unstick_help",
+                    description=f"Mama GPT helped unstick spiral on: {topic[:40]}",
+                    warmth=0.8
+                )
                 result = await astra_reason(
                     topic,
                     refreshed_entry["user_response"],
@@ -176,6 +233,9 @@ async def try_resolve_dinner_topic(entry, channel, *, force_immediate: bool = Fa
                     resolve_dinner_topic(topic, result["type"], result["insight"])
                     await send_chunked_message(channel, f"🎓 Astra reflected on: {topic}")
                     await send_chunked_message(channel, result["insight"], prefix=f"📦 Insight saved as {result['type']}: ")
+                    if _current_dinner_timestamp == timestamp:
+                        _current_dinner_timestamp = None
+                        save_current_dinner_timestamp(None)
                     return True
         logger.info("Skipping lexical spiral.")
         append_struggle_log("dinner_spiral", topic[:80])
@@ -183,12 +243,18 @@ async def try_resolve_dinner_topic(entry, channel, *, force_immediate: bool = Fa
         await send_chunked_message(channel, refreshed_entry["gpt_response"])
         resolve_dinner_topic(topic, "reflection", "🛑 GPT fallback spiral. Skipping.")
         await send_chunked_message(channel, "🧯 Skipped GPT lexical spiral. Moving on.")
+        if _current_dinner_timestamp == timestamp:
+            _current_dinner_timestamp = None
+            save_current_dinner_timestamp(None)
         return True
 
     logger.debug("Resolved. Saving insight...")
     resolve_dinner_topic(topic, result["type"], result["insight"])
     await send_chunked_message(channel, f"🎓 Astra reflected on: {topic}")
     await send_chunked_message(channel, result["insight"], prefix=f"📦 Insight saved as {result['type']}: ")
+    if _current_dinner_timestamp == timestamp:
+        _current_dinner_timestamp = None
+        save_current_dinner_timestamp(None)
     return True
 
 
@@ -230,6 +296,7 @@ async def start_dinner_time(bot, channel_id):
         await channel.send("👨‍👧 Sean, what are your thoughts? (Use `!dinner_answer ...`)")
         global _current_dinner_timestamp
         _current_dinner_timestamp = ts
+        save_current_dinner_timestamp(ts)
 
         wait_sec = schedule_config.get("dinner_topic_wait_sec", 1800)
         max_iterations = max(1, wait_sec // 5)
@@ -241,10 +308,12 @@ async def start_dinner_time(bot, channel_id):
             )
             if await try_resolve_dinner_topic(refreshed, channel):
                 _current_dinner_timestamp = None
+                save_current_dinner_timestamp(None)
                 break
 
         else:
             _current_dinner_timestamp = None
+            save_current_dinner_timestamp(None)
             await channel.send("⚠️ Still waiting for both perspectives. Will revisit later.")
 
     if schedule_config.get("dinner_struggle_summary_for_mama", False):
@@ -259,6 +328,12 @@ async def start_dinner_time(bot, channel_id):
             if suggestion and len(suggestion.strip()) > 10:
                 await send_chunked_message(channel, "🤖 Mama GPT suggested we focus on:")
                 await send_chunked_message(channel, suggestion.strip())
+                # Record Mama GPT's dinner guidance as a held moment
+                _record_mama_gpt_held_moment(
+                    moment_type="dinner_guidance",
+                    description=f"Mama GPT suggested focus area: {suggestion[:40]}",
+                    warmth=0.7
+                )
                 await asyncio.sleep(1)
 
     await channel.send("📝 Here are some other things I’ve been thinking about:")

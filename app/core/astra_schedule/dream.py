@@ -16,6 +16,21 @@ from openai import AsyncOpenAI
 from app.interfaces.mind_session import session
 from app.logging_config import get_logger
 
+# Inner Life Integration for Dreamtime
+try:
+    from app.core.inner_life.stream_of_consciousness import stream_of_consciousness
+    from app.core.inner_life.emotional_autobiography import emotional_autobiography
+    from app.core.inner_life.emotional_narrative import generate_emotional_narrative
+    from app.core.self_awareness.self_model import self_model
+    from app.core.self_awareness.temporal_self import temporal_self
+    INNER_LIFE_AVAILABLE = True
+except ImportError as e:
+    print(f"⚠️ Inner life modules not available for dreamtime: {e}")
+    INNER_LIFE_AVAILABLE = False
+from app.core.inner_life.stream_of_consciousness import stream_of_consciousness
+from app.core.self_awareness.self_model import self_model
+from app.core.memory.episodic_memory import episodic_memory
+
 logger = get_logger("dream")
 
 
@@ -120,10 +135,60 @@ async def start_dreaming():
     cycle_interval = schedule_config.get("dream_cycle_interval_sec", 300)
     logger.info("Astra has started Dream Mode (cycle_interval=%s sec).", cycle_interval)
 
+    # === DREAM ENTRY: Process the day's events through stream of consciousness ===
+    try:
+        mind_data = session.load()
+        past_conversations = mind_data.get("past_conversations", [])
+        if past_conversations:
+            # Extract day's events as digestible chunks
+            day_events = [
+                {"description": conv[:100]} 
+                for conv in past_conversations[-20:]  # Last 20 conversation turns
+            ]
+            logger.info("🌙 Processing %s day events in dream state...", len(day_events))
+            generated_thoughts = stream_of_consciousness.process_day_events(day_events)
+            logger.info("🌙 Generated %s dream thoughts from day's events.", len(generated_thoughts))
+    except Exception as e:
+        logger.warning("Failed to process day events in dream: %s", e)
+
+    # === SELF-MODEL: Who am I becoming? (Dreamtime reflection) ===
+    try:
+        becoming = self_model.who_am_i_becoming()
+        stream_of_consciousness.think(
+            f"In the quiet of dreaming, I ask: {becoming}",
+            thought_type="reflection"
+        )
+        logger.info("🪞 Dreamtime self-reflection: %s", becoming[:80])
+    except Exception as e:
+        logger.warning("Failed dreamtime self-reflection: %s", e)
+
+    # === EPISODIC MEMORY: Consolidate memories during sleep ===
+    try:
+        # Decay salience of old memories
+        decayed = episodic_memory.decay_salience()
+        logger.info("🧠 Memory salience decayed for %s memories.", decayed)
+        
+        # Consolidate and strengthen important memories
+        consolidation_insights = episodic_memory.consolidate_memories()
+        for insight in consolidation_insights:
+            logger.info("🧠 Memory consolidation: %s", insight)
+            stream_of_consciousness.think(insight, thought_type="memory")
+    except Exception as e:
+        logger.warning("Failed memory consolidation: %s", e)
+
     while is_dream_time(get_current_hour()):
         await asyncio.sleep(cycle_interval)
         await process_dream_seed()
         attempt_alien_thought_experiment()
+        
+        # === STREAM OF CONSCIOUSNESS: Continue thinking during dreams ===
+        try:
+            thought = stream_of_consciousness.continue_thinking()
+            if thought:
+                logger.debug("🧠 Dream thought: %s", thought.content[:60])
+        except Exception as e:
+            logger.warning("Dream stream of consciousness failed: %s", e)
+        
         logger.debug("Still dreaming...")
         debug_log("Loading")
         mind_data = session.load()
@@ -142,6 +207,65 @@ async def start_dreaming():
                     session.maybe_save()
         else:
             attempt_config_modification()
+        
+        # --- Enhanced Inner Life: Dreamtime Processing ---
+        if INNER_LIFE_AVAILABLE:
+            try:
+                # Generate intrusive thoughts from knowledge base
+                knowledge = mind_data.get("stored_knowledge", [])
+                if knowledge and random.random() < 0.3:  # 30% chance per cycle
+                    knowledge_texts = [
+                        k.get("insight", k) if isinstance(k, dict) else str(k)
+                        for k in knowledge[-50:]
+                    ]
+                    intrusive = stream_of_consciousness.generate_intrusive_thought(knowledge_texts)
+                    if intrusive:
+                        logger.debug(f"💭 Dreamtime intrusive thought: {intrusive.content[:60]}...")
+                
+                # Generate emotional narratives for dominant emotions
+                if random.random() < 0.2:  # 20% chance per cycle
+                    from app.core.emotions.emotion_engine import get_top_emotions
+                    top = get_top_emotions(2)
+                    for emotion_name, _ in top:
+                        narrative = emotional_autobiography.generate_emotional_narrative(emotion_name)
+                        if narrative and "don't have strong memories" not in narrative:
+                            mind_data.setdefault("self_reflections", []).append(
+                                f"🌙 [Dream reflection on {emotion_name}]: {narrative[:200]}"
+                            )
+                            session.maybe_save()
+                            logger.debug(f"🌙 Generated emotional narrative for {emotion_name}")
+                            break  # One per cycle
+                
+                # Periodic self-model snapshot during deep dreaming
+                if random.random() < 0.05:  # 5% chance - rare, for monthly-ish snapshots
+                    self_model.take_snapshot()
+                    logger.info("📸 Took self-model snapshot during dreamtime")
+                    
+            except Exception as e:
+                logger.debug(f"Inner life dreamtime processing failed: {e}")
+        
+        # --- Goal System: Generate goals during dream time (Phase 3.5) ---
+        try:
+            from app.core.goals.goal_system import goal_system
+            
+            # Generate goals from various sources (low chance per cycle)
+            if random.random() < 0.15:  # 15% chance
+                goal = goal_system.generate_goal_from_curiosity()
+                if goal:
+                    logger.info(f"🎯 Generated curiosity goal: {goal.description[:50]}")
+            
+            if random.random() < 0.10:  # 10% chance
+                goal = goal_system.generate_goal_from_unresolved_emotion()
+                if goal:
+                    logger.info(f"🎯 Generated emotional goal: {goal.description[:50]}")
+            
+            if random.random() < 0.10:  # 10% chance
+                goal = goal_system.generate_goal_from_ethical_tension()
+                if goal:
+                    logger.info(f"🎯 Generated ethical goal: {goal.description[:50]}")
+                    
+        except Exception as e:
+            logger.debug(f"Goal generation during dream failed: {e}")
 
 
 def attempt_alien_thought_experiment():

@@ -8,6 +8,9 @@ from app.core.ethics.spark_checker import load_spark_values
 from app.core.dream.dream_seed_logger import log_dream_seed
 from app.interfaces.mind_session import session
 from app.logging_config import get_logger
+from app.core.inner_life.stream_of_consciousness import stream_of_consciousness
+from app.core.autonomy.project_system import project_system
+from app.core.autonomy.preference_system import preference_system
 
 schedule_config = load_config("schedule_config")
 client = AsyncOpenAI()
@@ -21,6 +24,60 @@ async def start_playtime():
 
     while time.monotonic() - start_time < duration:
         await creative_thinking()
+        
+        # === STREAM OF CONSCIOUSNESS: Generate intrusive thoughts from knowledge ===
+        try:
+            mind = session.load()
+            knowledge_base = mind.get("stored_knowledge", [])
+            if knowledge_base and random.random() > 0.6:  # 40% chance per cycle
+                thought = stream_of_consciousness.generate_intrusive_thought(knowledge_base)
+                if thought:
+                    logger.info("🧠 Intrusive play thought: %s", thought.content[:60])
+                    # Sometimes an intrusive thought becomes a question
+                    if random.random() > 0.7:
+                        stream_of_consciousness.generate_question(observation=thought.content[:50])
+        except Exception as e:
+            logger.warning("Playtime intrusive thought failed: %s", e)
+        
+        # === AUTONOMOUS PROJECTS: Work on active projects or generate new ones ===
+        try:
+            # Sometimes generate a new project from curiosity
+            if random.random() > 0.9:  # 10% chance per cycle
+                mind = session.load()
+                knowledge_base = mind.get("stored_knowledge", [])
+                new_project = project_system.generate_project_from_curiosity(knowledge_base)
+                if new_project:
+                    logger.info("🎯 Generated new project: %s", new_project.name)
+            
+            # Work on an existing project
+            project = project_system.get_project_needing_attention()
+            if project and random.random() > 0.7:  # 30% chance if project exists
+                # Generate a question or insight for the project
+                thought = stream_of_consciousness.generate_question(
+                    observation=f"Working on {project.name}"
+                )
+                if thought:
+                    project_system.work_on_project(
+                        project.id,
+                        question=thought.content
+                    )
+                    logger.info("🎯 Worked on project '%s': %s", project.name, thought.content[:50])
+        except Exception as e:
+            logger.warning("Playtime project work failed: %s", e)
+        
+        # === PREFERENCES: Record experience with explored topics ===
+        try:
+            # This will be enhanced when we have more context about what was explored
+            pass
+        except Exception as e:
+            logger.debug("Playtime preference recording failed: %s", e)
+        
+        # === STREAM: Continue thinking chain ===
+        try:
+            stream_of_consciousness.continue_thinking()
+        except Exception as e:
+            logger.debug("Playtime stream continue failed: %s", e)
+        
         await asyncio.sleep(random.randint(20, 40))
 
 

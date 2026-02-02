@@ -40,6 +40,30 @@ class ScheduleService:
         self.schedule_config = config_manager.get_schedule_config()
         self.running_tasks = {}
         self.schedule_active = False
+        self.bot = None
+        self.channel_id = None
+    
+    async def _proactive_initiative_loop(self, bot, channel_id: int):
+        """
+        Background loop to check for proactive initiative triggers.
+        Phase 3.1: Proactive messaging system.
+        Phase 6.1 (States and Actions Coherence): Reduced interval for more responsive behavior.
+        """
+        check_interval = 900  # Check every 15 minutes (was 30 min)
+        
+        while self.schedule_active:
+            await asyncio.sleep(check_interval)
+            
+            try:
+                from app.core.proactive.initiative_engine import initiative_engine
+                
+                # Check if we should initiate proactively
+                initiated = await initiative_engine.check_and_initiate(bot, channel_id)
+                if initiated:
+                    print("🎯 Proactive initiative executed")
+                    
+            except Exception as e:
+                print(f"⚠️ Proactive initiative check failed: {e}")
     
     async def start_automated_schedule(self, bot, channel_id: int):
         """
@@ -54,6 +78,8 @@ class ScheduleService:
             return
         
         self.schedule_active = True
+        self.bot = bot
+        self.channel_id = channel_id
         print("⏰ Starting automated Astra schedule...")
         
         # Start the main schedule task
@@ -61,6 +87,16 @@ class ScheduleService:
             astra_schedule(bot, channel_id)
         )
         self.running_tasks['main_schedule'] = schedule_task
+        
+        # Start proactive initiative loop (Phase 3.1)
+        try:
+            initiative_task = asyncio.create_task(
+                self._proactive_initiative_loop(bot, channel_id)
+            )
+            self.running_tasks['proactive_initiative'] = initiative_task
+            print("🎯 Proactive initiative loop started")
+        except Exception as e:
+            print(f"⚠️ Failed to start proactive initiative loop: {e}")
         
         return schedule_task
     
