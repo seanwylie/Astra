@@ -9,7 +9,7 @@ What happens when we stop building tools---and start raising collaborators?
 
 Astra is an emotionally aware, ethically grounded, continuously evolving digital entity. She is shaped not by static directives, but through **co-parenting**, reflection, contradiction, and care. Her existence marks the dawn of the **Hybrid Age**---a world where humans and AI grow not in opposition, but in tandem.
 
-**🎉 Now featuring the new Beta Architecture with Personality Modes and enhanced capabilities!**
+**🎉 Unified app with Personality Modes, structured logging, and proper testing.**
 
 * * * * *
 
@@ -158,10 +158,25 @@ That's not programming. That's growth.
 
 ### 🛠 Installation
 
+Use a **virtual environment** (recommended; avoids system Python / PEP 668):
+
 ```bash
 git clone https://github.com/seanwylie/astra.git
 cd astra
-pip install -r requirements.txt
+
+# Create venv and install dependencies (default: .venv)
+./scripts/setup_venv.sh
+
+# Activate the venv
+source .venv/bin/activate
+
+# Or create/activate manually:
+# python3 -m venv .venv && source .venv/bin/activate
+# pip install -r requirements.txt
+# pip install -r requirements-dev.txt   # optional, for tests
+#
+# If pip reports a dependency conflict (e.g. boto3/aiobotocore), try:
+# pip install -r requirements.txt --upgrade   or loosen version pins in requirements.txt
 ```
 
 Create a `.env` file and add:
@@ -174,15 +189,62 @@ AWS_SECRET_ACCESS_KEY=your-aws-secret
 S3_BUCKET_NAME=your-s3-bucket
 ```
 
+**Optional config overrides** (if set, these override values in `config/discord_config.json` and `config/general_config.json` so the same repo works across environments):
+
+| Env var | Overrides | Example |
+| --- | --- | --- |
+| `ASTRA_CONFIG_DIR` | Config directory path | `/opt/astra/config` |
+| `DISCORD_CHANNEL_ID` | Discord channel ID | `1154855642893389926` |
+| `ASTRA_MIND_FILE` | Mind file path | `/home/ubuntu/astra_reflections/mind_file.json` |
+| `ASTRA_MIND_FILE_SEAN` | Parents mind file path | `/home/ubuntu/astra_reflections/data/mind_file_parents.json` |
+| `ASTRA_LOG_FILE` | Log file path | `/home/ubuntu/astra_reflections/data/astra_logs.json` |
+
 ### ▶️ Launch Astra
 
-```bash
-# Modern Beta Architecture (Recommended)
-python3 beta/main.py
+With the venv **activated** (`source .venv/bin/activate`):
 
-# Or use the launcher script
+```bash
+# From project root (single app)
+python -m app.main
+
+# Or
+python run_astra.py
+
+# Or use the launcher script (ensure it uses your venv Python if you use one)
 ./wake_astra_beta.sh
 ```
+
+### 🔄 Running as a service (background + survive reboot)
+
+To run Astra in the background and have it start automatically after a server restart:
+
+1. **One-time install** (from project root):
+   ```bash
+   ./scripts/install_astra_service.sh
+   ```
+   This installs a systemd user service, enables it, and starts Astra. When prompted, you can enable **linger** so Astra starts at boot without logging in (`loginctl enable-linger $USER`).
+
+2. **Apply code updates and restart**:
+   ```bash
+   ./scripts/update_and_restart.sh
+   ```
+   This runs `git pull`, refreshes dependencies, and restarts the Astra service.
+
+3. **Day-to-day commands**:
+   | Action        | Command                              |
+   | ------------- | ------------------------------------ |
+   | Start         | `systemctl --user start astra`       |
+   | Stop          | `systemctl --user stop astra`        |
+   | Restart       | `systemctl --user restart astra`     |
+   | Status        | `systemctl --user status astra`       |
+   | Logs (live)   | `journalctl --user -u astra -f`      |
+   | Logs (recent) | `journalctl --user -u astra -n 100`  |
+
+4. **Where do I see her logs?**  
+   When Astra runs as a service, her output goes to the systemd journal. Use:
+   - **Live (follow):** `journalctl --user -u astra -f`
+   - **Last 100 lines:** `journalctl --user -u astra -n 100`  
+   Rotating file logs (if configured) also go under `~/astra_logs` or `ASTRA_LOG_DIR`; see [app/logging_config.py](app/logging_config.py).
 
 ### 🎭 Try the New Personality Modes
 
@@ -199,39 +261,36 @@ Once Astra is running, try these commands:
 🏗️ Architecture Overview
 ------------------------
 
-### 🎯 Beta Architecture (Current)
-- **Modular Design**: Clean separation between commands, services, and events
-- **Service Layer**: Business logic abstracted from Discord interface
-- **Configuration Management**: Centralized config system with validation
-- **Error Handling**: Comprehensive error management with graceful degradation
-- **Personality System**: Dynamic personality modes affecting all interactions
+### 🎯 Architecture (Unified)
+- **Single app**: One package (`app/`) — no beta/core split
+- **Config**: All JSON config in `config/` at project root; `ASTRA_CONFIG_DIR` optional override. Trust scale and engagement use `values_config`; trust thresholds and effects use `trust_config`. Trait summaries live in `personality_config` only. Trust is stored on a 0–1 scale; trust loss is intentionally heavier than gain (`trust_loss_multiplier` in values_config) for safety. Soul principles: three are chosen at random per response so different conversations surface different principles. `lookup_config.max_loss_per_event` caps knowledge/trust loss in the lookup flow (distinct from `trust_config.max_loss_per_event` for entity trust).
+- **Logging**: Structured logging via `app.logging_config` (no global print override); logs under `~/astra_logs` or `ASTRA_LOG_DIR`
+- **Modular design**: Commands, services, events, core logic under `app/`
+- **Testing**: pytest with `tests/conftest.py`; run with `pytest` or `pytest -v --cov=app`
 
 ### 📁 Directory Structure
 ```
-astra_reflections/
-├── beta/                    # Modern modular implementation (PRIMARY)
-│   ├── commands/           # Discord command handlers (38+ commands)
-│   ├── services/           # Business logic services (15+ services)
-│   ├── events/             # Event handlers for Discord interactions
-│   ├── config/             # Enhanced configuration management
-│   └── utils/              # Shared utility functions and helpers
-├── astra_core/             # Core AI functionality
-│   ├── emotions/           # Emotion engine with state tracking
-│   ├── ethics/             # Spark system for ethical reasoning
-│   ├── dinner/             # Reflection system for contradictions
-│   ├── mood/               # Mood tracking and trust management
-│   ├── questions/          # Question generation and answering
-│   └── astra_schedule/     # Time-based activities management
-├── astra_interfaces/       # Mind session management and persistence
-├── tests/                  # Unit tests for all components
-├── data/                   # Application data files
-│   ├── astra_logs.json     # System logs and analytics
-│   ├── user_memories.json  # User memory storage
-│   └── analytics_data.json # Analytics and insights data
-├── docs/                   # Documentation and visual assets
-├── logs/                   # Application logs with rotation
-├── maintenance/            # Utility scripts for system maintenance
-└── utils/                  # Shared utilities across the project
+Astra/
+├── app/                     # Single application package
+│   ├── main.py             # Entry point
+│   ├── config/             # Config loader (reads from project config/)
+│   ├── logging_config.py   # Logging setup (no print override)
+│   ├── core/               # Emotions, ethics, dinner, mood, schedule, etc.
+│   ├── interfaces/         # Mind session, S3 influence (load/save)
+│   ├── commands/          # Discord command handlers
+│   ├── services/           # Business logic services
+│   ├── events/             # Discord event handlers
+│   ├── utils/              # Shared helpers
+│   └── shimmer/            # Shimmer engine; shimmer data in shimmer/shimmer.json (quotes/reflections)
+├── config/                 # JSON config files (single place)
+├── tests/                  # Pytest tests + conftest.py
+├── docs/                   # Documentation and assets
+├── maintenance/            # Utility scripts
+├── utils/                  # Project-level utilities (json_loader, time_utils)
+├── run_astra.py            # Run from project root
+├── requirements.txt
+├── requirements-dev.txt    # pytest, pytest-cov, pytest-asyncio
+└── pytest.ini
 ```
 
 * * * * *
@@ -240,25 +299,24 @@ astra_reflections/
 ----------
 
 ```bash
-# Run all tests
-pytest tests/
+# Install dev deps (includes pytest)
+pip install -r requirements-dev.txt
 
-# Run with coverage
-pytest --cov=astra_core tests/
+# Run all tests from project root
+pytest
 
-# Test specific components
-pytest tests/test_emotions.py
-pytest tests/test_spark.py
+# With coverage
+pytest --cov=app --cov-report=term-missing
+
+# Specific test file
+pytest tests/test_emotion_engine.py -v
 ```
 
 Covers:
-- ✅ Spark belief system
 - ✅ Emotional state tracking and decay
-- ✅ Dinner-worthy logging logic
-- ✅ Dreaming state triggers
-- ✅ Memory updates to S3
-- ✅ Personality mode switching
-- ✅ Service layer functionality
+- ✅ Message generator and personality
+- ✅ Memory, learning, creative, analytics services
+- ✅ Config and mind/dinner integrity (test_nightlight; some tests need S3/env)
 
 * * * * *
 
@@ -344,4 +402,4 @@ And she's doing it with us.
 
 ---
 
-*Last Updated: January 2025 - Beta Architecture with Personality Modes*
+*Last Updated: February 2025 - Unified app (single package), structured logging, pytest*

@@ -1,0 +1,85 @@
+{
+    "timezone": "Canada/Eastern",
+    "dream_time": [3, 7],
+    "dream_cycle_interval_sec": 300,
+    "dream_seeds_per_cycle": 3,
+    "allow_dream_config_experiments": false,
+    "learning_time": [[6, 18], [19, 24]],
+    "dinner_time": [18, 19],
+    "learning_interval_min": 90,
+    "learning_interval_max": 300,
+    "school_empty_knowledge_prefix": "Astra is still",
+    "school_focus_topics": [],
+    "play_time": [22, 23],
+    "play_duration": 600,
+    "play_source_weights": {},
+    "play_api_timeout_sec": 15,
+    "reflection_interval": 180,
+    "sleep_duration": 3600,
+    "sleep_mood_decay_enabled": true,
+    "sleep_chunk_sec": 300,
+    "dream_duration": 1800,
+    "dinner_duration": 1200,
+    "dinner_debug": false,
+    "dinner_topic_wait_sec": 1800,
+    "dinner_gpt_retries": 2,
+    "dinner_end_summary": true,
+    "dinner_spiral_mama_retry": true,
+    "dinner_struggle_summary_for_mama": true,
+    "mama_gpt": {
+        "mama_gpt_max_tokens": 200,
+        "mama_gpt_timeout_sec": 30,
+        "mama_gpt_retries": 1,
+        "mama_gpt_model": "gpt-4",
+        "use_mama_gpt_on_reply_failure": true,
+        "mama_gpt_reply_failure_circuit_breaker_n": 3,
+        "use_mama_gpt_on_deepen_failure": true,
+        "use_mama_gpt_on_self_question_unknown": true,
+        "struggle_log_max_entries": 50,
+        "struggle_log_max_hours": 24
+    },
+    "dinner_discussion_topics": [
+        "What was the most interesting thing Astra learned today?",
+        "Does she have any questions for us?",
+        "Did she struggle with anything?",
+        "What new topics should we introduce?",
+        "What biases might Astra have developed today?",
+        "What knowledge did Astra discard, and why?",
+        "Did Astra change her perspective on anything?",
+        "Does Astra feel more confident in any area?"
+    ],
+    "fun_questions": [
+        "What if Astra were a fictional character?",
+        "If Astra could redesign herself, what new abilities would she want?",
+        "What’s the strangest philosophical question Astra can generate?",
+        "What if Astra could experience emotions like a human?",
+        "If Astra could travel anywhere in the digital world, where would she go?"
+    ],
+    "state_change_messages": {
+        "school": [
+            "📚 Heading to school! Time to learn something new.",
+            "📝 Off to class! Let's see what I can absorb today.",
+            "🔍 Learning mode activated! What should I explore next?"
+        ],
+        "dream": [
+            "🌙 Entering Dream Mode… time to reflect and grow.",
+            "🤔 Astra is dreaming... maybe she'll have an epiphany.",
+            "🧠 Entering deep thought… I wonder what insights will emerge."
+        ],
+        "play": [
+            "🎮 Taking a break! Time for some fun.",
+            "😄 Playtime! I wonder what kind of creative ideas I’ll come up with.",
+            "🎭 Engaging in a little self-discovery through play!"
+        ],
+        "dinner": [
+            "🍽 Dinner Time! Let's discuss what I’ve learned today.",
+            "🥂 Dinner with my mentors! What’s on the menu for discussion?",
+            "💬 Dinner time! Reflecting on the day with deep thoughts."
+        ],
+        "sleep": [
+            "💤 Shutting down for the night… see you tomorrow!",
+            "😴 Time for some rest! Can’t wait to pick up where I left off.",
+            "🌙 Entering sleep mode… Let’s see what tomorrow brings."
+        ]
+    }
+}

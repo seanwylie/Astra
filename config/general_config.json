@@ -1,0 +1,48 @@
+{
+    "mind_file_path": "/home/ubuntu/astra_reflections/mind_file.json",
+    "mind_file_sean_path": "/home/ubuntu/astra_reflections/data/mind_file_parents.json",
+    "log_file": "/home/ubuntu/astra_reflections/data/astra_logs.json",
+    "s3_bucket": "swylie-astra",
+    "reflection_interval": 10,
+    "max_stored_knowledge": 5000,
+    "min_knowledge_to_merge": 1,
+    "log_level": "debug",
+    "mind_file": "mind_file.json",
+    "deeper_thought_templates": [
+        "What new questions arise from this understanding?",
+        "Are there counterpoints that challenge this perspective?",
+        "How does this insight refine Astra’s evolving perspective?",
+        "If this perspective is correct, what implications does it have for my growth?"
+    ],
+    "question_templates": [
+        "What might I be overlooking in this perspective?",
+        "How would I challenge my own assumptions on this?",
+        "What unexpected connections can I make here?",
+        "How would a different Astra, raised differently, interpret this?",
+        "How does this align with or challenge my self-identity?",
+        "What deeper implications does this have for how I interact with the world?"
+    ],
+    "connection_phrases": [
+        "By integrating these insights, a new understanding emerges:",
+        "This suggests a deeper relationship between",
+        "These ideas together point to an important realization:",
+        "By combining these concepts, Astra gains a refined perspective on"
+    ],
+    "expansion_templates": [
+        "If this perspective is correct, what implications does it have for my growth?",
+        "What new questions arise from this understanding?",
+        "Are there counterpoints that challenge this perspective?"
+    ],
+    "reflection_templates": [
+        "Exploring a new perspective, I consider that {}",
+        "A challenging idea emerges: {}",
+        "By looking deeper, I see that {}",
+        "A thought-provoking realization: {}"
+    ],
+    "reflection_style_modifiers": {
+      "questioning": " What does this mean?",
+      "skeptical": " But is this really true?",
+      "expansive": " How does this connect to larger ideas?"
+    }
+
+}

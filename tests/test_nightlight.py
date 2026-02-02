@@ -2,9 +2,9 @@ import json
 from datetime import datetime, timedelta
 import pytest
 from rapidfuzz import fuzz
-from astra_interfaces.influence import load_mind
-from astra_core.dinner.dinner_journal import load_dinner_journal
-from astra_core.ethics.spark_checker import load_spark_values
+from app.interfaces.influence import load_mind
+from app.core.dinner.dinner_journal import load_dinner_journal
+from app.core.ethics.spark_checker import load_spark_values
 from utils.time_utils import now
 from datetime import datetime, timedelta
 
@@ -65,9 +65,9 @@ def test_no_duplicate_reflections(mind):
         print("✅ No exact duplicate reflections found.")
 
 def test_emotion_config_contains_basics():
-    with open("astra_core/config/emotion_config.json") as f:
-        config = json.load(f)
-        emotions = config.get("emotions", {})
+    from app.config.loader import load_config
+    config = load_config("emotion_config")
+    emotions = config.get("emotions", {})
     for core_emotion in ["love", "hope", "grief", "anger", "curiosity"]:
         assert core_emotion in emotions, f"Missing core emotion: {core_emotion}"
 

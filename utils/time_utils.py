@@ -1,6 +1,6 @@
 from datetime import datetime
 import pytz
-from astra_core.config_loader import load_config
+from app.config.loader import load_config
 
 def now():
     config = load_config("schedule_config")

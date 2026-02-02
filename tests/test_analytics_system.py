@@ -7,11 +7,11 @@ import sys
 import os
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 
-from beta.services.analytics_service import analytics_service
-from beta.services.personality_service import personality_service
-from beta.services.memory_service import memory_service
-from beta.services.creative_service import creative_service
-from beta.services.learning_service import learning_service
+from app.services.analytics_service import analytics_service
+from app.services.personality_service import personality_service
+from app.services.memory_service import memory_service
+from app.services.creative_service import creative_service
+from app.services.learning_service import learning_service
 
 def setup_test_data():
     """Set up some test data across all systems"""

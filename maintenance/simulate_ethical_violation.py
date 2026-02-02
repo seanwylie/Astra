@@ -1,6 +1,6 @@
 # simulate_ethical_violation.py
 
-from astra_core.dinner.dinner_journal import log_dinner_entry
+from app.core.dinner.dinner_journal import log_dinner_entry
 from datetime import datetime
 from utils.time_utils import iso_now
 

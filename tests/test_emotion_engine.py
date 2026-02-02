@@ -1,8 +1,8 @@
 # tests/test_emotion_engine.py
 
 import pytest
-from astra_core.emotions import emotion_engine
-from astra_core.emotions.emotion_state_manager import (
+from app.core.emotions import emotion_engine
+from app.core.emotions.emotion_state_manager import (
     load_emotion_state,
     save_emotion_state,
 )

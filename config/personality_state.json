@@ -1,0 +1,11 @@
+{
+    "trait_weights": {
+        "thoughtfulness": 1.5,
+        "curiosity": 1.5,
+        "resilience": 1.0,
+        "trust": 1.0,
+        "empathy": 1.0,
+        "humility": 1.0,
+        "self_expansion": 1.0
+    }
+}

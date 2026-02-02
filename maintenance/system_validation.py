@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-System Validation Script for Astra Beta
+System Validation Script for Astra
 Validates all systems, configurations, and integrations are working correctly.
 """
 
@@ -22,7 +22,7 @@ class SystemValidator:
     
     def run_validation(self):
         """Run complete system validation"""
-        print("🔍 Astra Beta System Validation")
+        print("🔍 Astra System Validation")
         print("=" * 50)
         
         # Core system validation
@@ -42,22 +42,26 @@ class SystemValidator:
         
         try:
             # Test core service imports
-            from beta.services import (
+            from app.services import (
                 personality_service, memory_service, creative_service,
                 learning_service, analytics_service
             )
             self.successes.append("✅ All core services import successfully")
             
-            # Test configuration imports
-            from beta.config.system_config import system_config
-            from beta.config.localization_config import localization
-            self.successes.append("✅ Configuration modules import successfully")
+            # Test configuration
+            from app.config.loader import config_manager
+            dc = config_manager.get_discord_config()
+            vc = config_manager.get_values_config()
+            if dc and vc:
+                self.successes.append("✅ Configuration (discord/values) load successfully")
+            else:
+                self.warnings.append("⚠️ Some config files missing")
             
             # Test command imports
-            from beta.commands.memory_commands import MemoryCommands
-            from beta.commands.creative_commands import CreativeCommands
-            from beta.commands.learning_commands import LearningCommands
-            from beta.commands.analytics_commands import AnalyticsCommands
+            from app.commands.memory_commands import MemoryCommands
+            from app.commands.creative_commands import CreativeCommands
+            from app.commands.learning_commands import LearningCommands
+            from app.commands.analytics_commands import AnalyticsCommands
             self.successes.append("✅ All command modules import successfully")
             
         except ImportError as e:
@@ -70,23 +74,13 @@ class SystemValidator:
         print("⚙️ Validating configurations...")
         
         try:
-            from beta.config.system_config import validate_system_config
-            config_issues = validate_system_config()
-            
-            if not config_issues:
-                self.successes.append("✅ System configuration is valid")
+            from app.config.loader import load_config
+            discord_c = load_config("discord_config")
+            values_c = load_config("values_config")
+            if discord_c.get("discord_channel") and values_c.get("values"):
+                self.successes.append("✅ System configuration (discord/values) valid")
             else:
-                for issue in config_issues:
-                    self.issues.append(f"❌ Config issue: {issue}")
-            
-            # Test localization
-            from beta.config.localization_config import get_localized_string
-            test_string = get_localized_string("common.success_prefix")
-            if test_string:
-                self.successes.append("✅ Localization system working")
-            else:
-                self.warnings.append("⚠️ Localization may have issues")
-                
+                self.warnings.append("⚠️ discord_channel or values missing in config")
         except Exception as e:
             self.issues.append(f"❌ Configuration validation error: {e}")
     
@@ -96,7 +90,7 @@ class SystemValidator:
         
         try:
             # Test personality service
-            from beta.services.personality_service import personality_service
+            from app.services.personality_service import personality_service
             current_mode = personality_service.current_mode
             if current_mode in ["curious", "analytical", "creative", "mentor", "philosophical", "balanced"]:
                 self.successes.append("✅ Personality service operational")
@@ -104,28 +98,28 @@ class SystemValidator:
                 self.warnings.append(f"⚠️ Unexpected personality mode: {current_mode}")
             
             # Test memory service
-            from beta.services.memory_service import memory_service
+            from app.services.memory_service import memory_service
             if hasattr(memory_service, 'remember') and hasattr(memory_service, 'recall'):
                 self.successes.append("✅ Memory service operational")
             else:
                 self.issues.append("❌ Memory service missing core methods")
             
             # Test creative service
-            from beta.services.creative_service import creative_service
+            from app.services.creative_service import creative_service
             if hasattr(creative_service, 'create_poem') and hasattr(creative_service, 'write_story'):
                 self.successes.append("✅ Creative service operational")
             else:
                 self.issues.append("❌ Creative service missing core methods")
             
             # Test learning service
-            from beta.services.learning_service import learning_service
+            from app.services.learning_service import learning_service
             if hasattr(learning_service, 'learn_from_text') and hasattr(learning_service, 'generate_quiz'):
                 self.successes.append("✅ Learning service operational")
             else:
                 self.issues.append("❌ Learning service missing core methods")
             
             # Test analytics service
-            from beta.services.analytics_service import analytics_service
+            from app.services.analytics_service import analytics_service
             if hasattr(analytics_service, 'get_comprehensive_dashboard'):
                 self.successes.append("✅ Analytics service operational")
             else:
@@ -163,12 +157,12 @@ class SystemValidator:
         print("📁 Validating file structure...")
         
         required_dirs = [
-            "beta/commands",
-            "beta/services", 
-            "beta/config",
-            "beta/utils",
-            "astra_core",
-            "astra_interfaces"
+            "app/commands",
+            "app/services",
+            "app/config",
+            "app/utils",
+            "app/core",
+            "app/interfaces"
         ]
         
         for dir_path in required_dirs:
@@ -180,7 +174,7 @@ class SystemValidator:
         
         # Check for key files
         required_files = [
-            "beta/main.py",
+            "app/main.py",
             "requirements.txt",
             "README.md",
             ".gitignore"

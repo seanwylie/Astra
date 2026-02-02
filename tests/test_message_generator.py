@@ -1,8 +1,8 @@
 # tests/test_message_generator.py
 
 import pytest
-from astra_core.message_generator import MessageGenerator
-from astra_core.emotions.emotion_state_manager import save_emotion_state
+from app.core.message_generator import MessageGenerator
+from app.core.emotions.emotion_state_manager import save_emotion_state
 
 @pytest.fixture
 def mock_emotional_state():

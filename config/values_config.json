@@ -1,0 +1,46 @@
+{
+    "values": {
+        "command_prefix": "!",
+        "max_trust": 1,
+        "min_trust": 0,
+        "max_trust_gain": 1,
+        "trust_loss_multiplier": 2,
+        "trust_engagement_multiplier": 0.1,
+        "engagement_chance": 0.3,
+        "max_trust_boost": 0.3,
+        "default_engagement_chance": 0.3,
+        "engagement_cooldown": 30,
+        "default_trust_factor": 0.8,
+        "trust_factor": {
+            "1": 1.2,
+            "0.8": 1.1,
+            "0.5": 1.0,
+            "0.2": 0.8,
+            "0": 0.3
+        },
+        "curiosity_influence": 0.4,
+        "mood_influence": {
+            "curious": 0.9,
+            "excited": 0.8,
+            "thoughtful": 0.7,
+            "frustrated": 0.5,
+            "neutral": 0.6
+        },
+        "mood_factor": {
+            "curiosity_boost": 1.2,
+            "reflection_depth": 1.5,
+            "positive_engagement": 1.3,
+            "frustration_cutoff": 0.4
+        },
+        "trust_based_mood_adjustment": {
+            "high_trust": 1.1,
+            "low_trust": 0.8
+        },
+        "curiosity_response_boost": 0.3,
+        "max_mood_engagement_multiplier": 1.6,
+        "curiosity_threshold": 0.6,
+
+        "trust_gain_on_positive_reaction": 1,
+        "trust_loss_on_negative_reaction": -1
+    }
+}

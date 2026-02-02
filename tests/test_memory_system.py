@@ -2,12 +2,7 @@
 """
 Quick test script for the new Memory System
 """
-
-import sys
-import os
-sys.path.append(os.path.dirname(os.path.abspath(__file__)))
-
-from beta.services.memory_service import memory_service
+from app.services.memory_service import memory_service
 
 def test_memory_system():
     """Test the memory system functionality"""

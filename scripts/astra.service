@@ -1,0 +1,17 @@
+[Unit]
+Description=Astra Discord bot
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+WorkingDirectory=__ASTRA_PROJECT_ROOT__
+EnvironmentFile=__ASTRA_PROJECT_ROOT__/.env
+ExecStart=__ASTRA_PROJECT_ROOT__/.venv/bin/python -u -m app.main
+Restart=always
+RestartSec=10
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=default.target

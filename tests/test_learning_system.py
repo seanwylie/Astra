@@ -7,8 +7,8 @@ import sys
 import os
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 
-from beta.services.learning_service import learning_service
-from beta.services.personality_service import personality_service
+from app.services.learning_service import learning_service
+from app.services.personality_service import personality_service
 
 def test_learning_system():
     """Test the learning system functionality"""

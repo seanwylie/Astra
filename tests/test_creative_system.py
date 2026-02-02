@@ -7,8 +7,8 @@ import sys
 import os
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 
-from beta.services.creative_service import creative_service
-from beta.services.personality_service import personality_service
+from app.services.creative_service import creative_service
+from app.services.personality_service import personality_service
 
 def test_creative_system():
     """Test the creative system functionality"""
