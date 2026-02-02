@@ -146,7 +146,7 @@ async def creative_thinking(return_concept=False):
         opinion = await spark_opinion(concept)
         if opinion:
             mind.setdefault("self_reflections", []).append(opinion)
-        session.maybe_save()
+        await session.maybe_save_async()
         logger.debug("Appended concept to stored_knowledge; total entries: %s", len(mind.get("stored_knowledge", [])))
 
         if return_concept:

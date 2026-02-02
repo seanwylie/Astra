@@ -1,46 +1,53 @@
-feat: execute 4 spawn-agents plans — intelligence, emotions, states, Mama GPT
+Fix Discord heartbeat blocking by async-ifying S3 mind saves
 
-All four approved plans were executed via spawn_agents.sh:
+## Problem
+Discord bot was experiencing heartbeat blockages (>10s) causing WARNING messages:
+```
+discord.gateway: Shard ID None heartbeat blocked for more than 10 seconds
+```
 
-1) Intelligence and Sentience
-   - New: working_memory.py, expectation_model.py, emotional_transitions.py,
-     value_crystallization.py
-   - message_bus: causal reasoning, expectation check, emotional transitions,
-     working memory, dominant workspace, perspective-taking, reasoning trace
-     lifecycle, value crystallization
-   - self_model: verify_prediction(), accuracy tracking
-   - learning_desire: open questions, satisfaction/frustration
-   - knowledge_map + wonder: novelty detection, wonder for novelty
-   - continuity_weaver: weave_temporal_reference()
-   - parent_mentalizing: uncertainty tracking, verify_prediction
-   - incubation_system: generate_novel_connection(), incubate_for_insights()
+Root cause: The `save_mind()` function in `influence.py` calls synchronous boto3 
+`s3.get_object()` operations that block the asyncio event loop. This was happening 
+during the schedule loop (school/dream/play modes) when `session.maybe_save()` 
+was called.
 
-2) Emotions and Personality
-   - message_bus: emotional blending, felt sense, playfulness, wonder; intensity
-     bands and secondary emotions; emotional rhythms/seasons; response coloring
-   - emotion_engine: momentum, afterglow/echo, flooding detection
-   - emotion_config.json: expression_vocabulary, physical_metaphors,
-     momentum_factor, intensity_bands
+## Solution
+Added async versions of save operations to prevent blocking:
 
-3) States and Actions
-   - message_event: StateSnapshot (get_current_state_snapshot), post-response
-     MESSAGE_SENT publish
-   - message_bus: experience_orchestrator, inner_symphony in prompt
-   - New: action_decider.py (intention, goal, initiative, core needs)
-   - awareness_bus: MESSAGE_SENT, ACTION_DECIDED
-   - bus_subscribers: MESSAGE_SENT → intention progress; GOAL_PROGRESS →
-     proactive sharing
-   - state_commands: !mind (symphony, intentions), !coherence
-   - schedule_service: initiative interval 30min → 15min
-   - self_initiated_message: InnerSymphony gate before outreach
+1. **smart_mind_session.py**:
+   - Added `save_async()` method that uses `run_in_executor()` to offload 
+     blocking `save_mind()` calls to a thread pool
+   - Added `maybe_save_async()` as async alias
+   - Kept original sync methods for backwards compatibility
 
-4) Mama GPT Parenting
-   - mama_gpt.py: _build_mama_system_prompt(context), get_mama_context(),
-     mama_gpt_checkin(), mama_gpt_milestone_reflection(), mama_gpt_repair_insight()
-   - dinner.py: record Mama GPT “being held” moments
-   - schedule.py + schedule_config: _mama_gpt_checkin(), checkin interval/config
-   - coregulation.py: PARENT_REGULATION_STYLES (sean/gpt), get_parent_regulation_fit
-   - milestone_detector: mama reflection storage
-   - message_event: _check_for_coparent_perspective (triangulation)
-   - nurturing_commands: repair + Mama GPT insights, mama_understand command
-   - secure_base: get_parent_availability_score(), parent-specific attachment
+2. **Updated all async schedule functions**:
+   - `schedule.py`: Use `await session.maybe_save_async()` 
+   - `school.py`: Use `await session.maybe_save_async()`
+   - `dream.py`: Use `await session.maybe_save_async()` in async contexts
+   - `play.py`: Use `await session.maybe_save_async()`
+   - `message_event.py`: Use `await session.maybe_save_async()` in all async handlers
+
+3. **Made `_store_concept()` async**:
+   - Changed from sync to async function
+   - Updated call site to await it
+
+## Technical Details
+The fix uses `loop.run_in_executor(None, partial(save_mind, data, force))` which:
+- Runs the blocking S3 operations in the default ThreadPoolExecutor
+- Returns a Future that can be awaited without blocking the event loop
+- Allows Discord heartbeats to continue while S3 operations complete
+
+## Note
+The underlying `save_mind()` function in `influence.py` still uses synchronous 
+boto3 calls. There are already async versions (`load_mind_async()` and 
+`save_mind_async()`) but they aren't fully integrated. Future work could migrate 
+to those, but this executor-based approach provides an immediate fix with minimal 
+refactoring.
+
+## Files Modified
+- app/interfaces/smart_mind_session.py
+- app/core/astra_schedule/schedule.py
+- app/core/astra_schedule/school.py
+- app/core/astra_schedule/dream.py
+- app/core/astra_schedule/play.py
+- app/events/message_event.py

@@ -1,5 +1,5 @@
 ---
-description: CashStra project conventions and patterns
+description: Astra project conventions and patterns
 alwaysApply: true
 ---
 
@@ -7,32 +7,29 @@ alwaysApply: true
 
 ## Import paths and PYTHONPATH
 
-When running scripts from project root, use `PYTHONPATH=.` so root modules are importable:
+When running scripts from project root, use `PYTHONPATH=.` so the `app` package and root modules are importable:
 
 ```bash
-PYTHONPATH=. .venv/bin/python scripts/run_cashstra.py
+PYTHONPATH=. .venv/bin/python run_astra.py
+# or
+PYTHONPATH=. .venv/bin/python -m app.main
 ```
 
-The project has both root-level modules (`strategy.py`, `trading.py`) and `src/cashstra/` package. **Put new features in `src/cashstra/`**; root modules exist for compatibility.
+Main application code lives in **`app/`**. Root holds the entry point (`run_astra.py`), `config/`, `scripts/`, `utils/`, and `maintenance/`.
 
 ## Testing
 
-- Unit tests: `tests/unit/`
-- Integration tests: `tests/integration/`
-- Run: `make test` (preferred) or `.venv/bin/python -m pytest tests/ -v`
-
-## Makefile
-
-Use `make` targets when available: `make test`, `make run`, `make dashboard`, `make lint`, `make format`.
+- Tests: `tests/` (pytest; `conftest.py` sets `ASTRA_CONFIG_DIR` and `LOG_LEVEL`)
+- Run: `PYTHONPATH=. .venv/bin/python -m pytest tests/ -v`
+- Use `tests/conftest.py` and existing fixtures when adding tests
 
 ## Configuration
 
-- Config: `config.py` and `.env` (see `config/.env.template`)
-- Never commit `.env` or secrets
-- Use `config.get_*` / env vars for API keys and thresholds
+- Config: JSON files in `config/` (e.g. `personality_config.json`, `schedule_config.json`)
+- Secrets and env: `.env` (see `.env` or project docs); never commit `.env`
+- Use `utils/config_loader.py` and env vars for API keys and paths
 
-## Database
+## Data and persistence
 
-- SQLite at `data/cashstra.db`
-- Models in `models.py` and `src/cashstra/data/models.py`
-- Storage in `storage.py` / `src/cashstra/data/storage.py`
+- Runtime and generated data under `data/` (e.g. mind files, logs, DBs) are gitignored
+- S3 is used for mind file storage in production; local paths and DBs in `data/` for development

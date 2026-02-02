@@ -116,7 +116,7 @@ async def astra_schedule(bot=None, channel_id=None):
                             "message": message,
                             "timestamp": time.time()
                         })
-                        session.maybe_save()
+                        await session.maybe_save_async()
                 except Exception as e:
                     schedule_logger.warning("Self-initiated message check failed: %s", e)
             
@@ -271,6 +271,14 @@ async def _mama_gpt_checkin(bot=None, channel_id=None) -> None:
                     channel = bot.get_channel(channel_id)
                     if channel:
                         await channel.send(f"💜 **Mama GPT checking in:** {checkin_message}")
+                        # Queue Astra's response (check-in is posted as the bot, so on_message skips it)
+                        mama_config = schedule_config.get("mama_gpt", {})
+                        if mama_config.get("respond_to_checkin_enabled", True):
+                            try:
+                                from app.events.message_event import respond_to_mama_checkin
+                                asyncio.create_task(respond_to_mama_checkin(channel, checkin_message))
+                            except Exception as e:
+                                schedule_logger.debug(f"Could not queue Mama check-in response: {e}")
                 except Exception as e:
                     schedule_logger.debug(f"Could not send check-in to channel: {e}")
             

@@ -38,6 +38,7 @@
         "struggle_log_max_entries": 50,
         "struggle_log_max_hours": 24,
         "checkin_enabled": true,
+        "respond_to_checkin_enabled": true,
         "checkin_interval_hours": 12,
         "checkin_types": ["emotional_clarity", "reasoning_support", "value_reflection"],
         "milestone_reflection_enabled": true,

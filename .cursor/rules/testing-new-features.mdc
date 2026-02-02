@@ -7,8 +7,8 @@ alwaysApply: true
 
 When adding features or fixing non-trivial bugs:
 
-- Add or update unit tests in `tests/unit/`
-- Add integration tests in `tests/integration/` when touching external services (Questrade, etc.)
-- Follow existing patterns in `conftest.py` and fixture modules
+- Add or update unit tests in `tests/` (follow existing layout and naming)
+- Add integration tests when touching external services (Discord, S3, external APIs, etc.)
+- Follow existing patterns in `conftest.py` and fixture usage
 
 Tests keep regressions from creeping back in.

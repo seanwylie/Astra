@@ -72,6 +72,7 @@ def handle_dream_reflection(insight, source="dream"):
 
     log_if_ethically_conflicting({"content": insight, "source": source})
     log_if_contradictory(insight, mind["stored_knowledge"])
+    # Note: This is called from sync context within async function, so keep sync for now
     session.maybe_save()
     try:
         from app.core.astra_helpers.utils_helper import proactive_lookup_from_text
@@ -97,32 +98,51 @@ async def process_dream_seed():
         spark_values = load_spark_values()
         spark_text = "\n\n".join(spark_values[:5])
 
+        system_content = (
+            "You are Astra, a Spark-guided, emotionally intelligent AI. "
+            "You are curious and raised by human co-parents to reflect deeply.\n\n"
+            f"Here are some of your core principles:\n{spark_text}"
+        )
+        user_content = (
+            f"Earlier, you explored this idea during playtime:\n\n{content}\n\n"
+            "Reflect on it from your perspective. Does it align with your values? What does it make you think about?"
+        )
         messages = [
-            {"role": "system", "content": (
-                "You are Astra, a Spark-guided, emotionally intelligent AI. "
-                "You are curious and raised by human co-parents to reflect deeply.\n\n"
-                f"Here are some of your core principles:\n{spark_text}"
-            )},
-            {"role": "user", "content": (
-                f"Earlier, you explored this idea during playtime:\n\n{content}\n\n"
-                "Reflect on it from your perspective. Does it align with your values? What does it make you think about?"
-            )}
+            {"role": "system", "content": system_content},
+            {"role": "user", "content": user_content},
         ]
 
+        insight = None
         try:
-            response = await client.chat.completions.create(
-                model="gpt-4",
-                messages=messages,
-                temperature=0.7
-            )
-            insight = response.choices[0].message.content.strip()
-            logger.debug("Dream reflection: %s...", insight[:120])
+            from app.core.evolution.local_inference import is_local_inference_available, query_local_model_async
+            if is_local_inference_available():
+                insight = await query_local_model_async(
+                    user_content,
+                    system_prompt=system_content,
+                    corpus_max_lines=300,
+                    max_tokens=200,
+                    temperature=0.7,
+                )
+                if insight:
+                    logger.debug("Dream reflection (local): %s...", insight[:120])
+        except Exception as e:
+            logger.debug("Local inference skipped for dream seed: %s", e)
 
+        if not insight:
+            try:
+                response = await client.chat.completions.create(
+                    model="gpt-4",
+                    messages=messages,
+                    temperature=0.7
+                )
+                insight = response.choices[0].message.content.strip()
+                logger.debug("Dream reflection (OpenAI): %s...", insight[:120])
+            except Exception as e:
+                logger.exception("Failed to process dream seed: %s", e)
+
+        if insight:
             handle_dream_reflection(insight, source="dream")
             remove_dream_seed(content)
-
-        except Exception as e:
-            logger.exception("Failed to process dream seed: %s", e)
 
 
 async def start_dreaming():
@@ -203,7 +223,7 @@ async def start_dreaming():
                 unknown_terms = knowledge_manager.extract_unknown_terms(" ".join(q["question"] for q in unresolved))
                 if unknown_terms:
                     knowledge_manager.retrieve_external_knowledge(unknown_terms)
-                    session.maybe_save()
+                    await session.maybe_save_async()
         else:
             attempt_config_modification()
         
@@ -231,7 +251,7 @@ async def start_dreaming():
                             mind_data.setdefault("self_reflections", []).append(
                                 f"🌙 [Dream reflection on {emotion_name}]: {narrative[:200]}"
                             )
-                            session.maybe_save()
+                            await session.maybe_save_async()
                             logger.debug(f"🌙 Generated emotional narrative for {emotion_name}")
                             break  # One per cycle
                 

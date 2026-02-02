@@ -7,6 +7,7 @@ data/astra_logs.json
 data/user_memories.json
 data/analytics_data.json
 data/learning_data.json
+data/astra_corpus.jsonl
 logs/
 .qodo
 .updatemds/

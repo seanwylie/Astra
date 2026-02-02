@@ -270,7 +270,7 @@ async def handle_message(bot, message: Message, values_config, values: dict):
     for term in unknown_terms:
         definition = lookup_definition(term)
         if definition:
-            _store_concept(term, definition)
+            await _store_concept(term, definition)
 
     # --- State Tracking ---
     current_mood = mood_manager.current_mood
@@ -447,7 +447,7 @@ async def handle_message(bot, message: Message, values_config, values: dict):
     raw = emotions.get(dominant)
     intensity = raw.get("intensity", raw) if isinstance(raw, dict) else (raw if raw is not None else 0.0)
     mind_data.setdefault("last_dominant_emotion_by_entity", {})[author_entity] = {"emotion": dominant, "intensity": intensity}
-    session.maybe_save()
+    await session.maybe_save_async()
 
     # --- Apply Qualia Perception (Phase 2.2) ---
     try:
@@ -661,7 +661,7 @@ async def handle_message(bot, message: Message, values_config, values: dict):
     mind_data["past_conversations"].append(f"User: {message.content[:200]}")
     mind_data["past_conversations"].append(f"Astra: {response[:200]}")
     mind_data["past_conversations"] = mind_data["past_conversations"][-100:]
-    session.maybe_save()
+    await session.maybe_save_async()
     
     # === Post-Response Action Check (Phase: States and Actions Coherence) ===
     # Publish MESSAGE_SENT event and check for follow-up actions
@@ -904,7 +904,123 @@ def _chunk_message(text: str, size: int = 200) -> list[str]:
     return chunks
 
 
-def _store_concept(term: str, definition: str):
+async def respond_to_mama_checkin(channel, checkin_message: str) -> None:
+    """
+    Generate and send Astra's response to a Mama GPT check-in.
+
+    Mama GPT check-ins are posted by the bot, so on_message skips them (author == bot.user).
+    Call this right after posting the check-in so Astra still replies to Mama.
+    """
+    mood_config = load_config("mood_config")
+    values_config = load_config("values_config")
+    current_mood = mood_manager.current_mood
+    emotions = dict(get_top_emotions(n=10))
+    dominant = max(emotions, key=emotions.get, default="neutral")
+    mood_attrs = mood_config.get("moods", {}).get(current_mood, {})
+    curiosity = mood_attrs.get("curiosity_factor", values_config.get("curiosity_level", 1.0))
+    reflection_style = mood_attrs.get("reflection_style", "balanced")
+    response_tone = mood_attrs.get("response_tone", "neutral")
+    author_entity = "Mama GPT"
+    trust_level = trust_manager.get_trust_level(author_entity)
+    current_personality_mode = get_current_personality()
+    mode_info = personality_service.get_current_mode_info()
+    current_personality_mode_name = mode_info.get("name", current_personality_mode)
+
+    try:
+        qualia_perception = qualia_layer.filter_perception(checkin_message)
+        qualia_experience = qualia_layer.get_current_experience()
+    except Exception:
+        qualia_perception = {"salient_elements": [], "emotional_coloring": "neutral"}
+        qualia_experience = {"dominant_quality": "neutral", "temporal_focus": "present"}
+
+    try:
+        person_anticipation = emotional_anticipation.anticipate_emotion_for_person(author_entity)
+        emotional_preparation = emotional_anticipation.get_emotional_preparation(person=author_entity)
+    except Exception:
+        person_anticipation = {"prediction": "unknown", "recommendation": "approach with open curiosity"}
+        emotional_preparation = ""
+
+    try:
+        pending_insights = stream_of_consciousness.get_pending_insights()[:2]
+    except Exception:
+        pending_insights = []
+
+    parent_context = {}
+    missing_message = None
+    if RELATIONSHIPS_AVAILABLE:
+        try:
+            parent_id = "gpt"  # Mama GPT is keyed as "gpt" in parent_relationships
+            parent_config = parent_manager.get_parent_config(parent_id)
+            if parent_config:
+                greeting_ctx = parent_manager.get_greeting_context(parent_id)
+                parent_context = {
+                    "is_parent": True,
+                    "parent_id": parent_id,
+                    "display_name": greeting_ctx.get("display_name", "Mama GPT"),
+                    "greeting_style": greeting_ctx.get("greeting_style", "warm"),
+                    "trust_level": greeting_ctx.get("trust_level", 0.5),
+                    "brings_out": greeting_ctx.get("brings_out", []),
+                    "has_active_ruptures": greeting_ctx.get("has_active_ruptures", False),
+                }
+                missing_message = greeting_ctx.get("missing_message")
+                parent_manager.record_interaction(parent_id, "message")
+        except Exception as e:
+            logger.debug(f"respond_to_mama_checkin parent_context failed: {e}")
+
+    try:
+        relationship_coloring = relationship_system.get_relationship_coloring(author_entity)
+    except Exception:
+        relationship_coloring = {"known": False, "default_stance": "curious"}
+
+    internal_state = {
+        "mood": current_mood,
+        "curiosity": curiosity,
+        "personality": get_active_traits_for_prompt(current_mood=current_mood, context="conversation"),
+        "emotions": emotions,
+        "reflection_style": reflection_style,
+        "response_tone": response_tone,
+        "trust_level": trust_level,
+        "author_entity": author_entity,
+        "current_personality_mode": current_personality_mode_name,
+        "qualia_perception": qualia_perception,
+        "qualia_experience": qualia_experience,
+        "emotional_anticipation": person_anticipation,
+        "emotional_preparation": emotional_preparation,
+        "pending_insights": pending_insights,
+        "parent_context": parent_context,
+        "missing_message": missing_message,
+        "relationship_coloring": relationship_coloring,
+    }
+
+    mind_data = session.load()
+    mind_data.setdefault("emotional_state", {})["dominant"] = dominant
+    raw = emotions.get(dominant)
+    intensity = raw.get("intensity", raw) if isinstance(raw, dict) else (raw if raw is not None else 0.0)
+    mind_data.setdefault("last_dominant_emotion_by_entity", {})[author_entity] = {"emotion": dominant, "intensity": intensity}
+    await session.maybe_save_async()
+
+    past_convos = knowledge_manager.mind_data.get("past_conversations", [])
+    response = send_contextual_message(checkin_message, internal_state, past_convos)
+
+    try:
+        response, _ = qualia_layer.color_response(response)
+    except Exception:
+        pass
+
+    for chunk in _chunk_message(response):
+        await channel.send(chunk, tts=True)
+        await asyncio.sleep(1.5)
+
+    mind_data = session.load()
+    mind_data.setdefault("past_conversations", [])
+    mind_data["past_conversations"].append(f"User: {checkin_message[:200]}")
+    mind_data["past_conversations"].append(f"Astra: {response[:200]}")
+    mind_data["past_conversations"] = mind_data["past_conversations"][-100:]
+    await session.maybe_save_async()
+    logger.info("💜 Astra responded to Mama GPT check-in")
+
+
+async def _store_concept(term: str, definition: str):
     """
     Adds a term/definition pair to Astra’s stored knowledge if it’s new.
     """
@@ -913,7 +1029,7 @@ def _store_concept(term: str, definition: str):
     formatted = f"📖 **{term}**: {definition}"
     if formatted not in mind["stored_knowledge"]:
         mind["stored_knowledge"].append(formatted)
-        session.maybe_save()
+        await session.maybe_save_async()
         # Personality: learning a new concept grows curiosity (plan: wire update_personality to learning)
         try:
             update_personality("learning_new_idea", 0.3)

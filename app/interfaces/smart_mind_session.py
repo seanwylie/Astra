@@ -1,5 +1,7 @@
 import hashlib
 import json
+import asyncio
+from functools import partial
 from app.interfaces.influence import load_mind, save_mind
 from app.shimmer.shimmer_engine import maybe_add_shimmer
 from app.shimmer.shimmer_utils import is_shimmer_worthy
@@ -20,7 +22,7 @@ class SmartMindSession:
         return self.data
 
     def save(self, force=False):
-        """Save mind if forced or changed."""
+        """Save mind if forced or changed (synchronous version)."""
         if force or self.has_changed():
             print("💾 [SmartMindSession] Mind has changed — saving now.")
             self._generate_shimmers()
@@ -28,9 +30,24 @@ class SmartMindSession:
         else:
             print("✅ [SmartMindSession] No changes detected. Save skipped.")
 
+    async def save_async(self, force=False):
+        """Save mind if forced or changed (async version - non-blocking)."""
+        if force or self.has_changed():
+            print("💾 [SmartMindSession] Mind has changed — saving now (async).")
+            self._generate_shimmers()
+            # Run blocking save_mind in executor to avoid blocking event loop
+            loop = asyncio.get_event_loop()
+            await loop.run_in_executor(None, partial(save_mind, self.data, force))
+        else:
+            print("✅ [SmartMindSession] No changes detected. Save skipped.")
+
     def maybe_save(self):
-        """Alias for save without forcing."""
+        """Alias for save without forcing (synchronous)."""
         self.save(force=False)
+
+    async def maybe_save_async(self):
+        """Alias for save without forcing (async version)."""
+        await self.save_async(force=False)
 
     def has_changed(self):
         """Check if current mind hash differs from the original."""

@@ -1,0 +1,11 @@
+{
+  "version": 1,
+  "active": [
+    {
+      "name": "echo_astra",
+      "script_path": "echo_astra.py",
+      "description": "Echo a message (Astra-grown placeholder tool)",
+      "allowed_ops": []
+    }
+  ]
+}

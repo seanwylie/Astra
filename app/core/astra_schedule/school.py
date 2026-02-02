@@ -49,7 +49,7 @@ async def start_learning():
         if len(mind_data.get("stored_knowledge", [])) > 3000:
             from app.core.expansion import consolidate_knowledge
             consolidate_knowledge(mind_data, max_pairs=5)
-            session.maybe_save()
+            await session.maybe_save_async()
     except Exception as e:
         logger.exception("consolidate_knowledge failed: %s", e)
 

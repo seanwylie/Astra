@@ -1,5 +1,5 @@
 ---
-description: Git hygiene - never commit secrets or runtime data
+description: Git hygiene – never commit secrets or runtime data
 alwaysApply: true
 ---
 
@@ -7,10 +7,12 @@ alwaysApply: true
 
 Never commit:
 
-- **`.env`** – environment secrets, API keys, tokens
+- **`.env`**, **`.env.*`** – environment secrets, API keys, tokens
 - **`data/*.db`**, **`data/*.sqlite*`** – database files
-- **`data/live_orders.log`** – runtime logs
-- **`scripts/data/.questrade_token`** – Questrade refresh token
+- **`data/mind_file_parents.json`**, **`data/astra_logs.json`**, **`data/user_memories.json`**, **`data/analytics_data.json`**, **`data/learning_data.json`** – runtime/generated data
+- **`mind_file.json`** – exported mind file
+- **`scripts/.spawn-agents/`** – spawn-agents runtime output
+- **`logs/`**, **`*.log`** – runtime logs
 - **`.streamlit/secrets.toml`** – Streamlit secrets
 
 These are in `.gitignore`; avoid `git add -f` or overrides that would add them.

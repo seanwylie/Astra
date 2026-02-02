@@ -11,6 +11,15 @@ from app.core.struggle_log import append_struggle_log
 MAX_QUESTIONS_TO_ANSWER = 3
 
 
+def _question_text(raw) -> str:
+    """Normalize question value to str; handles 'question' being a nested dict (e.g. from API)."""
+    if isinstance(raw, str):
+        return raw
+    if isinstance(raw, dict):
+        return raw.get("text", raw.get("question", str(raw)))
+    return str(raw) if raw is not None else ""
+
+
 def _try_answer_question(question_text: str, mind_data: dict, client: OpenAI, mama_retry_done: bool = False) -> str | None:
     """Use GPT with stored_knowledge and reflections to attempt an answer. Returns answer or None."""
     knowledge = mind_data.get("stored_knowledge", [])
@@ -92,7 +101,7 @@ def self_answer_questions(mind_data: dict) -> list:
             question_text = q
             new_questions.append({"question": question_text, "unresolved": True, "context": "Stored for future answering."})
         elif isinstance(q, dict) and "question" in q:
-            question_text = q["question"]
+            question_text = _question_text(q["question"])
             new_questions.append({
                 "question": question_text,
                 "unresolved": q.get("unresolved", True),
@@ -114,7 +123,7 @@ def self_answer_questions(mind_data: dict) -> list:
         context_lower = (knowledge_recent + " " + reflections_recent).lower()
 
         def score_question(q):
-            text = (q.get("question") or "").lower()
+            text = _question_text(q.get("question")).lower()
             if not text:
                 return 0
             overlap = sum(1 for w in text.split() if len(w) >= 4 and w in context_lower)

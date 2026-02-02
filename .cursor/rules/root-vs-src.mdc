@@ -1,15 +1,13 @@
 ---
-description: Root modules vs src/cashstra - keep in sync when editing
+description: Astra package layout – app/ is the main package
 alwaysApply: true
 ---
 
-# Root vs src/cashstra
+# Root vs app/
 
-The project has **dual structure**: root-level modules (`strategy.py`, `trading.py`, `models.py`, etc.) and `src/cashstra/` equivalents.
+Astra uses a **single main package**: **`app/`**. There is no dual root-vs-src structure to keep in sync.
 
-When editing code in one location, check if the other needs the same change:
+- **`app/`**: Core application (main, interfaces, core systems, events, Discord, etc.). Put new features and application logic here.
+- **Root**: Entry point (`run_astra.py`), `config/`, `scripts/`, `utils/`, `maintenance/`, and top-level packages like `astra_growth/`.
 
-- Root: `strategy.py`, `trading.py`, `tracker.py`, `models.py`, `storage.py`, `config.py`, etc.
-- Package: `src/cashstra/strategy/`, `src/cashstra/trading/`, `src/cashstra/data/`, etc.
-
-New features go in `src/cashstra/`; root modules may wrap or re-export for backward compatibility.
+Run from project root with `PYTHONPATH=.` so that `app` and root modules resolve correctly (e.g. `run_astra.py` or `python -m app.main`).

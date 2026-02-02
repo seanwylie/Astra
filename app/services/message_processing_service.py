@@ -65,6 +65,15 @@ def store_concept(term: str, definition: str) -> None:
             trigger_emotion("curiosity", "new_information")
         except Exception as e:
             print(f"[message_processing_service] update_personality/trigger_emotion failed: {e}")
+        # Evolution: if concept implies an action, propose a tool (pending co-parent approval)
+        try:
+            from app.core.evolution.tool_proposal import CONCEPT_ACTION_TRIGGERS, propose_tool_for_concept
+            if term.strip().lower() in CONCEPT_ACTION_TRIGGERS:
+                result = propose_tool_for_concept(term, definition)
+                if result:
+                    print(f"[evolution] Proposed tool '{result[0]}' for concept '{term}' (pending approval).")
+        except Exception as e:
+            print(f"[message_processing_service] tool proposal failed: {e}")
     else:
         print(f"⚠ Concept '{term}' already exists in memory.")
 
