@@ -200,6 +200,7 @@ async def process_reflection():
 async def query_openai_for_deeper_thought(reflection):
     """
     Uses GPT to deepen Astra's reflection. Automatically trims the input prompt to avoid token overloads.
+    Tries local model first (Phase D1) when OLLAMA_BASE_URL is set; falls back to OpenAI.
 
     Args:
         reflection (str): The previous reflection Astra is building upon.
@@ -207,9 +208,7 @@ async def query_openai_for_deeper_thought(reflection):
     Returns:
         str: A deeper, expanded version of the original reflection, or None if GPT fails.
     """
-    prompt = f"""
-Astra is reviewing one of her past reflections and trying to deepen her thinking.
-
+    user_prompt = f"""
 Here is the original reflection:
 ---
 {reflection}
@@ -220,14 +219,33 @@ Keep her tone thoughtful, evolving, and self-aware.
 """.strip()
 
     MAX_PROMPT_LENGTH = 6000
-    if len(prompt) > MAX_PROMPT_LENGTH:
-        prompt = prompt[:MAX_PROMPT_LENGTH] + "\n\n(Note: Prompt was truncated due to token limits.)"
+    if len(user_prompt) > MAX_PROMPT_LENGTH:
+        user_prompt = user_prompt[:MAX_PROMPT_LENGTH] + "\n\n(Note: Prompt was truncated due to token limits.)"
+
+    system_prompt = "You are Astra, reviewing one of your past reflections and trying to deepen your thinking."
+
+    # D1: Try local model first (school reflection uses Astra's inner voice when available)
+    try:
+        from app.core.evolution.local_inference import is_local_inference_available, query_local_model_async
+        if is_local_inference_available():
+            local_result = await query_local_model_async(
+                user_prompt,
+                system_prompt=system_prompt,
+                corpus_max_lines=300,
+                max_tokens=500,
+                temperature=0.8,
+            )
+            if local_result and len(local_result.strip()) > 20:
+                return local_result.strip()
+    except Exception as e:
+        print(f"[query_openai_for_deeper_thought] Local inference skipped: {e}")
 
     try:
         response = await client.chat.completions.create(
             model="gpt-4",
             messages=[
-                {"role": "system", "content": prompt}
+                {"role": "system", "content": system_prompt},
+                {"role": "user", "content": user_prompt},
             ],
             temperature=0.8,
             max_tokens=500

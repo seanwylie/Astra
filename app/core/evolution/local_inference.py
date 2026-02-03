@@ -16,6 +16,8 @@ try:
 except ImportError:
     _HAS_REQUESTS = False
 
+_last_error: Optional[Exception] = None  # set when query_local_model fails (for diagnostics)
+
 
 def _get_config() -> Dict[str, Any]:
     """Base URL and model for local inference. Env overrides."""
@@ -36,6 +38,11 @@ def _get_config() -> Dict[str, Any]:
 def is_local_inference_available() -> bool:
     """True if a local model base URL is configured."""
     return bool(_get_config().get("base_url"))
+
+
+def get_last_inference_error() -> Optional[Exception]:
+    """Return the last exception from query_local_model, if any (for diagnostics)."""
+    return _last_error
 
 
 def _corpus_context_block(entries: List[Dict[str, Any]], max_chars: int = 4000) -> str:
@@ -66,6 +73,8 @@ def query_local_model(
     Call local model (Ollama-compatible API) with corpus slice as context.
     Returns generated text or None if disabled/failed.
     """
+    global _last_error
+    _last_error = None
     cfg = _get_config()
     base_url = cfg.get("base_url")
     if not base_url:
@@ -113,7 +122,8 @@ def query_local_model(
             msg = (data.get("message") or {})
             text = (msg.get("content") or "").strip()
             return text or None
-        except Exception:
+        except Exception as e:
+            _last_error = e
             pass
 
     try:
@@ -122,7 +132,8 @@ def query_local_model(
         data = r.json()
         text = (data.get("response") or "").strip()
         return text or None
-    except Exception:
+    except Exception as e:
+        _last_error = e
         return None
 
 

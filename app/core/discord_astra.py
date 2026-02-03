@@ -308,6 +308,10 @@ If there are multiple meanings, clarify them. If it’s vague, offer helpful que
         await ctx.send(chunk, tts=False)
 
 
+# Ensure lookup appears under Lookup in !commands (when this module defines the command)
+_cmd = bot.get_command("lookup")
+if _cmd is not None:
+    _cmd.category = "🔍 Lookup"
 
 
 @bot.command(name="test_emotion")

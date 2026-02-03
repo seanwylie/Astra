@@ -27,6 +27,7 @@ async def how_are_you(ctx):
     await ctx.send(result)
 
 how_are_you._is_command = True
+how_are_you.category = "🧠 Emotional"
 
 
 async def test_emotion(ctx, emotion: str, amount: int = 10):
@@ -35,3 +36,4 @@ async def test_emotion(ctx, emotion: str, amount: int = 10):
     await ctx.send(result)
 
 test_emotion._is_command = True
+test_emotion.category = "🧠 Emotional"

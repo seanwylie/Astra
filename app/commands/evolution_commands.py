@@ -196,3 +196,7 @@ async def propose_change(ctx, *, payload: str = ""):
         await ctx.send(msg)
     else:
         await ctx.send("Could not generate proposal (file not readable or API error).")
+
+
+propose_change._is_command = True
+propose_change.category = "Evolution"

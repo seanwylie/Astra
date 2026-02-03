@@ -33,12 +33,13 @@ def auto_register_commands(bot, command_module, module_path):
         command_module (module): The imported Python module containing commands.
         module_path (str): The file path to that module (used for docstring parsing).
     """
-    category = extract_doc_category(module_path) or "🧩 Miscellaneous"
+    default_category = extract_doc_category(module_path) or "🧩 Miscellaneous"
     for attr in dir(command_module):
         maybe_func = getattr(command_module, attr)
         if callable(maybe_func) and getattr(maybe_func, "_is_command", False):
             cmd = Command(maybe_func, name=maybe_func.__name__, help=maybe_func.__doc__ or "")
-            cmd.category = category
+            # Use per-command category if set (e.g. "💝 Nurturing"); else docstring (e.g. "💝 Nurturing Commands")
+            cmd.category = getattr(maybe_func, "category", None) or default_category
             bot.add_command(cmd)
 
 

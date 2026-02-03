@@ -2,6 +2,76 @@
 
 How Astra can evolve: corpus export, local inference, Astra-grown tools, and code change proposals.
 
+## Phase A: What’s done vs remaining
+
+| Step | Deliverable | Status | Remaining |
+|------|-------------|--------|-----------|
+| **A1** | Corpus export pipeline (mind, dinner, self_model, learning queue → JSONL) | ✅ Implemented | None. Run: `PYTHONPATH=. .venv/bin/python -m app.core.evolution.corpus_export` |
+| **A2** | Local inference with corpus-as-context (Ollama-compatible) | ✅ Implemented | None. Set `OLLAMA_BASE_URL` (and optional `OLLAMA_MODEL`). |
+| **A3** | Train/update local model on corpus; document how to run (e.g. weekly) | ✅ Script + doc | Run `./scripts/export_corpus_for_training.sh`; then run your training (Ollama/LoRA). See §3. |
+| **A4** | Point inference at trained model | ✅ Config-only | Set `OLLAMA_MODEL` to your trained model name after A3. |
+
+**Phase A remaining (concrete):** Run the steps in **Polish off Phase A and D1** below (export once; optionally set `OLLAMA_BASE_URL` and test; set `OLLAMA_MODEL` after training).
+
+---
+
+## D1: What’s done vs remaining
+
+| Item | Status | Notes |
+|------|--------|--------|
+| Dream: try local model first, then OpenAI | ✅ Implemented | `app/core/astra_schedule/dream.py` |
+| School (deepen reflection): try local model first, then OpenAI | ✅ Implemented | `app/core/processing.py` → `query_openai_for_deeper_thought` |
+| Other reflection paths (play, dinner, message reply, etc.) | Not in scope | Plan says “e.g. school reflection, dream”; extend later if desired. |
+
+**D1 remaining (concrete):**
+
+1. **Verify:** With `OLLAMA_BASE_URL` set and a model running, trigger a dream and a school cycle and confirm logs show local inference (or fallback to OpenAI if the call fails).
+2. **Optional:** Add more “inner voice” call paths (e.g. play, dinner reflection) to try local first; not required for D1.
+
+---
+
+## Polish off Phase A and D1 (run these)
+
+From the **project root** (e.g. `cd /home/sean/dev/systems/Astra`):
+
+**1. Phase A1 + A3 — Export corpus (once, or weekly before retraining)**
+
+```bash
+./scripts/export_corpus_for_training.sh
+```
+
+- Writes `data/astra_corpus.jsonl`. If mind/dinner/self_model aren't available yet, you may see fewer lines; that's fine.
+- When you're ready to train a local model, run this again and then use §3 (Ollama/LoRA) to train on that file.
+
+**2. Phase A2 + D1 — Local inference (optional but recommended)**
+
+- **2a.** In `.env`, add (if you have Ollama running locally):
+
+  ```bash
+  OLLAMA_BASE_URL=http://localhost:11434
+  # OLLAMA_MODEL=llama3.2   # optional; default is llama3.2
+  ```
+
+- **2b.** Quick test that local inference is available (no need to run the full bot):
+
+  ```bash
+  PYTHONPATH=. .venv/bin/python scripts/test_local_inference.py
+  ```
+
+- **2c.** With Astra running, trigger a dream or wait for a school cycle. In logs, look for `Dream reflection (local)` or local inference in school; if the local call fails, you'll see fallback to OpenAI.
+
+**3. Phase A4 — Use a trained model (when you have one)**
+
+- After you've trained/imported a model (see §3), set in `.env`:
+
+  ```bash
+  OLLAMA_MODEL=your-trained-model-name
+  ```
+
+No code changes needed; dream and school will use that model when local inference is available.
+
+---
+
 ## 1. Corpus export (Phase A1)
 
 Export Astra's mind, dinner journal, self-model, and learning queue to a single JSONL corpus for training or context.
@@ -25,7 +95,7 @@ When a local model (e.g. Ollama) is available, Astra can use it for reflection/d
 
 - **Env vars:** `OLLAMA_BASE_URL` (e.g. `http://localhost:11434`), optional `OLLAMA_MODEL` (default `llama3.2`).
 - **Config:** In `general_config.json`: `local_model_base_url`, `local_model_name`.
-- **Usage:** Dream seed processing tries local model first when `OLLAMA_BASE_URL` is set; falls back to OpenAI if disabled or if the call fails.
+- **Usage:** Dream seed processing and school reflection (deepen-thought) both try the local model first when `OLLAMA_BASE_URL` is set; they fall back to OpenAI if disabled or if the call fails.
 
 To use a **trained** model: train or import your model into Ollama (or your stack), then set `OLLAMA_MODEL` to that model name. No code change needed.
 
@@ -33,10 +103,67 @@ To use a **trained** model: train or import your model into Ollama (or your stac
 
 Corpus is in `data/astra_corpus.jsonl`. Training is an offline step and depends on your setup.
 
-- **Ollama:** Use Ollama’s fine-tuning or import flow for your base model; point `OLLAMA_MODEL` to the new model name.
-- **Generic:** Export corpus (above), then use your preferred tool (e.g. LoRA, fine-tune script) with the JSONL. Each line is `{"role": "...", "content": "...", "source": "...", "timestamp": "..."}`. Filter or weight by `source` if desired (e.g. more weight on `dinner_journal`, `self_model`).
+### Step 1: Export the corpus (run before training, e.g. weekly)
 
-Run corpus export periodically (e.g. weekly) before retraining so the model stays in sync with Astra’s growth.
+```bash
+./scripts/export_corpus_for_training.sh
+# Writes data/astra_corpus.jsonl (role, content, source, timestamp per line)
+```
+
+### Step 2: Convert to a training format (optional but recommended)
+
+Many fine-tuning tools expect **instruction/input/output** (Alpaca-style) or **messages**. A converter is included:
+
+```bash
+PYTHONPATH=. .venv/bin/python scripts/convert_corpus_for_training.py
+# Reads data/astra_corpus.jsonl, writes data/astra_training.jsonl (instruction, input, output)
+```
+
+You can then point Unsloth, Axolotl, or Hugging Face TRL at `data/astra_training.jsonl`.
+
+### Step 3: Fine-tune (choose one path)
+
+**Option A — Unsloth (recommended for ease, GPU needed)**
+1. Install Unsloth (see [docs.unsloth.ai](https://docs.unsloth.ai)).
+2. Use `data/astra_training.jsonl` (or convert to the dataset format Unsloth expects; see their Datasets Guide).
+3. Fine-tune a base model (e.g. Llama 3.2, Mistral) with LoRA.
+4. Export the adapter (e.g. Safetensors) or export to GGUF.
+
+**Option B — Hugging Face TRL / PEFT**
+1. Load `data/astra_training.jsonl` (or the raw corpus and map to `instruction`/`output` in code).
+2. Fine-tune with LoRA; save the adapter.
+
+**Option C — Other (Axolotl, llama.cpp fine-tune, etc.)**
+Use your preferred tool. Corpus format: one JSON object per line with `role`, `content`, `source`, `timestamp`. Filter or weight by `source` (e.g. more weight on `dinner_journal`, `self_model`) if desired.
+
+### Step 4: Import into Ollama and use
+
+After you have a **LoRA adapter** (e.g. Safetensors) or a **GGUF** file:
+
+1. **Using an adapter:** Create a Modelfile (e.g. `Modelfile.astra`):
+
+   ```
+   FROM llama3.2
+   ADAPTER /path/to/your/adapter_directory
+   ```
+
+   Then: `ollama create astra -f Modelfile.astra`
+
+2. **Using a GGUF:** If you exported a full model as GGUF, use `ollama create` with a Modelfile that references it (see [Ollama import docs](https://github.com/ollama/ollama/blob/main/docs/import.md)).
+
+3. **Use the new model:** In `.env` set `OLLAMA_MODEL=astra` (or whatever name you gave). Dream and school will use it when local inference is available.
+
+### Summary
+
+| Step | Command / action |
+|------|------------------|
+| 1. Export corpus | `./scripts/export_corpus_for_training.sh` |
+| 2. Convert for training | `PYTHONPATH=. .venv/bin/python scripts/convert_corpus_for_training.py` |
+| 3. Fine-tune | Unsloth / TRL / Axolotl on `data/astra_training.jsonl` (or raw corpus); export adapter or GGUF |
+| 4. Import to Ollama | `ollama create astra -f Modelfile` (adapter or GGUF) |
+| 5. Use in Astra | Set `OLLAMA_MODEL=astra` in `.env` |
+
+Run the export (and optionally convert) periodically (e.g. weekly) before retraining so the model stays in sync with Astra's growth.
 
 ## 4. Astra-grown tools (Phase B)
 
