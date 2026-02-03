@@ -2,10 +2,12 @@
 """
 Quick test script for the new Enhanced Learning Modes System
 """
-
-import sys
 import os
-sys.path.append(os.path.dirname(os.path.abspath(__file__)))
+import sys
+
+import pytest
+
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
 from app.services.learning_service import learning_service
 from app.services.personality_service import personality_service
@@ -85,6 +87,7 @@ def test_personality_learning_differences():
         
         print("\n" + "="*60 + "\n")
 
+@pytest.mark.integration
 def test_knowledge_base_integration():
     """Test knowledge base building and retrieval"""
     print("🔍 Testing Knowledge Base Integration\n")

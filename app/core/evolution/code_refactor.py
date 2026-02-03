@@ -14,6 +14,10 @@ import re
 import json
 from collections import defaultdict
 
+from app.logging_config import get_logger
+
+logger = get_logger(__name__)
+
 # Configurable paths
 PROJECT_ROOT = os.path.expanduser("~/astra_reflections")
 IGNORE_DIRS = {".git", "__pycache__", "venv", ".venv"}
@@ -50,7 +54,7 @@ def scan_codebase():
 
 
 def suggest_modular_split(usage_map):
-    print("\n🔍 Suggested Modular Mind Split:")
+    logger.info("Suggested Modular Mind Split:")
     split = defaultdict(set)
 
     for filename, sections in usage_map.items():
@@ -61,11 +65,9 @@ def suggest_modular_split(usage_map):
     for key in MIND_KEYS:
         files = list(split[key])
         if files:
-            print(f"\n🧠 '{key}' is used in:")
-            for f in files:
-                print(f"   - {f}")
+            logger.info("'%s' is used in: %s", key, files)
         else:
-            print(f"\n⚠️ '{key}' does not appear to be used anywhere.")
+            logger.warning("'%s' does not appear to be used anywhere.", key)
 
 
 def generate_mind_manifest():
@@ -78,11 +80,11 @@ def generate_mind_manifest():
     }
     with open(MIND_MANIFEST_PATH, "w", encoding="utf-8") as f:
         json.dump(manifest, f, indent=4)
-    print(f"\n📄 mind_manifest.json written to: {MIND_MANIFEST_PATH}")
+    logger.info("mind_manifest.json written to: %s", MIND_MANIFEST_PATH)
 
 
 if __name__ == "__main__":
-    print("🧠 Scanning Astra's codebase for mind usage patterns...")
+    logger.info("Scanning Astra's codebase for mind usage patterns...")
     usage_report = scan_codebase()
     suggest_modular_split(usage_report)
     generate_mind_manifest()

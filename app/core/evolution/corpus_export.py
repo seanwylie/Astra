@@ -40,7 +40,8 @@ def _load_mind() -> Optional[Dict[str, Any]]:
         from app.interfaces.influence import load_mind
         return load_mind()
     except Exception as e:
-        print(f"[corpus_export] Skipping mind_file: {e}")
+        import logging
+        logging.getLogger(__name__).debug("Skipping mind_file: %s", e)
         return None
 
 

@@ -9,6 +9,8 @@ import logging
 from pathlib import Path
 from typing import Any
 
+from app.exceptions import ConfigurationError
+
 logger = logging.getLogger(__name__)
 
 # Project root = parent of app/
@@ -44,12 +46,16 @@ def load_config(filename: str) -> dict[str, Any]:
     try:
         with open(file_path, "r", encoding="utf-8") as f:
             data = json.load(f)
-        if not _validate_config(filename, data):
-            logger.warning("Config validation failed for %s", filename)
-            data = {}
+        missing = _validate_config(filename, data)
+        if missing:
+            raise ConfigurationError(
+                "Config validation failed for %s: missing required key(s): %s" % (filename, ", ".join(missing))
+            )
         _apply_env_overrides(filename, data)
         _CONFIG_CACHE[filename] = data
         return data
+    except ConfigurationError:
+        raise
     except FileNotFoundError:
         logger.warning("Config file not found: %s", file_path)
         _CONFIG_CACHE[filename] = {}
@@ -60,13 +66,13 @@ def load_config(filename: str) -> dict[str, Any]:
         return {}
 
 
-def _validate_config(config_name: str, config: dict[str, Any]) -> bool:
+def _validate_config(config_name: str, config: dict[str, Any]) -> list[str]:
+    """Return list of missing required keys; empty if valid."""
     required = _VALIDATION_RULES.get(config_name, [])
-    for key in required:
-        if key not in config:
-            logger.error("Missing required key '%s' in %s", key, config_name)
-            return False
-    return True
+    missing = [k for k in required if k not in config]
+    for key in missing:
+        logger.error("Missing required key '%s' in %s", key, config_name)
+    return missing
 
 
 # Env vars override these config keys when set (so one repo works across environments)

@@ -106,8 +106,8 @@ def get_mama_context() -> Dict[str, Any]:
     
     # Get developmental stage
     try:
-        from app.core.growth.developmental_stages import developmental_stages
-        stage_info = developmental_stages.get_developmental_summary()
+        from app.core.development.developmental_stage import developmental_tracker
+        stage_info = developmental_tracker.get_developmental_summary()
         context["stage"] = stage_info.get("current_stage", {}).get("name", "")
     except Exception as e:
         logger.debug(f"Could not get developmental stage: {e}")

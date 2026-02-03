@@ -5,28 +5,41 @@ import aioboto3
 import io
 import wikipedia
 import os
+from botocore.config import Config as BotocoreConfig
 from app.config.loader import load_config
+from app.exceptions import InfluenceError
 from fuzzywuzzy import fuzz
 from app.logging_config import get_logger
 
 
-# ✅ Load general configurations
+# ✅ Load general configurations (paths overridable via ASTRA_MIND_FILE, ASTRA_LOG_FILE, etc.)
 general_config = load_config("general_config")
 S3_BUCKET_NAME = general_config.get("s3_bucket", "swylie-astra")
 MIND_FILE_JSON = general_config.get("mind_file", "mind_file.json")
 MIND_FILE_ORIG = general_config.get("structured_mind_file", "mind_file_parents.json")
 
-# Legacy sync client
-s3 = boto3.client("s3")
+
+def _local_mind_file_path():
+    """Path to local mind file, if any (used to remove stale local copy before S3 read/write). From config or env."""
+    path = general_config.get("mind_file_path") or os.getenv("ASTRA_MIND_FILE")
+    return path.strip() if path else None
+
+# S3 client with timeouts and retries for reliability
+_S3_CONFIG = BotocoreConfig(
+    connect_timeout=10,
+    read_timeout=60,
+    retries={"max_attempts": 3, "mode": "adaptive"},
+)
+s3 = boto3.client("s3", config=_S3_CONFIG)
 
 logger = get_logger("interfaces.influence")
 
 
 # === NEW: Async Mind Load ===
 async def load_mind_async():
-    """Asynchronously load the mind file from S3."""
+    """Asynchronously load the mind file from S3 (uses same timeouts/retries as sync client)."""
     logger.debug("🔍 [async] Loading mind file from S3...")
-    async with aioboto3.client("s3") as s3_async:
+    async with aioboto3.client("s3", config=_S3_CONFIG) as s3_async:
         response = await s3_async.get_object(Bucket=S3_BUCKET_NAME, Key=MIND_FILE_JSON)
         body = await response["Body"].read()
         mind_data = json.loads(body)
@@ -36,9 +49,9 @@ async def load_mind_async():
 
 # === NEW: Async Save ===
 async def save_mind_async(data):
-    """Asynchronously save the mind file to S3."""
+    """Asynchronously save the mind file to S3 (uses same timeouts/retries as sync client)."""
     logger.debug("💾 [async] Saving mind to S3. Reflections: %s", len(data.get("self_reflections", [])))
-    async with aioboto3.client("s3") as s3_async:
+    async with aioboto3.client("s3", config=_S3_CONFIG) as s3_async:
         payload = json.dumps(data, ensure_ascii=False).encode("utf-8")
         await s3_async.put_object(Bucket=S3_BUCKET_NAME, Key=MIND_FILE_JSON, Body=payload)
     logger.debug("✅ [async] Mind saved to S3.")
@@ -48,9 +61,9 @@ def save_to_s3(mind_data):
     """Save mind file to S3 using proper encoding and error handling."""
     try:
         logger.debug("📝 [save_to_s3] Pre-Save Knowledge Count: %s", len(mind_data.get("stored_knowledge", [])))
-        local_mind_file = "/home/sean/dev/systems/Astra/mind_file.json"
-        if os.path.exists(local_mind_file):
-            logger.debug("⚠ Deleting local mind_file.json to prevent accidental overwrites.")
+        local_mind_file = _local_mind_file_path()
+        if local_mind_file and os.path.exists(local_mind_file):
+            logger.debug("⚠ Deleting local mind file to prevent accidental overwrites.")
             os.remove(local_mind_file)
 
         mind_file_json = json.dumps(mind_data, indent=4, ensure_ascii=False)
@@ -63,8 +76,9 @@ def save_to_s3(mind_data):
             len(mind_data.get("self_questions", [])),
             len(mind_data.get("stored_knowledge", [])),
         )
-    except Exception:
+    except Exception as e:
         logger.exception("🚨 [save_to_s3] Failed to save mind file to S3.")
+        raise InfluenceError("Failed to save mind file to S3") from e
 
 
 def clean_text_entries(entries, label="entry", min_length=25, dedupe_threshold=90):
@@ -222,7 +236,10 @@ def save_mind(mind_data, force=False):
     mind_data["stored_knowledge"] = cleaned_knowledge
 
     logger.debug("🔍 [save_mind] Loading latest mind for comparison...")
-    latest_mind_data = load_mind()
+    try:
+        latest_mind_data = load_mind()
+    except InfluenceError:
+        latest_mind_data = None
 
     if latest_mind_data:
         latest_raw = latest_mind_data.get("stored_knowledge", [])
@@ -257,7 +274,11 @@ def save_mind(mind_data, force=False):
     save_to_s3(mind_data)
 
     logger.debug("🔁 [save_mind] Re-loading mind to verify persisted changes...")
-    reloaded = load_mind()
+    try:
+        reloaded = load_mind()
+    except InfluenceError as e:
+        logger.error("❌ [save_mind] Failed to reload mind after save: %s", e)
+        return
     if not reloaded:
         logger.error("❌ [save_mind] Failed to reload mind after save!")
         return
@@ -284,9 +305,9 @@ def save_mind(mind_data, force=False):
 def load_mind():
     """Load Astra's mind file from S3 while ensuring proper memory management."""
     logger.debug("🔍 Debug: Loading mind file from S3...")
-    local_mind_file = "/home/sean/dev/systems/Astra/mind_file.json"
-    if os.path.exists(local_mind_file):
-        logger.debug("⚠ Deleting local mind_file.json to prevent stale data usage!")
+    local_mind_file = _local_mind_file_path()
+    if local_mind_file and os.path.exists(local_mind_file):
+        logger.debug("⚠ Deleting local mind file to prevent stale data usage.")
         os.remove(local_mind_file)
 
     try:
@@ -298,7 +319,10 @@ def load_mind():
         return mind_data
     except (s3.exceptions.NoSuchKey, json.JSONDecodeError) as e:
         logger.warning("⚠ Warning: mind_file.json not found or corrupted in S3: %s", e)
-        return None
+        raise InfluenceError("Failed to load mind file from S3") from e
+    except Exception as e:
+        logger.exception("Failed to load mind file from S3")
+        raise InfluenceError("Failed to load mind file from S3") from e
 
 
 def is_term_or_phrase(concept):

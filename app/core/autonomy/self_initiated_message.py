@@ -8,6 +8,9 @@ import boto3
 from typing import Optional, Dict, Any, List
 from dataclasses import dataclass, asdict
 from app.config.loader import load_config
+from app.logging_config import get_logger
+
+logger = get_logger(__name__)
 from app.core.inner_life.stream_of_consciousness import stream_of_consciousness
 from app.core.autonomy.project_system import project_system
 from app.core.self_awareness.self_model import self_model
@@ -70,7 +73,7 @@ class SelfInitiatedMessageSystem:
         except s3.exceptions.NoSuchKey:
             pass
         except Exception as e:
-            print(f"⚠️ Error loading initiated messages: {e}")
+            logger.warning("Error loading initiated messages: %s", e)
     
     def _save_history(self) -> None:
         """Save message history to S3."""
@@ -85,7 +88,7 @@ class SelfInitiatedMessageSystem:
                 Body=json.dumps(data, indent=2).encode("utf-8")
             )
         except Exception as e:
-            print(f"⚠️ Error saving initiated messages: {e}")
+            logger.warning("Error saving initiated messages: %s", e)
     
     def can_send_message(self) -> bool:
         """Check if Astra should send a self-initiated message."""
@@ -113,17 +116,17 @@ class SelfInitiatedMessageSystem:
             
             # Don't reach out if energy is too low
             if energy < 0.3:
-                print(f"[self_initiated_message] 🎵 Energy too low ({energy:.0%}) for proactive outreach")
+                logger.debug("Energy too low (%.0f%%) for proactive outreach", energy * 100)
                 return False
             
             # Don't reach out if tone suggests internal struggle
             struggle_tones = ["heavy", "unsettled", "guarded"]
             if tone in struggle_tones:
-                print(f"[self_initiated_message] 🎵 Tone ({tone}) not conducive to proactive outreach")
+                logger.debug("Tone (%s) not conducive to proactive outreach", tone)
                 return False
                 
         except Exception as e:
-            print(f"[self_initiated_message] 🎵 Inner symphony check failed (proceeding): {e}")
+            logger.debug("Inner symphony check failed (proceeding): %s", e)
         
         return True
     
@@ -259,7 +262,7 @@ class SelfInitiatedMessageSystem:
         message = self.generate_message(reason)
         self.record_initiated_message(reason.get("type", "unknown"), message)
         
-        print(f"💬 Astra initiating message ({reason.get('type')}): {message[:50]}...")
+        logger.info("Astra initiating message (%s): %s...", reason.get("type"), message[:50])
         return message
 
 

@@ -36,6 +36,9 @@ from app.core.personality.personality_manager import get_active_traits_for_promp
 from app.services.personality_service import get_current_personality, personality_service
 from app.core.emotions.emotion_engine import trigger_emotion
 from app.config.loader import load_config
+from app.logging_config import get_logger
+
+logger = get_logger("message_processing_service")
 
 # Initialize managers
 mood_manager = MoodManager()
@@ -58,24 +61,24 @@ def store_concept(term: str, definition: str) -> None:
     if formatted_entry not in mind_data["stored_knowledge"]:
         mind_data["stored_knowledge"].append(formatted_entry)
         session.maybe_save()
-        print(f"✅ Stored new concept: {formatted_entry}")
+        logger.debug("Stored new concept: %s", formatted_entry[:80])
         # Plan: wire update_personality and outcome-based emotion to learning
         try:
             update_personality("learning_new_idea", 0.3)
             trigger_emotion("curiosity", "new_information")
         except Exception as e:
-            print(f"[message_processing_service] update_personality/trigger_emotion failed: {e}")
+            logger.debug("update_personality/trigger_emotion failed: %s", e)
         # Evolution: if concept implies an action, propose a tool (pending co-parent approval)
         try:
             from app.core.evolution.tool_proposal import CONCEPT_ACTION_TRIGGERS, propose_tool_for_concept
             if term.strip().lower() in CONCEPT_ACTION_TRIGGERS:
                 result = propose_tool_for_concept(term, definition)
                 if result:
-                    print(f"[evolution] Proposed tool '{result[0]}' for concept '{term}' (pending approval).")
+                    logger.debug("Proposed tool for concept %s (pending approval)", term)
         except Exception as e:
-            print(f"[message_processing_service] tool proposal failed: {e}")
+            logger.debug("tool proposal failed: %s", e)
     else:
-        print(f"⚠ Concept '{term}' already exists in memory.")
+        logger.debug("Concept already exists in memory: %s", term)
 
 
 def process_unknown_terms(user_message: str) -> List[str]:
@@ -275,4 +278,4 @@ async def send_chunked_response(send_func, response_chunks: List[str], use_tts: 
             if len(response_chunks) > 1:  # Only delay if multiple chunks
                 await asyncio.sleep(delay)
         else:
-            print("[message_processing_service] ⚠ Skipping empty message chunk.")
+            logger.debug("Skipping empty message chunk.")

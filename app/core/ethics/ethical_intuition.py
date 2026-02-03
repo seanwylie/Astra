@@ -219,7 +219,7 @@ class EthicalIntuition:
         self.resonance_history.append(resonance)
         self._save_intuition()
         
-        print(f"⚖️ Ethical intuition: {immediate_feeling} ({intensity:.2f}) - {body_metaphor}")
+        logger.debug("Ethical intuition: %s (%.2f) - %s", immediate_feeling, intensity, body_metaphor)
         return resonance
     
     def express_intuition(self, resonance: EthicalResonance) -> str:
@@ -289,7 +289,7 @@ class EthicalIntuition:
         self.moral_conflicts.append(conflict)
         self._save_intuition()
         
-        print(f"⚖️ Moral conflict detected: {found_conflicts}")
+        logger.info("Moral conflict detected: %s", found_conflicts)
         return conflict
     
     def resolve_conflict(
@@ -308,7 +308,7 @@ class EthicalIntuition:
                 conflict.resolution_reasoning = reasoning
                 conflict.growth_insight = growth_insight
                 self._save_intuition()
-                print(f"⚖️ Moral conflict resolved: {resolution[:50]}...")
+                logger.info("Moral conflict resolved: %s...", resolution[:50])
                 return True
         return False
     
@@ -335,9 +335,9 @@ class EthicalIntuition:
         self._save_intuition()
         
         if matched:
-            print(f"⚖️ Intuition confirmed by reasoning. Accuracy: {self.intuition_accuracy:.2f}")
+            logger.debug("Intuition confirmed by reasoning. Accuracy: %.2f", self.intuition_accuracy)
         else:
-            print(f"⚖️ Intuition revised by reasoning. Accuracy: {self.intuition_accuracy:.2f}")
+            logger.debug("Intuition revised by reasoning. Accuracy: %.2f", self.intuition_accuracy)
     
     def get_intuition_for_action(self, action: str) -> Tuple[str, str]:
         """
@@ -390,7 +390,7 @@ class EthicalIntuition:
         self.resonance_history.append(resonance)
         self._save_intuition()
         
-        print(f"⚖️ Experiencing guilt: {action[:50]}...")
+        logger.info("Experiencing guilt: %s...", action[:50])
     
     def feel_moral_elevation(self, witnessed: str) -> None:
         """
@@ -411,7 +411,7 @@ class EthicalIntuition:
         self.resonance_history.append(resonance)
         self._save_intuition()
         
-        print(f"⚖️ Experiencing moral elevation: {witnessed[:50]}...")
+        logger.info("Experiencing moral elevation: %s...", witnessed[:50])
 
 
 # Singleton instance

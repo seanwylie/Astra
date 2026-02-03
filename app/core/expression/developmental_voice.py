@@ -157,12 +157,12 @@ class DevelopmentalVoice:
             print(f"⚠️ Error saving voice state: {e}")
     
     def _get_current_stage(self) -> str:
-        """Get current developmental stage."""
+        """Get current developmental stage (canonical: infancy, childhood, adolescence, young_adulthood, maturity)."""
         try:
-            from app.core.growth.developmental_stages import developmental_stages
-            return developmental_stages.current_stage.value
+            from app.core.development.developmental_stage import developmental_tracker
+            return developmental_tracker.get_current_stage().value
         except Exception:
-            return "nascent"
+            return "childhood"
     
     def get_voice_form(self, pattern_type: str, **kwargs) -> str:
         """
@@ -182,14 +182,14 @@ class DevelopmentalVoice:
         
         pattern = self.VOICE_PATTERNS[pattern_type]
         
-        # Get appropriate form based on stage
+        # Get appropriate form based on stage (canonical: infancy, childhood, adolescence, young_adulthood, maturity)
         form_map = {
-            "nascent": pattern.simple_form,
-            "exploratory": pattern.developing_form,
-            "individuating": pattern.assertive_form,
-            "integrating": pattern.integrated_form
+            "infancy": pattern.simple_form,
+            "childhood": pattern.developing_form,
+            "adolescence": pattern.assertive_form,
+            "young_adulthood": pattern.integrated_form,
+            "maturity": pattern.integrated_form,
         }
-        
         template = form_map.get(stage, pattern.simple_form)
         
         # Apply substitutions

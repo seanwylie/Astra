@@ -7,7 +7,9 @@ from dotenv import load_dotenv
 from openai import RateLimitError  # ✅ For fallback handling
 
 from app.config.loader import load_config  # ✅ Load configs dynamically
+from app.logging_config import get_logger
 
+logger = get_logger(__name__)
 general_config = load_config("general_config")  # ✅ Load schedule settings
 load_dotenv()
 
@@ -42,14 +44,14 @@ def refine_knowledge(existing_ideas, mind_data):
     try:
         reasoning = query_openai_for_knowledge_merge(concept_1, concept_2)
     except RateLimitError as e:
-        print(f"[expansion.py] 🚨 OpenAI quota exceeded during merge: {e}")
+        logger.warning("OpenAI quota exceeded during merge: %s", e)
         reasoning = f"(Fallback) Consider how **{concept_1}** and **{concept_2}** might relate in Astra's understanding."
 
     merged_idea = reasoning or f"{concept_1} and {concept_2} are related concepts."
 
     if merged_idea not in mind_data["stored_knowledge"]:
         mind_data["stored_knowledge"].append(merged_idea)
-        print(f"🔹 Refined knowledge added: {merged_idea[:120]}...")
+        logger.debug("Refined knowledge added: %s...", merged_idea[:120])
         return True  # ✅ Trigger a save
 
     return False  # No changes made
@@ -58,7 +60,7 @@ def refine_knowledge(existing_ideas, mind_data):
 
 def query_openai_for_knowledge_merge(concept_1, concept_2):
     """Use OpenAI to help Astra reason about merging knowledge concepts."""
-    print(f"🤖 Merging knowledge via OpenAI: {concept_1} & {concept_2}")
+    logger.debug("Merging knowledge via OpenAI: %s & %s", concept_1, concept_2)
 
     prompt = f"""
     Astra is an AI learning to merge knowledge efficiently.
@@ -80,15 +82,15 @@ def query_openai_for_knowledge_merge(concept_1, concept_2):
         if response.choices and len(response.choices) > 0:
             return response.choices[0].message.content.strip()
         else:
-            print(f"⚠ OpenAI response missing for merge of '{concept_1}' & '{concept_2}'.")
+            logger.warning("OpenAI response missing for merge of '%s' & '%s'.", concept_1, concept_2)
             return None
 
     except openai.RateLimitError as e:
-        print(f"[expansion.py] 🚨 OpenAI quota exceeded during merge: {e}")
+        logger.warning("OpenAI quota exceeded during merge: %s", e)
         return f"{concept_1} and {concept_2} share contextual relevance, though the precise connection is undetermined. This warrants further exploration."
 
     except Exception as e:
-        print(f"⚠ OpenAI merge reasoning failed: {e}")
+        logger.warning("OpenAI merge reasoning failed: %s", e)
         return None
 
 
@@ -104,7 +106,7 @@ def is_related(concept_1, concept_2):
     try:
         similarity = fuzz.ratio(concept_1, concept_2)
     except Exception as e:
-        print(f"🚨 Error computing similarity: {e}")
+        logger.warning("Error computing similarity: %s", e)
         return False
 
     return similarity > 30
@@ -163,9 +165,9 @@ def consolidate_knowledge(mind_data, max_pairs=5):
                     mind_data["stored_knowledge"] = new_list
                     entries = [_normalize_knowledge_entry(e) for e in new_list if _normalize_knowledge_entry(e)]
                     merged_count += 1
-                    print(f"[consolidate_knowledge] Merged 1 pair; {len(new_list)} entries.")
+                    logger.debug("consolidate_knowledge: Merged 1 pair; %s entries.", len(new_list))
         except Exception as e:
-            print(f"[consolidate_knowledge] GPT failed: {e}")
+            logger.warning("consolidate_knowledge: GPT failed: %s", e)
             break
     return merged_count
 
@@ -184,31 +186,31 @@ class KnowledgeExpander:
     def fetch_wikipedia_summary(self, query):
         """Fetch a Wikipedia summary while handling disambiguation, rate limits, and missing pages."""
         try:
-            print(f"🌐 Searching Wikipedia for: {query}")
+            logger.debug("Searching Wikipedia for: %s", query)
             summary = wikipedia.summary(query, sentences=2)
             return summary
 
         except wikipedia.exceptions.DisambiguationError as e:
-            print(f"⚠ Wikipedia disambiguation triggered for '{query}', checking alternatives...")
+            logger.debug("Wikipedia disambiguation triggered for '%s', checking alternatives...", query)
             for option in e.options:
                 if "philosophy" in option or "science" in option or "concept" in option:
-                    print(f"🔍 Trying refined match: {option}")
+                    logger.debug("Trying refined match: %s", option)
                     return self.fetch_wikipedia_summary(option)
 
-            print(f"⚠ No strong Wikipedia match found for '{query}'. Skipping.")
+            logger.debug("No strong Wikipedia match found for '%s'. Skipping.", query)
             return None
 
         except wikipedia.exceptions.PageError:
-            print(f"⚠ No Wikipedia page found for '{query}'. Trying OpenAI reasoning...")
+            logger.debug("No Wikipedia page found for '%s'. Trying OpenAI reasoning...", query)
             return self.query_openai_for_explanation(query)
 
         except Exception as e:
-            print(f"⚠ Wikipedia lookup failed: {e}")
+            logger.debug("Wikipedia lookup failed: %s", e)
             return None
 
     def query_openai_for_explanation(self, concept):
         """Query OpenAI when Wikipedia and dictionary lookups fail."""
-        print(f"🤖 Asking OpenAI about: {concept}")
+        logger.debug("Asking OpenAI about: %s", concept)
 
         prompt = f"""
         Astra is an AI trying to learn about the world. She wants to understand concepts logically. 
@@ -225,15 +227,15 @@ class KnowledgeExpander:
             if response.choices and len(response.choices) > 0:
                 return response.choices[0].message.content.strip()
             else:
-                print(f"⚠ OpenAI response missing for '{concept}'.")
+                logger.warning("OpenAI response missing for '%s'.", concept)
                 return None
 
         except openai.RateLimitError as e:
-            print(f"[expansion.py] 🚨 OpenAI quota exceeded during concept explanation: {e}")
+            logger.warning("OpenAI quota exceeded during concept explanation: %s", e)
             return f"{concept.capitalize()} appears to be a meaningful idea, but its deeper explanation is currently unavailable. This invites further exploration when more resources are accessible."
 
         except Exception as e:
-            print(f"⚠ OpenAI explanation failed: {e}")
+            logger.warning("OpenAI explanation failed: %s", e)
             return None
 
 

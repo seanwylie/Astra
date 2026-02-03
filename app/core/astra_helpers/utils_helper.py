@@ -5,6 +5,9 @@ import requests
 import wikipedia
 from app.interfaces.influence import load_mind
 from app.interfaces.mind_session import session
+from app.logging_config import get_logger
+
+logger = get_logger(__name__)
 
 
 BLOCKED_TERMS = {
@@ -39,22 +42,21 @@ def lookup_definition(term):
         response = requests.get(f"https://api.dictionaryapi.dev/api/v2/entries/en/{clean_term}")
         if response.status_code == 200:
             definition = response.json()[0]['meanings'][0]['definitions'][0]['definition']
-            print(f"📖 Dictionary definition found for '{clean_term}'")
+            logger.debug("Dictionary definition found for '%s'", clean_term)
             return definition
     except Exception as e:
-        print(f"⚠️ Dictionary lookup failed for '{clean_term}': {e}")
+        logger.debug("Dictionary lookup failed for '%s': %s", clean_term, e)
 
-    # ✅ Fallback to Wikipedia
     try:
         summary = wikipedia.summary(clean_term, sentences=1)
-        print(f"🌐 Wikipedia summary found for '{clean_term}'")
+        logger.debug("Wikipedia summary found for '%s'", clean_term)
         return summary
     except wikipedia.exceptions.DisambiguationError as e:
-        print(f"⚠️ Wikipedia disambiguation for '{clean_term}': {e.options[:3]}")
+        logger.debug("Wikipedia disambiguation for '%s': %s", clean_term, e.options[:3])
     except wikipedia.exceptions.PageError:
-        print(f"⚠️ Wikipedia page not found for '{clean_term}'")
+        logger.debug("Wikipedia page not found for '%s'", clean_term)
     except Exception as e:
-        print(f"⚠️ Wikipedia lookup failed for '{clean_term}': {e}")
+        logger.debug("Wikipedia lookup failed for '%s': %s", clean_term, e)
 
     return None
 

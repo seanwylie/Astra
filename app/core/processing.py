@@ -1,6 +1,5 @@
 import random
 import os
-import sys
 import asyncio
 import time
 from openai import OpenAI, RateLimitError
@@ -16,10 +15,6 @@ from app.config.loader import load_config
 from app.interfaces.smart_mind_session import SmartMindSession
 from app.logging_config import get_logger
 from openai import AsyncOpenAI
-
-# ✅ Ensure Python knows where to find Astra’s core modules
-sys.path.append(os.path.dirname(os.path.abspath(__file__)))
-
 
 # ✅ Initialize OpenAI client (outside function if reused elsewhere)
 client = AsyncOpenAI(api_key=os.getenv("OPENAI_API_KEY"))
@@ -50,14 +45,6 @@ def validate_mind_structure(mind_data):
     mind_data.setdefault("self_reflections", [])
     mind_data.setdefault("self_questions", [])
     mind_data.setdefault("stored_knowledge", [])
-
-
-REFLECTION_REPEAT_THRESHOLD = 92
-SYNTHESIS_KEYWORDS = [
-    "however", "but", "on the other hand", "although",
-    "yet", "this contradicts", "while previously", "at first I thought",
-    "in contrast", "my earlier thought"
-]
 
 
 def reflection_loop_check(reflection, recent_reflections):

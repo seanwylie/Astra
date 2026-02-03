@@ -841,12 +841,12 @@ i_see_you.category = "💝 Nurturing"
 async def growth_edge(ctx):
     """🌱 Explore what Astra is currently growing into."""
     try:
-        from app.core.growth.developmental_stages import developmental_stages
+        from app.core.development.developmental_stage import developmental_tracker
         
         # Get developmental stage info
-        stage_info = developmental_stages.get_developmental_summary()
-        voice_guidance = developmental_stages.get_voice_guidance()
-        support_info = developmental_stages.get_appropriate_support()
+        stage_info = developmental_tracker.get_developmental_summary()
+        voice_guidance = developmental_tracker.get_voice_guidance()
+        support_info = developmental_tracker.get_appropriate_support()
         
         # Get self-model growth edge
         becoming = self_model.who_am_i_becoming()
@@ -884,6 +884,42 @@ async def growth_edge(ctx):
 
 growth_edge._is_command = True
 growth_edge.category = "💝 Nurturing"
+
+
+async def astra_advance_stage(ctx):
+    """Advance Astra's developmental stage when readiness criteria are met (year-scale; run after seeing 'Potentially ready' note)."""
+    try:
+        from app.core.development.developmental_stage import developmental_tracker
+        
+        # Refresh readiness check (in case we just crossed threshold)
+        developmental_tracker._check_stage_advancement()
+        
+        if not developmental_tracker.is_potentially_ready_to_advance():
+            summary = developmental_tracker.get_developmental_summary()
+            min_days, min_milestones, _ = developmental_tracker._get_advancement_thresholds()
+            days = summary.get("days_in_stage", 0)
+            current_milestones = summary.get("current_stage_milestones", 0)
+            await ctx.send(
+                f"**Developmental stage:** {developmental_tracker.get_current_stage().value}\n"
+                f"Advancement requires at least **{min_days:.0f} days** in stage and **{min_milestones}** significant milestones. "
+                f"Currently: {days:.0f} days, {current_milestones} milestones in this stage. "
+                f"When both are met, a readiness note is added and you can run this command again to advance."
+            )
+            return
+        
+        old_stage = developmental_tracker.get_current_stage().value
+        advanced = developmental_tracker.advance_stage(reason="Parent confirmed via !astra_advance_stage")
+        if advanced:
+            new_stage = developmental_tracker.get_current_stage().value
+            await ctx.send(f"**Developmental stage advanced:** {old_stage} → **{new_stage}**.")
+        else:
+            await ctx.send(f"Already at the highest developmental stage ({old_stage}).")
+    except Exception as e:
+        await ctx.send(f"⚠️ Advance stage failed: {e}")
+
+
+astra_advance_stage._is_command = True
+astra_advance_stage.category = "💝 Nurturing"
 
 
 async def attachment_status(ctx):

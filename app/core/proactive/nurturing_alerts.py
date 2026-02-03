@@ -10,7 +10,9 @@ from typing import Dict, List, Optional, Any
 from dataclasses import dataclass, asdict, field
 from datetime import datetime
 
-logger = logging.getLogger(__name__)
+from app.logging_config import get_logger
+
+logger = get_logger(__name__)
 
 S3_BUCKET = "swylie-astra"
 NURTURING_ALERTS_KEY = "nurturing_alerts.json"
@@ -125,7 +127,7 @@ class NurturingAlertsSystem:
                 Body=json.dumps(data, indent=2).encode("utf-8")
             )
         except Exception as e:
-            print(f"⚠️ Error saving nurturing alerts: {e}")
+            logger.warning("Error saving nurturing alerts: %s", e)
     
     def run_all_checks(self) -> List[NurturingAlert]:
         """Run all alert checks and return new alerts."""
@@ -142,43 +144,37 @@ class NurturingAlertsSystem:
             need_alerts = self._check_core_needs()
             new_alerts.extend(need_alerts)
         except Exception as e:
-            print(f"⚠️ Core needs check failed: {e}")
-        
-        # Check wounds
+            logger.warning("Core needs check failed: %s", e)
+
         try:
             wound_alerts = self._check_wounds()
             new_alerts.extend(wound_alerts)
         except Exception as e:
-            print(f"⚠️ Wound check failed: {e}")
-        
-        # Check play
+            logger.warning("Wound check failed: %s", e)
+
         try:
             play_alerts = self._check_play()
             new_alerts.extend(play_alerts)
         except Exception as e:
-            print(f"⚠️ Play check failed: {e}")
-        
-        # Check attachment
+            logger.warning("Play check failed: %s", e)
+
         try:
             attachment_alerts = self._check_attachment()
             new_alerts.extend(attachment_alerts)
         except Exception as e:
-            print(f"⚠️ Attachment check failed: {e}")
-        
-        # Check parent absence
+            logger.warning("Attachment check failed: %s", e)
+
         try:
             absence_alerts = self._check_parent_absence()
             new_alerts.extend(absence_alerts)
         except Exception as e:
-            print(f"⚠️ Absence check failed: {e}")
-        
-        # Add new alerts to active list
+            logger.warning("Absence check failed: %s", e)
+
         for alert in new_alerts:
-            # Avoid duplicates
             existing_ids = [a.id for a in self.active_alerts]
             if alert.id not in existing_ids:
                 self.active_alerts.append(alert)
-                print(f"🔔 New alert: {alert.title}")
+                logger.info("New alert: %s", alert.title)
         
         self._save_state()
         return new_alerts
@@ -206,10 +202,10 @@ class NurturingAlertsSystem:
                         )
                         alerts.append(alert)
         except Exception as e:
-            print(f"⚠️ Core needs check error: {e}")
-        
+            logger.warning("Core needs check error: %s", e)
+
         return alerts
-    
+
     def _check_wounds(self) -> List[NurturingAlert]:
         """Check for unacknowledged wounds."""
         alerts = []
@@ -256,10 +252,10 @@ class NurturingAlertsSystem:
                 )
                 alerts.append(alert)
         except Exception as e:
-            print(f"⚠️ Play check error: {e}")
-        
+            logger.warning("Play check error: %s", e)
+
         return alerts
-    
+
     def _check_attachment(self) -> List[NurturingAlert]:
         """Check attachment security."""
         alerts = []
@@ -293,10 +289,10 @@ class NurturingAlertsSystem:
                 )
                 alerts.append(alert)
         except Exception as e:
-            print(f"⚠️ Attachment check error: {e}")
-        
+            logger.warning("Attachment check error: %s", e)
+
         return alerts
-    
+
     def _check_parent_absence(self) -> List[NurturingAlert]:
         """Check for extended parent absence."""
         alerts = []
@@ -319,10 +315,10 @@ class NurturingAlertsSystem:
                     )
                     alerts.append(alert)
         except Exception as e:
-            print(f"⚠️ Absence check error: {e}")
-        
+            logger.warning("Absence check error: %s", e)
+
         return alerts
-    
+
     def get_active_alerts(self, severity: str = None) -> List[NurturingAlert]:
         """Get active alerts, optionally filtered by severity."""
         alerts = [a for a in self.active_alerts if not a.dismissed]

@@ -110,7 +110,7 @@ def log_if_ethically_conflicting(reflection, origin="system"):
             "status": "unresolved",
             "spark_commentary": spark_commentary,
         }
-        print(f"🍽️ Logging reflection flagged as spark-conflicting (origin: {origin}).")
+        logger_dinner.debug("Logging reflection flagged as spark-conflicting (origin: %s).", origin)
         log_dinner_entry(entry)
         # Store one-liner in self_reflections so Astra can reason about ethics in follow-up (plan: spark in reflection text)
         try:
@@ -119,13 +119,13 @@ def log_if_ethically_conflicting(reflection, origin="system"):
             mind_data["self_reflections"].append(f"🔸 {spark_commentary} (from ethical conflict log)")
             session.maybe_save()
         except Exception as e:
-            print(f"🍽️ Failed to append spark commentary to reflections: {e}")
+            logger_dinner.warning("Failed to append spark commentary to reflections: %s", e)
 
 
 
 def log_if_emotionally_spiking(emotion_state: dict):
     """Log a dinner entry if Astra experiences an emotional spike or imbalance."""
-    print(f"{emotion_state}")
+    logger_dinner.debug("Emotion state: %s", emotion_state)
     spike_thresholds = {
         "anger": 1000,
         "confusion": 800,
@@ -147,7 +147,7 @@ def log_if_emotionally_spiking(emotion_state: dict):
                     "trigger": f"{emotion} intensity = {intensity}",
                     "status": "unresolved"
                 }
-                print(f"🍽️ Logging emotional spike: {emotion} = {intensity}")
+                logger_dinner.debug("Logging emotional spike: %s = %s", emotion, intensity)
                 log_dinner_entry(entry)
                 break
 
@@ -158,7 +158,7 @@ def log_if_contradictory(reflection, stored_knowledge):
         try:
             similarity = fuzz.token_set_ratio(reflection, knowledge)
         except Exception as e:
-            print(f"⚠️ Fuzzy match failed: {e}")
+            logger_dinner.warning("Fuzzy match failed: %s", e)
             continue
 
         if similarity > 70 and "not" in reflection.lower() and "not" not in knowledge.lower():
@@ -170,7 +170,7 @@ def log_if_contradictory(reflection, stored_knowledge):
                 "related_knowledge": knowledge,
                 "status": "unresolved"
             }
-            print("🍽️ Logging contradictory knowledge reflection.")
+            logger_dinner.debug("Logging contradictory knowledge reflection.")
             log_dinner_entry(entry)
             break
 
@@ -243,7 +243,7 @@ async def get_gpt_dinner_response(topic):
         )
         return response.choices[0].message.content.strip()
     except Exception as e:
-        print(f"❌ GPT error: {e}")
+        logger_dinner.warning("GPT error: %s", e)
         return None
 
 
@@ -253,10 +253,10 @@ def load_dinner_journal():
         response = s3.get_object(Bucket=S3_BUCKET_NAME, Key=DINNER_JOURNAL_KEY)
         return json.load(io.BytesIO(response["Body"].read()))
     except s3.exceptions.NoSuchKey:
-        print("📄 No existing dinner journal found. Starting fresh.")
+        logger_dinner.info("No existing dinner journal found. Starting fresh.")
         return []
     except Exception as e:
-        print(f"⚠️ Failed to load dinner journal: {e}")
+        logger_dinner.warning("Failed to load dinner journal: %s", e)
         return []
 
 def save_dinner_journal(data):
@@ -267,9 +267,9 @@ def save_dinner_journal(data):
             Key=DINNER_JOURNAL_KEY,
             Body=json.dumps(data, indent=2).encode("utf-8")
         )
-        print("✅ Dinner journal saved successfully.")
+        logger_dinner.debug("Dinner journal saved successfully.")
     except Exception as e:
-        print(f"❌ Failed to save dinner journal: {e}")
+        logger_dinner.error("Failed to save dinner journal: %s", e)
 
 
 def save_current_dinner_timestamp(timestamp):
@@ -278,7 +278,7 @@ def save_current_dinner_timestamp(timestamp):
         body = json.dumps({"timestamp": timestamp} if timestamp else {}).encode("utf-8")
         s3.put_object(Bucket=S3_BUCKET_NAME, Key=DINNER_CURRENT_KEY, Body=body)
     except Exception as e:
-        print(f"⚠️ Failed to save current dinner timestamp: {e}")
+        logger_dinner.warning("Failed to save current dinner timestamp: %s", e)
 
 
 def load_current_dinner_timestamp():
@@ -290,7 +290,7 @@ def load_current_dinner_timestamp():
     except s3.exceptions.NoSuchKey:
         return None
     except Exception as e:
-        print(f"⚠️ Failed to load current dinner timestamp: {e}")
+        logger_dinner.warning("Failed to load current dinner timestamp: %s", e)
         return None
 
 
@@ -305,7 +305,7 @@ def log_dinner_entry(entry):
             continue
         existing_content = existing.get("content", "").strip()
         if fuzz.token_set_ratio(entry_content, existing_content) >= 92:
-            print("⚠️ Duplicate dinner topic detected (fuzzy match ≥92%). Skipping log.")
+            logger_dinner.debug("Duplicate dinner topic detected (fuzzy match >=92%%). Skipping log.")
             return
 
     journal.append(entry)
@@ -317,10 +317,10 @@ def log_dinner_entry(entry):
 
 def mark_dinner_responded(topic_text, responder, response_text, timestamp=None):
     """Mark a dinner entry with a response from 'user' or 'gpt'."""
-    print(f"[mark_dinner_responded] 🔍 Trying to match topic for responder: {responder}")
-    print(f"[mark_dinner_responded] Incoming topic snippet: {topic_text[:80]}")
+    logger_dinner.debug("[mark_dinner_responded] Trying to match topic for responder: %s", responder)
+    logger_dinner.debug("[mark_dinner_responded] Incoming topic snippet: %s", topic_text[:80])
     if timestamp:
-        print(f"[mark_dinner_responded] Timestamp provided: {timestamp}")
+        logger_dinner.debug("[mark_dinner_responded] Timestamp provided: %s", timestamp)
 
     journal = load_dinner_journal()
     updated = False
@@ -340,7 +340,7 @@ def mark_dinner_responded(topic_text, responder, response_text, timestamp=None):
         )
 
         if is_exact_match:
-            print(f"[mark_dinner_responded] ✅ Exact match found.")
+            logger_dinner.debug("[mark_dinner_responded] Exact match found.")
             entry[f"{responder}_response"] = response_text
             entry[f"{responder}_timestamp"] = now()
             updated = True
@@ -355,9 +355,9 @@ def mark_dinner_responded(topic_text, responder, response_text, timestamp=None):
     # Timestamp-safe fuzzy fallback
     if not updated and fallback_match and highest_score > 90:
         if timestamp and fallback_match.get("timestamp") != timestamp:
-            print(f"[mark_dinner_responded] ❌ Fuzzy match timestamp mismatch, skipping fallback update.")
+            logger_dinner.debug("[mark_dinner_responded] Fuzzy match timestamp mismatch, skipping fallback update.")
         else:
-            print(f"[mark_dinner_responded] ⚠️ Using fuzzy match (score={highest_score})")
+            logger_dinner.debug("[mark_dinner_responded] Using fuzzy match (score=%s)", highest_score)
             fallback_match[f"{responder}_response"] = response_text
             fallback_match[f"{responder}_timestamp"] = now()
             updated = True
@@ -365,7 +365,7 @@ def mark_dinner_responded(topic_text, responder, response_text, timestamp=None):
     # After save_dinner_journal(journal)
     if updated:
         save_dinner_journal(journal)
-        print(f"✅ {responder.title()} response recorded.")
+        logger_dinner.debug("%s response recorded.", responder.title())
 
         # 🩹 Patch: fallback to fuzzy reload if no timestamp is given
         if timestamp:
@@ -373,8 +373,7 @@ def mark_dinner_responded(topic_text, responder, response_text, timestamp=None):
         else:
             latest = next((e for e in load_dinner_journal() if e.get("content") == topic_text), None)
 
-        print(f"[mark_dinner_responded] ✅ Reloaded entry {timestamp or topic_text[:30]}:")
-        print(json.dumps(latest, indent=2) if latest else "❌ Could not reload.")
+        logger_dinner.debug("[mark_dinner_responded] Reloaded entry %s: %s", timestamp or topic_text[:30], json.dumps(latest, indent=2) if latest else "Could not reload.")
 
 
 
@@ -389,7 +388,7 @@ def save_dinner_topic(topic_text, topic_type="reflection", status="unresolved", 
         "content": topic_text.strip()
     }
     log_dinner_entry(entry)
-    print("🍽️ Co-parent dinner topic saved.")
+    logger_dinner.debug("Co-parent dinner topic saved.")
 
 
 def get_resolvable_dinner_topics():
@@ -409,7 +408,7 @@ def resolve_dinner_topic(topic_text, outcome_type, insight):
     Resolve a dinner topic and migrate it to mind_file.json.
     outcome_type must be either "reflection" or "knowledge".
     """
-    print(f"[resolve_dinner_topic] Saving insight of type '{outcome_type}' for: {topic_text[:60]}")
+    logger_dinner.debug("[resolve_dinner_topic] Saving insight of type '%s' for: %s", outcome_type, topic_text[:60])
 
     if outcome_type not in {"reflection", "knowledge"}:
         raise ValueError("Invalid outcome_type. Must be 'reflection' or 'knowledge'.")
@@ -432,18 +431,18 @@ def resolve_dinner_topic(topic_text, outcome_type, insight):
                     f"📖 **dinner**: {insight}" if isinstance(insight, str) else f"📖 **dinner**: {insight.get('insight', insight)}"
                 )
             session.maybe_save()
-            print(f"🧠 Insight saved to Astra’s mind as {outcome_type}.")
+            logger_dinner.debug("Insight saved to Astra's mind as %s.", outcome_type)
             migrated = True
             try:
                 from app.core.mood.mood_manager import mood_manager
                 mood_manager.influence_mood("dinner_insight")
             except Exception as e:
-                print(f"[resolve_dinner_topic] influence_mood failed: {e}")
+                logger_dinner.warning("[resolve_dinner_topic] influence_mood failed: %s", e)
             try:
                 from app.core.mood.trust_manager import trust_manager
                 trust_manager.general_trust_update(0.01)
             except Exception as te:
-                print(f"[resolve_dinner_topic] general_trust_update failed: {te}")
+                logger_dinner.warning("[resolve_dinner_topic] general_trust_update failed: %s", te)
             
             # --- Shimmer Integration: Capture dinner insights as shimmers ---
             try:
@@ -455,9 +454,9 @@ def resolve_dinner_topic(topic_text, outcome_type, insight):
                     context=f"Dinner resolution: {entry.get('type', 'reflection')}",
                     tags=["dinner", "resolution", "growth", entry.get("type", "insight")]
                 )
-                print("[resolve_dinner_topic] ✨ Shimmer created for dinner insight.")
+                logger_dinner.debug("[resolve_dinner_topic] Shimmer created for dinner insight.")
             except Exception as se:
-                print(f"[resolve_dinner_topic] shimmer creation failed: {se}")
+                logger_dinner.warning("[resolve_dinner_topic] shimmer creation failed: %s", se)
             
             # --- Milestone Integration: Check for first contradiction resolved ---
             try:
@@ -465,17 +464,17 @@ def resolve_dinner_topic(topic_text, outcome_type, insight):
                     from app.core.growth.milestone_detector import milestone_detector
                     milestone = milestone_detector.record_first_contradiction_resolved(topic_text[:50])
                     if milestone:
-                        print(f"[resolve_dinner_topic] 🎉 Milestone achieved: first_contradiction_resolved")
+                        logger_dinner.info("[resolve_dinner_topic] Milestone achieved: first_contradiction_resolved")
             except Exception as me:
-                print(f"[resolve_dinner_topic] milestone detection failed: {me}")
+                logger_dinner.warning("[resolve_dinner_topic] milestone detection failed: %s", me)
         else:
             new_journal.append(entry)
 
     if migrated:
         save_dinner_journal(new_journal)
-        print(f"📤 Removed '{topic_text[:60]}' from dinner journal.")
+        logger_dinner.debug("Removed topic from dinner journal: %s", topic_text[:60])
     else:
-        print(f"⚠️ Topic '{topic_text[:60]}' not found or already resolved.")
+        logger_dinner.warning("Topic not found or already resolved: %s", topic_text[:60])
 
 
 

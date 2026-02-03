@@ -1,0 +1,47 @@
+# CI: format check, lint, unit tests. No integration tests or coverage in Phase 2.
+name: CI
+
+on:
+  push:
+    branches: [master, main]
+  pull_request:
+    branches: [master, main]
+
+jobs:
+  lint-and-test:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ["3.10"]
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          if [ -f requirements.lock ]; then pip install -r requirements.lock; else pip install -r requirements.txt; fi
+          pip install -r requirements-dev.txt
+          pip install black isort flake8 mypy pip-audit
+
+      - name: Dependency audit (pip-audit)
+        run: pip-audit -r requirements.txt
+
+      - name: Format check (black)
+        run: black --check --line-length=100 app tests utils astra_growth
+      - name: Format check (isort)
+        run: isort --check-only --profile=black --line-length=100 app tests utils astra_growth
+
+      - name: Lint (flake8)
+        run: flake8 app tests utils astra_growth --max-line-length=100 --extend-ignore=E203,W503
+      - name: Type check (mypy)
+        run: mypy app --ignore-missing-imports || true
+
+      - name: Unit tests
+        run: |
+          PYTHONPATH=. python -m pytest tests/ -v -m "not integration" --tb=short --cov=app --cov-report=term-missing

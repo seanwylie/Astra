@@ -1,10 +1,7 @@
 import time
 import logging
 import threading
-import sys
 import os
-
-sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 
 from app.config.loader import load_config
 from app.interfaces.influence import load_mind, save_mind  # ✅ Handles memory storage
@@ -22,7 +19,7 @@ class MoodManager:
         self.mood_config = load_config("mood_config")
         logger.debug("mood_config loaded: %s", list(self.mood_config.keys()))
 
-        self.LOG_FILE = load_config("general_config").get("log_file", "/home/sean/dev/systems/Astra/data/astra_logs.json")
+        self.LOG_FILE = load_config("general_config").get("log_file", "data/astra_logs.json")
         debug_log("Loading")
         mind_data = session.load()  # ✅ Load Astra's previous mind state
 
@@ -91,7 +88,7 @@ class MoodManager:
         cooldown_time = 10  # 10 minutes cooldown
         last_mod_time = self.last_modification.get(event_type, 0)
         if time.time() - last_mod_time < cooldown_time:
-            print(f"⚠️ Modification cooldown active for {event_type}. Try again later.")
+            logger.debug("Modification cooldown active for %s. Try again later.", event_type)
             return
         
         if event_type in self.mood_config.get("mood_influences", {}):
@@ -107,7 +104,7 @@ class MoodManager:
             session.maybe_save()
             logger.debug("Mood influences saved and will persist across restarts.")
         else:
-            print(f"⚠️ Warning: Unknown mood influence '{event_type}', modification skipped.")
+            logger.warning("Unknown mood influence '%s', modification skipped.", event_type)
 
     def update_mood(self, force=False):
         """Updates Astra's mood dynamically using mood_config.json."""
@@ -149,7 +146,7 @@ class MoodManager:
 
         # ✅ If mood actually changes, update it
         if previous_mood != new_mood:
-            print(f"🔄 Mood Shifted! {previous_mood} → {new_mood}")
+            logger.info("Mood shifted: %s → %s", previous_mood, new_mood)
             self.current_mood = new_mood
             
             # Publish to awareness bus (Phase 1.1)
@@ -186,13 +183,13 @@ class MoodManager:
 
         # ✅ Allow overriding cooldown in tests
         if not force_override and time.time() - last_mod_time < cooldown_time:
-            print(f"⚠️ Modification cooldown active for {mood}. Try again later.")
+            logger.debug("Modification cooldown active for %s. Try again later.", mood)
             return
 
         if mood in self.mood_config["moods"]:
             self.mood_config["moods"][mood]["curiosity_factor"] = new_value
             self.last_modification[mood] = time.time()
-            print(f"🔍 Modified curiosity factor for {mood}: {new_value}")
+            logger.debug("Modified curiosity factor for %s: %s", mood, new_value)
 
             debug_log("Loading")  
             mind_data = session.load()
@@ -200,9 +197,9 @@ class MoodManager:
             mind_data["last_modification"] = self.last_modification
             debug_log("Saving")
             session.maybe_save()
-            print("✅ Curiosity factors saved and will persist across restarts!")
+            logger.debug("Curiosity factors saved and will persist across restarts.")
         else:
-            print(f"⚠️ Warning: Unknown mood '{mood}', modification skipped.")
+            logger.warning("Unknown mood '%s', modification skipped.", mood)
 
 
 

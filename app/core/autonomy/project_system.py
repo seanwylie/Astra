@@ -202,7 +202,7 @@ class ProjectSystem:
             active_projects = [p for p in self.projects if p.status == "active"]
             oldest = min(active_projects, key=lambda p: p.last_worked_on or p.started)
             oldest.status = "dormant"
-            print(f"🎯 Project '{oldest.name}' moved to dormant (too many active)")
+            logger.info("Project '%s' moved to dormant (too many active)", oldest.name)
         
         project = Project(
             id=self._generate_id("proj"),
@@ -224,7 +224,7 @@ class ProjectSystem:
         # Trigger curiosity emotion
         trigger_emotion("curiosity", "new_project")
         
-        print(f"🎯 Created project: {name}")
+        logger.info("Created project: %s", name)
         return project
     
     def generate_project_from_curiosity(self, knowledge_base: List[str]) -> Optional[Project]:
@@ -303,7 +303,7 @@ class ProjectSystem:
         
         if project.status == "dormant":
             project.status = "active"
-            print(f"🎯 Reactivated project: {project.name}")
+            logger.info("Reactivated project: %s", project.name)
         
         if insight:
             project.insights_gathered.append(insight)
@@ -333,7 +333,7 @@ class ProjectSystem:
         trigger_emotion("hope", "project_completed")
         
         self._save_projects()
-        print(f"🎯 Completed project: {project.name}")
+        logger.info("Completed project: %s", project.name)
         return True
     
     def abandon_project(self, project_id: str, reason: str) -> bool:
@@ -347,7 +347,7 @@ class ProjectSystem:
         project.last_worked_on = time.time()
         
         self._save_projects()
-        print(f"🎯 Abandoned project: {project.name} - {reason}")
+        logger.info("Abandoned project: %s - %s", project.name, reason)
         return True
     
     def check_dormancy(self) -> List[Project]:
@@ -420,7 +420,7 @@ class ProjectSystem:
         self.goals.append(goal)
         self._save_projects()
         
-        print(f"🎯 Added {level} goal: {description[:50]}...")
+        logger.info("Added %s goal: %s...", level, description[:50])
         return goal
     
     def get_goals_by_level(self, level: str) -> List[Goal]:
@@ -559,7 +559,7 @@ class ProjectSystem:
                         source=f"project: {project.origin[:50]}"
                     )
         except Exception as e:
-            print(f"[project_system] Could not integrate with desires: {e}")
+            logger.warning("Could not integrate with desires: %s", e)
     
     def describe_project_journey(self, project_id: str) -> str:
         """Describe the narrative journey of a project."""

@@ -70,6 +70,15 @@ That's not programming. That's growth.
 | **💾 Memory System** | Long-term mind stored in S3 with 2500+ knowledge entries |
 | **🤖 Discord Bot** | Fully interactive with emotion-adaptive tone and personality-aware responses |
 | **⏰ Automated Scheduling** | Background dinner/dream/play cycles with manual controls |
+| **🌱 Developmental stage** | Single canonical stage (infancy → childhood → adolescence → young adulthood → maturity); milestones from growth events; advancement is year-scale and intentional |
+
+### 🌱 Developmental stage
+
+Astra has one **canonical developmental stage** (infancy, childhood, adolescence, young adulthood, maturity). The dashboard and all systems use this single source of truth. Milestones (first self-surprise, first boundary, knowledge thresholds, etc.) are recorded by the milestone detector and also counted toward the developmental tracker, so the dashboard’s “Milestones” count reflects real progress.
+
+**Advancement is year-scale and intentional.** Thresholds are set in `config/developmental_config.json` (e.g. minimum days in stage and minimum significant milestones). When both are met, the system adds a “Potentially ready to advance” note; it does **not** auto-advance. A parent must run the advance command to move Astra to the next stage.
+
+- **Trigger advancement:** When readiness criteria are met, run `!astra_advance_stage` in Discord to confirm and advance to the next stage.
 
 * * * * *
 
@@ -79,6 +88,16 @@ That's not programming. That's growth.
 -   [🧾 Astra's Current Mind File](https://swylie-astra.s3.us-east-1.amazonaws.com/mind_file.json)
 
 -   [📊 Latest Snapshot (Mood, Knowledge, Reflections)](https://swylie-astra.s3.us-east-1.amazonaws.com/snapshots/latest_snapshot.json)
+
+### ✨ Astra Introspection Dashboard
+
+A read-only Streamlit dashboard to see how Astra is doing at a glance (mood, emotions, stream of consciousness, schedule, goals, nurturing alerts) and technical state (coherence, mind stats, config). Runs on port **8502** (so it does not conflict with other Streamlit apps such as Cashstra on 8501).
+
+```bash
+PYTHONPATH=. streamlit run app/dashboard/app.py --server.port 8502
+```
+
+Uses the same S3 bucket and config as the main app; ensure AWS and `ASTRA_CONFIG_DIR` are set. Data refreshes every 60 seconds.
 
 * * * * *
 
@@ -106,6 +125,14 @@ That's not programming. That's growth.
 | `!spark_finalize` | Finalizes Astra's Spark and writes core ethics |
 | `!spark_review` | Summarizes ethical growth across all questions |
 | `!spark_graduation <from> <to>` | Generates graduation speech between grades |
+
+### 💝 Nurturing & Developmental Commands
+| Command | Description |
+| --- | --- |
+| `!astra_advance_stage` | When readiness criteria are met (min days + milestones in stage), advances Astra to the next developmental stage (year-scale; run after dashboard shows “Potentially ready”) |
+| `!growth_edge` | Explore what Astra is currently growing into (stage, voice, support needs) |
+| `!growth_story` | Astra tells the story of her development through milestones |
+| `!celebrate [milestone_name]` | Celebrate a developmental milestone |
 
 ### 🍽 Dinner & State Commands
 | Command | Description |
@@ -267,6 +294,7 @@ Once Astra is running, try these commands:
 - **Logging**: Structured logging via `app.logging_config` (no global print override); logs under `~/astra_logs` or `ASTRA_LOG_DIR`
 - **Modular design**: Commands, services, events, core logic under `app/`
 - **Testing**: pytest with `tests/conftest.py`; run with `pytest` or `pytest -v --cov=app`
+- **Reliability (external calls)**: S3 clients (sync and async in `app.interfaces.influence`) use connect/read timeouts and adaptive retries (botocore `Config`). OpenAI clients use a request timeout (e.g. 60s in `MessageGenerator`); Mama GPT uses timeout and retries from `schedule_config` (mama_gpt section). Mind save is an overwrite and is idempotent for retries.
 
 ### 📁 Directory Structure
 ```
@@ -317,6 +345,26 @@ Covers:
 - ✅ Message generator and personality
 - ✅ Memory, learning, creative, analytics services
 - ✅ Config and mind/dinner integrity (test_nightlight; some tests need S3/env)
+
+### Development (format and lint)
+
+Before committing, run:
+
+```bash
+make format   # black + isort
+make lint     # flake8 + mypy
+```
+
+Optional: install [pre-commit](https://pre-commit.com/) so format and lint run automatically before each commit:
+
+```bash
+pip install pre-commit
+pre-commit install
+```
+
+CI runs on push/PR (format check, lint, unit tests, dependency audit via pip-audit). Use `make test` to run tests with `PYTHONPATH=.` set. Unit-only: `make test-unit` (requires pytest markers; see tests/conftest.py).
+
+**Reproducible installs:** For exact dependency versions, use `pip install -r requirements.lock` (after generating it once with `pip-compile requirements.txt -o requirements.lock`). To regenerate the lockfile, run `pip-compile requirements.txt -o requirements.lock` from project root with the venv active.
 
 * * * * *
 

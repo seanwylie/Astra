@@ -36,10 +36,10 @@ class KnowledgeManager:
 
         # ✅ Ensure proper memory structure
         if not isinstance(self.mind_data, dict):
-            print("🚨 Warning: mind_data was corrupted! Resetting...")
+            logger.warning("mind_data was corrupted; resetting.")
             self.mind_data = {"self_reflections": [], "self_questions": [], "stored_knowledge": []}
         if "stored_knowledge" not in self.mind_data or not isinstance(self.mind_data["stored_knowledge"], list):
-            print("🚨 Fixing `stored_knowledge`, ensuring it's a list!")
+            logger.warning("Fixing stored_knowledge, ensuring it's a list.")
             self.mind_data["stored_knowledge"] = []
 
     def store_conversation(self, message):
@@ -55,11 +55,11 @@ class KnowledgeManager:
         concept_lower = concept.lower().strip()
 
         if force:
-            print(f"⚠ Force lookup enabled for '{concept}', overriding existing checks.")
+            logger.debug("Force lookup enabled for '%s', overriding existing checks.", concept)
             return True  
 
         if concept_lower in self.COMMON_WORDS or len(concept_lower) < 3:
-            print(f"⚠ Ignoring '{concept}', too generic.")
+            logger.debug("Ignoring '%s', too generic.", concept)
             return False  
 
         # ✅ Check existing definitions
@@ -73,7 +73,7 @@ class KnowledgeManager:
             if similarity > 92:
                 return False  
 
-        print(f"🔍 Concept '{concept}' not found in a meaningful form, proceeding with lookup.")
+        logger.debug("Concept '%s' not found in meaningful form, proceeding with lookup.", concept)
         return True  
 
     def lookup_dictionary_definition(self, word):
@@ -85,7 +85,7 @@ class KnowledgeManager:
                 data = response.json()
                 return f"🔹 {clean_word}: {data[0]['meanings'][0]['definitions'][0]['definition']}"
         except Exception as e:
-            print(f"⚠ Dictionary lookup failed for '{clean_word}': {e}")
+            logger.debug("Dictionary lookup failed for '%s': %s", clean_word, e)
         return None
 
     def retrieve_external_knowledge(self, search_terms, force=False):
@@ -98,19 +98,19 @@ class KnowledgeManager:
                 print(f"⚠ Skipping lookup for '{concept}', already known.")
                 continue
 
-            print(f"🔍 Looking up: {concept}")
+            logger.debug("Looking up: %s", concept)
             dictionary_info = self.lookup_dictionary_definition(concept)
 
             if dictionary_info:
                 new_knowledge.append(f"📖 {concept}: {dictionary_info}")
-                print(f"✅ Dictionary found: {dictionary_info}")
+                logger.debug("Dictionary found: %s", dictionary_info)
             else:
-                print(f"🌐 Searching deeper for: {concept}")
+                logger.debug("Searching deeper for: %s", concept)
                 new_knowledge.append(self.query_openai_for_reasoning(concept))
 
         # ✅ If no new knowledge was retrieved, exit early
         if not new_knowledge:
-            print("❌ No new knowledge retrieved. Skipping save.")
+            logger.debug("No new knowledge retrieved. Skipping save.")
             return False  
 
         # ✅ Store new knowledge
@@ -119,7 +119,7 @@ class KnowledgeManager:
             if entry and entry not in self.mind_data["stored_knowledge"]:  
                 self.mind_data["stored_knowledge"].append(entry)
 
-        print(f"🔍 Debug: Before saving, knowledge count: {pre_save_count} -> {len(self.mind_data['stored_knowledge'])}")
+        logger.debug("Before saving, knowledge count: %s -> %s", pre_save_count, len(self.mind_data["stored_knowledge"]))
 
         # ✅ Save and verify
         session = SmartMindSession()
@@ -162,7 +162,7 @@ class KnowledgeManager:
 
     def extract_unknown_terms(self, reflection):
         """Extract meaningful unknown concepts while filtering out noise."""
-        print(f"🔍 Debug: Reflection Type: {type(reflection)}, Length: {len(reflection) if isinstance(reflection, str) else 'N/A'}")
+        logger.debug("Reflection type: %s, length: %s", type(reflection), len(reflection) if isinstance(reflection, str) else "N/A")
 
         if isinstance(reflection, list):
             reflection = " ".join(reflection[-5:])  
@@ -171,7 +171,7 @@ class KnowledgeManager:
             return []
 
         if len(reflection) > 5000:
-            print(f"⚠ WARNING: Reflection is too long ({len(reflection)} chars)! Trimming...")
+            logger.warning("Reflection is too long (%s chars); trimming.", len(reflection))
             reflection = reflection[:5000]
 
         phrase_pattern = r'\b(?:[A-Z][a-z]+(?:\s+[A-Z][a-z]+)*)\b'
@@ -183,10 +183,10 @@ class KnowledgeManager:
         final_terms = (found_phrases | filtered_words) - self.IGNORE_TERMS
         unknown_terms = [term for term in final_terms if term not in self.mind_data["stored_knowledge"]]
 
-        print(f"🔍 Debug: Final unknown concepts after filtering: {unknown_terms}")
+        logger.debug("Final unknown concepts after filtering: %s", unknown_terms)
 
         if unknown_terms:
-            print("🔍 Debug: Attempting external knowledge lookup...")
+            logger.debug("Attempting external knowledge lookup.")
             self.retrieve_external_knowledge(unknown_terms)
 
         return unknown_terms

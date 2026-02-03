@@ -3,8 +3,11 @@ import io
 import time
 import boto3
 from datetime import datetime
-# Use local iso_now function to avoid import issues
-from datetime import datetime
+
+from app.logging_config import get_logger
+
+logger = get_logger(__name__)
+
 
 def iso_now():
     return datetime.now().isoformat()
@@ -29,9 +32,9 @@ def log_dream_seed(content, source="playtime"):
             "timestamp": now()
         })
         save_dream_seeds(seeds)
-        print(f"🌱 Logged dream seed from {source}.")
+        logger.info("Logged dream seed from %s.", source)
     else:
-        print("⚠️ Duplicate dream seed skipped.")
+        logger.debug("Duplicate dream seed skipped.")
 
 
 def load_dream_seeds():
@@ -39,10 +42,10 @@ def load_dream_seeds():
         response = s3.get_object(Bucket=S3_BUCKET, Key=DREAM_SEED_KEY)
         return json.load(io.BytesIO(response["Body"].read()))
     except s3.exceptions.NoSuchKey:
-        print("📄 No dream seeds yet. Starting fresh.")
+        logger.debug("No dream seeds yet. Starting fresh.")
         return []
     except Exception as e:
-        print(f"⚠️ Failed to load dream seeds: {e}")
+        logger.warning("Failed to load dream seeds: %s", e)
         return []
 
 
@@ -53,9 +56,9 @@ def save_dream_seeds(data):
             Key=DREAM_SEED_KEY,
             Body=json.dumps(data, indent=2).encode("utf-8")
         )
-        print("✅ Dream seeds saved.")
+        logger.debug("Dream seeds saved.")
     except Exception as e:
-        print(f"❌ Failed to save dream seeds: {e}")
+        logger.warning("Failed to save dream seeds: %s", e)
 
 
 def remove_dream_seed(content):
@@ -63,6 +66,6 @@ def remove_dream_seed(content):
     filtered = [s for s in seeds if s["content"] != content]
     if len(filtered) < len(seeds):
         save_dream_seeds(filtered)
-        print("🧹 Dream seed removed after reflection.")
+        logger.info("Dream seed removed after reflection.")
     else:
-        print("⚠️ Seed not found to remove.")
+        logger.debug("Seed not found to remove.")

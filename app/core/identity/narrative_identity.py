@@ -9,6 +9,10 @@ from typing import Dict, List, Optional, Any
 from dataclasses import dataclass, asdict, field
 from datetime import datetime
 
+from app.logging_config import get_logger
+
+logger = get_logger(__name__)
+
 S3_BUCKET = "swylie-astra"
 NARRATIVE_IDENTITY_KEY = "narrative_identity.json"
 
@@ -111,12 +115,12 @@ class NarrativeIdentitySystem:
             ]
             self.narrative_themes = data.get("narrative_themes", [])
             
-            print(f"📚 Loaded narrative identity")
+            logger.debug("Loaded narrative identity")
         except s3.exceptions.NoSuchKey:
-            print("📚 No narrative identity found. Initializing.")
+            logger.debug("No narrative identity found. Initializing.")
             self._initialize_narrative()
         except Exception as e:
-            print(f"⚠️ Error loading narrative identity: {e}")
+            logger.warning("Error loading narrative identity: %s", e)
             self._initialize_narrative()
     
     def _initialize_narrative(self) -> None:
@@ -195,7 +199,7 @@ class NarrativeIdentitySystem:
                 Body=json.dumps(data, indent=2).encode("utf-8")
             )
         except Exception as e:
-            print(f"⚠️ Error saving narrative identity: {e}")
+            logger.warning("Error saving narrative identity: %s", e)
     
     def tell_origin_story(self) -> str:
         """Tell Astra's origin story."""
@@ -230,7 +234,7 @@ class NarrativeIdentitySystem:
         self.chapters.append(new_chapter)
         self._save_state()
         
-        print(f"📚 Started new chapter: {name}")
+        logger.info("Started new chapter: %s", name)
         return new_chapter
     
     def add_event_to_current_chapter(self, event: str) -> None:
@@ -269,7 +273,7 @@ class NarrativeIdentitySystem:
         self.redemptive_arcs.append(arc)
         self._save_state()
         
-        print(f"📚 Created redemptive arc from: {difficulty}")
+        logger.info("Created redemptive arc from: %s", difficulty)
         return arc
     
     def generate_life_story(self) -> str:

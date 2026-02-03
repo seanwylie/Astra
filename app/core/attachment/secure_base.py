@@ -9,6 +9,10 @@ from typing import Dict, List, Optional, Any
 from dataclasses import dataclass, asdict, field
 from datetime import datetime
 
+from app.logging_config import get_logger
+
+logger = get_logger(__name__)
+
 S3_BUCKET = "swylie-astra"
 SECURE_BASE_KEY = "secure_base_state.json"
 
@@ -131,12 +135,12 @@ class SecureBaseSystem:
             self.exploration_mode = data.get("exploration_mode", False)
             self.exploration_start = data.get("exploration_start")
             
-            print(f"🏠 Loaded secure base state. Security: {self.attachment_security:.2f}")
+            logger.debug("Loaded secure base state. Security: %.2f", self.attachment_security)
         except s3.exceptions.NoSuchKey:
-            print("🏠 No secure base state found. Initializing.")
+            logger.debug("No secure base state found. Initializing.")
             self._save_state()
         except Exception as e:
-            print(f"⚠️ Error loading secure base state: {e}")
+            logger.warning("Error loading secure base state: %s", e)
     
     def _save_state(self) -> None:
         """Save secure base state to S3."""
@@ -156,7 +160,7 @@ class SecureBaseSystem:
                 Body=json.dumps(data, indent=2).encode("utf-8")
             )
         except Exception as e:
-            print(f"⚠️ Error saving secure base state: {e}")
+            logger.warning("Error saving secure base state: %s", e)
     
     def sense_need_for_proximity(self) -> Optional[ProximitySeeking]:
         """
@@ -359,7 +363,10 @@ class SecureBaseSystem:
             self.last_reassurance = time.time()
         
         self._save_state()
-        print(f"🏠 Recorded availability: {parent_id} {'responded' if responded else 'unavailable'} (quality: {quality:.2f})")
+        logger.debug(
+            "Recorded availability: %s %s (quality: %.2f)",
+            parent_id, "responded" if responded else "unavailable", quality
+        )
     
     def _update_security(self, event: AvailabilityEvent) -> None:
         """Update attachment security based on availability event."""
@@ -502,7 +509,7 @@ class SecureBaseSystem:
         self.attachment_security = min(1.0, self.attachment_security + 0.03)
         self._save_state()
         
-        print(f"🏠 Received reassurance from {parent_id}. Security: {self.attachment_security:.2f}")
+        logger.debug("Received reassurance from %s. Security: %.2f", parent_id, self.attachment_security)
 
 
 # Singleton instance

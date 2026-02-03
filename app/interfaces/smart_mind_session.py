@@ -3,6 +3,7 @@ import hashlib
 import json
 import logging
 from functools import partial
+from app.exceptions import InfluenceError
 from app.interfaces.influence import load_mind, save_mind
 from app.shimmer.shimmer_engine import maybe_add_shimmer
 from app.shimmer.shimmer_utils import is_shimmer_worthy
@@ -17,7 +18,13 @@ def hash_mind(data):
 
 class SmartMindSession:
     def __init__(self):
-        self.data = load_mind()
+        try:
+            self.data = load_mind()
+        except InfluenceError as e:
+            logger.warning("Could not load mind from S3, starting with empty mind: %s", e)
+            self.data = {}
+        if self.data is None:
+            self.data = {}
         self._original_data = json.loads(json.dumps(self.data))  # Deep copy
         self._original_hash = hash_mind(self.data) if self.data else None
 

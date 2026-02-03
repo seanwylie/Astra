@@ -214,6 +214,13 @@ async def astra_schedule(bot=None, channel_id=None):
                         topics=["milestone", m.get("name", "achievement")]
                     )
                 
+                # Update developmental stage readiness (year-scale; does not auto-advance)
+                try:
+                    from app.core.development.developmental_stage import developmental_tracker
+                    developmental_tracker._check_stage_advancement()
+                except Exception as dt_e:
+                    schedule_logger.debug("Developmental readiness check failed: %s", dt_e)
+                
                 # Quarterly growth reflection check
                 quarterly = temporal_self.quarterly_growth_reflection()
                 if quarterly:

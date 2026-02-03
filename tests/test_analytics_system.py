@@ -2,10 +2,12 @@
 """
 Quick test script for the new Analytics & Insights System
 """
-
-import sys
 import os
-sys.path.append(os.path.dirname(os.path.abspath(__file__)))
+import sys
+
+import pytest
+
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
 from app.services.analytics_service import analytics_service
 from app.services.personality_service import personality_service
@@ -85,6 +87,7 @@ def test_analytics_system():
     print("✅ Analytics & Insights system test completed successfully!")
     print("🚀 Ready to provide comprehensive user insights!")
 
+@pytest.mark.integration
 def test_cross_system_integration():
     """Test how analytics integrates data from all systems"""
     print("\n🔗 Testing Cross-System Integration\n")

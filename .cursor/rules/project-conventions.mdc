@@ -27,7 +27,7 @@ Main application code lives in **`app/`**. Root holds the entry point (`run_astr
 
 - Config: JSON files in `config/` (e.g. `personality_config.json`, `schedule_config.json`)
 - Secrets and env: `.env` (see `.env` or project docs); never commit `.env`
-- Use `utils/config_loader.py` and env vars for API keys and paths
+- Use `app.config.loader` (e.g. `load_config`, `config_manager`) and env vars for API keys and paths
 
 ## Data and persistence
 

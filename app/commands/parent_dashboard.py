@@ -64,10 +64,10 @@ async def how_is_astra(ctx):
         
         # === Developmental Stage ===
         try:
-            from app.core.growth.developmental_stages import developmental_stages
+            from app.core.development.developmental_stage import developmental_tracker
             
-            stage_info = developmental_stages.get_developmental_summary()
-            support_info = developmental_stages.get_appropriate_support()
+            stage_info = developmental_tracker.get_developmental_summary()
+            support_info = developmental_tracker.get_appropriate_support()
             
             parts.append(f"\n**Developmental Stage:** {stage_info['current_stage']['name'].title()}")
             parts.append(f"Days in stage: {stage_info['current_stage']['days_in_stage']:.0f}")

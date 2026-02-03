@@ -1,0 +1,18 @@
+[Unit]
+Description=Astra Introspection Dashboard (Streamlit port 8502)
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+WorkingDirectory=__ASTRA_PROJECT_ROOT__
+Environment=PYTHONPATH=__ASTRA_PROJECT_ROOT__
+EnvironmentFile=-__ASTRA_PROJECT_ROOT__/.env
+ExecStart=__ASTRA_PROJECT_ROOT__/.venv/bin/streamlit run app/dashboard/app.py --server.port 8502 --server.headless true --server.address 0.0.0.0
+Restart=always
+RestartSec=10
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=default.target

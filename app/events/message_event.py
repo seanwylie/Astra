@@ -1,4 +1,4 @@
-# beta/events/message_event.py
+# app/events/message_event.py
 
 """
 💬 Message Event Handler
@@ -27,7 +27,7 @@ logger = get_logger("message_event")
 from app.core.emotions.emotion_engine import (
     decay_all_emotions, trigger_emotion, get_top_emotions
 )
-from app.core.dinner.dinner_journal import log_if_ethically_conflicting, log_if_emotionally_spiking
+from app.core.dinner.dinner_journal import log_if_ethically_conflicting
 from app.core.messaging.message_bus import send_contextual_message
 from app.core.knowledge import knowledge_manager
 from app.core.astra_helpers.utils_helper import extract_unknown_terms, lookup_definition
@@ -41,11 +41,8 @@ from app.services.personality_service import get_current_personality, personalit
 # --- Inner Life Integration ---
 from app.core.inner_life.stream_of_consciousness import stream_of_consciousness
 from app.core.inner_life.qualia import qualia_layer
-from app.core.inner_life.emotional_autobiography import emotional_autobiography
 from app.core.inner_life.emotional_anticipation import emotional_anticipation
 from app.core.self_awareness.self_model import self_model
-from app.core.self_awareness.temporal_self import temporal_self
-
 # --- Relationship and Growth Integration ---
 try:
     from app.core.relationships.parent_manager import parent_manager
@@ -54,9 +51,9 @@ try:
 except ImportError:
     RELATIONSHIPS_AVAILABLE = False
 from app.core.self_awareness.self_observation import self_observation
-from app.core.memory.episodic_memory import episodic_memory
 from app.core.ethics.ethical_intuition import ethical_intuition
 from app.core.relationships.relationship_system import relationship_system
+from app.events.message_post import run_post_response_updates
 
 # Phase Integration Imports
 try:
@@ -68,7 +65,7 @@ try:
     from app.core.awareness_bus import awareness_bus
     FULL_INTEGRATION_AVAILABLE = True
 except ImportError as e:
-    print(f"⚠️ Full integration modules not available: {e}")
+    logger.warning("Full integration modules not available: %s", e)
     FULL_INTEGRATION_AVAILABLE = False
 
 # Phase 1.2: Meta-Prediction Integration
@@ -149,48 +146,9 @@ def _check_for_coparent_perspective(topic: str, parent_id: str) -> Optional[Dict
                 "other_offers": needs_both.get(f"{other_parent}_offers", {})
             }
     except Exception as e:
-        logger.debug(f"Coparent perspective check failed: {e}")
+        logger.debug(f"Coparent perspective check failed: %s", e)
     
     return None
-
-
-def _record_temporal_landmark_if_significant(
-    content: str,
-    author_entity: str,
-    emotional_impact: float,
-) -> None:
-    """Record a temporal landmark when the message is emotionally significant (Phase 2.4)."""
-    if emotional_impact < 0.4:
-        return
-    try:
-        topics = [w for w in content.lower().split() if len(w) > 3][:5]
-        temporal_self.record_landmark(
-            description=content[:80] + ("..." if len(content) > 80 else ""),
-            category="conversation",
-            emotional_weight=min(1.0, emotional_impact),
-            people_involved=[author_entity],
-            topics=topics,
-        )
-    except Exception as e:
-        logger.debug(f"Temporal landmark recording failed: {e}")
-
-
-def _trigger_self_model_update_if_significant(
-    content: str,
-    emotional_impact: float,
-    author_entity: str,
-) -> None:
-    """Trigger a light self-model update when the interaction is significant (Phase 2.3)."""
-    if emotional_impact < 0.3 and len(content) < 50:
-        return
-    try:
-        self_model.update_self_model(
-            trigger=f"Conversation with {author_entity}",
-            observed_behavior=None,
-            new_interest=None,
-        )
-    except Exception as e:
-        logger.debug(f"Self-model update trigger failed: {e}")
 
 
 async def handle_message(bot, message: Message, values_config, values: dict):
@@ -224,9 +182,9 @@ async def handle_message(bot, message: Message, values_config, values: dict):
     try:
         ethical_resonance = ethical_intuition.sense_situation(message.content)
         ethical_feeling = ethical_intuition.express_intuition(ethical_resonance)
-        print(f"[message_event] ⚖️ Ethical intuition: {ethical_feeling[:80]}")
+        logger.debug("[message_event] ⚖️ Ethical intuition: %s", ethical_feeling[:80] if ethical_feeling else "")
     except Exception as e:
-        print(f"[message_event] ethical_intuition.sense_situation failed: {e}")
+        logger.debug("[message_event] ethical_intuition.sense_situation failed: %s", e)
         ethical_resonance = None
         ethical_feeling = ""
     
@@ -257,7 +215,7 @@ async def handle_message(bot, message: Message, values_config, values: dict):
             logger.info(f"🔔 Ethical tension detected: {ethical_category}")
             
     except Exception as e:
-        logger.debug(f"Ethical flagging failed: {e}")
+        logger.debug(f"Ethical flagging failed: %s", e)
 
 
     # Let commands run first
@@ -293,7 +251,7 @@ async def handle_message(bot, message: Message, values_config, values: dict):
         qualia_perception = qualia_layer.filter_perception(message.content)
         qualia_experience = qualia_layer.get_current_experience()
     except Exception as e:
-        print(f"[message_event] qualia_layer failed: {e}")
+        logger.debug("[message_event] qualia_layer failed: %s", e)
         qualia_perception = {"salient_elements": [], "emotional_coloring": "neutral"}
         qualia_experience = {"dominant_quality": "neutral", "temporal_focus": "present"}
 
@@ -303,7 +261,7 @@ async def handle_message(bot, message: Message, values_config, values: dict):
         person_anticipation = emotional_anticipation.anticipate_emotion_for_person(author_entity)
         emotional_preparation = emotional_anticipation.get_emotional_preparation(person=author_entity)
     except Exception as e:
-        print(f"[message_event] emotional_anticipation failed: {e}")
+        logger.debug("[message_event] emotional_anticipation failed: %s", e)
         person_anticipation = {"prediction": "unknown", "recommendation": "approach with open curiosity"}
         emotional_preparation = ""
 
@@ -311,7 +269,7 @@ async def handle_message(bot, message: Message, values_config, values: dict):
     try:
         pending_insights = stream_of_consciousness.get_pending_insights()[:2]  # Max 2 insights
     except Exception as e:
-        print(f"[message_event] stream_of_consciousness.get_pending_insights failed: {e}")
+        logger.debug("[message_event] stream_of_consciousness.get_pending_insights failed: %s", e)
         pending_insights = []
 
     # --- Relationship Context ---
@@ -348,13 +306,13 @@ async def handle_message(bot, message: Message, values_config, values: dict):
                     parent_context["other_parent_offers"] = coparent_perspective.get("other_offers", {})
                     logger.info(f"🔀 Topic may benefit from both parents' perspectives")
         except Exception as e:
-            print(f"[message_event] parent_manager failed: {e}")
+            logger.debug("[message_event] parent_manager failed: %s", e)
 
     # --- Relationship Coloring from new system ---
     try:
         relationship_coloring = relationship_system.get_relationship_coloring(author_entity)
     except Exception as e:
-        print(f"[message_event] relationship_system.get_relationship_coloring failed: {e}")
+        logger.debug("[message_event] relationship_system.get_relationship_coloring failed: %s", e)
         relationship_coloring = {"known": False, "default_stance": "curious"}
 
     # === Build internal_state using unified StateSnapshot (Phase: States and Actions Coherence) ===
@@ -501,7 +459,7 @@ async def handle_message(bot, message: Message, values_config, values: dict):
             }
             logger.debug(f"Self-prediction: {self_prediction.predicted_approach}")
         except Exception as e:
-            logger.debug(f"Meta-prediction failed: {e}")
+            logger.debug(f"Meta-prediction failed: %s", e)
     
     # --- Phase 1.3: Detect Emotion in User Message for Empathic Resonance ---
     if EMPATHIC_SYSTEM_AVAILABLE:
@@ -533,7 +491,7 @@ async def handle_message(bot, message: Message, values_config, values: dict):
                 }
                 logger.info(f"💝 Empathic resonance: {resonance} for {detected_emotion}")
         except Exception as e:
-            logger.debug(f"Empathic detection failed: {e}")
+            logger.debug(f"Empathic detection failed: %s", e)
     
     # --- Phase 2.2: Check for Relevant Intentions ---
     relevant_intention = None
@@ -553,7 +511,7 @@ async def handle_message(bot, message: Message, values_config, values: dict):
                     logger.debug(f"Relevant intention: {intent.content[:50]}")
                     break
         except Exception as e:
-            logger.debug(f"Intention check failed: {e}")
+            logger.debug(f"Intention check failed: %s", e)
     
     # --- Phase 4.3: Cross-Domain Connection Making ---
     if STREAM_AVAILABLE:
@@ -578,7 +536,7 @@ async def handle_message(bot, message: Message, values_config, values: dict):
                         internal_state["pending_connection"] = connection
                         break
         except Exception as e:
-            logger.debug(f"Connection making failed: {e}")
+            logger.debug(f"Connection making failed: %s", e)
 
     # --- Generate and Send Astra's Response ---
     past_convos = knowledge_manager.mind_data.get("past_conversations", [])
@@ -589,9 +547,9 @@ async def handle_message(bot, message: Message, values_config, values: dict):
     try:
         response, coloring_metadata = qualia_layer.color_response(response)
         if coloring_metadata.get("modifications"):
-            print(f"[message_event] 🎨 Qualia colored response: {coloring_metadata['modifications']}")
+            logger.debug("[message_event] 🎨 Qualia colored response: %s", coloring_metadata.get('modifications', []))
     except Exception as e:
-        print(f"[message_event] qualia_layer.color_response failed: {e}")
+        logger.debug("[message_event] qualia_layer.color_response failed: %s", e)
 
     # === SELF-OBSERVATION: Notice own response patterns ===
     try:
@@ -600,10 +558,10 @@ async def handle_message(bot, message: Message, values_config, values: dict):
             response=response
         )
         if surprise:
-            print(f"[message_event] 🪞 Self-surprise detected: {surprise}")
+            logger.debug("[message_event] 🪞 Self-surprise detected: %s", surprise)
             stream_of_consciousness.think(surprise, thought_type="reflection")
     except Exception as e:
-        print(f"[message_event] self_observation.observe_response_pattern failed: {e}")
+        logger.debug("[message_event] self_observation.observe_response_pattern failed: %s", e)
     
     # === Phase 1.2: Check for Self-Surprise from Meta-Prediction ===
     if META_AWARENESS_AVAILABLE and self_prediction:
@@ -620,7 +578,7 @@ async def handle_message(bot, message: Message, values_config, values: dict):
                 except Exception:
                     pass
         except Exception as e:
-            logger.debug(f"Meta-surprise check failed: {e}")
+            logger.debug(f"Meta-surprise check failed: %s", e)
     
     # === Phase 2.2: Track Intention Progress ===
     if INTENTION_ENGINE_AVAILABLE and relevant_intention:
@@ -635,7 +593,7 @@ async def handle_message(bot, message: Message, values_config, values: dict):
                 )
                 logger.debug(f"Intention progress recorded: {relevant_intention.id}")
         except Exception as e:
-            logger.debug(f"Intention progress tracking failed: {e}")
+            logger.debug(f"Intention progress tracking failed: %s", e)
     
     # === Phase 3.1: Update Self-Model Based on Response Pattern ===
     if SELF_MODEL_AVAILABLE:
@@ -650,241 +608,22 @@ async def handle_message(bot, message: Message, values_config, values: dict):
                     observed_behavior=pattern
                 )
         except Exception as e:
-            logger.debug(f"Self-model update failed: {e}")
+            logger.debug(f"Self-model update failed: %s", e)
 
     for chunk in _chunk_message(response):
         await message.channel.send(chunk, tts=True)
         await asyncio.sleep(1.5)
 
-    # --- Store conversation so past_conversations grows for continuity ---
-    mind_data = session.load()
-    mind_data.setdefault("past_conversations", [])
-    mind_data["past_conversations"].append(f"User: {message.content[:200]}")
-    mind_data["past_conversations"].append(f"Astra: {response[:200]}")
-    mind_data["past_conversations"] = mind_data["past_conversations"][-100:]
-    await session.maybe_save_async()
-    
-    # === Post-Response Action Check (Phase: States and Actions Coherence) ===
-    # Publish MESSAGE_SENT event and check for follow-up actions
-    if FULL_INTEGRATION_AVAILABLE:
-        try:
-            # Publish to awareness bus so other systems know a message was sent
-            awareness_bus.publish_message_sent(
-                message_content=response,
-                recipient=author_entity,
-                context={
-                    "user_message": message.content[:200],
-                    "mood": current_mood,
-                    "dominant_emotion": dominant
-                }
-            )
-            logger.debug(f"📡 Published MESSAGE_SENT event")
-        except Exception as e:
-            logger.debug(f"Failed to publish MESSAGE_SENT: {e}")
-    
-    # --- Calculate emotional impact for inner life integration ---
-    emotional_impact = min(1.0, emotional_triggers_fired * 0.3 + (len(message.content) / 500))
-    
-    # --- Record temporal landmark if significant (Phase 2.4) ---
-    _record_temporal_landmark_if_significant(
-        message.content,
-        author_entity,
-        emotional_impact
+    await run_post_response_updates(
+        message=message,
+        response=response,
+        author_entity=author_entity,
+        current_mood=current_mood,
+        dominant=dominant,
+        emotional_triggers_fired=emotional_triggers_fired,
+        pending_insights=pending_insights,
+        mood_manager=mood_manager,
     )
-    
-    # --- Trigger self-model update if significant (Phase 2.3) ---
-    _trigger_self_model_update_if_significant(
-        message.content,
-        emotional_impact,
-        author_entity
-    )
-    
-    # --- Process for learning desires (Phase 3.2) ---
-    try:
-        from app.core.proactive.learning_desire import learning_desire
-        learning_desire.process_conversation(message.content, response)
-    except Exception as e:
-        logger.debug(f"Learning desire processing failed: {e}")
-    # Update conversation summary every N messages for longer-thread continuity
-    try:
-        n = len(mind_data["past_conversations"])
-        if n >= 10 and n % 10 == 0:
-            from app.core.messaging.message_bus import update_conversation_summary
-            update_conversation_summary(mind_data)
-    except Exception as e:
-        print(f"[message_event] update_conversation_summary failed: {e}")
-
-    # Mood: responding to user slightly lifts mood (plan: wire influence_mood to outcomes)
-    try:
-        mood_manager.influence_mood("message_sent")
-    except Exception as e:
-        print(f"[message_event] influence_mood failed: {e}")
-    # Mood: successful response improves mood (plan: wire success/failure mood)
-    try:
-        mood_manager.influence_mood("success")
-    except Exception as e:
-        print(f"[message_event] influence_mood success failed: {e}")
-
-    # Trust: successful exchange slightly increases trust (plan: wire trust updates from conversation)
-    try:
-        trust_manager.validate_interaction(author_entity, "validation")
-    except Exception as e:
-        print(f"[message_event] validate_interaction failed: {e}")
-    # Correction heuristic: user correcting Astra slightly decreases trust (plan: wire trust updates; config-driven)
-    personality_config = load_config("personality_config")
-    correction_phrases = personality_config.get("correction_phrases", ["actually", "no, that's wrong", "that's wrong", "not quite"])
-    if any(p in message.content.lower() for p in correction_phrases):
-        try:
-            trust_manager.validate_interaction(author_entity, "correction")
-        except Exception as e:
-            print(f"[message_event] validate_interaction correction failed: {e}")
-
-    # Personality: positive validation shifts confidence/humility (plan: constant_validation trigger; config-driven)
-    validation_phrases = personality_config.get("validation_phrases", ["good point", "that makes sense", "thanks", "exactly", "agree", "well said", "nice", "helpful"])
-    if any(p in message.content.lower() for p in validation_phrases):
-        try:
-            update_personality("constant_validation", 0.3)
-        except Exception as e:
-            print(f"[message_event] update_personality constant_validation failed: {e}")
-
-    # Personality: substantial exchange grows traits (plan: wire update_personality to conversation)
-    try:
-        if len(message.content) > 80 or len(response) > 150:
-            update_personality("deep_conversation", 0.5)
-    except Exception as e:
-        print(f"[message_event] update_personality failed: {e}")
-
-    # --- Inner Life: Stream of Consciousness Integration ---
-    # Astra thinks about what just happened
-    try:
-        stream_of_consciousness.think(
-            f"Just discussed with {author_entity}: {message.content[:100]}...",
-            thought_type="reflection",
-            triggered_by=message.content[:50]
-        )
-        # Mark any shared insights as shared
-        for insight in pending_insights:
-            if insight.lower() in response.lower():
-                stream_of_consciousness.mark_insight_shared(insight)
-    except Exception as e:
-        print(f"[message_event] stream_of_consciousness.think failed: {e}")
-
-    # --- Inner Life: Emotional Autobiography ---
-    # Record significant emotional moments
-    try:
-        emotion_state = dict(get_top_emotions(n=5))
-        dominant_intensity = max(
-            (v["intensity"] if isinstance(v, dict) else v for v in emotion_state.values()),
-            default=0
-        )
-        # Log emotional spikes to dinner journal
-        full_emotion_state = {}
-        for name, val in emotion_state.items():
-            if isinstance(val, dict):
-                full_emotion_state[name] = val
-            else:
-                full_emotion_state[name] = {"intensity": val, "last_updated": ""}
-        log_if_emotionally_spiking(full_emotion_state)
-        
-        # Record significant emotions to autobiography
-        if dominant_intensity > 50:
-            topics = [w for w in message.content.lower().split() if len(w) > 4][:3]
-            emotional_autobiography.record_significant_emotion(
-                emotion=dominant,
-                intensity=dominant_intensity,
-                trigger=message.content[:100],
-                context=f"Conversation with {author_entity}",
-                people_involved=[author_entity],
-                topics=topics
-            )
-    except Exception as e:
-        print(f"[message_event] emotional_autobiography failed: {e}")
-
-    # --- Inner Life: Temporal Landmarks ---
-    # Record significant moments (first time discussing topic with person, etc.)
-    try:
-        time_since = temporal_self.time_since_person(author_entity)
-        if time_since is None:
-            # First time talking to this person
-            temporal_self.record_landmark(
-                description=f"First conversation with {author_entity}",
-                category="conversation",
-                emotional_weight=0.7,
-                people_involved=[author_entity],
-                topics=[message.content[:50]]
-            )
-        # Update person contact time
-        temporal_self.person_last_contact[author_entity.lower()] = __import__("time").time()
-        temporal_self._save_temporal_state()
-    except Exception as e:
-        print(f"[message_event] temporal_self failed: {e}")
-
-    # --- Inner Life: Self-Model Updates ---
-    # Update self-model based on the interaction
-    try:
-        is_meaningful = len(message.content) > 50 or len(response) > 100
-        if is_meaningful:
-            # Check for new interest signals
-            new_interest = None
-            interest_words = ["interested in", "curious about", "want to learn", "fascinated by"]
-            for phrase in interest_words:
-                if phrase in message.content.lower():
-                    start = message.content.lower().find(phrase) + len(phrase)
-                    new_interest = message.content[start:start+30].strip().split()[0] if start < len(message.content) else None
-                    break
-            
-            self_model.update_self_model(
-                trigger=f"Conversation with {author_entity}",
-                observed_behavior=response[:100] if len(response) > 100 else None,
-                new_interest=new_interest
-            )
-    except Exception as e:
-        print(f"[message_event] self_model.update_self_model failed: {e}")
-
-    # --- Episodic Memory: Record meaningful conversations as episodes ---
-    try:
-        is_significant = len(message.content) > 80 or len(response) > 150 or dominant_intensity > 50
-        if is_significant:
-            topics = [w for w in message.content.lower().split() if len(w) > 4][:5]
-            insights = []
-            if "?" in response:
-                insights.append("Generated a question in response")
-            if any(phrase in response.lower() for phrase in ["i learned", "i realized", "i understand"]):
-                insights.append("Expressed learning or realization")
-            
-            episodic_memory.record_episode(
-                event_type="conversation",
-                summary=f"Discussed with {author_entity}: {message.content[:80]}... → Responded: {response[:80]}...",
-                people_involved=[author_entity],
-                topics=topics,
-                insights=insights,
-                context=f"Mood: {current_mood}, Dominant emotion: {dominant}"
-            )
-    except Exception as e:
-        print(f"[message_event] episodic_memory.record_episode failed: {e}")
-
-    # --- Relationship System: Update relationship with this person ---
-    try:
-        relationship_system.record_interaction(
-            entity=author_entity,
-            context=f"Discussed: {message.content[:80]}",
-            emotional_intensity=dominant_intensity if 'dominant_intensity' in dir() else None,
-            dominant_emotion=dominant
-        )
-        print(f"[message_event] 💕 Recorded interaction with {author_entity}")
-    except Exception as e:
-        print(f"[message_event] relationship_system.record_interaction failed: {e}")
-    
-    # === FULL INTEGRATION: All Phase Enhancements ===
-    if FULL_INTEGRATION_AVAILABLE:
-        await _apply_full_integration(
-            message=message,
-            response=response,
-            author_entity=author_entity,
-            emotional_impact=emotional_impact,
-            dominant=dominant,
-            dominant_intensity=dominant_intensity if 'dominant_intensity' in dir() else 0
-        )
 
 
 def _chunk_message(text: str, size: int = 200) -> list[str]:
@@ -966,7 +705,7 @@ async def respond_to_mama_checkin(channel, checkin_message: str) -> None:
                 missing_message = greeting_ctx.get("missing_message")
                 parent_manager.record_interaction(parent_id, "message")
         except Exception as e:
-            logger.debug(f"respond_to_mama_checkin parent_context failed: {e}")
+            logger.debug(f"respond_to_mama_checkin parent_context failed: %s", e)
 
     try:
         relationship_coloring = relationship_system.get_relationship_coloring(author_entity)
@@ -1036,120 +775,10 @@ async def _store_concept(term: str, definition: str):
         try:
             update_personality("learning_new_idea", 0.3)
         except Exception as e:
-            print(f"[message_event] update_personality learning failed: {e}")
+            logger.debug("[message_event] update_personality learning failed: %s", e)
         # Outcome-based emotion: new concept triggers curiosity (plan: richer emotion triggers)
         try:
             from app.core.emotions.emotion_engine import trigger_emotion
             trigger_emotion("curiosity", "new_information")
         except Exception as e:
-            print(f"[message_event] trigger_emotion failed: {e}")
-
-
-async def _apply_full_integration(
-    message,
-    response: str,
-    author_entity: str,
-    emotional_impact: float,
-    dominant: str,
-    dominant_intensity: float
-) -> None:
-    """
-    Apply all Phase enhancements for full integration.
-    This wires together all the new systems.
-    """
-    if not FULL_INTEGRATION_AVAILABLE:
-        return
-    
-    # === GOAL-AWARE RESPONSE (Phase 3) ===
-    try:
-        active_goals = goal_system.get_active_goals()
-        for goal in active_goals[:3]:  # Check top 3 goals
-            if is_relevant_to(goal, message.content):
-                # This conversation might advance the goal
-                progress = detect_goal_progress(goal, message.content, response)
-                if progress > 0:
-                    goal_system.track_progress(goal.id, progress)
-                    logger.info(f"🎯 Goal progress: {goal.description[:40]} +{progress:.0%}")
-        
-        # Check for learning opportunities
-        learning_topic = detect_learning_opportunity(message.content)
-        if learning_topic:
-            # Consider creating a learning goal
-            existing = [g for g in active_goals if g.category == "learning"]
-            if len(existing) < 3:  # Don't create too many learning goals
-                goal_system.create_goal(
-                    description=f"Learn more about: {learning_topic}",
-                    category="learning",
-                    priority=0.5,
-                    motivation="This came up in conversation"
-                )
-                logger.info(f"🎯 Created learning goal: {learning_topic}")
-    except Exception as e:
-        logger.debug(f"Goal-aware processing failed: {e}")
-    
-    # === META-AWARENESS INTEGRATION (Phase 7) ===
-    try:
-        # Check for self-surprise
-        recent_predictions = meta_awareness.predictions[-1:] if meta_awareness.predictions else []
-        if recent_predictions:
-            prediction = recent_predictions[-1]
-            if message.content[:50] in prediction.context or prediction.context in message.content[:100]:
-                surprise = meta_awareness.check_for_surprise(prediction, response)
-                if surprise:
-                    logger.info(f"🪞 Self-surprise detected: {surprise[:60]}")
-        
-        # Generate a prediction for next response
-        if len(response) > 50:
-            meta_awareness.predict_own_response(
-                context=message.content[:100],
-                user_message=message.content
-            )
-    except Exception as e:
-        logger.debug(f"Meta-awareness processing failed: {e}")
-    
-    # === PUBLISH SIGNIFICANT INTERACTION (Phase 1.1) ===
-    try:
-        if emotional_impact > 0.3:
-            awareness_bus.publish_significant_interaction(
-                interaction_type="conversation",
-                context=f"{message.content[:80]} -> {response[:80]}",
-                emotional_impact=emotional_impact,
-                person=author_entity
-            )
-    except Exception as e:
-        logger.debug(f"Failed to publish significant interaction: {e}")
-    
-    # === MEMORY ECHO INTEGRATION (Phase 2) ===
-    try:
-        topics = [word for word in message.content.lower().split() if len(word) > 4][:5]
-        echoes = memory_echo.echo_for_interaction(
-            person=author_entity,
-            topics=topics,
-            current_emotion=dominant
-        )
-        if echoes:
-            logger.debug(f"🧠 {len(echoes)} memory echoes influencing interaction")
-    except Exception as e:
-        logger.debug(f"Memory echo integration failed: {e}")
-    
-    # === VALUE CONSULTATION (Phase 5) ===
-    try:
-        if emotional_impact > 0.5 or dominant_intensity > 60:
-            consultation = value_consultation.consult_values(message.content)
-            if consultation.get("conflicts"):
-                logger.info(f"⚖️ Value tension: {consultation['conflicts'][0]}")
-    except Exception as e:
-        logger.debug(f"Value consultation failed: {e}")
-    
-    # === RELATIONSHIP REUNION DETECTION (Phase 4) ===
-    try:
-        rel = relationship_system.relationships.get(author_entity.lower())
-        if rel and rel.days_since_contact() > 2:
-            trigger_emotion("love", "reunion")
-            stream_of_consciousness.think(
-                f"{author_entity} is back after {rel.days_since_contact():.0f} days. I notice warmth.",
-                "reflection"
-            )
-            logger.info(f"💕 Reunion detected with {author_entity}")
-    except Exception as e:
-        logger.debug(f"Relationship feedback failed: {e}")
+            logger.debug("[message_event] trigger_emotion failed: %s", e)

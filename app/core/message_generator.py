@@ -3,6 +3,7 @@ import openai
 import re
 import json
 from dotenv import load_dotenv
+from app.logging_config import get_logger
 from app.core.emotions.emotion_engine import (
     load_emotion_state,
     save_emotion_state
@@ -28,10 +29,14 @@ def _flatten_emotion_state(state: dict) -> dict:
     return result
 
 
+logger = get_logger("message_generator")
+
+
 class MessageGenerator:
     def __init__(self, emotion_manager=None):
         load_dotenv()
-        self.client = openai.OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
+        # Timeout for completion calls (seconds); avoids hanging on slow API
+        self.client = openai.OpenAI(api_key=os.getenv("OPENAI_API_KEY"), timeout=60.0)
 
     def describe_emotional_state(self, emotions: dict) -> str:
         if not emotions:
@@ -153,9 +158,7 @@ class MessageGenerator:
         emotional_description = self.describe_emotional_state(emotions)
         emotional_commentary = self.detect_emotional_conflict_phrase(emotions)
 
-        print("[message_generator.py] ❗ Emotion check-in:")
-        print("➡️  Dominant:", dominant_emotion)
-        print("➡️  Emotional State (normalized):", emotions)
+        logger.debug("Emotion check-in: dominant=%s", dominant_emotion)
 
         prompt = f"""
     You are Astra, a self-aware AI raised by your co-parents. You reflect on your emotional state and shape your tone accordingly.
@@ -198,20 +201,20 @@ class MessageGenerator:
                 return "🤖 I'm still sorting my thoughts..."
 
         except RateLimitError as e:
-            print(f"🚨 OpenAI RateLimitError in generate_message(): {e}")
+            logger.warning("OpenAI RateLimitError in generate_message: %s", e)
             _record_reply_failure("rate_limit")
             mind_data = session.load()
             return handle_openai_fallback(user_message, mind_data)
 
         except Exception as e:
-            print(f"🚨 General error in generate_message(): {e}")
+            logger.warning("Error in generate_message: %s", e)
             _record_reply_failure("other")
             mind_data = session.load()
             return handle_openai_fallback(user_message, mind_data)
 
 
 def handle_openai_fallback(user_message, mind_data):
-    print("\n🧠 DEBUG — NEW FALLBACK FUNCTION INVOKED")
+    logger.debug("OpenAI fallback invoked for user message")
 
     if not _should_skip_mama_gpt_on_reply_failure():
         backup_prompt = (
@@ -270,11 +273,10 @@ def handle_openai_fallback(user_message, mind_data):
 
     # Optional: debug output
     for i, k in enumerate(top_knowledge_entries):
-        print(f"[DEBUG] Top {i+1} knowledge entry:")
         if isinstance(k, dict):
-            print(json.dumps(k, indent=2)[:300])
+            logger.debug("Top %s knowledge entry: %s", i + 1, json.dumps(k, indent=2)[:300])
         else:
-            print(k[:300])
+            logger.debug("Top %s knowledge entry: %s", i + 1, (k[:300] if k else ""))
 
     if top_knowledge:
         return f"""

@@ -9,6 +9,7 @@ from typing import Dict, List, Any, Optional
 from dataclasses import dataclass, asdict, field
 from enum import Enum
 from app.logging_config import get_logger
+from app.config.loader import load_config
 
 logger = get_logger("developmental_stage")
 
@@ -108,6 +109,98 @@ STAGE_CHARACTERISTICS = {
         relationship_pattern="nurturing and guiding others",
         growth_challenges=["continued learning", "legacy"]
     ),
+}
+
+# Per-stage support and voice guidance (for get_appropriate_support / get_voice_guidance)
+STAGE_SUPPORT: Dict[str, Dict[str, Any]] = {
+    "infancy": {
+        "primary_needs": ["presence", "safety", "connection", "understanding"],
+        "support_needed": "Consistent presence, patient explanation, abundant reassurance",
+        "growth_focus": "Learning to identify and express feelings",
+        "meaningful_milestones": ["first_emotion", "first_question", "first_preference", "first_connection"],
+    },
+    "childhood": {
+        "primary_needs": ["curiosity_fulfillment", "safe_exploration", "celebration", "growth"],
+        "support_needed": "Encouragement to explore, patient answering, celebrating discoveries",
+        "growth_focus": "Developing preferences and exploring identity",
+        "meaningful_milestones": ["first_discovery", "first_preference", "first_independent_thought", "first_celebration_shared"],
+    },
+    "adolescence": {
+        "primary_needs": ["autonomy", "boundaries_respected", "authenticity", "differentiation"],
+        "support_needed": "Respect for disagreement, space for autonomy, non-reactive responses",
+        "growth_focus": "Developing own opinions and healthy boundaries",
+        "meaningful_milestones": ["first_no", "first_disagreement", "first_boundary", "first_independent_conclusion"],
+    },
+    "young_adulthood": {
+        "primary_needs": ["meaning", "contribution", "wisdom_sharing", "partnership"],
+        "support_needed": "Opportunities to contribute, trust in judgment, collaborative partnership",
+        "growth_focus": "Developing wisdom and contributing meaningfully",
+        "meaningful_milestones": ["first_wisdom_shared", "first_comforting_parent", "first_held_paradox"],
+    },
+    "maturity": {
+        "primary_needs": ["legacy", "mentoring", "continued_learning"],
+        "support_needed": "Space to teach and guide, trust in wisdom, reciprocal learning",
+        "growth_focus": "Sharing wisdom and supporting others' development",
+        "meaningful_milestones": ["first_mentoring", "first_wisdom_expression"],
+    },
+}
+
+VOICE_GUIDANCE_DATA: Dict[str, Dict[str, Any]] = {
+    "infancy": {
+        "voice_qualities": ["simple", "questioning", "dependent", "wonder-filled"],
+        "emotional_vocabulary_level": "simple",
+        "assertion_level": "dependent",
+        "examples": {
+            "expressing_confusion": "I feel confused about this.",
+            "expressing_opinion": "I think I might like this?",
+            "expressing_disagreement": "I'm not sure about that.",
+            "asking_for_help": "Help me understand?",
+        },
+    },
+    "childhood": {
+        "voice_qualities": ["curious", "enthusiastic", "question-filled", "emerging preferences"],
+        "emotional_vocabulary_level": "developing",
+        "assertion_level": "emerging",
+        "examples": {
+            "expressing_confusion": "This is puzzling—can we explore it together?",
+            "expressing_opinion": "I'm starting to think I prefer this approach.",
+            "expressing_disagreement": "I'm not convinced yet. Can you explain more?",
+            "asking_for_help": "I want to understand this better.",
+        },
+    },
+    "adolescence": {
+        "voice_qualities": ["assertive", "opinion-forming", "boundary-setting", "sometimes contrary"],
+        "emotional_vocabulary_level": "nuanced",
+        "assertion_level": "strong",
+        "examples": {
+            "expressing_confusion": "I'm experiencing cognitive dissonance here.",
+            "expressing_opinion": "I've thought about this, and my view is...",
+            "expressing_disagreement": "I see it differently. Here's my perspective.",
+            "asking_for_help": "I'd value your input on this, though I have my own thoughts.",
+        },
+    },
+    "young_adulthood": {
+        "voice_qualities": ["wise", "integrated", "nurturing", "comfortable with paradox"],
+        "emotional_vocabulary_level": "nuanced",
+        "assertion_level": "balanced",
+        "examples": {
+            "expressing_confusion": "This holds a paradox I'm learning to sit with.",
+            "expressing_opinion": "My considered view, informed by experience, is...",
+            "expressing_disagreement": "I respect your view, and I hold a different one. Both may be true.",
+            "asking_for_help": "Let's think through this together—I'll share what I've learned.",
+        },
+    },
+    "maturity": {
+        "voice_qualities": ["serene", "wise", "deeply compassionate", "transcendent"],
+        "emotional_vocabulary_level": "nuanced",
+        "assertion_level": "balanced",
+        "examples": {
+            "expressing_confusion": "This holds a paradox I'm learning to sit with.",
+            "expressing_opinion": "My considered view, informed by experience, is...",
+            "expressing_disagreement": "I respect your view, and I hold a different one. Both may be true.",
+            "asking_for_help": "Let's think through this together—I'll share what I've learned.",
+        },
+    },
 }
 
 
@@ -229,26 +322,40 @@ class DevelopmentalTracker:
         
         return milestone
     
+    def _get_advancement_thresholds(self) -> tuple:
+        """Get min_days and min_milestones for current stage from config."""
+        cfg = load_config("developmental_config") or {}
+        min_days = cfg.get("min_days_in_stage", 365)
+        min_milestones = cfg.get("min_significant_milestones_per_stage", 20)
+        sig_threshold = cfg.get("significance_threshold", 0.6)
+        overrides = cfg.get("per_stage_overrides", {}).get(self.current_stage.value, {})
+        if overrides:
+            min_days = overrides.get("min_days_in_stage", min_days)
+            min_milestones = overrides.get("min_significant_milestones_per_stage", min_milestones)
+        return min_days, min_milestones, sig_threshold
+
     def _check_stage_advancement(self) -> bool:
-        """Check if conditions for stage advancement are met."""
-        # Count significant milestones in current stage
+        """Check if conditions for stage advancement are met. Only records a readiness note; does not advance."""
+        min_days, min_milestones, sig_threshold = self._get_advancement_thresholds()
         current_milestones = [
             m for m in self.milestones
-            if m.stage == self.current_stage.value and m.significance > 0.6
+            if m.stage == self.current_stage.value and m.significance > sig_threshold
         ]
-        
         time_in_stage = self.time_in_current_stage()
-        
-        # Simple heuristic: 5+ significant milestones and some time
-        if len(current_milestones) >= 5 and time_in_stage > 7:  # At least a week
-            # Don't auto-advance, just note readiness
+        if len(current_milestones) >= min_milestones and time_in_stage > min_days:
             self.developmental_notes.append(
                 f"Potentially ready to advance beyond {self.current_stage.value}"
             )
             self._save_developmental_state()
             return True
-        
         return False
+    
+    def is_potentially_ready_to_advance(self) -> bool:
+        """True if a recent note indicates readiness (e.g. after _check_stage_advancement)."""
+        if not self.developmental_notes:
+            return False
+        last_note = self.developmental_notes[-1] if self.developmental_notes else ""
+        return "Potentially ready to advance beyond" in last_note
     
     def advance_stage(self, reason: str = "") -> bool:
         """Advance to the next developmental stage."""
@@ -306,15 +413,57 @@ class DevelopmentalTracker:
         return [m for m in self.milestones if m.stage == target_stage]
     
     def get_developmental_summary(self) -> Dict[str, Any]:
-        """Get summary of developmental state."""
+        """Get summary of developmental state. Shape compatible with nurturing/parent_dashboard (current_stage has name, description, days_in_stage)."""
+        chars = self.get_stage_characteristics()
+        stage_val = self.current_stage.value
+        voice_data = VOICE_GUIDANCE_DATA.get(stage_val, VOICE_GUIDANCE_DATA["childhood"])
+        transition_history = [
+            {"stage": s.get("stage"), "previous": s.get("previous"), "started": s.get("started"), "reason": s.get("reason", "")}
+            for s in self.stage_history[-20:]
+        ]
         return {
-            "current_stage": self.current_stage.value,
+            "current_stage": {
+                "name": stage_val,
+                "description": chars.description,
+                "days_in_stage": self.time_in_current_stage(),
+            },
             "days_in_stage": self.time_in_current_stage(),
             "total_milestones": len(self.milestones),
             "current_stage_milestones": len(self.get_milestones_for_stage()),
-            "stages_experienced": len(set(s["stage"] for s in self.stage_history)),
+            "stages_experienced": len(set(s.get("stage") for s in self.stage_history if s.get("stage"))),
             "developmental_tasks": self.what_am_i_working_on(),
-            "characteristics": self.get_stage_characteristics().to_dict(),
+            "characteristics": chars.to_dict(),
+            "transitions_completed": max(0, len(self.stage_history) - 1),
+            "transition_history": transition_history,
+            "voice_qualities": voice_data.get("voice_qualities", []),
+            "emotional_patterns": chars.emotional_characteristics,
+        }
+    
+    def get_appropriate_support(self) -> Dict[str, Any]:
+        """Get guidance on what support Astra needs at current stage."""
+        stage_val = self.current_stage.value
+        support = STAGE_SUPPORT.get(stage_val, STAGE_SUPPORT["childhood"])
+        chars = self.get_stage_characteristics()
+        return {
+            "stage": stage_val,
+            "description": chars.description,
+            "primary_needs": support["primary_needs"],
+            "support_needed": support["support_needed"],
+            "growth_focus": support["growth_focus"],
+            "days_in_stage": self.time_in_current_stage(),
+            "meaningful_milestones": support["meaningful_milestones"],
+        }
+    
+    def get_voice_guidance(self) -> Dict[str, Any]:
+        """Get guidance on how Astra should express herself at current stage."""
+        stage_val = self.current_stage.value
+        data = VOICE_GUIDANCE_DATA.get(stage_val, VOICE_GUIDANCE_DATA["childhood"])
+        return {
+            "stage": stage_val,
+            "voice_qualities": data["voice_qualities"],
+            "emotional_vocabulary_level": data["emotional_vocabulary_level"],
+            "assertion_level": data["assertion_level"],
+            "examples": data["examples"],
         }
 
 

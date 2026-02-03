@@ -16,6 +16,7 @@ Created: 2025-04-15
 # --- Imports ---
 from app.interfaces.mind_session import session
 from app.config.loader import load_config
+from app.logging_config import get_logger
 from app.core.messaging.message_bus import send_contextual_message
 from app.core.mood.mood_manager import MoodManager
 from app.core.personality.personality_manager import get_active_traits_for_prompt
@@ -32,6 +33,8 @@ try:
     STATE_SNAPSHOT_AVAILABLE = True
 except ImportError:
     STATE_SNAPSHOT_AVAILABLE = False
+
+logger = get_logger("response_service")
 
 # --- Config & State ---
 values_config = load_config("values_config")
@@ -106,7 +109,7 @@ def query_openai_for_response(user_message: str, past_conversations: list[str], 
                 pass
             
         except Exception as e:
-            print(f"[response_service] State snapshot failed: {e}")
+            logger.warning("State snapshot failed: %s", e)
 
     # If new terms were discovered, prepend them to the conversation history
     if unknown_terms:
@@ -125,16 +128,16 @@ def query_openai_for_response(user_message: str, past_conversations: list[str], 
     try:
         response, coloring_metadata = qualia_layer.color_response(response)
         if coloring_metadata.get("modifications"):
-            print(f"[response_service] 🎨 Qualia colored response: {coloring_metadata['modifications']}")
+            logger.debug("Qualia colored response: %s", coloring_metadata.get("modifications"))
     except Exception as e:
-        print(f"[response_service] qualia_layer.color_response failed: {e}")
+        logger.debug("qualia_layer.color_response failed: %s", e)
 
     # === EMOTIONAL NARRATIVE: Weave emotions into expression ===
     try:
         emotion_state = load_emotion_state()
         response = emotional_narrative.weave_emotions_into_response(response, emotion_state)
     except Exception as e:
-        print(f"[response_service] emotional_narrative.weave_emotions_into_response failed: {e}")
+        logger.warning("emotional_narrative.weave_emotions_into_response failed: %s", e)
     
     # === ASTRA DEEPENING PLAN INTEGRATIONS ===
     
@@ -143,9 +146,9 @@ def query_openai_for_response(user_message: str, past_conversations: list[str], 
         from app.core.inner_life.response_coloring import response_coloring
         response, coloring_meta = response_coloring.color_response(response, person=None)
         if coloring_meta.get("modifications"):
-            print(f"[response_service] 🎨 Response coloring: {coloring_meta['modifications']}")
+            logger.debug("Response coloring: %s", coloring_meta.get('modifications', []))
     except Exception as e:
-        print(f"[response_service] response_coloring failed: {e}")
+        logger.warning("response_coloring failed: %s", e)
     
     # === CONTINUITY WEAVING: Add narrative continuity ===
     try:
@@ -166,9 +169,9 @@ def query_openai_for_response(user_message: str, past_conversations: list[str], 
             emotional_intensity=emotional_intensity
         )
         if weave_meta.get("weavings"):
-            print(f"[response_service] 🧵 Continuity woven: {weave_meta['weavings']}")
+            logger.debug("Continuity woven: %s", weave_meta.get('weavings', []))
     except Exception as e:
-        print(f"[response_service] continuity_weaver failed: {e}")
+        logger.debug("continuity_weaver failed: %s", e)
     
     # === FELT SENSE: Occasionally express pre-verbal experience ===
     try:
@@ -176,9 +179,9 @@ def query_openai_for_response(user_message: str, past_conversations: list[str], 
         should_express, expression = felt_sense.should_express_felt_sense()
         if should_express and expression:
             response = response + " " + expression
-            print(f"[response_service] 🫀 Felt sense expressed")
+            logger.debug("Felt sense expressed")
     except Exception as e:
-        print(f"[response_service] felt_sense failed: {e}")
+        logger.debug("felt_sense failed: %s", e)
     
     # === EMOTIONAL BLENDING: Express complex emotions ===
     try:
@@ -186,9 +189,9 @@ def query_openai_for_response(user_message: str, past_conversations: list[str], 
         should_express, blend_expr = emotional_blending.should_express_complexity()
         if should_express and blend_expr:
             response = response + " " + blend_expr
-            print(f"[response_service] 💜 Blend expressed")
+            logger.debug("Blend expressed")
     except Exception as e:
-        print(f"[response_service] emotional_blending failed: {e}")
+        logger.debug("emotional_blending failed: %s", e)
     
     # === THRESHOLD RECOGNITION: Mark significant moments ===
     try:
@@ -200,9 +203,9 @@ def query_openai_for_response(user_message: str, past_conversations: list[str], 
         )
         if should_mark and threshold_expr:
             response = threshold_expr + " " + response
-            print(f"[response_service] 🚪 Threshold marked")
+            logger.debug("Threshold marked")
     except Exception as e:
-        print(f"[response_service] threshold_recognition failed: {e}")
+        logger.debug("threshold_recognition failed: %s", e)
     
     # === DESIRE INTROSPECTION: Occasionally express wants ===
     try:
@@ -210,9 +213,9 @@ def query_openai_for_response(user_message: str, past_conversations: list[str], 
         should_express, desire_expr = desire_introspection.should_express_desire()
         if should_express and desire_expr:
             response = response + " " + desire_expr
-            print(f"[response_service] 💫 Desire expressed")
+            logger.debug("Desire expressed")
     except Exception as e:
-        print(f"[response_service] desire_introspection failed: {e}")
+        logger.debug("desire_introspection failed: %s", e)
     
     # === CAPTURE FOR CONTINUITY ===
     try:

@@ -19,6 +19,10 @@ from datetime import datetime
 from pathlib import Path
 from difflib import SequenceMatcher
 
+from app.logging_config import get_logger
+
+logger = get_logger(__name__)
+
 
 # Text Processing Utilities
 
@@ -171,7 +175,10 @@ def safe_get(data: Dict[str, Any], key: str, default: Any = None, expected_type:
     value = data.get(key, default)
     
     if expected_type and value is not None and not isinstance(value, expected_type):
-        print(f"⚠️ Warning: Expected {expected_type.__name__} for key '{key}', got {type(value).__name__}")
+        logger.warning(
+            "Expected %s for key '%s', got %s",
+            expected_type.__name__, key, type(value).__name__
+        )
         return default
     
     return value
@@ -194,13 +201,13 @@ def safe_load_json(file_path: Union[str, Path], default: Any = None) -> Any:
         with open(file_path, 'r', encoding='utf-8') as f:
             return json.load(f)
     except FileNotFoundError:
-        print(f"⚠️ File not found: {file_path}")
+        logger.warning("File not found: %s", file_path)
         return default
     except json.JSONDecodeError as e:
-        print(f"❌ Invalid JSON in {file_path}: {e}")
+        logger.warning("Invalid JSON in %s: %s", file_path, e)
         return default
     except Exception as e:
-        print(f"❌ Error loading {file_path}: {e}")
+        logger.warning("Error loading %s: %s", file_path, e)
         return default
 
 
@@ -224,7 +231,7 @@ def safe_save_json(data: Any, file_path: Union[str, Path], indent: int = 2) -> b
             json.dump(data, f, indent=indent, ensure_ascii=False)
         return True
     except Exception as e:
-        print(f"❌ Error saving to {file_path}: {e}")
+        logger.warning("Error saving to %s: %s", file_path, e)
         return False
 
 
@@ -315,7 +322,7 @@ def safe_execute(func, *args, default=None, log_errors=True, **kwargs):
         return func(*args, **kwargs)
     except Exception as e:
         if log_errors:
-            print(f"❌ Error executing {func.__name__}: {e}")
+            logger.warning("Error executing %s: %s", func.__name__, e)
         return default
 
 

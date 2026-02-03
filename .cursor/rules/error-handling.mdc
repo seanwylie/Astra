@@ -1,12 +1,12 @@
 ---
-description: Error handling with project exceptions
+description: Error handling conventions for Astra
 globs: "**/*.py"
 alwaysApply: false
 ---
 
 # Error Handling
 
-- Use project exceptions from `exceptions.py`: `CashStraException`, `QuestradeException`, `TradingException`, `StrategyException`, `ConfigurationException`, `DatabaseException`
-- Avoid bare `except:` or `except Exception:` without re-raising or proper handling
-- Prefer specific exception types; chain with `raise ... from e` when appropriate
-- Log at appropriate levels before re-raising
+- Use project exceptions from `app.exceptions`: `AstraException`, `ConfigurationError`, `InfluenceError`, `ExternalServiceError`. Raise them for config validation failures, mind load/save failures, and external service failures so callers can catch specific types.
+- Prefer specific exception types; avoid bare `except:` or broad `except Exception:` unless you re-raise or handle appropriately.
+- When re-raising, chain with `raise ... from e` so the cause is preserved.
+- Log at an appropriate level before re-raising (e.g. `logger.exception` or `logger.error`).

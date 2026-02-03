@@ -242,7 +242,7 @@ class SelfModel:
         self.historical_snapshots.append(snapshot)
         self._save_self_model()
         
-        print(f"🪞 Took self-snapshot #{len(self.historical_snapshots)}")
+        logger.debug("Took self-snapshot #%d", len(self.historical_snapshots))
         return snapshot
     
     def predict_own_response(self, situation: str) -> Dict[str, Any]:
@@ -308,16 +308,19 @@ class SelfModel:
         self.surprise_log.append(surprise)
         self._save_self_model()
         
-        print(f"🪞 Recorded self-surprise: expected '{expected_response[:30]}...' but did '{actual_response[:30]}...'")
+        logger.info(
+            "Recorded self-surprise: expected '%s...' but did '%s...'",
+            expected_response[:30], actual_response[:30]
+        )
         
         # --- Milestone Integration: Check for first self-surprise ---
         try:
             from app.core.growth.milestone_detector import milestone_detector
             milestone = milestone_detector.record_first_self_surprise(expected_response, actual_response)
             if milestone:
-                print(f"🪞 🎉 Milestone achieved: first_self_surprise")
+                logger.info("Milestone achieved: first_self_surprise")
         except Exception as e:
-            print(f"🪞 Milestone detection failed: {e}")
+            logger.warning("Milestone detection failed: %s", e)
     
     def compare_to_past_self(self, days_ago: int = 30) -> Dict[str, Any]:
         """
@@ -452,7 +455,7 @@ class SelfModel:
         
         self._save_self_model()
         
-        print(f"🪞 Chosen cultivation: {quality}")
+        logger.info("Chosen cultivation: %s", quality)
         
         return {
             "quality": quality,
@@ -476,7 +479,7 @@ class SelfModel:
         self.changes.append(change)
         self._save_self_model()
         
-        print(f"🪞 Rejected quality: {quality}")
+        logger.info("Rejected quality: %s", quality)
         
         return {
             "quality": quality,

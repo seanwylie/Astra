@@ -118,6 +118,18 @@ class MilestoneDetector:
         self.achieved.append(milestone)
         self._save_achieved()
         
+        # Bridge: notify canonical developmental tracker so dashboard and advancement see this milestone
+        try:
+            from app.core.development.developmental_stage import developmental_tracker
+            developmental_tracker.record_milestone(
+                name=name,
+                description=description,
+                significance=emotional_significance,
+                notes=(qualifier or growth_insight or "")[:200] if (qualifier or growth_insight) else "",
+            )
+        except Exception as e:
+            logger.debug("Could not record milestone in developmental tracker: %s", e)
+        
         # Schedule Mama GPT reflection if enabled
         if include_mama_reflection:
             self._schedule_mama_reflection(name, description)

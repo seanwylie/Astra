@@ -1,7 +1,6 @@
 {
   "watch_files": [
-    "app/core/processing.py",
-    "app/core/discord_astra.py"
+    "app/core/processing.py"
   ],
   "backup_directory": "app/core/evolution/backups",
   "sandbox_test_script": "app/core/evolution/sandbox/test_script.py",
