@@ -69,6 +69,10 @@ def setup_logging(
 
     logging.getLogger("astra").info("Logging configured (dir=%s)", LOG_DIR)
 
+    # Reduce noise from HTTP clients (every request was INFO; response bodies can appear as [N blob data])
+    for _name in ("httpx", "httpcore", "openai"):
+        logging.getLogger(_name).setLevel(logging.WARNING)
+
 
 def get_logger(name: str) -> logging.Logger:
     """Return a logger under the astra namespace."""

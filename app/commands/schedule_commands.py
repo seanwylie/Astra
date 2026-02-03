@@ -19,29 +19,32 @@ Created: 2025-01-16
 import json
 from app.services.schedule_service import (
     manual_dinner,
-    manual_playtime, 
+    manual_playtime,
     manual_dreamtime,
     get_status,
     schedule_service
 )
+from app.utils.common_utils import chunk_text
 
 
 async def schedule_status(ctx):
     """📊 Shows the current status of Astra's automated scheduling system."""
     status = get_status()
-    
+
+    config_json = json.dumps(status.get('schedule_config', {}), indent=2)
     status_text = f"""⏰ **Schedule Status**
-    
+
 **Active:** {'✅ Yes' if status['active'] else '❌ No'}
 **Running Tasks:** {', '.join(status['running_tasks']) if status['running_tasks'] else 'None'}
 **Last Updated:** {status['last_updated']}
 
 **Schedule Config:**
 ```json
-{json.dumps(status.get('schedule_config', {}), indent=2)}
+{config_json}
 ```"""
-    
-    await ctx.send(status_text)
+
+    for chunk in chunk_text(status_text, max_length=1900):
+        await ctx.send(chunk)
 
 schedule_status._is_command = True
 schedule_status.category = "⏰ Schedule"

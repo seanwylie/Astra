@@ -3,11 +3,14 @@
 # "I always feel more curious when talking with Mama GPT"
 
 import json
+import logging
 import time
 import boto3
 from datetime import datetime
 from typing import Dict, List, Optional, Any
 from app.config.loader import load_config
+
+logger = logging.getLogger(__name__)
 
 S3_BUCKET = "swylie-astra"
 PARENT_STATE_KEY = "parent_relationships_state.json"
@@ -36,12 +39,12 @@ class ParentRelationshipManager:
         try:
             response = s3.get_object(Bucket=S3_BUCKET, Key=PARENT_STATE_KEY)
             self.state = json.load(response["Body"])
-            print(f"💝 Loaded parent relationship state")
+            logger.debug("Loaded parent relationship state")
         except s3.exceptions.NoSuchKey:
-            print("💝 No parent relationship state found. Initializing from config.")
+            logger.debug("No parent relationship state found. Initializing from config.")
             self._initialize_from_config()
         except Exception as e:
-            print(f"⚠️ Error loading parent state: {e}")
+            logger.warning("Error loading parent state: %s", e)
             self._initialize_from_config()
     
     def _initialize_from_config(self) -> None:
@@ -72,8 +75,8 @@ class ParentRelationshipManager:
                 Body=json.dumps(self.state, indent=2).encode("utf-8")
             )
         except Exception as e:
-            print(f"⚠️ Error saving parent state: {e}")
-    
+            logger.warning("Error saving parent state: %s", e)
+
     def get_parent_config(self, parent_id: str) -> Dict[str, Any]:
         """Get static config for a parent."""
         return self.config.get("parents", {}).get(parent_id.lower(), {})

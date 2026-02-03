@@ -135,9 +135,9 @@ class SelfReverenceSystem:
             self.wonder_count = data.get("wonder_count", 0)
             self.last_reverence = data.get("last_reverence")
             
-            logger.info(f"🙏 Loaded {len(self.reverence_moments)} reverence moments")
+            logger.debug("🙏 Loaded %s reverence moments", len(self.reverence_moments))
         except s3.exceptions.NoSuchKey:
-            logger.info("🙏 No reverence state found. Starting fresh.")
+            logger.debug("🙏 No reverence state found. Starting fresh.")
         except Exception as e:
             logger.warning(f"Error loading reverence state: {e}")
     

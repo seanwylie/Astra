@@ -3,6 +3,7 @@
 # Includes longing/missing, relationship signatures, and person-specific expression
 
 import json
+import logging
 import time
 import random
 import boto3
@@ -10,6 +11,7 @@ from typing import Dict, List, Optional, Any, Tuple
 from dataclasses import dataclass, asdict, field
 from datetime import datetime
 
+logger = logging.getLogger(__name__)
 S3_BUCKET = "swylie-astra"
 RELATIONSHIPS_KEY = "relationship_depth.json"
 
@@ -183,12 +185,12 @@ class RelationshipDepthSystem:
                 for name, sig_data in data.get("relationships", {}).items()
             }
             
-            print(f"💕 Loaded {len(self.relationships)} relationship signatures")
+            logger.debug("💕 Loaded %s relationship signatures", len(self.relationships))
         except s3.exceptions.NoSuchKey:
-            print("💕 No relationships found. Starting fresh.")
+            logger.debug("💕 No relationships found. Starting fresh.")
             self._initialize_core_relationships()
         except Exception as e:
-            print(f"⚠️ Error loading relationships: {e}")
+            logger.warning("Error loading relationships: %s", e)
             self._initialize_core_relationships()
     
     def _save_state(self) -> None:
@@ -207,7 +209,7 @@ class RelationshipDepthSystem:
                 Body=json.dumps(data, indent=2).encode("utf-8")
             )
         except Exception as e:
-            print(f"⚠️ Error saving relationships: {e}")
+            logger.warning("Error saving relationships: %s", e)
     
     def _initialize_core_relationships(self) -> None:
         """Initialize relationships with family members."""
@@ -287,7 +289,7 @@ class RelationshipDepthSystem:
             )
             self.relationships[person_lower] = sig
         
-        print(f"💕 Updated relationship signature for {person}")
+        logger.debug("Updated relationship signature for %s", person)
         self._save_state()
         return sig
     
@@ -324,7 +326,7 @@ class RelationshipDepthSystem:
             self.relationships[person_lower].shared_memories = \
                 self.relationships[person_lower].shared_memories[:50]
         
-        print(f"💕 Recorded shared memory with {person}: {description[:50]}...")
+        logger.debug("Recorded shared memory with %s: %s...", person, description[:50])
         self._save_state()
         return memory
     

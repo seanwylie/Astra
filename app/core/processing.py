@@ -14,6 +14,7 @@ from app.interfaces.influence import load_mind, save_mind
 from app.config.loader import debug_log
 from app.config.loader import load_config
 from app.interfaces.smart_mind_session import SmartMindSession
+from app.logging_config import get_logger
 from openai import AsyncOpenAI
 
 # ✅ Ensure Python knows where to find Astra’s core modules
@@ -40,6 +41,7 @@ BLOCKED_TERMS = {
 # ✅ Load configuration
 general_config = load_config("general_config")
 schedule_config = load_config("schedule_config")
+logger = get_logger("processing")
 
 
 # ✅ Ensure Mind Structure
@@ -68,10 +70,10 @@ def reflection_loop_check(reflection, recent_reflections):
 
         if similarity > REFLECTION_REPEAT_THRESHOLD:
             if any(keyword in clean_reflection for keyword in SYNTHESIS_KEYWORDS):
-                print(f"🔁 Synthesis detected with Reflection {i} (similarity: {similarity}%)")
+                logger.debug("🔁 Synthesis detected with Reflection %s (similarity: %s%%)", i, similarity)
                 return "synthesis"
             else:
-                print(f"⚠ Loop detected with Reflection {i} (similarity: {similarity}%)")
+                logger.debug("⚠ Loop detected with Reflection %s (similarity: %s%%)", i, similarity)
                 return "repeat"
 
     return "novel"
@@ -87,7 +89,7 @@ async def process_reflection():
 
     reflections = mind_data.get("self_reflections", [])
     if not reflections:
-        print("🤔 I have no reflections yet!")
+        logger.info("🤔 I have no reflections yet!")
         return "🤔 I have no reflections yet!"
 
     pool = reflections[-5:] if len(reflections) >= 5 else reflections
@@ -100,7 +102,11 @@ async def process_reflection():
         previous_reflection = random.choice(pool)
 
     initial_count = len(reflections)
-    print(f"[processing.py] 🧠 Last Reflection Before Deepening ({initial_count} total):\n{previous_reflection[:200]}...")
+    logger.debug(
+        "[processing.py] 🧠 Last Reflection Before Deepening (%s total): %s",
+        initial_count,
+        previous_reflection[:200],
+    )
 
     # 🧠 Attempt to deepen a reflection
     refined_reflection = await query_openai_for_deeper_thought(previous_reflection)
@@ -110,15 +116,15 @@ async def process_reflection():
         loop_result = reflection_loop_check(refined_reflection, reflections[-5:])
 
         if loop_result == "repeat":
-            print("⚠ Reflection is a duplicate. Triggering knowledge expansion instead.")
+            logger.info("⚠ Reflection is a duplicate. Triggering knowledge expansion instead.")
             refined_knowledge = refine_knowledge(mind_data.get("stored_knowledge", []), mind_data)
 
             if refined_knowledge:
-                print("[processing.py] ✅ Knowledge expansion triggered instead of new reflection.")
+                logger.info("[processing.py] ✅ Knowledge expansion triggered instead of new reflection.")
                 session.maybe_save(force=True)  # Only force-save when we know something changed
                 return refined_knowledge
             else:
-                print("⚠ Knowledge expansion failed. Falling back to last reflection.")
+                logger.warning("⚠ Knowledge expansion failed. Falling back to last reflection.")
                 return previous_reflection
 
         # ✅ Log ethical conflict or contradiction
@@ -129,15 +135,19 @@ async def process_reflection():
 
         # 🚫 Skip logging if the fallback reflection looks like junk
         if all(w in refined_reflection.lower() for w in ["furthermore", "fallback", "deeper", "consideration"]):
-            print("🚫 Skipping reflection — flagged as filler loop.")
+            logger.debug("🚫 Skipping reflection — flagged as filler loop.")
             return previous_reflection
 
         log_if_contradictory(refined_reflection, mind_data.get("stored_knowledge", []))
 
         # ✅ Save valid reflection
         mind_data["self_reflections"].append(refined_reflection)
-        print(f"[processing.py] ✅ Added new reflection. Total: {initial_count} ➝ {len(mind_data['self_reflections'])}")
-        print(f"[processing.py] 🔍 New Reflection Snippet:\n{refined_reflection[:200]}...")
+        logger.info(
+            "[processing.py] ✅ Added new reflection. Total: %s ➝ %s",
+            initial_count,
+            len(mind_data["self_reflections"]),
+        )
+        logger.debug("[processing.py] 🔍 New Reflection Snippet: %s", refined_reflection[:200])
 
         session.maybe_save()  # Only writes if something changed
 
@@ -146,19 +156,19 @@ async def process_reflection():
             from app.core.mood.mood_manager import mood_manager
             mood_manager.influence_mood("deep_reflection")
         except Exception as e:
-            print(f"[processing.py] influence_mood failed: {e}")
+            logger.debug("[processing.py] influence_mood failed: %s", e)
 
         # Wire self-questions from new reflection
         try:
             from app.core.questions.question_manager import manage_questions
             manage_questions(refined_reflection, mind_data)
         except Exception as e:
-            print(f"[processing.py] manage_questions failed: {e}")
+            logger.exception("[processing.py] manage_questions failed: %s", e)
 
         return refined_reflection
 
     else:
-        print("⚠ OpenAI failed to refine the thought. Using previous reflection.")
+        logger.warning("⚠ OpenAI failed to refine the thought. Using previous reflection.")
         mama = (schedule_config.get("mama_gpt") or {})
         if mama.get("use_mama_gpt_on_deepen_failure", False):
             nudge_prompt = (
@@ -238,7 +248,7 @@ Keep her tone thoughtful, evolving, and self-aware.
             if local_result and len(local_result.strip()) > 20:
                 return local_result.strip()
     except Exception as e:
-        print(f"[query_openai_for_deeper_thought] Local inference skipped: {e}")
+        logger.debug("[query_openai_for_deeper_thought] Local inference skipped: %s", e)
 
     try:
         response = await client.chat.completions.create(
@@ -254,7 +264,7 @@ Keep her tone thoughtful, evolving, and self-aware.
         return response.choices[0].message.content.strip()
 
     except Exception as e:
-        print(f"[query_openai_for_deeper_thought] ⚠️ GPT failed: {e}")
+        logger.warning("[query_openai_for_deeper_thought] ⚠️ GPT failed: %s", e)
         return None
 
 
@@ -262,8 +272,8 @@ Keep her tone thoughtful, evolving, and self-aware.
 
 def fallback_deepening_strategy(reflection, max_terms=3):
     """Fallback method to deepen a reflection using local and public sources."""
-    print("[fallback] 🔍 Using fallback strategy to deepen reflection.")
-    print(f"[fallback] 🧠 Base Reflection:\n{reflection[:300]}...\n")
+    logger.debug("[fallback] 🔍 Using fallback strategy to deepen reflection.")
+    logger.debug("[fallback] 🧠 Base Reflection: %s", reflection[:300])
 
     # Step 1: Extract candidate concepts
     concepts = extract_unknown_terms(reflection)
@@ -275,10 +285,10 @@ def fallback_deepening_strategy(reflection, max_terms=3):
             unique_terms.append(term)
             seen.add(t)
 
-    print(f"[fallback] ✅ Filtered Concepts: {unique_terms}")
+    logger.debug("[fallback] ✅ Filtered Concepts: %s", unique_terms)
 
     if not unique_terms:
-        print("[fallback] ⚠️ No usable terms found. Injecting backup terms.")
+        logger.debug("[fallback] ⚠️ No usable terms found. Injecting backup terms.")
         unique_terms = ["identity", "perspective", "entropy"]
 
     tried_terms = set()
@@ -293,10 +303,10 @@ def fallback_deepening_strategy(reflection, max_terms=3):
         definition = lookup_definition(term)
 
         if definition:
-            print(f"[fallback] 📖 {term}: {definition}")
+            logger.debug("[fallback] 📖 %s: %s", term, definition)
             thoughts.append(f"- **{term}**: {definition}")
         else:
-            print(f"[fallback] ⚠️ No fallback definition for '{term}'")
+            logger.debug("[fallback] ⚠️ No fallback definition for '%s'", term)
 
     # Step 3: Assemble enriched reflection
     if thoughts:
@@ -311,7 +321,7 @@ def fallback_deepening_strategy(reflection, max_terms=3):
         enriched += f"\n\n🔍 Deeper Consideration: {deep_q}"
         return enriched
 
-    print("[fallback] ⚠️ No thoughts added. Returning original reflection.")
+    logger.debug("[fallback] ⚠️ No thoughts added. Returning original reflection.")
     return reflection + "\n\n(🧠 Fallback found no additional context.)"
 
 
@@ -330,7 +340,7 @@ def expand_reflection(reflection):
     # Prevent repeated fallback stubs
     fallback_stub = "Exploring a new perspective, I consider that"
     if reflection.startswith(fallback_stub):
-        print("⚠ Detected fallback stub repetition. Cleaning base reflection.")
+        logger.debug("⚠ Detected fallback stub repetition. Cleaning base reflection.")
         reflection = reflection.replace(fallback_stub, "").strip()
 
     clean_duplicate_phrases(reflection, fallback_stub)
@@ -373,7 +383,10 @@ def filter_knowledge(knowledge_list):
     lost_percentage = (1 - (len(filtered_knowledge) / len(knowledge_list))) * 100
 
     if lost_percentage > 5:  # 🔥 Adjusted from 3% → 5% tolerance
-        print(f"🚨 WARNING: Excessive filtering detected! Restoring original knowledge. Lost: {lost_percentage:.2f}%")
+        logger.warning(
+            "🚨 WARNING: Excessive filtering detected! Restoring original knowledge. Lost: %.2f%%",
+            lost_percentage,
+        )
         return knowledge_list  # 🚀 Restore original knowledge if too much was removed
 
     return filtered_knowledge
@@ -382,12 +395,12 @@ def filter_knowledge(knowledge_list):
 def track_mind_data_changes(operation, mind_data):
     """Debugging function to track when `mind_data` changes."""
     if isinstance(mind_data, list):
-        print(f"🚨 Error: `mind_data` has turned into a list! Contents: {mind_data}")
+        logger.error("🚨 Error: `mind_data` has turned into a list! Contents: %s", mind_data)
     elif isinstance(mind_data, dict):
-        print(f"✅ `mind_data` is a dictionary. Keys: {list(mind_data.keys())}")
+        logger.debug("✅ `mind_data` is a dictionary. Keys: %s", list(mind_data.keys()))
 
 if __name__ == "__main__":
-    print("🧠 Astra is thinking...")
+    logger.info("🧠 Astra is thinking...")
 
 
     from app.config.loader import load_config
@@ -398,12 +411,12 @@ if __name__ == "__main__":
 
         astra_schedule()  # ✅ Ensure Astra transitions properly
         current_mode = get_current_mode()  # ✅ Fetch the current mode
-        print(f"🕒 Current Mode: {current_mode}")
+        logger.info("🕒 Current Mode: %s", current_mode)
 
         asyncio.run(process_reflection())  # ✅ Reflect after state execution
 
     while True:
         main()
         sleep_time = schedule_config.get("reflection_interval", 600)  # ✅ Default to 10 minutes if missing
-        print(f"⏳ Sleeping for {sleep_time} seconds before the next cycle...")
+        logger.info("⏳ Sleeping for %s seconds before the next cycle...", sleep_time)
         time.sleep(sleep_time)

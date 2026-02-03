@@ -92,7 +92,7 @@ class MindModeler:
     def __init__(self):
         self.person_models: Dict[str, PersonModel] = {}
         self._load_mind_models()
-        logger.info("🧠 Mind Modeler initialized - understanding other minds")
+        logger.debug("🧠 Mind Modeler initialized - understanding other minds")
     
     def _load_mind_models(self) -> None:
         """Load mind models from S3."""
@@ -105,9 +105,9 @@ class MindModeler:
                 for pid, p in data.get("models", {}).items()
             }
             
-            logger.info(f"🧠 Loaded {len(self.person_models)} person models")
+            logger.debug("🧠 Loaded %s person models", len(self.person_models))
         except s3.exceptions.NoSuchKey:
-            logger.info("🧠 No mind models found. Creating foundational models.")
+            logger.debug("🧠 No mind models found. Creating foundational models.")
             self._create_foundational_models()
         except Exception as e:
             logger.warning(f"🧠 Error loading mind models: {e}")

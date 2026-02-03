@@ -156,9 +156,9 @@ class ContinuityWeaver:
             ]
             self.recently_referenced = data.get("recently_referenced", [])
             
-            logger.info(f"🧵 Loaded {len(self.threads)} continuity threads")
+            logger.debug("🧵 Loaded %s continuity threads", len(self.threads))
         except s3.exceptions.NoSuchKey:
-            logger.info("🧵 No continuity state found. Starting fresh.")
+            logger.debug("🧵 No continuity state found. Starting fresh.")
         except Exception as e:
             logger.warning(f"Error loading continuity state: {e}")
     

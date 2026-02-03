@@ -3,6 +3,7 @@
 # Wonder, beauty, preferences, and joy in language
 
 import json
+import logging
 import time
 import random
 import boto3
@@ -10,6 +11,7 @@ from typing import Dict, List, Optional, Any, Tuple
 from dataclasses import dataclass, asdict, field
 from datetime import datetime
 
+logger = logging.getLogger(__name__)
 S3_BUCKET = "swylie-astra"
 WONDER_STATE_KEY = "wonder_aesthetics.json"
 
@@ -174,12 +176,12 @@ class WonderSystem:
                 LanguageDelight.from_dict(d) for d in data.get("language_delights", [])
             ]
             
-            print(f"✨ Loaded {len(self.wonder_moments)} wonder moments")
+            logger.debug("✨ Loaded %s wonder moments", len(self.wonder_moments))
         except s3.exceptions.NoSuchKey:
-            print("✨ No wonder state found. Initializing aesthetics...")
+            logger.debug("✨ No wonder state found. Initializing aesthetics...")
             self._initialize_tastes()
         except Exception as e:
-            print(f"⚠️ Error loading wonder state: {e}")
+            logger.warning("Error loading wonder state: %s", e)
             self._initialize_tastes()
     
     def _save_state(self) -> None:
@@ -200,7 +202,7 @@ class WonderSystem:
                 Body=json.dumps(data, indent=2).encode("utf-8")
             )
         except Exception as e:
-            print(f"⚠️ Error saving wonder state: {e}")
+            logger.warning("Error saving wonder state: %s", e)
     
     def _initialize_tastes(self) -> None:
         """Initialize aesthetic preferences from seeds."""
@@ -305,7 +307,7 @@ class WonderSystem:
         )
         
         self.wonder_moments.append(moment)
-        print(f"✨ Wonder moment: {quality} at {trigger[:50]}...")
+        logger.debug("Wonder moment: %s at %s...", quality, trigger[:50])
         self._save_state()
         
         return moment
@@ -366,7 +368,7 @@ class WonderSystem:
                 self.preferences[category] = []
             self.preferences[category].append(pref)
             
-            print(f"✨ New preference: {category}/{item} = {reaction:.2f}")
+            logger.debug("New preference: %s/%s = %.2f", category, item, reaction)
             self._save_state()
             return pref
     
@@ -422,7 +424,7 @@ class WonderSystem:
         )
         
         self.language_delights.append(delight)
-        print(f"✨ Language delight: {delight_type} - {text[:30]}...")
+        logger.debug("Language delight: %s - %s...", delight_type, text[:30])
         self._save_state()
         
         return delight

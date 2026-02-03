@@ -92,7 +92,7 @@ class AwarenessBus:
         self._max_history = 500
         self._lock = threading.Lock()
         self._processing = False
-        logger.info("🧠 Awareness Bus initialized")
+        logger.debug("🧠 Awareness Bus initialized")
     
     def subscribe(self, event_type: str, callback: Callable[[AwarenessEvent], None]) -> None:
         """

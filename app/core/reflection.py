@@ -1,3 +1,4 @@
+import logging
 import random
 from app.interfaces.influence import load_mind, save_mind
 from app.config.loader import load_config
@@ -6,6 +7,7 @@ from app.config.loader import debug_log
 from app.core.dinner.dinner_journal import log_if_ethically_conflicting, log_if_contradictory
 from app.interfaces.mind_session import session
 
+logger = logging.getLogger(__name__)
 
 # Load configurations
 question_config = load_config("question_config")
@@ -64,10 +66,10 @@ def generate_reflection(knowledge=None, recent_reflections=None, focus_topics=No
     # ✅ Detect reflection loops
     for past_reflection in recent_reflections[-MAX_REFLECTION_HISTORY:]:
         similarity = fuzz.ratio(new_reflection, past_reflection)
-        print(f"🔍 Debug: Comparing reflection similarity -> {similarity}%")
+        logger.debug("Comparing reflection similarity -> %s%%", similarity)
 
         if similarity >= SIMILARITY_THRESHOLD:
-            print(f"🚨 Reflection loop detected! Similarity: {similarity}%. Forcing novelty.")
+            logger.debug("Reflection loop detected (similarity %s%%). Forcing novelty.", similarity)
             new_reflection = enforce_novelty(new_reflection, recent_reflections)
             break
 
@@ -80,24 +82,24 @@ def generate_reflection(knowledge=None, recent_reflections=None, focus_topics=No
 
     # ✅ Persist new reflection to self_reflections
     mind_data.setdefault("self_reflections", []).append(new_reflection)
-    print(f"📝 [reflection] New reflection from knowledge: {new_reflection[:80]}...")
+    logger.debug("New reflection from knowledge: %s...", new_reflection[:80])
 
     # ✅ Save key insights in `stored_knowledge`
     if base_idea not in mind_data["stored_knowledge"]:
         mind_data["stored_knowledge"].append(base_idea)
-        print(f"📝 [DEBUG] Stored new knowledge: {base_idea[:100]}...")
+        logger.debug("Stored new knowledge: %s...", base_idea[:100])
         # Personality: learning from reflection (plan: wire update_personality to learning)
         try:
             from app.core.personality.personality_manager import update_personality
             update_personality("learning_new_idea", 0.3)
         except Exception as e:
-            print(f"[reflection] update_personality failed: {e}")
+            logger.warning("update_personality failed: %s", e)
         # Outcome-based emotion: new knowledge triggers curiosity (plan: richer emotion triggers)
         try:
             from app.core.emotions.emotion_engine import trigger_emotion
             trigger_emotion("curiosity", "new_information")
         except Exception as e:
-            print(f"[reflection] trigger_emotion failed: {e}")
+            logger.warning("trigger_emotion failed: %s", e)
 
     session.maybe_save()
 
@@ -112,7 +114,7 @@ def generate_reflection(knowledge=None, recent_reflections=None, focus_topics=No
         from app.core.mood.trust_manager import trust_manager
         trust_manager.general_trust_update(0.01)
     except Exception as e:
-        print(f"[reflection] general_trust_update failed: {e}")
+        logger.warning("general_trust_update failed: %s", e)
 
     # See if the reflection violates her spark
     log_if_ethically_conflicting(new_reflection)

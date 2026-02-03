@@ -258,7 +258,7 @@ class StateManifest:
                     Key=location.path,
                     Body=json.dumps(default, indent=2).encode("utf-8")
                 )
-                logger.info(f"Initialized default state for {location.name}")
+                logger.debug("Initialized default state for %s", location.name)
                 return True
                 
         except Exception as e:

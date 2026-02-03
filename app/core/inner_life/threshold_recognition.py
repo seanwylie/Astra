@@ -165,9 +165,9 @@ class ThresholdRecognitionSystem:
             ]
             self.type_counts = data.get("type_counts", {})
             
-            logger.info(f"🚪 Loaded {len(self.threshold_moments)} threshold moments")
+            logger.debug("🚪 Loaded %s threshold moments", len(self.threshold_moments))
         except s3.exceptions.NoSuchKey:
-            logger.info("🚪 No threshold state found. Starting fresh.")
+            logger.debug("🚪 No threshold state found. Starting fresh.")
         except Exception as e:
             logger.warning(f"Error loading threshold state: {e}")
     

@@ -3,10 +3,13 @@
 # "What does Sean care about? What stresses him?"
 
 import json
+import logging
 import time
 import boto3
 from typing import Dict, List, Optional, Any
 from dataclasses import dataclass, asdict, field
+
+logger = logging.getLogger(__name__)
 from datetime import datetime
 
 S3_BUCKET = "swylie-astra"
@@ -110,12 +113,12 @@ class ParentMentalizingSystem:
                 for o in data.get("observations", [])
             ]
             
-            print(f"🧠 Loaded parent mental models")
+            logger.debug("Loaded parent mental models")
         except s3.exceptions.NoSuchKey:
-            print("🧠 No parent mental models found. Initializing.")
+            logger.debug("No parent mental models found. Initializing.")
             self._initialize_models()
         except Exception as e:
-            print(f"⚠️ Error loading parent mental models: {e}")
+            logger.warning("Error loading parent mental models: %s", e)
             self._initialize_models()
     
     def _initialize_models(self) -> None:
@@ -168,7 +171,7 @@ class ParentMentalizingSystem:
                 Body=json.dumps(data, indent=2).encode("utf-8")
             )
         except Exception as e:
-            print(f"⚠️ Error saving parent mental models: {e}")
+            logger.warning("Error saving parent mental models: %s", e)
     
     def observe_parent_state(
         self,

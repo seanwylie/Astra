@@ -195,9 +195,9 @@ S3_BUCKET_NAME=your-s3-bucket
 | --- | --- | --- |
 | `ASTRA_CONFIG_DIR` | Config directory path | `/opt/astra/config` |
 | `DISCORD_CHANNEL_ID` | Discord channel ID | `1154855642893389926` |
-| `ASTRA_MIND_FILE` | Mind file path | `/home/ubuntu/astra_reflections/mind_file.json` |
-| `ASTRA_MIND_FILE_SEAN` | Parents mind file path | `/home/ubuntu/astra_reflections/data/mind_file_parents.json` |
-| `ASTRA_LOG_FILE` | Log file path | `/home/ubuntu/astra_reflections/data/astra_logs.json` |
+| `ASTRA_MIND_FILE` | Mind file path | `/home/sean/dev/systems/Astra/mind_file.json` |
+| `ASTRA_MIND_FILE_SEAN` | Parents mind file path | `/home/sean/dev/systems/Astra/data/mind_file_parents.json` |
+| `ASTRA_LOG_FILE` | Log file path | `/home/sean/dev/systems/Astra/data/astra_logs.json` |
 
 ### ▶️ Launch Astra
 

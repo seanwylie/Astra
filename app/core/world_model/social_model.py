@@ -69,7 +69,7 @@ class SocialModel:
         self.norms: Dict[str, SocialNorm] = {}
         self.relationship_types: Dict[str, Dict[str, Any]] = {}
         self._load_social_model()
-        logger.info("👥 Social Model initialized - understanding relationships")
+        logger.debug("👥 Social Model initialized - understanding relationships")
     
     def _load_social_model(self) -> None:
         """Load social model from S3."""
@@ -87,9 +87,9 @@ class SocialModel:
             }
             self.relationship_types = data.get("relationship_types", {})
             
-            logger.info(f"👥 Loaded {len(self.roles)} social roles, {len(self.norms)} norms")
+            logger.debug("👥 Loaded %s social roles, %s norms", len(self.roles), len(self.norms))
         except s3.exceptions.NoSuchKey:
-            logger.info("👥 No social model found. Building social understanding.")
+            logger.debug("👥 No social model found. Building social understanding.")
             self._initialize_social_understanding()
         except Exception as e:
             logger.warning(f"👥 Error loading social model: {e}")

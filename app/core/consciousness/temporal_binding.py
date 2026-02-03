@@ -75,7 +75,7 @@ class TemporalBinding:
         self.current_moment_orientation: str = "present"  # Where attention is
         
         self._load_temporal_state()
-        logger.info("⏳ Temporal Binding initialized - weaving past, present, future")
+        logger.debug("⏳ Temporal Binding initialized - weaving past, present, future")
     
     def _load_temporal_state(self) -> None:
         """Load temporal binding state from S3."""
@@ -91,9 +91,9 @@ class TemporalBinding:
             ]
             self.temporal_threads = data.get("temporal_threads", [])
             
-            logger.info(f"⏳ Loaded {len(self.past_selves)} past snapshots, {len(self.future_projections)} future projections")
+            logger.debug("⏳ Loaded %s past snapshots, %s future projections", len(self.past_selves), len(self.future_projections))
         except s3.exceptions.NoSuchKey:
-            logger.info("⏳ No temporal binding state. Starting fresh.")
+            logger.debug("⏳ No temporal binding state. Starting fresh.")
         except Exception as e:
             logger.warning(f"⏳ Error loading temporal state: {e}")
     

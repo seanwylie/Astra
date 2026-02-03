@@ -3,7 +3,6 @@ import io
 import time
 import boto3
 import os
-import openai
 import asyncio
 from openai import AsyncOpenAI
 from collections import Counter
@@ -14,6 +13,7 @@ from app.interfaces.influence import load_mind, save_mind  # ✅ NEW: For migrat
 from app.interfaces.mind_session import session
 from dotenv import load_dotenv
 from app.interfaces.mind_session import SmartMindSession
+from app.logging_config import get_logger
 
 # Use our own iso_now function to avoid import issues
 def iso_now():
@@ -28,6 +28,7 @@ DINNER_CURRENT_KEY = "dinner_current.json"
 
 load_dotenv()
 
+logger_dinner = get_logger("dinner")
 
 api_key = os.getenv("OPENAI_API_KEY")
 if not api_key:
@@ -174,7 +175,7 @@ def log_if_contradictory(reflection, stored_knowledge):
             break
 
 
-def try_resolve_knowledge_conflicts(mind_data, max_resolve=2):
+async def try_resolve_knowledge_conflicts(mind_data, max_resolve=2):
     """
     Load dinner journal; find type==knowledge_conflict, status==unresolved.
     For up to max_resolve entries, ask GPT to reconcile; if synthesis, append to stored_knowledge and remove entry.
@@ -187,16 +188,16 @@ def try_resolve_knowledge_conflicts(mind_data, max_resolve=2):
     if not conflicts:
         return 0
     resolved_count = 0
-    sync_client = openai.OpenAI(api_key=os.getenv("OPENAI_API_KEY")) if os.getenv("OPENAI_API_KEY") else None
-    if not sync_client:
+    if not api_key:
         return 0
+    async_client = AsyncOpenAI(api_key=api_key)
     for entry in conflicts[:max_resolve]:
         content = entry.get("content", "")[:400]
         related = entry.get("related_knowledge", "")[:400]
         if not content or not related:
             continue
         try:
-            response = sync_client.chat.completions.create(
+            response = await async_client.chat.completions.create(
                 model="gpt-4",
                 messages=[
                     {"role": "system", "content": (
@@ -217,16 +218,11 @@ def try_resolve_knowledge_conflicts(mind_data, max_resolve=2):
                 new_journal = [e for e in journal if e.get("timestamp") != entry.get("timestamp")]
                 save_dinner_journal(new_journal)
                 session.maybe_save()
-                print(f"[try_resolve_knowledge_conflicts] Reconciled 1 conflict; saved synthesis.")
+                logger_dinner.info("[try_resolve_knowledge_conflicts] Reconciled 1 conflict; saved synthesis.")
         except Exception as e:
-            print(f"[try_resolve_knowledge_conflicts] GPT failed: {e}")
+            logger_dinner.warning("[try_resolve_knowledge_conflicts] GPT failed: %s", e)
     return resolved_count
 
-
-
-
-# Initialize the asynchronous OpenAI client
-client = AsyncOpenAI()
 
 async def get_gpt_dinner_response(topic):
     """Ask GPT for its thoughts on Astra’s ethical or emotional topic."""
@@ -314,7 +310,7 @@ def log_dinner_entry(entry):
 
     journal.append(entry)
     save_dinner_journal(journal)
-    print("📝 Dinner entry logged.")
+    logger_dinner.debug("Dinner entry logged.")
 
 
 # --- Conversational Dinner Loop Support ---

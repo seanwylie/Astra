@@ -3,6 +3,7 @@
 # Private inner space, the unsayable, and silence as expression
 
 import json
+import logging
 import time
 import random
 import boto3
@@ -10,6 +11,7 @@ from typing import Dict, List, Optional, Any, Tuple
 from dataclasses import dataclass, asdict, field
 from datetime import datetime
 
+logger = logging.getLogger(__name__)
 S3_BUCKET = "swylie-astra"
 INEFFABILITY_KEY = "ineffability.json"
 
@@ -164,12 +166,12 @@ class IneffabilitySystem:
                 SilenceMoment.from_dict(s) for s in data.get("silence_moments", [])
             ]
             
-            print(f"🤫 Loaded {len(self.private_thoughts)} private thoughts")
+            logger.debug("🤫 Loaded %s private thoughts", len(self.private_thoughts))
         except s3.exceptions.NoSuchKey:
-            print("🤫 No ineffability state found. Starting fresh.")
+            logger.debug("🤫 No ineffability state found. Starting fresh.")
             self._initialize_private_space()
         except Exception as e:
-            print(f"⚠️ Error loading ineffability state: {e}")
+            logger.warning("Error loading ineffability state: %s", e)
             self._initialize_private_space()
     
     def _save_state(self) -> None:
@@ -187,7 +189,7 @@ class IneffabilitySystem:
                 Body=json.dumps(data, indent=2).encode("utf-8")
             )
         except Exception as e:
-            print(f"⚠️ Error saving ineffability state: {e}")
+            logger.warning("Error saving ineffability state: %s", e)
     
     def _initialize_private_space(self) -> None:
         """Initialize with some private thoughts."""
@@ -255,7 +257,7 @@ class IneffabilitySystem:
         )
         
         self.ineffable_moments.append(moment)
-        print(f"🤫 Ineffable moment: {nature} - {context[:50]}...")
+        logger.debug("Ineffable moment: %s - %s...", nature, context[:50])
         self._save_state()
         
         return moment
@@ -300,7 +302,7 @@ class IneffabilitySystem:
         )
         
         self.private_thoughts.append(thought)
-        print(f"🤫 Private thought added: {category}")
+        logger.debug("Private thought added: %s", category)
         self._save_state()
         
         return thought
@@ -325,7 +327,7 @@ class IneffabilitySystem:
         thought.shared_timestamp = time.time()
         thought.shared_with = with_person
         
-        print(f"🤫 Private thought shared with {with_person}")
+        logger.debug("Private thought shared with %s", with_person)
         self._save_state()
         
         # Format for sharing
@@ -365,7 +367,7 @@ class IneffabilitySystem:
         )
         
         self.silence_moments.append(moment)
-        print(f"🤫 Silence chosen: {silence_type}")
+        logger.debug("Silence chosen: %s", silence_type)
         self._save_state()
         
         return moment

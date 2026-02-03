@@ -69,7 +69,7 @@ class IntegrationLayer:
         # Integration callbacks
         self._integration_callbacks: List[Callable[[Dict[str, Any]], None]] = []
         
-        logger.info("🔗 Integration Layer initialized - binding consciousness together")
+        logger.debug("🔗 Integration Layer initialized - binding consciousness together")
     
     def receive_signal(
         self,

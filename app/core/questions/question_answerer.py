@@ -1,3 +1,4 @@
+import logging
 import os
 import time
 from app.config.loader import debug_log, load_config
@@ -7,6 +8,7 @@ import openai
 from app.core.mama_gpt import ask_mama_gpt_sync
 from app.core.struggle_log import append_struggle_log
 
+logger = logging.getLogger(__name__)
 # Answer at most this many questions per call to avoid rate limits
 MAX_QUESTIONS_TO_ANSWER = 3
 
@@ -77,7 +79,7 @@ Answer (1–2 sentences, or "I don't know"):"""
             if attempt < 2:
                 time.sleep(1 * (2 ** attempt))
                 continue
-            print(f"[question_answerer] OpenAI error after retries: {e}")
+            logger.warning("OpenAI error after retries: %s", e)
             return None
         except Exception as e:
             print(f"[question_answerer] OpenAI error: {e}")
@@ -141,7 +143,7 @@ def self_answer_questions(mind_data: dict) -> list:
 
     api_key = os.getenv("OPENAI_API_KEY")
     if not api_key:
-        print("[question_answerer] No OPENAI_API_KEY; skipping answering.")
+        logger.debug("No OPENAI_API_KEY; skipping answering.")
         mind_data["self_questions"] = new_questions
         mind_data["unresolved_questions"] = [q for q in new_questions if q.get("unresolved", True)]
         session.maybe_save()
@@ -159,19 +161,19 @@ def self_answer_questions(mind_data: dict) -> list:
             if entry not in mind_data["stored_knowledge"]:
                 mind_data["stored_knowledge"].append(entry)
             resolved_count += 1
-            print(f"[question_answerer] Resolved: {q['question'][:60]}...")
+            logger.debug("Resolved: %s...", q["question"][:60])
 
     mind_data["self_questions"] = new_questions
     mind_data["unresolved_questions"] = [{"question": q["question"]} for q in new_questions if q.get("unresolved", True)]
     if resolved_count:
-        print(f"[question_answerer] Resolved {resolved_count} question(s).")
+        logger.debug("Resolved %s question(s).", resolved_count)
     elif to_try:
         append_struggle_log("self_question_unknown", f"{len(to_try)} unanswered")
         try:
             from app.core.astra_helpers.utils_helper import proactive_lookup_from_text
             proactive_lookup_from_text(to_try[0]["question"], mind_data, max_lookups=1)
         except Exception as e:
-            print(f"[question_answerer] proactive_lookup failed: {e}")
+            logger.warning("proactive_lookup failed: %s", e)
     debug_log("Saving")
     session.maybe_save()
     return new_questions

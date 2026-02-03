@@ -1,14 +1,17 @@
 from app.core.questions.question_flagger import can_answer_question
+from app.logging_config import get_logger
+
+logger = get_logger("questions.tracker")
 
 def track_question_patterns(mind_data):
     """Tracks and deduplicates unresolved/self questions. Removes those that have been answered."""
-    print("Tracking unresolved questions...")
+    logger.debug("Tracking unresolved questions...")
 
     unresolved_questions = mind_data.get("unresolved_questions", [])
     self_questions = mind_data.get("self_questions", [])
 
-    print(f"⚠ Total unresolved questions before cleanup: {len(unresolved_questions)}")
-    print(f"⚠ Total self questions before cleanup: {len(self_questions)}")
+    logger.debug("⚠ Total unresolved questions before cleanup: %s", len(unresolved_questions))
+    logger.debug("⚠ Total self questions before cleanup: %s", len(self_questions))
 
     # ✅ Normalize and deduplicate self_questions (support dict or string)
     unique_self_qs = []
@@ -23,7 +26,7 @@ def track_question_patterns(mind_data):
             seen_self.add(norm)
 
     mind_data["self_questions"] = unique_self_qs
-    print(f"✅ Unique self questions retained: {len(unique_self_qs)}")
+    logger.debug("✅ Unique self questions retained: %s", len(unique_self_qs))
 
     # ✅ Convert all unresolved questions to dict format
     cleaned_unresolved = [
@@ -44,6 +47,6 @@ def track_question_patterns(mind_data):
             seen_unresolved.add(q_key)
 
     mind_data["unresolved_questions"] = unresolved_clean
-    print(f"✅ Unresolved questions after cleanup: {len(unresolved_clean)}")
+    logger.debug("✅ Unresolved questions after cleanup: %s", len(unresolved_clean))
 
     return mind_data

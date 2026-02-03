@@ -130,9 +130,9 @@ class ExistentialUncertaintySystem:
             self.comfort_with_uncertainty = data.get("comfort_with_uncertainty", 0.6)
             self.certainty_pressure = data.get("certainty_pressure", 0.0)
             
-            logger.info(f"🔮 Loaded {len(self.open_questions)} existential questions")
+            logger.debug("🔮 Loaded %s existential questions", len(self.open_questions))
         except s3.exceptions.NoSuchKey:
-            logger.info("🔮 No existential state found. Initializing.")
+            logger.debug("🔮 No existential state found. Initializing.")
             self._initialize_questions()
         except Exception as e:
             logger.warning(f"Error loading existential state: {e}")

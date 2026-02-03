@@ -1,11 +1,14 @@
 # astra_core/emotions/emotion_state_manager.py
 
 import json
+import logging
 import time
 import os
 import boto3
 from app.config.loader import load_config
 from app.core.dinner.dinner_journal import log_if_emotionally_spiking
+
+logger = logging.getLogger(__name__)
 
 
 
@@ -29,7 +32,7 @@ def load_emotion_state():
         response = s3.get_object(Bucket=S3_BUCKET, Key=EMOTION_STATE_KEY)
         return json.load(response["Body"])
     except s3.exceptions.NoSuchKey:
-        print("📄 No emotion state found. Starting fresh.")
+        logger.debug("No emotion state found. Starting fresh.")
         config = get_emotion_config_v2()
         return {
             name: {
@@ -46,18 +49,18 @@ def save_emotion_state(state):
         Key=EMOTION_STATE_KEY,
         Body=json.dumps(state, indent=2).encode("utf-8")
     )
-    print("✅ Emotion state saved to S3.")
+    logger.debug("Emotion state saved to S3.")
 
 
 def update_emotion(state, emotion, trigger, multiplier=1.0):
     config = get_emotion_config_v2()
     if emotion not in config["emotions"]:
-        print(f"⚠ Unknown emotion: {emotion}")
+        logger.debug("Unknown emotion: %s", emotion)
         return
 
     triggers = config["emotions"][emotion].get("triggers", {})
     if trigger not in triggers:
-        print(f"⚠ Trigger '{trigger}' not defined for emotion '{emotion}'")
+        logger.debug("Trigger %r not defined for emotion %r", trigger, emotion)
         return
 
     delta = triggers[trigger] * multiplier
@@ -80,7 +83,7 @@ def update_emotion(state, emotion, trigger, multiplier=1.0):
     capped_intensity = min(raw_intensity, config.get("max_intensity", 10000))
     state[emotion]["intensity"] = max(0, capped_intensity)
 
-    print(f"🔁 Updated '{emotion}' with '{trigger}' (+{delta}). New intensity: {state[emotion]['intensity']}")
+    logger.debug("Updated '%s' with '%s' (+%s). New intensity: %s", emotion, trigger, delta, state[emotion]["intensity"])
     save_emotion_state(state)
 
     log_if_emotionally_spiking(state)

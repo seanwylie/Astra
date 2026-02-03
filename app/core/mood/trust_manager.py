@@ -1,3 +1,4 @@
+import logging
 import time
 from app.interfaces.mind_session import SmartMindSession
 from app.config.loader import load_config
@@ -5,10 +6,13 @@ from app.interfaces.influence import load_mind, save_mind  # ✅ Handles memory 
 from app.config.loader import debug_log
 from app.interfaces.mind_session import session
 
+logger = logging.getLogger(__name__)
+
+
 class TrustManager:
     def __init__(self):
         """Initialize Astra's trust system with config-based trust parameters."""
-        print("Debug: Loading trust settings...")
+        logger.debug("Loading trust settings...")
         self.config = load_config("trust_config")
 
         debug_log("Loading")  
@@ -22,9 +26,9 @@ class TrustManager:
         self.daily_trust_log = {}
 
         # ✅ Apply trust decay toward default (soften over time) if at least one day since last decay
-        self._apply_trust_decay_if_due()  
+        self._apply_trust_decay_if_due()
 
-        print(f"Trust Initialized: General Trust Level → {self.general_trust}")
+        logger.debug("Trust initialized: general_trust=%s", self.general_trust)
 
     def _apply_trust_decay_if_due(self):
         """Apply daily trust decay toward default so Astra softens over time (does not hold grudges indefinitely)."""

@@ -154,7 +154,7 @@ class PrometheusCore:
             logger.info("  ✓ Development tracking loaded")
             
             self._initialized = True
-            logger.info("🔥 Prometheus Core fully initialized!")
+            logger.debug("🔥 Prometheus Core fully initialized!")
             
         except Exception as e:
             logger.error(f"🔥 Prometheus initialization error: {e}")

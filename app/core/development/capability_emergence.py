@@ -80,7 +80,7 @@ class CapabilityTracker:
         self.capabilities: Dict[str, Capability] = {}
         self.demonstrations: List[CapabilityDemonstration] = []
         self._load_capabilities()
-        logger.info("🌟 Capability Tracker initialized - watching for emergence")
+        logger.debug("🌟 Capability Tracker initialized - watching for emergence")
     
     def _load_capabilities(self) -> None:
         """Load capabilities from S3."""
@@ -96,9 +96,9 @@ class CapabilityTracker:
                 CapabilityDemonstration(**d) for d in data.get("demonstrations", [])
             ]
             
-            logger.info(f"🌟 Loaded {len(self.capabilities)} capabilities")
+            logger.debug("🌟 Loaded %s capabilities", len(self.capabilities))
         except s3.exceptions.NoSuchKey:
-            logger.info("🌟 No capabilities found. Initializing tracked capabilities.")
+            logger.debug("🌟 No capabilities found. Initializing tracked capabilities.")
             self._initialize_capabilities()
         except Exception as e:
             logger.warning(f"🌟 Error loading capabilities: {e}")

@@ -148,7 +148,7 @@ class Ontology:
         self.categories: Dict[str, OntologicalCategory] = {}
         self.entities: Dict[str, Entity] = {}
         self._load_ontology()
-        logger.info("🌍 Ontology initialized - mapping what exists")
+        logger.debug("🌍 Ontology initialized - mapping what exists")
     
     def _load_ontology(self) -> None:
         """Load ontology from S3."""
@@ -165,9 +165,9 @@ class Ontology:
                 for eid, e in data.get("entities", {}).items()
             }
             
-            logger.info(f"🌍 Loaded {len(self.categories)} categories, {len(self.entities)} entities")
+            logger.debug("🌍 Loaded %s categories, %s entities", len(self.categories), len(self.entities))
         except s3.exceptions.NoSuchKey:
-            logger.info("🌍 No ontology found. Establishing foundational categories.")
+            logger.debug("🌍 No ontology found. Establishing foundational categories.")
             self._establish_foundations()
         except Exception as e:
             logger.warning(f"🌍 Error loading ontology: {e}")

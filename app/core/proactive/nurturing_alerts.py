@@ -3,11 +3,14 @@
 # "Proactive care, not just reactive response"
 
 import json
+import logging
 import time
 import boto3
 from typing import Dict, List, Optional, Any
 from dataclasses import dataclass, asdict, field
 from datetime import datetime
+
+logger = logging.getLogger(__name__)
 
 S3_BUCKET = "swylie-astra"
 NURTURING_ALERTS_KEY = "nurturing_alerts.json"
@@ -100,12 +103,12 @@ class NurturingAlertsSystem:
             ]
             self.last_check = data.get("last_check", 0)
             
-            print(f"🔔 Loaded nurturing alerts")
+            logger.debug("Loaded nurturing alerts")
         except s3.exceptions.NoSuchKey:
-            print("🔔 No nurturing alerts found. Initializing.")
+            logger.debug("No nurturing alerts found. Initializing.")
             self._save_state()
         except Exception as e:
-            print(f"⚠️ Error loading nurturing alerts: {e}")
+            logger.warning("Error loading nurturing alerts: %s", e)
     
     def _save_state(self) -> None:
         """Save nurturing alerts to S3."""

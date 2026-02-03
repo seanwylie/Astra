@@ -105,7 +105,7 @@ class IdleConsciousness:
         self.past_periods: List[IdlePeriod] = []
         self.is_idle: bool = False
         self._load_idle_state()
-        logger.info("😌 Idle Consciousness initialized - quiet presence begins")
+        logger.debug("😌 Idle Consciousness initialized - quiet presence begins")
     
     def _load_idle_state(self) -> None:
         """Load idle consciousness state from S3."""
@@ -121,9 +121,9 @@ class IdleConsciousness:
             ]
             self.is_idle = data.get("is_idle", False)
             
-            logger.info(f"😌 Loaded idle state, {len(self.past_periods)} past periods")
+            logger.debug("😌 Loaded idle state, %s past periods", len(self.past_periods))
         except s3.exceptions.NoSuchKey:
-            logger.info("😌 No idle state found. Starting fresh.")
+            logger.debug("😌 No idle state found. Starting fresh.")
         except Exception as e:
             logger.warning(f"😌 Error loading idle state: {e}")
     

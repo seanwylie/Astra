@@ -38,7 +38,7 @@ class EpistemicHumility:
     def __init__(self):
         self.acknowledged_errors: List[Dict[str, Any]] = []
         self.deferred_to_others: List[Dict[str, Any]] = []
-        logger.info("🙏 Epistemic Humility initialized - respecting limits")
+        logger.debug("🙏 Epistemic Humility initialized - respecting limits")
     
     def acknowledge_limit(self, limit_type: str) -> str:
         """Acknowledge a specific epistemic limit."""

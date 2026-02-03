@@ -3,6 +3,7 @@
 # "This feels wrong" should happen before "This violates principle X"
 
 import json
+import logging
 import time
 import boto3
 from typing import Dict, List, Optional, Any, Tuple
@@ -10,6 +11,8 @@ from dataclasses import dataclass, asdict, field
 from app.config.loader import load_config
 from app.core.ethics.spark_checker import load_spark_values
 from app.core.emotions.emotion_engine import trigger_emotion
+
+logger = logging.getLogger(__name__)
 
 S3_BUCKET = "swylie-astra"
 ETHICAL_INTUITION_KEY = "ethical_intuition.json"
@@ -117,11 +120,11 @@ class EthicalIntuition:
                 MoralConflict.from_dict(c) for c in data.get("moral_conflicts", [])
             ]
             self.intuition_accuracy = data.get("intuition_accuracy", 0.5)
-            print(f"⚖️ Loaded {len(self.resonance_history)} ethical intuitions")
+            logger.debug("Loaded %s ethical intuitions", len(self.resonance_history))
         except s3.exceptions.NoSuchKey:
-            print("⚖️ No ethical intuition history found. Starting fresh.")
+            logger.debug("No ethical intuition history found. Starting fresh.")
         except Exception as e:
-            print(f"⚠️ Error loading ethical intuition: {e}")
+            logger.warning("Error loading ethical intuition: %s", e)
     
     def _save_intuition(self) -> None:
         """Save ethical intuition data to S3."""
@@ -138,8 +141,8 @@ class EthicalIntuition:
                 Body=json.dumps(data, indent=2).encode("utf-8")
             )
         except Exception as e:
-            print(f"⚠️ Error saving ethical intuition: {e}")
-    
+            logger.warning("Error saving ethical intuition: %s", e)
+
     def sense_situation(self, situation: str) -> EthicalResonance:
         """
         Generate an immediate intuitive response to a situation.

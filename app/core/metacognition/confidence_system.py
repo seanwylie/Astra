@@ -3,11 +3,14 @@
 # Express uncertainty authentically rather than hedging
 
 import json
+import logging
 import time
 import boto3
 from typing import Dict, List, Optional, Any, Tuple
 from dataclasses import dataclass, asdict, field
 from app.config.loader import load_config
+
+logger = logging.getLogger(__name__)
 
 S3_BUCKET = "swylie-astra"
 CONFIDENCE_KEY = "confidence_calibration.json"
@@ -59,11 +62,11 @@ class ConfidenceSystem:
             self.predictions = [Prediction.from_dict(p) for p in data.get("predictions", [])]
             self.domain_accuracy = data.get("domain_accuracy", {})
             self.domain_counts = data.get("domain_counts", {})
-            print(f"🎯 Loaded {len(self.predictions)} predictions for confidence calibration")
+            logger.debug("Loaded %s predictions for confidence calibration", len(self.predictions))
         except s3.exceptions.NoSuchKey:
-            print("🎯 No confidence data found. Starting fresh.")
+            logger.debug("No confidence data found. Starting fresh.")
         except Exception as e:
-            print(f"⚠️ Error loading confidence data: {e}")
+            logger.warning("Error loading confidence data: %s", e)
     
     def _save_confidence(self) -> None:
         """Save confidence data to S3."""

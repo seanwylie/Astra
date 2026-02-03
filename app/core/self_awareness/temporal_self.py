@@ -2,6 +2,7 @@
 # Subjective sense of time and personal history
 # "It feels like a long time since we talked about philosophy"
 
+import logging
 import time
 import json
 import boto3
@@ -9,6 +10,8 @@ from datetime import datetime
 from typing import Dict, List, Optional, Any
 from dataclasses import dataclass, asdict
 from app.interfaces.mind_session import session
+
+logger = logging.getLogger(__name__)
 
 S3_BUCKET = "swylie-astra"
 TEMPORAL_STATE_KEY = "temporal_self.json"
@@ -65,11 +68,11 @@ class TemporalSelfAwareness:
             self.person_last_contact = data.get("person_last_contact", {})
             self.last_growth_reflection = data.get("last_growth_reflection", 0)
             
-            print(f"⏳ Loaded {len(self.landmarks)} temporal landmarks")
+            logger.debug("Loaded %s temporal landmarks", len(self.landmarks))
         except s3.exceptions.NoSuchKey:
-            print("⏳ No temporal state found. Starting fresh.")
+            logger.debug("No temporal state found. Starting fresh.")
         except Exception as e:
-            print(f"⚠️ Error loading temporal state: {e}")
+            logger.warning("Error loading temporal state: %s", e)
     
     def _save_temporal_state(self) -> None:
         """Save temporal state to S3."""

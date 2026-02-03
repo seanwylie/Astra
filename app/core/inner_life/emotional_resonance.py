@@ -227,9 +227,9 @@ class EmotionalResonanceSystem:
             ]
             self.person_patterns = data.get("person_patterns", {})
             
-            logger.info(f"💞 Loaded {len(self.resonance_history)} resonance events")
+            logger.debug("💞 Loaded %s resonance events", len(self.resonance_history))
         except s3.exceptions.NoSuchKey:
-            logger.info("💞 No resonance state found. Starting fresh.")
+            logger.debug("💞 No resonance state found. Starting fresh.")
         except Exception as e:
             logger.warning(f"Error loading resonance state: {e}")
     

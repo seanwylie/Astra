@@ -3,6 +3,7 @@
 # "Who am I becoming? How have I changed?"
 
 import json
+import logging
 import time
 import boto3
 from datetime import datetime
@@ -10,6 +11,8 @@ from typing import Dict, List, Optional, Any
 from dataclasses import dataclass, asdict, field
 from app.config.loader import load_config
 from app.interfaces.mind_session import session
+
+logger = logging.getLogger(__name__)
 
 S3_BUCKET = "swylie-astra"
 SELF_MODEL_KEY = "self_model.json"
@@ -92,12 +95,12 @@ class SelfModel:
             ]
             self.surprise_log = data.get("surprise_log", [])
             
-            print(f"🪞 Loaded self-model with {len(self.historical_snapshots)} historical snapshots")
+            logger.debug("Loaded self-model with %s historical snapshots", len(self.historical_snapshots))
         except s3.exceptions.NoSuchKey:
-            print("🪞 No self-model found. Creating initial self-model.")
+            logger.debug("No self-model found. Creating initial self-model.")
             self._initialize_self_model()
         except Exception as e:
-            print(f"⚠️ Error loading self-model: {e}")
+            logger.warning("Error loading self-model: %s", e)
             self._initialize_self_model()
     
     def _save_self_model(self) -> None:
@@ -115,9 +118,9 @@ class SelfModel:
                 Key=SELF_MODEL_KEY,
                 Body=json.dumps(data, indent=2).encode("utf-8")
             )
-            print("✅ Self-model saved.")
+            logger.debug("Self-model saved.")
         except Exception as e:
-            print(f"⚠️ Error saving self-model: {e}")
+            logger.warning("Error saving self-model: %s", e)
     
     def _initialize_self_model(self) -> None:
         """Create initial self-model from current state."""

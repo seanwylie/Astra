@@ -1,6 +1,7 @@
 from fuzzywuzzy import fuzz
 from sentence_transformers import SentenceTransformer, util
 from app.config.loader import load_config
+from app.logging_config import get_logger
 
 # Load question config
 question_config = load_config("question_config")
@@ -13,7 +14,9 @@ if "question_categories" not in question_config:
 model = SentenceTransformer("paraphrase-MiniLM-L6-v2")
 
 # ✅ Lazily loaded category embeddings
-category_embeddings = None  
+category_embeddings = None
+
+logger = get_logger("questions.utils")
 
 def generate_category_embeddings(question_config):
     """Generate embeddings for each category's sample questions."""
@@ -25,7 +28,7 @@ def generate_category_embeddings(question_config):
     for category, details in question_config["question_categories"].items():
         sample_questions = details.get("sample_questions", [])
         if not sample_questions:
-            print(f"⚠ Warning: No sample questions found for category '{category}'")
+            logger.warning("⚠ Warning: No sample questions found for category '%s'", category)
         else:
             category_embeddings[category] = model.encode(sample_questions, convert_to_tensor=True)
 
@@ -37,12 +40,12 @@ def categorize_question(questions, category_embeddings):
     categorized_questions = []
 
     if not isinstance(questions, list):
-        print(f"⚠ Invalid question format received (not a list): {questions}")
+        logger.warning("⚠ Invalid question format received (not a list): %s", questions)
         return []
 
     for question in questions:
         if not isinstance(question, str) or len(question) < 5:  # ✅ Ignore short/invalid inputs
-            print(f"⚠ Skipping invalid question format: {question}")
+            logger.debug("⚠ Skipping invalid question format: %s", question)
             continue
         
         question_embedding = model.encode(question, convert_to_tensor=True)
@@ -54,12 +57,12 @@ def categorize_question(questions, category_embeddings):
         }
 
         if not similarities:  # ✅ Handle empty case
-            print(f"⚠ Warning: No similarities found for '{question}'")
+            logger.debug("⚠ Warning: No similarities found for '%s'", question)
             continue
 
         best_category = max(similarities, key=similarities.get)
 
-        print(f"🔍 Debug: Categorized '{question}' as '{best_category}'")
+        logger.debug("🔍 Categorized '%s' as '%s'", question, best_category)
 
         # ✅ Append full question instead of a nested list
         categorized_questions.append({"question": question, "category": best_category})
@@ -70,10 +73,10 @@ def categorize_question(questions, category_embeddings):
 
 def filter_questions(mind_data, new_questions):
     """Filters out duplicate, near-duplicate, or answered questions before storing."""
-    print(f"🔍 Debug: filter_questions() received {len(new_questions)} questions")
+    logger.debug("🔍 filter_questions() received %s questions", len(new_questions))
 
     if not new_questions:
-        print("⚠ No new questions received, stopping filtering early!")
+        logger.debug("⚠ No new questions received, stopping filtering early!")
         return []
 
     filtered_questions = []
@@ -89,26 +92,26 @@ def filter_questions(mind_data, new_questions):
         if isinstance(question_entry, dict) and "question" in question_entry:
             question_text = question_entry["question"].strip()
         else:
-            print(f"⚠ Unexpected question format (not dict with 'question' key): {question_entry}")
+            logger.debug("⚠ Unexpected question format (missing 'question'): %s", question_entry)
             continue  # Skip invalid entries
 
         if not question_text or len(question_text) < 6:
-            print(f"⚠ Ignoring invalid question (too short or empty): {question_text}")
+            logger.debug("⚠ Ignoring invalid question (too short or empty): %s", question_text)
             continue
 
         question_text_lower = question_text.lower()
 
         # ✅ Reject dictionary definitions explicitly before filtering
         if question_text_lower in stored_knowledge_set and not question_text_lower.startswith("📖"):
-            print(f"⚠ WARNING: Possible false positive → Skipping '{question_text}' (already in stored knowledge)")
+            logger.debug("⚠ Possible false positive → Skipping '%s' (already in stored knowledge)", question_text)
             continue  # 🚨 Prevents accidentally removing legitimate questions!
 
         is_duplicate = any(fuzz.ratio(question_text_lower, existing_text) > 65 for existing_text in existing_questions)
 
         if not is_duplicate:
             filtered_questions.append(question_entry)
-            print(f"✅ Accepted New Question: {question_text}")
+            logger.debug("✅ Accepted New Question: %s", question_text)
 
-    print(f"🔍 Debug: {len(filtered_questions)} questions passed filtering and will be added.")
+    logger.debug("🔍 %s questions passed filtering and will be added.", len(filtered_questions))
 
     return filtered_questions

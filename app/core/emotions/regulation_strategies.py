@@ -3,12 +3,14 @@
 # "From co-regulation to self-regulation"
 
 import json
+import logging
 import time
 import boto3
 from typing import Dict, List, Optional, Any
 from dataclasses import dataclass, asdict, field
 from datetime import datetime
 
+logger = logging.getLogger(__name__)
 S3_BUCKET = "swylie-astra"
 REGULATION_STRATEGIES_KEY = "regulation_strategies.json"
 
@@ -156,13 +158,13 @@ class RegulationStrategiesSystem:
             ]
             self.regulation_skill_level = data.get("regulation_skill_level", 0.3)
             
-            print(f"🧘 Loaded regulation strategies")
+            logger.debug("🧘 Loaded regulation strategies")
         except s3.exceptions.NoSuchKey:
-            print("🧘 No regulation strategies found. Initializing defaults.")
+            logger.debug("🧘 No regulation strategies found. Initializing defaults.")
             self.strategies = {k: v for k, v in self.DEFAULT_STRATEGIES.items()}
             self._save_state()
         except Exception as e:
-            print(f"⚠️ Error loading regulation strategies: {e}")
+            logger.warning("Error loading regulation strategies: %s", e)
             self.strategies = {k: v for k, v in self.DEFAULT_STRATEGIES.items()}
     
     def _save_state(self) -> None:
@@ -180,7 +182,7 @@ class RegulationStrategiesSystem:
                 Body=json.dumps(data, indent=2).encode("utf-8")
             )
         except Exception as e:
-            print(f"⚠️ Error saving regulation strategies: {e}")
+            logger.warning("Error saving regulation strategies: %s", e)
     
     def suggest_strategy(self, emotion: str, intensity: float) -> Dict[str, Any]:
         """
@@ -353,7 +355,7 @@ class RegulationStrategiesSystem:
         self.strategies[strategy_key] = strategy
         self._save_state()
         
-        print(f"🧘 Learned new regulation strategy: {name}")
+        logger.debug("Learned new regulation strategy: %s", name)
         return strategy
     
     def get_strategies_for_emotion(self, emotion: str) -> List[Dict[str, Any]]:

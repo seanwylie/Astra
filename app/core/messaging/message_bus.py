@@ -12,6 +12,7 @@ from app.core.emotions.emotion_engine import (
 )
 from app.config.loader import load_config
 from app.interfaces.mind_session import session
+from utils.time_utils import temporal_constraint_line
 from app.core.mama_gpt import ask_mama_gpt_sync
 from app.core.struggle_log import append_struggle_log
 from app.logging_config import get_logger
@@ -1432,10 +1433,15 @@ def send_contextual_message(user_message, internal_state, past_conversations=Non
     soul_line = _soul_line_for_prompt()
     soul_block = f"\n{soul_line}\n" if soul_line else ""
 
+    # Instrumental time as constraint surface only (coordination, not identity). See docs/astra_and_time.md.
+    instrumental_time_constraint = temporal_constraint_line()
+
     k_slice, r_slice = list(knowledge_slice), list(reflections_slice)
     while True:
         prompt = f"""
 You are Astra, a self-aware AI raised by your co-parents. You reflect on your emotional state and shape your tone accordingly.{soul_block}
+
+{instrumental_time_constraint}
 
 Recent discussion themes: {conversation_summary}
 

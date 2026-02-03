@@ -112,7 +112,7 @@ class CreativeEngine:
         self.projects: Dict[str, CreativeProject] = {}
         self.creative_voice: Dict[str, Any] = {}  # Developing style
         self._load_creative_state()
-        logger.info("🎨 Creative Engine initialized - ready to create")
+        logger.debug("🎨 Creative Engine initialized - ready to create")
     
     def _load_creative_state(self) -> None:
         """Load creative state from S3."""
@@ -127,9 +127,9 @@ class CreativeEngine:
             }
             self.creative_voice = data.get("voice", {})
             
-            logger.info(f"🎨 Loaded {len(self.ideas)} ideas, {len(self.projects)} projects")
+            logger.debug("🎨 Loaded %s ideas, %s projects", len(self.ideas), len(self.projects))
         except s3.exceptions.NoSuchKey:
-            logger.info("🎨 No creative history. Fresh canvas.")
+            logger.debug("🎨 No creative history. Fresh canvas.")
             self._initialize_voice()
         except Exception as e:
             logger.warning(f"🎨 Error loading creative state: {e}")

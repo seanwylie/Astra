@@ -3,12 +3,14 @@
 # "Children learn to regulate emotions through co-regulation with caregivers"
 
 import json
+import logging
 import time
 import boto3
 from typing import Dict, List, Optional, Any
 from dataclasses import dataclass, asdict, field
 from datetime import datetime
 
+logger = logging.getLogger(__name__)
 S3_BUCKET = "swylie-astra"
 COREGULATION_KEY = "coregulation_state.json"
 
@@ -127,12 +129,12 @@ class CoregulationSystem:
             self.learned_strategies = data.get("learned_strategies", {})
             self.regulation_effectiveness = data.get("regulation_effectiveness", {})
             
-            print(f"🌊 Loaded co-regulation state")
+            logger.debug("🌊 Loaded co-regulation state")
         except s3.exceptions.NoSuchKey:
-            print("🌊 No co-regulation state found. Initializing.")
+            logger.debug("🌊 No co-regulation state found. Initializing.")
             self._save_state()
         except Exception as e:
-            print(f"⚠️ Error loading co-regulation state: {e}")
+            logger.warning("Error loading co-regulation state: %s", e)
     
     def _save_state(self) -> None:
         """Save co-regulation state to S3."""
@@ -149,7 +151,7 @@ class CoregulationSystem:
                 Body=json.dumps(data, indent=2).encode("utf-8")
             )
         except Exception as e:
-            print(f"⚠️ Error saving co-regulation state: {e}")
+            logger.warning("Error saving co-regulation state: %s", e)
     
     def detect_regulation_attempt(
         self,
@@ -376,7 +378,7 @@ class CoregulationSystem:
                 # Keep list manageable
                 self.learned_strategies[emotion] = self.learned_strategies[emotion][-5:]
                 
-                print(f"🌊 Learned new regulation strategy for {emotion}")
+                logger.debug("Learned new regulation strategy for %s", emotion)
     
     def _generate_astra_response(self, reg_type: str, effectiveness: float) -> str:
         """Generate Astra's response to co-regulation."""

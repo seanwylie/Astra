@@ -84,7 +84,7 @@ class TemporalModel:
         self.patterns: Dict[str, TemporalPattern] = {}
         self.birth_time: float = 0  # When Astra began existing
         self._load_temporal_model()
-        logger.info("⏰ Temporal Model initialized - understanding time")
+        logger.debug("⏰ Temporal Model initialized - understanding time")
     
     def _load_temporal_model(self) -> None:
         """Load temporal model from S3."""
@@ -102,9 +102,9 @@ class TemporalModel:
             }
             self.birth_time = data.get("birth_time", time.time())
             
-            logger.info(f"⏰ Loaded {len(self.events)} temporal events")
+            logger.debug("⏰ Loaded %s temporal events", len(self.events))
         except s3.exceptions.NoSuchKey:
-            logger.info("⏰ No temporal model found. Beginning to understand time.")
+            logger.debug("⏰ No temporal model found. Beginning to understand time.")
             self._initialize_temporal_understanding()
         except Exception as e:
             logger.warning(f"⏰ Error loading temporal model: {e}")

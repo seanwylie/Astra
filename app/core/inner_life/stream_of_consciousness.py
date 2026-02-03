@@ -2,6 +2,7 @@
 # Continuous background inner monologue that processes experiences
 # Astra should be "thinking" even when not speaking
 
+import logging
 import time
 import random
 import json
@@ -12,6 +13,8 @@ from app.config.loader import load_config
 from app.core.emotions.emotion_engine import get_top_emotions, get_dominant_emotion
 from app.core.emotions.emotion_state_manager import load_emotion_state
 from app.interfaces.mind_session import session
+
+logger = logging.getLogger(__name__)
 
 S3_BUCKET = "swylie-astra"
 STREAM_KEY = "stream_of_consciousness.json"
@@ -102,12 +105,12 @@ class StreamOfConsciousness:
             data = json.load(response["Body"])
             self.thoughts = [Thought.from_dict(t) for t in data.get("thoughts", [])]
             self.pending_insights = data.get("pending_insights", [])
-            print(f"🧠 Loaded {len(self.thoughts)} thoughts from stream")
+            logger.debug("Loaded %s thoughts from stream", len(self.thoughts))
         except s3.exceptions.NoSuchKey:
-            print("🧠 No stream of consciousness found. Starting fresh.")
+            logger.debug("No stream of consciousness found. Starting fresh.")
             self.thoughts = []
         except Exception as e:
-            print(f"⚠️ Error loading stream: {e}")
+            logger.warning("Error loading stream: %s", e)
             self.thoughts = []
     
     def _save_stream(self) -> None:
@@ -129,8 +132,8 @@ class StreamOfConsciousness:
                 Body=json.dumps(data, indent=2).encode("utf-8")
             )
         except Exception as e:
-            print(f"⚠️ Error saving stream: {e}")
-    
+            logger.warning("Error saving stream: %s", e)
+
     def _get_emotional_context(self) -> str:
         """Get current emotional context as a string."""
         emotions = load_emotion_state()
@@ -167,7 +170,7 @@ class StreamOfConsciousness:
         else:
             self.current_chain = [thought]  # Start new chain
         
-        print(f"🧠 [{thought_type}] {content[:60]}...")
+        logger.debug("[%s] %s...", thought_type, content[:60])
         self._save_stream()
         
         # Publish to awareness bus (Phase 1.1)

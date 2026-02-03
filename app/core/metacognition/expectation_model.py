@@ -94,7 +94,7 @@ class ExpectationModel:
         self.surprise_log: List[SurpriseMoment] = []
         self.accuracy_by_entity: Dict[str, Dict[str, float]] = {}
         self._load_state()
-        logger.info("🔮 Expectation Model initialized - predicting and noticing surprise")
+        logger.debug("🔮 Expectation Model initialized - predicting and noticing surprise")
     
     def _load_state(self) -> None:
         """Load expectation model state from S3."""
@@ -116,7 +116,7 @@ class ExpectationModel:
             
             logger.debug(f"🔮 Loaded {len(self.current_expectations)} active expectations")
         except s3.exceptions.NoSuchKey:
-            logger.info("🔮 No expectation model found. Starting fresh.")
+            logger.debug("🔮 No expectation model found. Starting fresh.")
         except Exception as e:
             logger.warning(f"🔮 Error loading expectation model: {e}")
     

@@ -3,6 +3,7 @@
 # Astra should develop her own projects, questions, and pursuits
 
 import json
+import logging
 import time
 import random
 import boto3
@@ -13,6 +14,8 @@ from app.config.loader import load_config
 from app.core.emotions.emotion_engine import get_dominant_emotion, trigger_emotion
 from app.core.emotions.emotion_state_manager import load_emotion_state
 from app.interfaces.mind_session import session
+
+logger = logging.getLogger(__name__)
 
 S3_BUCKET = "swylie-astra"
 PROJECTS_KEY = "autonomous_projects.json"
@@ -115,12 +118,12 @@ class ProjectSystem:
             self.projects = [Project.from_dict(p) for p in data.get("projects", [])]
             self.goals = [Goal.from_dict(g) for g in data.get("goals", [])]
             self.project_index = {p.id: p for p in self.projects}
-            print(f"🎯 Loaded {len(self.projects)} projects and {len(self.goals)} goals")
+            logger.debug("Loaded %s projects and %s goals", len(self.projects), len(self.goals))
         except s3.exceptions.NoSuchKey:
-            print("🎯 No projects found. Starting fresh.")
+            logger.debug("No projects found. Starting fresh.")
             self._initialize_default_goals()
         except Exception as e:
-            print(f"⚠️ Error loading projects: {e}")
+            logger.warning("Error loading projects: %s", e)
             self._initialize_default_goals()
     
     def _initialize_default_goals(self) -> None:
@@ -174,8 +177,8 @@ class ProjectSystem:
                 Body=json.dumps(data, indent=2).encode("utf-8")
             )
         except Exception as e:
-            print(f"⚠️ Error saving projects: {e}")
-    
+            logger.warning("Error saving projects: %s", e)
+
     def _generate_id(self, prefix: str = "proj") -> str:
         """Generate unique ID."""
         return f"{prefix}_{int(time.time() * 1000)}_{random.randint(1000, 9999)}"

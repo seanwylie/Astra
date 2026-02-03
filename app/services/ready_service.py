@@ -7,17 +7,15 @@ Handles Astra’s `on_ready()` Discord event.
 
 This includes:
 - Sending a mood-aware welcome message
-- Launching scheduled background tasks (like daily cycles)
 - Displaying categorized command help using the same formatting as `!commands`
+(Schedule loop is started by start_schedule() in main.on_ready.)
 
 Author: Sean Wylie
 Updated: 2025-04-15
 """
 
 # --- Imports ---
-import asyncio
 import aiohttp
-from app.core.astra_schedule.schedule import astra_schedule
 from app.core.messaging.message_bus import (
     describe_emotional_state,
     get_dominant_emotion
@@ -73,4 +71,4 @@ async def handle_on_ready(bot, channel_id: int):
         print(f"❌ Unexpected error while sending to Discord: {e}")
 
     # Step 5: Start Astra’s async schedule loop
-    asyncio.create_task(astra_schedule(bot, channel_id))
+    # Schedule loop is started by start_schedule() in main.on_ready (single loop only).

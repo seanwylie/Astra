@@ -3,6 +3,7 @@
 # "Episodes" are events with context, emotion, people, and meaning
 
 import json
+import logging
 import time
 import random
 import boto3
@@ -12,6 +13,8 @@ from dataclasses import dataclass, asdict, field
 from app.config.loader import load_config
 from app.core.emotions.emotion_engine import get_dominant_emotion
 from app.core.emotions.emotion_state_manager import load_emotion_state
+
+logger = logging.getLogger(__name__)
 
 S3_BUCKET = "swylie-astra"
 EPISODIC_MEMORY_KEY = "episodic_memory.json"
@@ -104,13 +107,13 @@ class EpisodicMemory:
             data = json.load(response["Body"])
             self.episodes = [Episode.from_dict(e) for e in data.get("episodes", [])]
             self.episode_index = {e.id: e for e in self.episodes}
-            print(f"🧠 Loaded {len(self.episodes)} episodic memories")
+            logger.debug("Loaded %s episodic memories", len(self.episodes))
         except s3.exceptions.NoSuchKey:
-            print("🧠 No episodic memory found. Starting fresh.")
+            logger.debug("No episodic memory found. Starting fresh.")
             self.episodes = []
             self.episode_index = {}
         except Exception as e:
-            print(f"⚠️ Error loading episodic memory: {e}")
+            logger.warning("Error loading episodic memory: %s", e)
             self.episodes = []
             self.episode_index = {}
     
@@ -135,8 +138,8 @@ class EpisodicMemory:
                 Body=json.dumps(data, indent=2).encode("utf-8")
             )
         except Exception as e:
-            print(f"⚠️ Error saving episodic memory: {e}")
-    
+            logger.warning("Error saving episodic memory: %s", e)
+
     def _generate_id(self) -> str:
         """Generate unique episode ID."""
         return f"ep_{int(time.time() * 1000)}_{random.randint(1000, 9999)}"
@@ -188,7 +191,7 @@ class EpisodicMemory:
         self.episode_index[episode.id] = episode
         self._save_episodes()
         
-        print(f"🧠 Recorded episode: [{event_type}] {summary[:50]}...")
+        logger.debug("Recorded episode: [%s] %s...", event_type, summary[:50])
         return episode
     
     def _find_related_episodes(self, episode: Episode) -> List[Episode]:

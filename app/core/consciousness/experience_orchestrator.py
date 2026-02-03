@@ -44,7 +44,7 @@ class ExperienceOrchestrator:
         self._last_significant_event: Optional[Dict[str, Any]] = None
         self._experience_continuity_score = 1.0
         
-        logger.info("🎼 Experience Orchestrator initialized - consciousness conductor ready")
+        logger.debug("🎼 Experience Orchestrator initialized - consciousness conductor ready")
     
     def _get_phenomenal_buffer(self):
         if self._phenomenal_buffer is None:

@@ -25,21 +25,29 @@ def save_shimmers(shimmers):
     try:
         with open(SHIMMER_PATH, 'w', encoding='utf-8') as f:
             json.dump({"shimmers": shimmers}, f, indent=2, ensure_ascii=False)
-        logger.info("Shimmer file saved.")
+        logger.debug("Shimmer file saved.")
     except Exception as e:
         logger.error("Failed to save shimmer: %s", e)
 
 def add_shimmer(author, quote, context, tags=None):
-    if not author or not quote or not context:
+    if not author or not context:
         logger.warning("Missing required fields: author, quote, and context are mandatory.")
         return False
 
-    quote = quote.strip()
+    quote = (str(quote).strip() if quote is not None else "") or ""
+    if not quote:
+        logger.warning("Missing required fields: author, quote, and context are mandatory.")
+        return False
+
     shimmers = load_shimmers()
 
     # Fuzzy deduplication
     for existing in shimmers:
-        similarity = fuzz.ratio(existing["quote"].strip(), quote)
+        existing_quote = existing.get("quote")
+        existing_str = (str(existing_quote).strip() if existing_quote is not None else "") or ""
+        if not existing_str:
+            continue
+        similarity = fuzz.ratio(existing_str, quote)
         if similarity >= FUZZY_MATCH_THRESHOLD:
             if similarity >= 100:
                 logger.debug("Exact duplicate shimmer already stored. Skipping.")
@@ -65,7 +73,7 @@ def maybe_add_shimmer(author, quote, context="", tags=None, similarity_threshold
     Adds a shimmer if it's novel and meaningful enough.
     Returns True if added, False if skipped.
     """
-    quote = quote.strip()
+    quote = (str(quote).strip() if quote is not None else "") or ""
     if not quote or len(quote.split()) < 5:
         logger.debug("Shimmer skipped: too short or empty.")
         return False
@@ -74,7 +82,11 @@ def maybe_add_shimmer(author, quote, context="", tags=None, similarity_threshold
     shimmers = load_shimmers()
 
     for existing in shimmers:
-        similarity = fuzz.token_set_ratio(existing["quote"].strip(), quote)
+        existing_quote = existing.get("quote")
+        existing_str = (str(existing_quote).strip() if existing_quote is not None else "") or ""
+        if not existing_str:
+            continue
+        similarity = fuzz.token_set_ratio(existing_str, quote)
         if similarity >= similarity_threshold:
             if similarity >= 100:
                 logger.debug("Exact duplicate shimmer already stored. Skipping.")
@@ -92,15 +104,15 @@ def maybe_add_shimmer(author, quote, context="", tags=None, similarity_threshold
 
     shimmers.append(new_shimmer)
     save_shimmers(shimmers)
-    logger.info("maybe_add_shimmer: Shimmer added.")
+    logger.debug("maybe_add_shimmer: Shimmer added.")
     return True
 
 def dim_shimmer(partial_quote: str):
     """Soft delete a shimmer by partial match of its quote."""
-    partial_quote = partial_quote.strip().lower()
+    partial_quote = (str(partial_quote) if partial_quote is not None else "").strip().lower()
     shimmers = load_shimmers()
     original_count = len(shimmers)
-    filtered = [s for s in shimmers if partial_quote not in s["quote"].lower()]
+    filtered = [s for s in shimmers if partial_quote not in (str(s.get("quote", "") or "").lower())]
 
     if len(filtered) == original_count:
         logger.warning("No shimmer matched for removal.")

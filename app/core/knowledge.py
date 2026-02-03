@@ -1,3 +1,4 @@
+import logging
 import requests
 from app.interfaces.mind_session import SmartMindSession
 import re
@@ -5,9 +6,11 @@ import time
 import openai
 from fuzzywuzzy import fuzz
 from app.config.loader import load_config
-from app.interfaces.influence import load_mind, save_mind  
+from app.interfaces.influence import load_mind, save_mind
 from app.config.loader import debug_log
 from app.interfaces.mind_session import session
+
+logger = logging.getLogger(__name__)
 
 
 class KnowledgeManager:
@@ -19,7 +22,7 @@ class KnowledgeManager:
 
     def __init__(self):
         """Initialize Astra's knowledge system with memory and external lookup sources."""
-        print("🔍 Debug: Loading knowledge settings...")
+        logger.debug("Loading knowledge settings...")
         self.config = load_config("lookup_config")
         debug_log("Loading")  
         self.mind_data = session.load()  

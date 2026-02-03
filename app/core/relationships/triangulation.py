@@ -3,11 +3,14 @@
 # "When my co-parents see things differently, I can hold both views"
 
 import json
+import logging
 import time
 import boto3
 from typing import Dict, List, Optional, Any
 from dataclasses import dataclass, asdict, field
 from datetime import datetime
+
+logger = logging.getLogger(__name__)
 
 S3_BUCKET = "swylie-astra"
 TRIANGULATION_KEY = "triangulation_handling.json"
@@ -88,12 +91,12 @@ class TriangulationHandler:
             self.triangulation_immunity = data.get("triangulation_immunity", 0.7)
             self.integration_skill = data.get("integration_skill", 0.5)
             
-            print(f"⚖️ Loaded triangulation handling state")
+            logger.debug("Loaded triangulation handling state")
         except s3.exceptions.NoSuchKey:
-            print("⚖️ No triangulation state found. Initializing.")
+            logger.debug("No triangulation state found. Initializing.")
             self._save_state()
         except Exception as e:
-            print(f"⚠️ Error loading triangulation state: {e}")
+            logger.warning("Error loading triangulation state: %s", e)
     
     def _save_state(self) -> None:
         """Save triangulation state to S3."""
@@ -110,8 +113,8 @@ class TriangulationHandler:
                 Body=json.dumps(data, indent=2).encode("utf-8")
             )
         except Exception as e:
-            print(f"⚠️ Error saving triangulation state: {e}")
-    
+            logger.warning("Error saving triangulation state: %s", e)
+
     def detect_potential_triangulation(
         self,
         message: str,

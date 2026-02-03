@@ -66,7 +66,7 @@ class BackgroundProcessor:
         self.last_processing_time: float = 0
         self.processing_session_count: int = 0
         self._load_background_state()
-        logger.info("🔄 Background Processor initialized - continuous existence begins")
+        logger.debug("🔄 Background Processor initialized - continuous existence begins")
     
     def _load_background_state(self) -> None:
         """Load background processing state from S3."""
@@ -83,7 +83,7 @@ class BackgroundProcessor:
             self.last_processing_time = data.get("last_processing", 0)
             self.processing_session_count = data.get("session_count", 0)
             
-            logger.info(f"🔄 Loaded {len(self.pending_tasks)} pending background tasks")
+            logger.debug("🔄 Loaded %s pending background tasks", len(self.pending_tasks))
         except s3.exceptions.NoSuchKey:
             logger.info("🔄 No background state. Starting fresh.")
         except Exception as e:

@@ -86,17 +86,17 @@ def log_status(message):
 async def astra_schedule(bot=None, channel_id=None):
     global last_state
 
-    print("🟢 Astra Schedule Loop Initialized")
+    schedule_logger.debug("🟢 Astra Schedule Loop Initialized")
 
     while True:
         current_mode = get_current_mode()
         curiosity_level = set_curiosity_level(current_mode)
 
-        print(f"🔄 Processing {current_mode} Mode | Curiosity: {curiosity_level}")
+        schedule_logger.debug("Processing %s Mode | Curiosity: %s", current_mode, curiosity_level)
 
         if current_mode != last_state:
             notification = get_random_notification(current_mode)
-            print(f"🔔 {notification}")  # Replaces SMS
+            schedule_logger.debug("Mode notification: %s", notification)  # Replaces SMS
             log_status(f"Astra is transitioning into {current_mode} mode.")
             
             # === EXPERIENTIAL TRANSITIONS: Make mode changes feel like something ===
@@ -131,15 +131,15 @@ async def astra_schedule(bot=None, channel_id=None):
             last_state = current_mode
 
         if current_mode == "dream":
-            print("🌙 Astra is in Dream Mode.")
+            schedule_logger.debug("🌙 Astra is in Dream Mode.")
             await start_dreaming()
 
         elif current_mode == "dinner":
-            print("🍽️ Astra is in Dinner Time.")
+            schedule_logger.debug("🍽️ Astra is in Dinner Time.")
             await start_dinner_time(bot, channel_id)
 
         elif current_mode == "school":
-            print("📚 Astra is in School Mode.")
+            schedule_logger.debug("📚 Astra is in School Mode.")
             await start_learning()
             
             # === MAMA GPT CHECK-IN: Proactive parenting during active modes ===
@@ -147,7 +147,7 @@ async def astra_schedule(bot=None, channel_id=None):
                 await _mama_gpt_checkin(bot, channel_id)
 
         elif current_mode == "play":
-            print("🎮 Astra is in Playtime Mode.")
+            schedule_logger.debug("🎮 Astra is in Playtime Mode.")
             await start_playtime()
             
             # === MAMA GPT CHECK-IN: Proactive parenting during active modes ===
@@ -155,15 +155,15 @@ async def astra_schedule(bot=None, channel_id=None):
                 await _mama_gpt_checkin(bot, channel_id)
 
         else:
-            print("😴 Astra is in Sleep Mode. No active schedule detected.")
+            schedule_logger.debug("😴 Astra is in Sleep Mode. No active schedule detected.")
             await start_sleeping()
             if schedule_config.get("sleep_mood_decay_enabled", True):
                 try:
                     mood_manager.influence_mood("idle")
                 except Exception as e:
-                    print(f"[schedule] influence_mood idle failed: {e}")
+                    schedule_logger.warning("influence_mood idle failed: %s", e)
 
-        print(f"🔍 Astra Curiosity Level: {curiosity_level} in {current_mode} mode")
+        schedule_logger.debug("Astra curiosity level: %s in %s mode", curiosity_level, current_mode)
 
         # === INNER LIFE: Continuous Stream of Consciousness ===
         # Astra should be "thinking" even when not conversing
@@ -223,10 +223,10 @@ async def astra_schedule(bot=None, channel_id=None):
                 schedule_logger.debug(f"Inner life background processing failed: {e}")
 
         if asyncio.current_task().cancelled():
-            print("🛑 Task was cancelled. Exiting schedule loop.")
+            schedule_logger.info("🛑 Schedule task cancelled. Exiting loop.")
             break
 
-        print(f"🔁 Sleeping for {schedule_config['reflection_interval']} seconds before next loop...")
+        schedule_logger.debug("Sleeping %s s before next loop", schedule_config["reflection_interval"])
         await asyncio.sleep(schedule_config["reflection_interval"])
 
 async def _mama_gpt_checkin(bot=None, channel_id=None) -> None:
@@ -496,7 +496,7 @@ async def _experience_transition(old_mode: str, new_mode: str) -> None:
                 "anticipation"
             )
             trigger_emotion("curiosity", "learning_time")
-            schedule_logger.info("📚 Experienced transition to school mode")
+            schedule_logger.debug("📚 Experienced transition to school mode")
         
         # === TRANSITION TO SLEEP: Deep rest ===
         elif new_mode == "sleep":

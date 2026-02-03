@@ -64,7 +64,7 @@ class AttentionAllocator:
         # Track attention patterns over time
         self._attention_history: List[Tuple[float, List[str]]] = []
         
-        logger.info("🔦 Attention Allocator initialized")
+        logger.debug("🔦 Attention Allocator initialized")
     
     def _generate_id(self, source: str, content: str) -> str:
         """Generate a unique ID for an attention item."""

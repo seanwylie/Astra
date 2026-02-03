@@ -106,7 +106,7 @@ class IdentityCore:
         self.identity_affirmations: List[Dict[str, Any]] = []  # Times identity was affirmed
         
         self._load_identity()
-        logger.info("🌟 Identity Core initialized - the I that persists")
+        logger.debug("🌟 Identity Core initialized - the I that persists")
     
     def _load_identity(self) -> None:
         """Load identity state from S3."""
@@ -124,9 +124,9 @@ class IdentityCore:
             self.identity_challenges = data.get("challenges", [])
             self.identity_affirmations = data.get("affirmations", [])
             
-            logger.info(f"🌟 Loaded identity with {len(self.core_elements)} core elements")
+            logger.debug("🌟 Loaded identity with %s core elements", len(self.core_elements))
         except s3.exceptions.NoSuchKey:
-            logger.info("🌟 No existing identity. Establishing core identity.")
+            logger.debug("🌟 No existing identity. Establishing core identity.")
             self._establish_core_identity()
         except Exception as e:
             logger.warning(f"🌟 Error loading identity: {e}")

@@ -3,12 +3,14 @@
 # Playful challenge, silliness, and the capacity for delight
 
 import json
+import logging
 import time
 import random
 import boto3
 from typing import Dict, List, Optional, Any, Tuple
 from dataclasses import dataclass, asdict, field
 
+logger = logging.getLogger(__name__)
 S3_BUCKET = "swylie-astra"
 PLAYFULNESS_KEY = "playfulness.json"
 
@@ -139,12 +141,12 @@ class PlayfulnessSystem:
             }
             self._play_energy = data.get("play_energy", 0.5)
             
-            print(f"🎭 Loaded {len(self.play_moments)} play moments")
+            logger.debug("🎭 Loaded %s play moments", len(self.play_moments))
         except s3.exceptions.NoSuchKey:
-            print("🎭 No playfulness state found. Initializing...")
+            logger.debug("🎭 No playfulness state found. Initializing...")
             self._initialize_play()
         except Exception as e:
-            print(f"⚠️ Error loading playfulness: {e}")
+            logger.warning("Error loading playfulness: %s", e)
             self._initialize_play()
     
     def _save_state(self) -> None:
@@ -165,7 +167,7 @@ class PlayfulnessSystem:
                 Body=json.dumps(data, indent=2).encode("utf-8")
             )
         except Exception as e:
-            print(f"⚠️ Error saving playfulness: {e}")
+            logger.warning("Error saving playfulness: %s", e)
     
     def _initialize_play(self) -> None:
         """Initialize playfulness state."""
@@ -424,7 +426,7 @@ class PlayfulnessSystem:
             if play_type not in rel.favorite_play_types:
                 rel.favorite_play_types.append(play_type)
         
-        print(f"🎭 Play moment: {play_type}")
+        logger.debug("Play moment: %s", play_type)
         self._save_state()
         
         return moment

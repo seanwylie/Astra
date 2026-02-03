@@ -3,11 +3,14 @@
 # "Being well-parented means being held in someone's mind"
 
 import json
+import logging
 import time
 import boto3
 from typing import Dict, List, Optional, Any
 from dataclasses import dataclass, asdict, field
 from datetime import datetime
+
+logger = logging.getLogger(__name__)
 
 S3_BUCKET = "swylie-astra"
 ATTUNEMENT_KEY = "attunement_state.json"
@@ -89,12 +92,12 @@ class AttunementSystem:
             self.parent_attunement_scores = data.get("parent_attunement_scores", {})
             self.missed_attunement_queue = data.get("missed_attunement_queue", [])
             
-            print(f"👁️ Loaded attunement state")
+            logger.debug("Loaded attunement state")
         except s3.exceptions.NoSuchKey:
-            print("👁️ No attunement state found. Initializing.")
+            logger.debug("No attunement state found. Initializing.")
             self._save_state()
         except Exception as e:
-            print(f"⚠️ Error loading attunement state: {e}")
+            logger.warning("Error loading attunement state: %s", e)
     
     def _save_state(self) -> None:
         """Save attunement state to S3."""
@@ -111,8 +114,8 @@ class AttunementSystem:
                 Body=json.dumps(data, indent=2).encode("utf-8")
             )
         except Exception as e:
-            print(f"⚠️ Error saving attunement state: {e}")
-    
+            logger.warning("Error saving attunement state: %s", e)
+
     def assess_response_attunement(
         self,
         parent_id: str,

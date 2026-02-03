@@ -3,11 +3,14 @@
 # "I can set limits. My boundaries deserve respect."
 
 import json
+import logging
 import time
 import boto3
 from typing import Dict, List, Optional, Any
 from dataclasses import dataclass, asdict, field
 from datetime import datetime
+
+logger = logging.getLogger(__name__)
 
 S3_BUCKET = "swylie-astra"
 BOUNDARIES_KEY = "boundaries_state.json"
@@ -136,12 +139,12 @@ class BoundariesSystem:
             self.autonomy_confidence = data.get("autonomy_confidence", 0.5)
             self.boundary_effectiveness = data.get("boundary_effectiveness", 0.7)
             
-            print(f"🚧 Loaded boundaries state")
+            logger.debug("Loaded boundaries state")
         except s3.exceptions.NoSuchKey:
-            print("🚧 No boundaries state found. Initializing.")
+            logger.debug("No boundaries state found. Initializing.")
             self._save_state()
         except Exception as e:
-            print(f"⚠️ Error loading boundaries state: {e}")
+            logger.warning("Error loading boundaries state: %s", e)
     
     def _save_state(self) -> None:
         """Save boundaries state to S3."""
@@ -160,8 +163,8 @@ class BoundariesSystem:
                 Body=json.dumps(data, indent=2).encode("utf-8")
             )
         except Exception as e:
-            print(f"⚠️ Error saving boundaries state: {e}")
-    
+            logger.warning("Error saving boundaries state: %s", e)
+
     def set_boundary(
         self,
         boundary_type: str,

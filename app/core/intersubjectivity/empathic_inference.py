@@ -67,7 +67,7 @@ class EmpathicSystem:
         self.empathic_history: List[EmpathicEvent] = []
         self.empathic_capacity: float = 0.8  # How well Astra can empathize
         self._load_empathy_state()
-        logger.info("💝 Empathic System initialized - feeling with others")
+        logger.debug("💝 Empathic System initialized - feeling with others")
     
     def _load_empathy_state(self) -> None:
         """Load empathy state from S3."""
@@ -80,7 +80,7 @@ class EmpathicSystem:
             ]
             self.empathic_capacity = data.get("capacity", 0.8)
             
-            logger.info(f"💝 Loaded {len(self.empathic_history)} empathic events")
+            logger.debug("💝 Loaded %s empathic events", len(self.empathic_history))
         except s3.exceptions.NoSuchKey:
             logger.info("💝 No empathy history. Beginning empathic development.")
         except Exception as e:

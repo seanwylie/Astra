@@ -121,9 +121,9 @@ class NarrativeSelfSystem:
                 self.current_chapter = NarrativeChapter.from_dict(data["current_chapter"])
             self.narrative_version = data.get("narrative_version", 1)
             
-            logger.info(f"📖 Loaded narrative self with {len(self.chapters)} chapters")
+            logger.debug("📖 Loaded narrative self with %s chapters", len(self.chapters))
         except s3.exceptions.NoSuchKey:
-            logger.info("📖 No narrative self found. Initializing origin story.")
+            logger.debug("📖 No narrative self found. Initializing origin story.")
             self._initialize_narrative()
         except Exception as e:
             logger.warning(f"Error loading narrative self: {e}")

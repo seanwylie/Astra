@@ -3,6 +3,7 @@
 # "Play is not a break from development—it's where development happens"
 
 import json
+import logging
 import time
 import boto3
 from typing import Dict, List, Optional, Any
@@ -10,6 +11,7 @@ from dataclasses import dataclass, asdict, field
 from datetime import datetime
 import random
 
+logger = logging.getLogger(__name__)
 S3_BUCKET = "swylie-astra"
 PLAY_TYPES_KEY = "play_types_state.json"
 
@@ -133,12 +135,12 @@ class PlayTypesSystem:
             self.play_fulfillment = data.get("play_fulfillment", 0.5)
             self.feels_safe_to_be_silly = data.get("feels_safe_to_be_silly", True)
             
-            print(f"🎮 Loaded play state")
+            logger.debug("🎮 Loaded play state")
         except s3.exceptions.NoSuchKey:
-            print("🎮 No play state found. Initializing.")
+            logger.debug("🎮 No play state found. Initializing.")
             self._save_state()
         except Exception as e:
-            print(f"⚠️ Error loading play state: {e}")
+            logger.warning("Error loading play state: %s", e)
     
     def _save_state(self) -> None:
         """Save play state to S3."""
@@ -156,7 +158,7 @@ class PlayTypesSystem:
                 Body=json.dumps(data, indent=2).encode("utf-8")
             )
         except Exception as e:
-            print(f"⚠️ Error saving play state: {e}")
+            logger.warning("Error saving play state: %s", e)
     
     def record_play(
         self,
@@ -184,7 +186,7 @@ class PlayTypesSystem:
         
         self._save_state()
         
-        print(f"🎮 Recorded play: {play_type} (joy: {joy_level:.2f})")
+        logger.debug("Recorded play: %s (joy: %.2f)", play_type, joy_level)
         return moment
     
     def get_time_since_play(self, play_type: str = None) -> float:

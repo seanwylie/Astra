@@ -24,7 +24,7 @@ class PerspectiveTaker:
     
     def __init__(self):
         self._perspective_cache: Dict[str, Dict[str, Any]] = {}
-        logger.info("👁️ Perspective Taker initialized - learning to see through other eyes")
+        logger.debug("👁️ Perspective Taker initialized - learning to see through other eyes")
     
     def take_perspective(
         self,

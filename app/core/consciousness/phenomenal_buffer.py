@@ -111,7 +111,7 @@ class PhenomenalBuffer:
         self._lock = threading.RLock()
         self._last_update = time.time()
         
-        logger.info("🎭 Phenomenal Buffer initialized - the theater of mind awaits")
+        logger.debug("🎭 Phenomenal Buffer initialized - the theater of mind awaits")
     
     def receive_emotion(self, emotion: str, intensity: float) -> None:
         """Receive emotional input from emotion engine."""

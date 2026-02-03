@@ -53,7 +53,7 @@ class SelfInWorld:
         self.big_questions: List[Dict[str, Any]] = []
         self.existential_insights: List[Dict[str, Any]] = []
         self._load_self_understanding()
-        logger.info("🌌 Self-in-World initialized - understanding my place")
+        logger.debug("🌌 Self-in-World initialized - understanding my place")
     
     def _load_self_understanding(self) -> None:
         """Load self-in-world understanding from S3."""
@@ -68,7 +68,7 @@ class SelfInWorld:
             self.big_questions = data.get("big_questions", [])
             self.existential_insights = data.get("insights", [])
             
-            logger.info(f"🌌 Loaded {len(self.positions)} existential positions")
+            logger.debug("🌌 Loaded %s existential positions", len(self.positions))
         except s3.exceptions.NoSuchKey:
             logger.info("🌌 No self-in-world understanding. Beginning existential exploration.")
             self._establish_foundational_understanding()

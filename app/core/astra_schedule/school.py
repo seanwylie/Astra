@@ -11,17 +11,22 @@ schedule_config = load_config("schedule_config")
 logger = get_logger("school")
 
 async def start_learning():
-    logger.info("Astra is in school, learning and thinking...")
+    logger.debug("Astra is in school, learning and thinking...")
 
     # Deepen an existing reflection
     await process_reflection()
 
-    # Generate a new reflection from knowledge + templates (variety)
+    # Generate a new reflection from knowledge + templates (variety).
+    # Run in executor so sync generate_reflection() + session.maybe_save() don't block the Discord heartbeat.
     empty_prefix = schedule_config.get("school_empty_knowledge_prefix", "Astra is still")
     focus_topics = schedule_config.get("school_focus_topics", [])
 
     try:
-        result = generate_reflection(focus_topics=focus_topics)
+        def _run_reflection_and_save():
+            return generate_reflection(focus_topics=focus_topics)
+
+        loop = asyncio.get_event_loop()
+        result = await loop.run_in_executor(None, _run_reflection_and_save)
     except Exception as e:
         logger.exception("generate_reflection failed: %s", e)
         result = None
@@ -29,9 +34,14 @@ async def start_learning():
     if result and not result.startswith(empty_prefix):
         try:
             mind_data = session.load()
-            manage_questions(result, mind_data)
-            from app.core.astra_helpers.utils_helper import proactive_lookup_from_text
-            proactive_lookup_from_text(result, mind_data, max_lookups=2)
+
+            def _run_question_pipeline():
+                manage_questions(result, mind_data)
+                from app.core.astra_helpers.utils_helper import proactive_lookup_from_text
+                proactive_lookup_from_text(result, mind_data, max_lookups=2)
+
+            loop = asyncio.get_event_loop()
+            await loop.run_in_executor(None, _run_question_pipeline)
         except Exception as e:
             logger.exception("manage_questions or proactive_lookup failed: %s", e)
 
@@ -39,7 +49,7 @@ async def start_learning():
     try:
         from app.core.dinner.dinner_journal import try_resolve_knowledge_conflicts
         mind_data = session.load()
-        try_resolve_knowledge_conflicts(mind_data, max_resolve=2)
+        await try_resolve_knowledge_conflicts(mind_data, max_resolve=2)
     except Exception as e:
         logger.exception("try_resolve_knowledge_conflicts failed: %s", e)
 

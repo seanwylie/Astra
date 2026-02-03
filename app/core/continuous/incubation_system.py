@@ -66,7 +66,7 @@ class IncubationSystem:
         self.incubating: Dict[str, IncubatingProblem] = {}
         self.resolved_problems: List[IncubatingProblem] = []
         self._load_incubation_state()
-        logger.info("💭 Incubation System initialized - problems gestating")
+        logger.debug("💭 Incubation System initialized - problems gestating")
     
     def _load_incubation_state(self) -> None:
         """Load incubation state from S3."""
@@ -82,7 +82,7 @@ class IncubationSystem:
                 IncubatingProblem.from_dict(p) for p in data.get("resolved", [])
             ]
             
-            logger.info(f"💭 Loaded {len(self.incubating)} incubating problems")
+            logger.debug("💭 Loaded %s incubating problems", len(self.incubating))
         except s3.exceptions.NoSuchKey:
             logger.info("💭 No incubation state. Ready to receive problems.")
         except Exception as e:

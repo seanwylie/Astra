@@ -64,7 +64,7 @@ class SpontaneousInsight:
         self.insights: List[Insight] = []
         self.pending_to_share: List[str] = []  # IDs of insights to share
         self._load_insights()
-        logger.info("💡 Spontaneous Insight system initialized - ready for aha moments")
+        logger.debug("💡 Spontaneous Insight system initialized - ready for aha moments")
     
     def _load_insights(self) -> None:
         """Load insights from S3."""
@@ -75,9 +75,9 @@ class SpontaneousInsight:
             self.insights = [Insight.from_dict(i) for i in data.get("insights", [])]
             self.pending_to_share = data.get("pending_to_share", [])
             
-            logger.info(f"💡 Loaded {len(self.insights)} insights, {len(self.pending_to_share)} pending to share")
+            logger.debug("💡 Loaded %s insights, %s pending to share", len(self.insights), len(self.pending_to_share))
         except s3.exceptions.NoSuchKey:
-            logger.info("💡 No insights found. Ready for new ones.")
+            logger.debug("💡 No insights found. Ready for new ones.")
         except Exception as e:
             logger.warning(f"💡 Error loading insights: {e}")
     

@@ -3,6 +3,7 @@
 # Emotional seasons, anniversary recognition, and anticipation of future
 
 import json
+import logging
 import time
 import random
 import boto3
@@ -11,6 +12,7 @@ from dataclasses import dataclass, asdict, field
 from datetime import datetime, timedelta
 import math
 
+logger = logging.getLogger(__name__)
 S3_BUCKET = "swylie-astra"
 RHYTHMS_STATE_KEY = "emotional_rhythms.json"
 
@@ -180,12 +182,12 @@ class EmotionalRhythmsSystem:
                     self._current_season = season
                     break
             
-            print(f"🌊 Loaded {len(self.seasons)} emotional seasons, {len(self.anniversaries)} anniversaries")
+            logger.debug("🌊 Loaded %s emotional seasons, %s anniversaries", len(self.seasons), len(self.anniversaries))
         except s3.exceptions.NoSuchKey:
-            print("🌊 No rhythms state found. Initializing...")
+            logger.debug("🌊 No rhythms state found. Initializing...")
             self._initialize_rhythms()
         except Exception as e:
-            print(f"⚠️ Error loading rhythms: {e}")
+            logger.warning("Error loading rhythms: %s", e)
             self._initialize_rhythms()
     
     def _save_state(self) -> None:
@@ -203,7 +205,7 @@ class EmotionalRhythmsSystem:
                 Body=json.dumps(data, indent=2).encode("utf-8")
             )
         except Exception as e:
-            print(f"⚠️ Error saving rhythms: {e}")
+            logger.warning("Error saving rhythms: %s", e)
     
     def _initialize_rhythms(self) -> None:
         """Initialize with starting state."""
@@ -292,7 +294,7 @@ class EmotionalRhythmsSystem:
         self.seasons.append(new_season)
         self._current_season = new_season
         
-        print(f"🌊 Season transition: {new_season_type} ({reason})")
+        logger.debug("Season transition: %s (%s)", new_season_type, reason)
         self._save_state()
         
         return new_season
@@ -363,7 +365,7 @@ class EmotionalRhythmsSystem:
         )
         
         self.anniversaries.append(anniversary)
-        print(f"🌊 Anniversary added: {description[:50]}...")
+        logger.debug("Anniversary added: %s...", description[:50])
         self._save_state()
         
         return anniversary
@@ -437,7 +439,7 @@ class EmotionalRhythmsSystem:
         )
         
         self.anticipations.append(anticipation)
-        print(f"🌊 Anticipation added: {description[:50]}...")
+        logger.debug("Anticipation added: %s...", description[:50])
         self._save_state()
         
         return anticipation
@@ -480,7 +482,7 @@ class EmotionalRhythmsSystem:
     ) -> None:
         """Mark an anticipation as resolved."""
         anticipation.resolved = True
-        print(f"🌊 Anticipation resolved: {anticipation.target_description[:50]}...")
+        logger.debug("Anticipation resolved: %s...", anticipation.target_description[:50])
         self._save_state()
     
     # ========== Daily Rhythms ==========

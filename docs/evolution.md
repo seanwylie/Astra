@@ -2,6 +2,8 @@
 
 How Astra can evolve: corpus export, local inference, Astra-grown tools, and code change proposals.
 
+**Full model update runbook (export → train → merge → deploy):** see **[docs/astra_model_update_guide.md](astra_model_update_guide.md)** for the step-by-step from corpus export through Unsloth training, weight merge, server transfer, Ollama ingestion, and personality layering.
+
 ## Phase A: What’s done vs remaining
 
 | Step | Deliverable | Status | Remaining |

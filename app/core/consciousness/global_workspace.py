@@ -58,7 +58,7 @@ class GlobalWorkspace:
         self._workspace_history: List[Dict[str, Any]] = []
         self._lock = threading.RLock()
         
-        logger.info("🎪 Global Workspace initialized - the theater of consciousness")
+        logger.debug("🎪 Global Workspace initialized - the theater of consciousness")
     
     def _generate_id(self, source: str, content_type: str) -> str:
         return f"{source}:{content_type}:{int(time.time() * 1000) % 100000}"

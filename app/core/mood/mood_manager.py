@@ -1,5 +1,5 @@
 import time
-
+import logging
 import threading
 import sys
 import os
@@ -11,18 +11,19 @@ from app.interfaces.influence import load_mind, save_mind  # ✅ Handles memory 
 from app.config.loader import debug_log
 from app.interfaces.mind_session import session
 
+logger = logging.getLogger(__name__)
 
 # Load mood-related configurations
 mood_config = load_config("mood_config")  # Load mood and emotional settings
 
 class MoodManager:
     def __init__(self):
-        print("🔍 Debug: Attempting to load mood_config.json...")
+        logger.debug("Attempting to load mood_config.json...")
         self.mood_config = load_config("mood_config")
-        print("🔍 Debug: mood_config Loaded →", self.mood_config)
+        logger.debug("mood_config loaded: %s", list(self.mood_config.keys()))
 
-        self.LOG_FILE = load_config("general_config").get("log_file", "/home/ubuntu/astra_reflections/data/astra_logs.json")
-        debug_log("Loading")  
+        self.LOG_FILE = load_config("general_config").get("log_file", "/home/sean/dev/systems/Astra/data/astra_logs.json")
+        debug_log("Loading")
         mind_data = session.load()  # ✅ Load Astra's previous mind state
 
         # ✅ Restore mood & curiosity level from memory
@@ -34,7 +35,7 @@ class MoodManager:
 
         self.last_mood_update = time.time()
 
-        print(f"🔍 Loaded mood from memory: {self.current_mood}, Score: {self.mood_score}, Curiosity: {self.curiosity_level}")
+        logger.debug("Loaded mood from memory: %s, Score: %s, Curiosity: %s", self.current_mood, self.mood_score, self.curiosity_level)
 
         self.start_mood_thread()
 
@@ -76,7 +77,7 @@ class MoodManager:
         # ✅ Allow the mood score to move beyond 1.0 if necessary
         self.mood_score = max(min(self.mood_score, 2.0), -2.0)  
 
-        print(f"🔍 Mood influenced by {event_type}: New Score: {self.mood_score}")
+        logger.debug("Mood influenced by %s: New Score: %s", event_type, self.mood_score)
 
         # ✅ Immediate mood update without waiting for the thread loop
         self.update_mood(force=True)
@@ -96,7 +97,7 @@ class MoodManager:
         if event_type in self.mood_config.get("mood_influences", {}):
             self.mood_config["mood_influences"][event_type] = new_value
             self.last_modification[event_type] = time.time()
-            print(f"🔍 Modified mood influence: {event_type} → {new_value}")
+            logger.debug("Modified mood influence: %s → %s", event_type, new_value)
 
             debug_log("Loading")  
             mind_data = session.load()
@@ -104,7 +105,7 @@ class MoodManager:
             mind_data["last_modification"] = self.last_modification
             debug_log("Saving")
             session.maybe_save()
-            print("✅ Mood influences saved and will persist across restarts!")
+            logger.debug("Mood influences saved and will persist across restarts.")
         else:
             print(f"⚠️ Warning: Unknown mood influence '{event_type}', modification skipped.")
 
@@ -132,7 +133,7 @@ class MoodManager:
         self.mood_score = max(min(new_mind_data.get("mood_score", self.mood_score), 2.0), -2.0)
         self.current_mood = new_mind_data.get("last_mood", self.current_mood)
 
-        print(f"🔍 DEBUG: Checking mood update with score {self.mood_score}")
+        logger.debug("Checking mood update with score %s", self.mood_score)
 
         # ✅ Retrieve mood ranges dynamically
         mood_thresholds = sorted(
@@ -162,7 +163,7 @@ class MoodManager:
             except Exception:
                 pass  # Awareness bus may not be available
         else:
-            print(f"⚠️ Mood remained unchanged: {self.current_mood}")
+            logger.debug("Mood remained unchanged: %s", self.current_mood)
 
         # Sync curiosity_level with current mood's curiosity_factor (plan: sync curiosity with mood)
         self.curiosity_level = self.mood_config["moods"].get(self.current_mood, {}).get("curiosity_factor", 1.0)

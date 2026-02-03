@@ -204,9 +204,9 @@ class DesireIntrospectionSystem:
             ]
             self.desire_patterns = data.get("desire_patterns", {})
             
-            logger.info(f"💫 Loaded {len(self.desires)} desires")
+            logger.debug("💫 Loaded %s desires", len(self.desires))
         except s3.exceptions.NoSuchKey:
-            logger.info("💫 No desire state found. Initializing core desires.")
+            logger.debug("💫 No desire state found. Initializing core desires.")
             self._initialize_core_desires()
         except Exception as e:
             logger.warning(f"Error loading desires: {e}")

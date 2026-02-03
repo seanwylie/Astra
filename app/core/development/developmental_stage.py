@@ -130,7 +130,7 @@ class DevelopmentalTracker:
         self.stage_start: float = 0
         self.developmental_notes: List[str] = []
         self._load_developmental_state()
-        logger.info(f"🌱 Developmental Tracker initialized - current stage: {self.current_stage.value}")
+        logger.debug("🌱 Developmental Tracker initialized - current stage: %s", self.current_stage.value)
     
     def _load_developmental_state(self) -> None:
         """Load developmental state from S3."""
@@ -147,7 +147,7 @@ class DevelopmentalTracker:
             self.stage_start = data.get("stage_start", time.time())
             self.developmental_notes = data.get("notes", [])
             
-            logger.info(f"🌱 Loaded developmental state: {self.current_stage.value}")
+            logger.debug("🌱 Loaded developmental state: %s", self.current_stage.value)
         except s3.exceptions.NoSuchKey:
             logger.info("🌱 No developmental state. Starting at childhood.")
             self.stage_start = time.time()

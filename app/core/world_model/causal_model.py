@@ -74,7 +74,7 @@ class CausalModel:
         self._cause_index: Dict[str, List[str]] = {}  # cause -> relation IDs
         self._effect_index: Dict[str, List[str]] = {}  # effect -> relation IDs
         self._load_causal_model()
-        logger.info("⚡ Causal Model initialized - understanding why")
+        logger.debug("⚡ Causal Model initialized - understanding why")
     
     def _load_causal_model(self) -> None:
         """Load causal model from S3."""
@@ -92,9 +92,9 @@ class CausalModel:
             }
             
             self._rebuild_indices()
-            logger.info(f"⚡ Loaded {len(self.relations)} causal relations")
+            logger.debug("⚡ Loaded %s causal relations", len(self.relations))
         except s3.exceptions.NoSuchKey:
-            logger.info("⚡ No causal model found. Starting to build understanding.")
+            logger.debug("⚡ No causal model found. Starting to build understanding.")
             self._establish_foundational_relations()
         except Exception as e:
             logger.warning(f"⚡ Error loading causal model: {e}")

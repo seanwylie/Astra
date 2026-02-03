@@ -16,8 +16,11 @@ Created: 2025-01-16
 """
 
 import asyncio
+import logging
 from typing import Optional, Dict, Any
 from datetime import datetime
+
+logger = logging.getLogger(__name__)
 
 # Core scheduling imports
 from app.core.astra_schedule.schedule import astra_schedule
@@ -60,10 +63,9 @@ class ScheduleService:
                 # Check if we should initiate proactively
                 initiated = await initiative_engine.check_and_initiate(bot, channel_id)
                 if initiated:
-                    print("🎯 Proactive initiative executed")
-                    
+                    logger.info("🎯 Proactive initiative executed")
             except Exception as e:
-                print(f"⚠️ Proactive initiative check failed: {e}")
+                logger.warning("Proactive initiative check failed: %s", e)
     
     async def start_automated_schedule(self, bot, channel_id: int):
         """
@@ -74,13 +76,13 @@ class ScheduleService:
             channel_id: Channel ID for schedule notifications
         """
         if self.schedule_active:
-            print("⚠️ Schedule already active")
+            logger.warning("Schedule already active")
             return
-        
+
         self.schedule_active = True
         self.bot = bot
         self.channel_id = channel_id
-        print("⏰ Starting automated Astra schedule...")
+        logger.info("⏰ Starting automated Astra schedule...")
         
         # Start the main schedule task
         schedule_task = asyncio.create_task(
@@ -94,9 +96,9 @@ class ScheduleService:
                 self._proactive_initiative_loop(bot, channel_id)
             )
             self.running_tasks['proactive_initiative'] = initiative_task
-            print("🎯 Proactive initiative loop started")
+            logger.info("🎯 Proactive initiative loop started")
         except Exception as e:
-            print(f"⚠️ Failed to start proactive initiative loop: {e}")
+            logger.warning("Failed to start proactive initiative loop: %s", e)
         
         return schedule_task
     
@@ -107,10 +109,9 @@ class ScheduleService:
         for task_name, task in self.running_tasks.items():
             if not task.done():
                 task.cancel()
-                print(f"⏰ Cancelled schedule task: {task_name}")
-        
+                logger.debug("Cancelled schedule task: %s", task_name)
         self.running_tasks.clear()
-        print("⏰ Automated schedule stopped")
+        logger.info("⏰ Automated schedule stopped")
     
     async def trigger_dinner_manually(self, bot, channel_id: int) -> str:
         """
@@ -192,13 +193,13 @@ class ScheduleService:
             
             # If schedule is running, restart with new config
             if self.schedule_active:
-                print("⏰ Restarting schedule with new configuration...")
+                logger.info("⏰ Restarting schedule with new configuration...")
                 # Note: This would require bot and channel_id to be stored
                 # For now, just update the config
             
             return True
         except Exception as e:
-            print(f"❌ Failed to update schedule configuration: {e}")
+            logger.warning("Failed to update schedule configuration: %s", e)
             return False
 
 

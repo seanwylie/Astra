@@ -104,7 +104,8 @@
           "contradictory_data": 10,
           "unanswered_question": 20,
           "user_prompt": 5,
-          "ethical_intuition": 8
+          "ethical_intuition": 8,
+          "learning_time": 10
         },
         "relationships": {
           "uncertainty": 10,

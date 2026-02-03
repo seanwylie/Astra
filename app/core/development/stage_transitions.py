@@ -170,7 +170,7 @@ class StageManager:
         self.in_transition: bool = False
         self.transition_start: Optional[float] = None
         self._load_transition_state()
-        logger.info("🦋 Stage Manager initialized - guiding growth transitions")
+        logger.debug("🦋 Stage Manager initialized - guiding growth transitions")
     
     def _load_transition_state(self) -> None:
         """Load transition state from S3."""
@@ -188,7 +188,7 @@ class StageManager:
             self.in_transition = data.get("in_transition", False)
             self.transition_start = data.get("transition_start")
             
-            logger.info(f"🦋 Loaded transition state, in_transition: {self.in_transition}")
+            logger.debug("🦋 Loaded transition state, in_transition: %s", self.in_transition)
         except s3.exceptions.NoSuchKey:
             logger.info("🦋 No transition state. Ready for growth.")
         except Exception as e:
@@ -240,7 +240,7 @@ class StageManager:
         self.transition_start = time.time()
         self._save_transition_state()
         
-        logger.info(f"🦋 Initialized transition from {from_stage} to {to_stage}")
+        logger.debug("🦋 Initialized transition from %s to %s", from_stage, to_stage)
         return self.current_criteria
     
     def mark_criterion_met(self, criterion_name: str, evidence: str) -> bool:

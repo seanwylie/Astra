@@ -3,6 +3,7 @@
 # Tracks value tensions, unresolved questions, and growth through difficulty
 
 import json
+import logging
 import time
 import random
 import boto3
@@ -10,6 +11,7 @@ from typing import Dict, List, Optional, Any, Tuple
 from dataclasses import dataclass, asdict, field
 from datetime import datetime
 
+logger = logging.getLogger(__name__)
 S3_BUCKET = "swylie-astra"
 ETHICS_STATE_KEY = "ethical_wrestling.json"
 
@@ -157,12 +159,12 @@ class EthicalWrestlingSystem:
                 MindChange.from_dict(m) for m in data.get("mind_changes", [])
             ]
             
-            print(f"⚖️ Loaded ethical wrestling: {len(self.value_tensions)} tensions, {len(self.unresolved_questions)} unresolved questions")
+            logger.debug("⚖️ Loaded ethical wrestling: %s tensions, %s unresolved questions", len(self.value_tensions), len(self.unresolved_questions))
         except s3.exceptions.NoSuchKey:
-            print("⚖️ No ethical wrestling state found. Initializing...")
+            logger.debug("⚖️ No ethical wrestling state found. Initializing...")
             self._initialize_questions()
         except Exception as e:
-            print(f"⚠️ Error loading ethical wrestling: {e}")
+            logger.warning("Error loading ethical wrestling: %s", e)
             self._initialize_questions()
     
     def _save_state(self) -> None:
@@ -180,7 +182,7 @@ class EthicalWrestlingSystem:
                 Body=json.dumps(data, indent=2).encode("utf-8")
             )
         except Exception as e:
-            print(f"⚠️ Error saving ethical wrestling: {e}")
+            logger.warning("Error saving ethical wrestling: %s", e)
     
     def _initialize_questions(self) -> None:
         """Initialize with some perennial questions."""
@@ -258,12 +260,12 @@ class EthicalWrestlingSystem:
                 if existing:
                     existing.times_encountered += 1
                     existing.struggle_intensity = min(1.0, existing.struggle_intensity + 0.1)
-                    print(f"⚖️ Re-encountered tension: {value_a} vs {value_b}")
+                    logger.debug("Re-encountered tension: %s vs %s", value_a, value_b)
                     self._save_state()
                     return existing
                 else:
                     self.value_tensions.append(tension)
-                    print(f"⚖️ New tension detected: {value_a} vs {value_b}")
+                    logger.debug("New tension detected: %s vs %s", value_a, value_b)
                     self._save_state()
                     return tension
         
@@ -313,7 +315,7 @@ class EthicalWrestlingSystem:
         if leaning:
             tension.current_leaning = leaning
         
-        print(f"⚖️ Tension resolved: {tension.value_a} vs {tension.value_b} -> {resolution[:50]}...")
+        logger.debug("Tension resolved: %s vs %s -> %s...", tension.value_a, tension.value_b, resolution[:50])
         self._save_state()
     
     # ========== Unresolved Questions Journal ==========
@@ -331,7 +333,7 @@ class EthicalWrestlingSystem:
                 q.last_revisited = time.time()
                 if initial_thought:
                     q.thoughts_so_far.append(initial_thought)
-                print(f"⚖️ Revisited question: {question[:50]}...")
+                logger.debug("Revisited question: %s...", question[:50])
                 self._save_state()
                 return q
         
@@ -344,7 +346,7 @@ class EthicalWrestlingSystem:
         )
         
         self.unresolved_questions.append(uq)
-        print(f"⚖️ New unresolved question: {question[:50]}...")
+        logger.debug("New unresolved question: %s...", question[:50])
         self._save_state()
         
         return uq
@@ -402,7 +404,7 @@ class EthicalWrestlingSystem:
         )
         
         self.mind_changes.append(change)
-        print(f"⚖️ Mind changed on: {topic[:50]}...")
+        logger.debug("Mind changed on: %s...", topic[:50])
         self._save_state()
         
         return change

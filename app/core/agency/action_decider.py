@@ -67,7 +67,7 @@ class ActionDecider:
     def __init__(self):
         self._last_decision_time: float = 0
         self._recent_actions: List[DecidedAction] = []
-        logger.info("🎬 ActionDecider initialized - coherent action layer ready")
+        logger.debug("🎬 ActionDecider initialized - coherent action layer ready")
     
     def decide_actions(
         self,

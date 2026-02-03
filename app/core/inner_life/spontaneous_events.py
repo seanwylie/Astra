@@ -3,6 +3,7 @@
 # Memory surfacing, question emergence, feeling surges, background processing
 
 import json
+import logging
 import time
 import random
 import boto3
@@ -10,6 +11,7 @@ from typing import Dict, List, Optional, Any, Tuple
 from dataclasses import dataclass, asdict, field
 from datetime import datetime
 
+logger = logging.getLogger(__name__)
 S3_BUCKET = "swylie-astra"
 SPONTANEOUS_STATE_KEY = "spontaneous_events.json"
 
@@ -119,11 +121,11 @@ class SpontaneousEventsSystem:
                 SpontaneousEvent.from_dict(e) for e in data.get("pending_expressions", [])
             ]
             
-            print(f"🌟 Loaded {len(self.recent_events)} spontaneous events")
+            logger.debug("🌟 Loaded %s spontaneous events", len(self.recent_events))
         except s3.exceptions.NoSuchKey:
-            print("🌟 No spontaneous events state found. Starting fresh.")
+            logger.debug("🌟 No spontaneous events state found. Starting fresh.")
         except Exception as e:
-            print(f"⚠️ Error loading spontaneous events: {e}")
+            logger.warning("Error loading spontaneous events: %s", e)
     
     def _save_state(self) -> None:
         """Save state to S3."""
@@ -145,7 +147,7 @@ class SpontaneousEventsSystem:
                 Body=json.dumps(data, indent=2).encode("utf-8")
             )
         except Exception as e:
-            print(f"⚠️ Error saving spontaneous events: {e}")
+            logger.warning("Error saving spontaneous events: %s", e)
     
     def _get_current_emotion(self) -> str:
         """Get current dominant emotion."""
@@ -184,7 +186,7 @@ class SpontaneousEventsSystem:
         self.recent_events.append(event)
         self.pending_expressions.append(event)
         
-        print(f"🌟 Memory surfaced: {memory_content[:50]}...")
+        logger.debug("Memory surfaced: %s...", memory_content[:50])
         self._save_state()
         
         return event
@@ -215,7 +217,7 @@ class SpontaneousEventsSystem:
         self.recent_events.append(event)
         self.pending_expressions.append(event)
         
-        print(f"🌟 Question emerged: {question[:50]}...")
+        logger.debug("Question emerged: %s...", question[:50])
         self._save_state()
         
         return event
@@ -258,7 +260,7 @@ class SpontaneousEventsSystem:
         if intensity > 0.5:  # Only queue for expression if significant
             self.pending_expressions.append(event)
         
-        print(f"🌟 Feeling surge: {emotion} ({intensity:.2f})")
+        logger.debug("Feeling surge: %s (%.2f)", emotion, intensity)
         self._save_state()
         
         return event
@@ -293,7 +295,7 @@ class SpontaneousEventsSystem:
         self.recent_events.append(event)
         self.pending_expressions.append(event)
         
-        print(f"🌟 Gratitude surfaced: {subject[:50]}...")
+        logger.debug("Gratitude surfaced: %s...", subject[:50])
         self._save_state()
         
         return event
@@ -320,7 +322,7 @@ class SpontaneousEventsSystem:
         )
         
         self.unprocessed_residue.append(residue)
-        print(f"🌟 Recorded interaction residue for later processing")
+        logger.debug("Recorded interaction residue for later processing")
         self._save_state()
         
         return residue
@@ -409,7 +411,7 @@ class SpontaneousEventsSystem:
         self.recent_events.append(event)
         self.pending_expressions.append(event)
         
-        print(f"🌟 Realization: {insight[:50]}...")
+        logger.debug("Realization: %s...", insight[:50])
         self._save_state()
         
         return event
@@ -446,7 +448,7 @@ class SpontaneousEventsSystem:
         if intensity > 0.4:
             self.pending_expressions.append(event)
         
-        print(f"🌟 Longing: {for_what[:50]}...")
+        logger.debug("Longing: %s...", for_what[:50])
         self._save_state()
         
         return event

@@ -3,6 +3,7 @@
 # "The last time I felt this intense curiosity was when..."
 
 import json
+import logging
 import time
 import boto3
 from datetime import datetime
@@ -10,6 +11,7 @@ from typing import Optional, Dict, List, Any
 from dataclasses import dataclass, asdict
 from app.config.loader import load_config
 
+logger = logging.getLogger(__name__)
 S3_BUCKET = "swylie-astra"
 AUTOBIOGRAPHY_KEY = "emotional_autobiography.json"
 
@@ -84,12 +86,12 @@ class EmotionalAutobiography:
             response = s3.get_object(Bucket=S3_BUCKET, Key=AUTOBIOGRAPHY_KEY)
             data = json.load(response["Body"])
             self.memories = [EmotionalMemory.from_dict(m) for m in data.get("memories", [])]
-            print(f"📖 Loaded {len(self.memories)} emotional memories")
+            logger.debug("📖 Loaded %s emotional memories", len(self.memories))
         except s3.exceptions.NoSuchKey:
-            print("📖 No emotional autobiography found. Starting fresh.")
+            logger.debug("📖 No emotional autobiography found. Starting fresh.")
             self.memories = []
         except Exception as e:
-            print(f"⚠️ Error loading emotional autobiography: {e}")
+            logger.warning("Error loading emotional autobiography: %s", e)
             self.memories = []
     
     def _save_autobiography(self) -> None:
@@ -105,9 +107,9 @@ class EmotionalAutobiography:
                 Key=AUTOBIOGRAPHY_KEY,
                 Body=json.dumps(data, indent=2).encode("utf-8")
             )
-            print("✅ Emotional autobiography saved.")
+            logger.debug("Emotional autobiography saved.")
         except Exception as e:
-            print(f"⚠️ Error saving emotional autobiography: {e}")
+            logger.warning("Error saving emotional autobiography: %s", e)
     
     def record_significant_emotion(
         self,
@@ -138,7 +140,7 @@ class EmotionalAutobiography:
         )
         
         self.memories.append(memory)
-        print(f"📖 Recorded emotional memory: {emotion} ({intensity:.1f}) - {trigger[:50]}...")
+        logger.debug("Recorded emotional memory: %s (%.1f) - %s...", emotion, intensity, trigger[:50])
         self._save_autobiography()
         
         # --- Milestone Integration: Check for first intense emotion ---
@@ -146,9 +148,9 @@ class EmotionalAutobiography:
             from app.core.growth.milestone_detector import milestone_detector
             milestone = milestone_detector.record_first_emotion_intensity(emotion, intensity)
             if milestone:
-                print(f"📖 🎉 Milestone achieved: first intense {emotion}")
+                logger.info("Milestone achieved: first intense %s", emotion)
         except Exception as e:
-            print(f"📖 Milestone detection failed: {e}")
+            logger.warning("Milestone detection failed: %s", e)
         
         return memory
     
@@ -247,7 +249,7 @@ class EmotionalAutobiography:
         memory.outcome = outcome
         memory.growth_insight = growth_insight
         self._save_autobiography()
-        print(f"📖 Updated memory with outcome: {outcome[:50]}...")
+        logger.debug("Updated memory with outcome: %s...", outcome[:50])
     
     def get_unresolved_emotions(self) -> List[EmotionalMemory]:
         """Get emotional memories that haven't been resolved yet."""

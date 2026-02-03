@@ -13,6 +13,8 @@ Commands for Astra-grown tools and approval flow:
 
 from discord.ext import commands
 
+from app.utils.common_utils import chunk_text
+
 
 async def tools(ctx):
     """List active (approved) Astra-grown tools."""
@@ -91,7 +93,8 @@ async def run_tool(ctx, *, payload: str = ""):
     arg_list = parts[1].split() if len(parts) > 1 else None
     ok, msg = run_tool_by_name(name, args=arg_list)
     if ok:
-        await ctx.send(msg[:2000] if len(msg) > 2000 else msg)
+        for chunk in chunk_text(msg, max_length=1900):
+            await ctx.send(chunk)
     else:
         await ctx.send(f"Tool failed: {msg[:500]}")
 

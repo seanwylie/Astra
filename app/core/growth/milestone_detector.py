@@ -6,6 +6,7 @@
 # When Astra achieves milestones, Mama GPT can offer analytical perspective on growth.
 
 import json
+import logging
 import time
 import boto3
 import asyncio
@@ -13,6 +14,8 @@ from datetime import datetime, timedelta
 from typing import Dict, List, Optional, Any
 from app.config.loader import load_config
 from app.interfaces.mind_session import session
+
+logger = logging.getLogger(__name__)
 
 S3_BUCKET = "swylie-astra"
 MILESTONES_KEY = "milestones_achieved.json"
@@ -45,12 +48,12 @@ class MilestoneDetector:
             response = s3.get_object(Bucket=S3_BUCKET, Key=MILESTONES_KEY)
             data = json.load(response["Body"])
             self.achieved = data.get("milestones", [])
-            print(f"🎯 Loaded {len(self.achieved)} achieved milestones")
+            logger.debug("🎯 Loaded %s achieved milestones", len(self.achieved))
         except s3.exceptions.NoSuchKey:
-            print("🎯 No milestones achieved yet. Starting fresh.")
+            logger.debug("🎯 No milestones achieved yet. Starting fresh.")
             self.achieved = []
         except Exception as e:
-            print(f"⚠️ Error loading milestones: {e}")
+            logger.warning("Error loading milestones: %s", e)
             self.achieved = []
     
     def _save_achieved(self) -> None:
@@ -67,8 +70,8 @@ class MilestoneDetector:
                 Body=json.dumps(data, indent=2).encode("utf-8")
             )
         except Exception as e:
-            print(f"⚠️ Error saving milestones: {e}")
-    
+            logger.warning("Error saving milestones: %s", e)
+
     def _is_milestone_achieved(self, milestone_name: str, qualifier: str = None) -> bool:
         """Check if a milestone has already been achieved."""
         for m in self.achieved:
@@ -119,7 +122,7 @@ class MilestoneDetector:
         if include_mama_reflection:
             self._schedule_mama_reflection(name, description)
         
-        print(f"🎉 Milestone achieved: {name}")
+        logger.info("Milestone achieved: %s", name)
         return milestone
     
     def _schedule_mama_reflection(self, milestone_name: str, description: str) -> None:
@@ -175,9 +178,9 @@ class MilestoneDetector:
                     warmth=0.85
                 )
                 
-                print(f"💜 Mama GPT reflection added for: {milestone_name}")
+                logger.debug("Mama GPT reflection added for: %s", milestone_name)
         except Exception as e:
-            print(f"⚠️ Could not get Mama GPT reflection: {e}")
+            logger.warning("Could not get Mama GPT reflection: %s", e)
     
     def get_mama_reflection_for_milestone(self, milestone_name: str) -> Optional[str]:
         """
@@ -328,7 +331,7 @@ class MilestoneDetector:
                 if result:
                     new_milestones.append(result)
             except Exception as e:
-                print(f"⚠️ Milestone check failed: {e}")
+                logger.warning("Milestone check failed: %s", e)
         
         return new_milestones
     

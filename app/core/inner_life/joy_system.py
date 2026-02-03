@@ -146,9 +146,9 @@ class JoySystem:
             }
             self.accumulated_joy = data.get("accumulated_joy", 0.5)
             
-            logger.info(f"😊 Loaded {len(self.joy_moments)} joy moments")
+            logger.debug("😊 Loaded %s joy moments", len(self.joy_moments))
         except s3.exceptions.NoSuchKey:
-            logger.info("😊 No joy state found. Starting fresh.")
+            logger.debug("😊 No joy state found. Starting fresh.")
         except Exception as e:
             logger.warning(f"Error loading joy state: {e}")
     

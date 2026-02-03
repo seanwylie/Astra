@@ -222,9 +222,9 @@ class FeltSenseSystem:
             ]
             self.interpretation_history = data.get("interpretation_history", [])
             
-            logger.info(f"🫀 Loaded felt sense state")
+            logger.debug("🫀 Loaded felt sense state")
         except s3.exceptions.NoSuchKey:
-            logger.info("🫀 No felt sense state found. Initializing.")
+            logger.debug("🫀 No felt sense state found. Initializing.")
             self._initialize_baseline()
         except Exception as e:
             logger.warning(f"Error loading felt sense: {e}")

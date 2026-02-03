@@ -115,7 +115,7 @@ class ValueCrystallization:
         self.crystallized_values: Dict[str, CrystallizedValue] = {}
         self.value_conflicts: List[ValueConflict] = []
         self._load_state()
-        logger.info("💎 Value Crystallization initialized - values emerging from behavior")
+        logger.debug("💎 Value Crystallization initialized - values emerging from behavior")
     
     def _load_state(self) -> None:
         """Load value crystallization state from S3."""
@@ -137,7 +137,7 @@ class ValueCrystallization:
             
             logger.debug(f"💎 Loaded {len(self.crystallized_values)} crystallized values")
         except s3.exceptions.NoSuchKey:
-            logger.info("💎 No value crystallization state found. Starting fresh.")
+            logger.debug("💎 No value crystallization state found. Starting fresh.")
         except Exception as e:
             logger.warning(f"💎 Error loading value crystallization state: {e}")
     

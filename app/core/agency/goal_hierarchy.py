@@ -81,7 +81,7 @@ class GoalHierarchy:
     def __init__(self):
         self.goals: Dict[str, Goal] = {}
         self._load_goals()
-        logger.info("🎯 Goal Hierarchy initialized - decomposing intentions into action")
+        logger.debug("🎯 Goal Hierarchy initialized - decomposing intentions into action")
     
     def _load_goals(self) -> None:
         """Load goals from S3."""
@@ -94,9 +94,9 @@ class GoalHierarchy:
                 for gid, gdata in data.get("goals", {}).items()
             }
             
-            logger.info(f"🎯 Loaded {len(self.goals)} goals")
+            logger.debug("🎯 Loaded %s goals", len(self.goals))
         except s3.exceptions.NoSuchKey:
-            logger.info("🎯 No goals found. Ready for goal setting.")
+            logger.debug("🎯 No goals found. Ready for goal setting.")
         except Exception as e:
             logger.warning(f"🎯 Error loading goals: {e}")
     

@@ -87,7 +87,7 @@ class PreferenceSystem:
         self.stable_preferences: Dict[str, List[StablePreference]] = defaultdict(list)
         self.choice_memory: List[Dict[str, Any]] = []  # Choices made and their outcomes
         self._load_preferences()
-        logger.info("💜 Preference System initialized - developing taste")
+        logger.debug("💜 Preference System initialized - developing taste")
     
     def _load_preferences(self) -> None:
         """Load preferences from S3."""
@@ -106,9 +106,9 @@ class PreferenceSystem:
             
             self.choice_memory = data.get("choices", [])
             
-            logger.info(f"💜 Loaded {len(self.preference_history)} preference points, {sum(len(v) for v in self.stable_preferences.values())} stable preferences")
+            logger.debug("💜 Loaded %s preference points, %s stable preferences", len(self.preference_history), sum(len(v) for v in self.stable_preferences.values()))
         except s3.exceptions.NoSuchKey:
-            logger.info("💜 No preferences found. Ready to develop taste.")
+            logger.debug("💜 No preferences found. Ready to develop taste.")
         except Exception as e:
             logger.warning(f"💜 Error loading preferences: {e}")
     

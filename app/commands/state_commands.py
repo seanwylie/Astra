@@ -17,6 +17,7 @@ Created: 2025-04-14
 """
 
 from app.services import state_service
+from app.utils.common_utils import chunk_text
 
 
 async def dinner_summary(ctx):
@@ -243,7 +244,8 @@ async def mind(ctx):
             f"{symphony_line}"
             f"{intentions_line}"
         )
-        await ctx.send(summary[:2000])
+        for chunk in chunk_text(summary, max_length=1900):
+            await ctx.send(chunk)
     except Exception as e:
         await ctx.send(f"⚠️ Could not load state: {e}")
 
@@ -356,8 +358,9 @@ async def inner_life(ctx):
             lines.append(f"  Learning desires unavailable: {e}")
         
         response = "\n".join(lines)
-        await ctx.send(response[:2000])
-        
+        for chunk in chunk_text(response, max_length=1900):
+            await ctx.send(chunk)
+
     except Exception as e:
         await ctx.send(f"⚠️ Could not load inner life state: {e}")
 
@@ -370,7 +373,8 @@ async def goals(ctx):
     try:
         from app.core.goals.goal_system import goal_system
         display = goal_system.format_goals_for_display()
-        await ctx.send(display[:2000])
+        for chunk in chunk_text(display, max_length=1900):
+            await ctx.send(chunk)
     except Exception as e:
         await ctx.send(f"⚠️ Could not load goals: {e}")
 
@@ -383,7 +387,8 @@ async def modification_requests(ctx):
     try:
         from app.core.proactive.self_modification import self_modification_request
         display = self_modification_request.format_pending_for_display()
-        await ctx.send(display[:2000])
+        for chunk in chunk_text(display, max_length=1900):
+            await ctx.send(chunk)
     except Exception as e:
         await ctx.send(f"⚠️ Could not load modification requests: {e}")
 
@@ -553,8 +558,9 @@ async def coherence(ctx):
             lines.append(f"  Assessment failed: {e}")
         
         response = "\n".join(lines)
-        await ctx.send(response[:2000])
-        
+        for chunk in chunk_text(response, max_length=1900):
+            await ctx.send(chunk)
+
     except Exception as e:
         await ctx.send(f"⚠️ Could not generate coherence report: {e}")
 

@@ -3,11 +3,14 @@
 # Astra should develop authentic likes and dislikes, not just report them
 
 import json
+import logging
 import time
 import boto3
 from typing import Dict, List, Optional, Any, Tuple
 from dataclasses import dataclass, asdict, field
 from app.config.loader import load_config
+
+logger = logging.getLogger(__name__)
 
 S3_BUCKET = "swylie-astra"
 PREFERENCES_KEY = "preferences.json"
@@ -103,11 +106,11 @@ class PreferenceSystem:
                 for k, v in data.get("preferences", {}).items()
             }
             self.opinions = [Opinion.from_dict(o) for o in data.get("opinions", [])]
-            print(f"💭 Loaded {len(self.preferences)} preference subjects and {len(self.opinions)} opinions")
+            logger.debug("Loaded %s preference subjects and %s opinions", len(self.preferences), len(self.opinions))
         except s3.exceptions.NoSuchKey:
-            print("💭 No preferences found. Starting fresh.")
+            logger.debug("No preferences found. Starting fresh.")
         except Exception as e:
-            print(f"⚠️ Error loading preferences: {e}")
+            logger.warning("Error loading preferences: %s", e)
     
     def _save_preferences(self) -> None:
         """Save preferences to S3."""
@@ -123,8 +126,8 @@ class PreferenceSystem:
                 Body=json.dumps(data, indent=2).encode("utf-8")
             )
         except Exception as e:
-            print(f"⚠️ Error saving preferences: {e}")
-    
+            logger.warning("Error saving preferences: %s", e)
+
     def record_encounter(
         self,
         subject: str,

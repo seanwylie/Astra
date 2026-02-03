@@ -45,7 +45,7 @@ class InitiativeEngine:
     # Minimum time between initiatives of the same type (seconds)
     # Phase 6: Reduced cooldowns for more proactive behavior
     COOLDOWNS = {
-        "pending_insight": 1800,      # 30 min (was 1 hour)
+        "pending_insight": 3600,      # 1 hour (avoid repeating same teaser every 30 min)
         "nostalgia": 43200,           # 12 hours (was 1 day)
         "growth_milestone": 21600,    # 6 hours (was 12 hours)
         "unresolved_emotion": 3600,   # 1 hour (was 2 hours)
@@ -112,12 +112,29 @@ class InitiativeEngine:
             insights = stream_of_consciousness.get_pending_insights()
             
             if len(insights) >= 3:
+                sample = (insights[0] or "").strip()
+                # Don't use raw knowledge/definition text as teaser (📄 Topic: definition...)
+                if "📄" in sample or "📖" in sample or ("also referred to" in sample and len(sample) > 80):
+                    topic = sample.lstrip("📄📖 \n*").split(":", 1)[0].strip().strip("*") if ":" in sample else None
+                    teaser = f"something I learned about {topic}" if topic else "something I learned"
+                else:
+                    # Short teaser, max ~60 chars, no mid-word truncation
+                    teaser = (
+                        sample[:57].rsplit(" ", 1)[0] + "…"
+                        if len(sample) > 60
+                        else (sample if sample else None)
+                    )
+                if teaser:
+                    message = f"I've been thinking about a few things… like how {teaser}"
+                else:
+                    message = "I've been thinking about a few things and have some insights I'd like to share..."
                 return {
                     "trigger_type": "pending_insight",
-                    "message": "I've been thinking about a few things and have some insights I'd like to share...",
+                    "message": message,
                     "context": {
                         "insight_count": len(insights),
-                        "sample_insight": insights[0] if insights else None
+                        "sample_insight": insights[0] if insights else None,
+                        "insights_to_mark_shared": insights.copy(),
                     }
                 }
         except Exception as e:
@@ -463,6 +480,16 @@ class InitiativeEngine:
             self._initiative_log.append(record)
             self._last_initiatives[trigger_type] = time.time()
             self._save_log()
+            
+            # So we don't re-send the same "pending insight" every cooldown: mark as shared
+            if trigger_type == "pending_insight":
+                to_mark = context.get("insights_to_mark_shared", [])
+                try:
+                    from app.core.inner_life.stream_of_consciousness import stream_of_consciousness
+                    for insight in to_mark:
+                        stream_of_consciousness.mark_insight_shared(insight)
+                except Exception as e:
+                    logger.debug(f"Failed to mark insights shared: {e}")
             
             # Publish to awareness bus
             try:

@@ -59,7 +59,7 @@ class UncertaintyModel:
         self.calibration_history: List[UncertaintyCalibration] = []
         self.calibration_score: float = 0.7  # How well-calibrated Astra is
         self._load_uncertainty_model()
-        logger.info("❓ Uncertainty Model initialized - knowing what I don't know")
+        logger.debug("❓ Uncertainty Model initialized - knowing what I don't know")
     
     def _load_uncertainty_model(self) -> None:
         """Load uncertainty model from S3."""
@@ -73,9 +73,9 @@ class UncertaintyModel:
             ]
             self.calibration_score = data.get("calibration_score", 0.7)
             
-            logger.info(f"❓ Loaded uncertainty model, calibration: {self.calibration_score:.2f}")
+            logger.debug("❓ Loaded uncertainty model, calibration: %.2f", self.calibration_score)
         except s3.exceptions.NoSuchKey:
-            logger.info("❓ No uncertainty model found. Starting calibration.")
+            logger.debug("❓ No uncertainty model found. Starting calibration.")
         except Exception as e:
             logger.warning(f"❓ Error loading uncertainty model: {e}")
     

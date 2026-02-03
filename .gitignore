@@ -2,12 +2,7 @@
 nohup.out
 scripts/.spawn-agents/
 mind_file.json
-data/mind_file_parents.json
-data/astra_logs.json
-data/user_memories.json
-data/analytics_data.json
-data/learning_data.json
-data/astra_corpus.jsonl
+data/
 logs/
 .qodo
 .updatemds/

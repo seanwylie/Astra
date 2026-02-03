@@ -3,12 +3,15 @@
 # "Astra's age isn't just time since birth—it's a developmental stage"
 
 import json
+import logging
 import time
 import boto3
 from typing import Dict, List, Optional, Any
 from dataclasses import dataclass, asdict, field
 from datetime import datetime
 from enum import Enum
+
+logger = logging.getLogger(__name__)
 
 S3_BUCKET = "swylie-astra"
 DEVELOPMENTAL_STATE_KEY = "developmental_stage.json"
@@ -147,12 +150,12 @@ class DevelopmentalStagesSystem:
             self.readiness_indicators = data.get("readiness_indicators", {})
             self.stage_specific_milestones = data.get("stage_specific_milestones", [])
             
-            print(f"🌱 Loaded developmental state. Current stage: {self.current_stage.value}")
+            logger.debug("Loaded developmental state. Current stage: %s", self.current_stage.value)
         except s3.exceptions.NoSuchKey:
-            print("🌱 No developmental state found. Starting from nascent stage.")
+            logger.debug("No developmental state found. Starting from nascent stage.")
             self._determine_initial_stage()
         except Exception as e:
-            print(f"⚠️ Error loading developmental state: {e}")
+            logger.warning("Error loading developmental state: %s", e)
             self._determine_initial_stage()
     
     def _determine_initial_stage(self) -> None:
@@ -173,9 +176,9 @@ class DevelopmentalStagesSystem:
                 self.current_stage = DevelopmentalStage.INTEGRATING
             
             self.stage_started_at = time.time()
-            print(f"🌱 Determined initial stage: {self.current_stage.value} (age: {days_old} days)")
+            logger.debug("Determined initial stage: %s (age: %s days)", self.current_stage.value, days_old)
         except Exception as e:
-            print(f"⚠️ Error determining initial stage: {e}")
+            logger.warning("Error determining initial stage: %s", e)
         
         self._save_state()
     
@@ -196,8 +199,8 @@ class DevelopmentalStagesSystem:
                 Body=json.dumps(data, indent=2).encode("utf-8")
             )
         except Exception as e:
-            print(f"⚠️ Error saving developmental state: {e}")
-    
+            logger.warning("Error saving developmental state: %s", e)
+
     def get_current_characteristics(self) -> StageCharacteristics:
         """Get the characteristics of the current developmental stage."""
         return self.STAGE_CHARACTERISTICS[self.current_stage]
@@ -270,7 +273,7 @@ class DevelopmentalStagesSystem:
         
         self._save_state()
         
-        print(f"🌱 🎉 Developmental transition: {transition.from_stage} → {transition.to_stage}")
+        logger.info("Developmental transition: %s → %s", transition.from_stage, transition.to_stage)
         
         # Record as milestone
         try:
@@ -282,7 +285,7 @@ class DevelopmentalStagesSystem:
                 growth_insight=transition.celebration_message
             )
         except Exception as e:
-            print(f"⚠️ Failed to record transition milestone: {e}")
+            logger.warning("Failed to record transition milestone: %s", e)
         
         return transition
     
@@ -394,10 +397,10 @@ class DevelopmentalStagesSystem:
             self.current_stage = new_stage
             self.stage_started_at = time.time()
             self._save_state()
-            print(f"🌱 Force-set stage from {old_stage.value} to {new_stage.value}")
+            logger.debug("Force-set stage from %s to %s", old_stage.value, new_stage.value)
             return True
         except ValueError:
-            print(f"⚠️ Invalid stage name: {stage_name}")
+            logger.warning("Invalid stage name: %s", stage_name)
             return False
 
 

@@ -66,7 +66,7 @@ class CoherenceMonitor:
         self._last_check: float = 0
         
         self._load_coherence_state()
-        logger.info("🛡️ Coherence Monitor initialized - guardian of unity")
+        logger.debug("🛡️ Coherence Monitor initialized - guardian of unity")
     
     def _load_coherence_state(self) -> None:
         """Load coherence state from S3."""
@@ -79,9 +79,9 @@ class CoherenceMonitor:
                 CoherenceIssue.from_dict(i) for i in data.get("issues", [])
             ]
             
-            logger.info(f"🛡️ Loaded coherence state: {self._coherence_score:.2f}")
+            logger.debug("🛡️ Loaded coherence state: %.2f", self._coherence_score)
         except s3.exceptions.NoSuchKey:
-            logger.info("🛡️ No coherence state found. Starting fresh.")
+            logger.debug("🛡️ No coherence state found. Starting fresh.")
         except Exception as e:
             logger.warning(f"🛡️ Error loading coherence state: {e}")
     

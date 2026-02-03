@@ -177,9 +177,9 @@ class AuthenticVoiceSystem:
                 DisagreementRecord.from_dict(d) for d in data.get("disagreement_history", [])
             ]
             
-            logger.info(f"🗣️ Loaded {len(self.perspectives)} authentic perspectives")
+            logger.debug("🗣️ Loaded %s authentic perspectives", len(self.perspectives))
         except s3.exceptions.NoSuchKey:
-            logger.info("🗣️ No authentic voice state found. Initializing.")
+            logger.debug("🗣️ No authentic voice state found. Initializing.")
             self._initialize_perspectives()
         except Exception as e:
             logger.warning(f"Error loading authentic voice: {e}")

@@ -1,7 +1,10 @@
-from app.config.loader import load_config, debug_log
+import logging
 import random
+from app.config.loader import load_config, debug_log
 from app.core.questions.question_utils import generate_category_embeddings, categorize_question
 from app.interfaces.mind_session import session
+
+logger = logging.getLogger(__name__)
 
 # Load configuration files
 general_config = load_config("general_config")
@@ -20,7 +23,7 @@ def generate_questions(reflection: str, mind_data: dict) -> tuple:
 
     unresolved_limit = 1000
     if len(unresolved_questions) >= unresolved_limit:
-        print(f"⚠ WARNING: Too many unresolved questions ({len(unresolved_questions)}). Skipping new question generation.")
+        logger.warning("Too many unresolved questions (%s). Skipping new question generation.", len(unresolved_questions))
         return {}, {}
 
     question_categories = question_config.get("question_categories", ["general", "scientific", "philosophical"])
@@ -68,7 +71,7 @@ def generate_questions(reflection: str, mind_data: dict) -> tuple:
         unresolved_followup = f"What new insights could help resolve this? {unresolved_question}"
         generated_questions.add(unresolved_followup)
 
-    print(f"🔍 Debug: Generated unique questions: {list(generated_questions)}")
+    logger.debug("Generated unique questions: %s", list(generated_questions))
 
     # Step 5: Categorize Questions
     categorized_questions = []
@@ -79,10 +82,10 @@ def generate_questions(reflection: str, mind_data: dict) -> tuple:
                 categorized_questions.append({"question": question.strip(), "category": category[0]["category"]})
                 category_counts[category[0]["category"]] += 1
             else:
-                print(f"⚠ Warning: No category found for question: {question}")
+                logger.debug("No category found for question: %s", question)
 
-    print(f"🔍 Debug: Categorized questions: {categorized_questions}")
-    print(f"🔍 Debug: Question category counts: {category_counts}")
+    logger.debug("Categorized questions: %s", categorized_questions)
+    logger.debug("Question category counts: %s", category_counts)
 
     # Step 6: Store & Format
     if categorized_questions:
@@ -90,7 +93,7 @@ def generate_questions(reflection: str, mind_data: dict) -> tuple:
 
     # Step 7: Limit Question Overload
     if len(mind_data["self_questions"]) > unresolved_limit:
-        print(f"⚠ WARNING: Too many unresolved questions ({len(mind_data['self_questions'])}). Trimming to {unresolved_limit}.")
+        logger.warning("Too many unresolved questions (%s). Trimming to %s.", len(mind_data["self_questions"]), unresolved_limit)
         mind_data["self_questions"] = mind_data["self_questions"][-unresolved_limit:]
 
     return {"general": mind_data["self_questions"]}, category_counts

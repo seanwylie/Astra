@@ -1,9 +1,13 @@
 import time
+import logging
 from app.core.emotions.emotion_state_manager import (
     load_emotion_state,
     save_emotion_state
 )
 from app.config.loader import load_config
+
+logger = logging.getLogger(__name__)
+
 
 def get_emotion_config():
     return load_config("emotion_config")
@@ -71,7 +75,7 @@ def trigger_emotion(emotion_name, trigger_event):
     emotions = config.get("emotions", {})
 
     if emotion_name not in emotions:
-        print(f"⚠️ Unknown emotion: {emotion_name}")
+        logger.warning("Unknown emotion: %s", emotion_name)
         return
 
     emotion = emotions[emotion_name]
@@ -97,7 +101,7 @@ def trigger_emotion(emotion_name, trigger_event):
         # Plan: emotion relationships — propagate small delta to related emotions
         _apply_relationship_propagation(emotion_state, emotion_name, config)
 
-        print(f"[emotion_engine] 🔁 Triggered '{emotion_name}' via '{trigger_event}' ({change:+}). New intensity: {new_intensity:.2f}")
+        logger.debug("Triggered '%s' via '%s' (%+g). New intensity: %.2f", emotion_name, trigger_event, change, new_intensity)
         save_emotion_state(emotion_state)
         
         # Track peak intensities for afterglow/echo (Priority 4.2)
@@ -117,7 +121,7 @@ def trigger_emotion(emotion_name, trigger_event):
             pass  # Awareness bus may not be available yet
 
     else:
-        print(f"[emotion_engine] ⚠️ No trigger mapping for '{trigger_event}' in emotion '{emotion_name}'")
+        logger.debug("No trigger mapping for '%s' in emotion '%s'", trigger_event, emotion_name)
 
 
 # Hours per "decay tick" for time-based decay (plan: time-based decay using last_updated)
@@ -152,7 +156,7 @@ def decay_all_emotions():
         }
 
         if elapsed_hours > 0.01:
-            print(f"[emotion_engine] 🧪 Decayed '{name}' ({elapsed_hours:.2f}h): {current:.2f} ➞ {decayed:.2f}")
+            logger.debug("Decayed '%s' (%.2fh): %.2f ➞ %.2f", name, elapsed_hours, current, decayed)
 
     save_emotion_state(emotion_state)
 

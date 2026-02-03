@@ -80,7 +80,7 @@ class CommitmentTracker:
         self.commitments: Dict[str, Commitment] = {}
         self.integrity_score: float = 1.0  # Starts perfect
         self._load_commitments()
-        logger.info("🤝 Commitment Tracker initialized - integrity matters")
+        logger.debug("🤝 Commitment Tracker initialized - integrity matters")
     
     def _load_commitments(self) -> None:
         """Load commitments from S3."""
@@ -94,9 +94,9 @@ class CommitmentTracker:
             }
             self.integrity_score = data.get("integrity_score", 1.0)
             
-            logger.info(f"🤝 Loaded {len(self.commitments)} commitments, integrity: {self.integrity_score:.2f}")
+            logger.debug("🤝 Loaded %s commitments, integrity: %.2f", len(self.commitments), self.integrity_score)
         except s3.exceptions.NoSuchKey:
-            logger.info("🤝 No commitments found. Clean slate.")
+            logger.debug("🤝 No commitments found. Clean slate.")
         except Exception as e:
             logger.warning(f"🤝 Error loading commitments: {e}")
     

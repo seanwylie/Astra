@@ -4,12 +4,14 @@ from app.core.questions.question_utils import filter_questions, categorize_quest
 from app.core.questions.question_flagger import flag_unresolved_question
 from app.core.questions.question_answerer import self_answer_questions
 from app.core.questions.question_tracker import track_question_patterns
+from app.logging_config import get_logger
 from fuzzywuzzy import fuzz  # ✅ Added for fuzzy matching
 
 # Load configuration files
 general_config = load_config("general_config")
 config_soul = load_config("config_soul")  # Load deeper soul-based questioning parameters
 question_config = load_config("question_config")
+logger = get_logger("questions.manager")
 
 
 def deduplicate_questions(questions, threshold=65):  # 🔥 Lower threshold from 85 to 70
@@ -43,9 +45,9 @@ def manage_questions(reflection, mind_data):
     new_questions = [{"question": q} for q in raw_questions.get("general", [])]
 
     if not new_questions:
-        print("⚠ No new questions were generated!")
+        logger.debug("⚠ No new questions were generated!")
     else:
-        print(f"✅ Adding {len(new_questions)} new questions to self_questions.")
+        logger.debug("✅ Adding %s new questions to self_questions.", len(new_questions))
 
     # 🔥 Fix: Ensure new questions persist
     if "self_questions" not in mind_data or not isinstance(mind_data["self_questions"], list):
@@ -73,7 +75,7 @@ def manage_questions(reflection, mind_data):
     track_question_patterns(mind_data)
 
     # 🔥 Fix: Debug check before final save
-    print(f"✅ Final check before saving: {len(mind_data['self_questions'])} questions stored.")
+    logger.debug("✅ Final check before saving: %s questions stored.", len(mind_data["self_questions"]))
 
     return flagged_questions
 

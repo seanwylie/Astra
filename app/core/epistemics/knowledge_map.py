@@ -74,7 +74,7 @@ class KnowledgeMap:
         self.domains: Dict[str, KnowledgeDomain] = {}
         self.items: Dict[str, KnowledgeItem] = {}
         self._load_knowledge_map()
-        logger.info("📚 Knowledge Map initialized - mapping what I know")
+        logger.debug("📚 Knowledge Map initialized - mapping what I know")
     
     def _load_knowledge_map(self) -> None:
         """Load knowledge map from S3."""
@@ -91,9 +91,9 @@ class KnowledgeMap:
                 for iid, i in data.get("items", {}).items()
             }
             
-            logger.info(f"📚 Loaded {len(self.domains)} knowledge domains, {len(self.items)} items")
+            logger.debug("📚 Loaded %s knowledge domains, %s items", len(self.domains), len(self.items))
         except s3.exceptions.NoSuchKey:
-            logger.info("📚 No knowledge map found. Establishing initial map.")
+            logger.debug("📚 No knowledge map found. Establishing initial map.")
             self._establish_initial_map()
         except Exception as e:
             logger.warning(f"📚 Error loading knowledge map: {e}")

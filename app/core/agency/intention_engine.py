@@ -82,7 +82,7 @@ class IntentionEngine:
     def __init__(self):
         self.intentions: Dict[str, Intention] = {}
         self._load_intentions()
-        logger.info("🎯 Intention Engine initialized - the will to become")
+        logger.debug("🎯 Intention Engine initialized - the will to become")
     
     def _load_intentions(self) -> None:
         """Load intentions from S3."""
@@ -95,9 +95,9 @@ class IntentionEngine:
                 for iid, idata in data.get("intentions", {}).items()
             }
             
-            logger.info(f"🎯 Loaded {len(self.intentions)} intentions")
+            logger.debug("🎯 Loaded %s intentions", len(self.intentions))
         except s3.exceptions.NoSuchKey:
-            logger.info("🎯 No intentions found. Ready for first intentions.")
+            logger.debug("🎯 No intentions found. Ready for first intentions.")
             self._seed_initial_intentions()
         except Exception as e:
             logger.warning(f"🎯 Error loading intentions: {e}")

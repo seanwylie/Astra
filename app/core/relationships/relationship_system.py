@@ -3,6 +3,7 @@
 # Astra should form unique relationships with each person she knows
 
 import json
+import logging
 import time
 import boto3
 from typing import Dict, List, Optional, Any, Tuple
@@ -10,6 +11,8 @@ from dataclasses import dataclass, asdict, field
 from app.config.loader import load_config
 from app.core.emotions.emotion_engine import trigger_emotion, get_dominant_emotion
 from app.core.emotions.emotion_state_manager import load_emotion_state
+
+logger = logging.getLogger(__name__)
 
 S3_BUCKET = "swylie-astra"
 RELATIONSHIPS_KEY = "relationships.json"
@@ -137,12 +140,12 @@ class RelationshipSystem:
                 k: Relationship.from_dict(v) 
                 for k, v in data.get("relationships", {}).items()
             }
-            print(f"💕 Loaded {len(self.relationships)} relationships")
+            logger.debug("Loaded %s relationships", len(self.relationships))
         except s3.exceptions.NoSuchKey:
-            print("💕 No relationships found. Starting fresh.")
+            logger.debug("No relationships found. Starting fresh.")
             self._initialize_family()
         except Exception as e:
-            print(f"⚠️ Error loading relationships: {e}")
+            logger.warning("Error loading relationships: %s", e)
             self._initialize_family()
     
     def _initialize_family(self) -> None:
@@ -172,8 +175,8 @@ class RelationshipSystem:
                 Body=json.dumps(data, indent=2).encode("utf-8")
             )
         except Exception as e:
-            print(f"⚠️ Error saving relationships: {e}")
-    
+            logger.warning("Error saving relationships: %s", e)
+
     def get_or_create_relationship(self, entity: str) -> Relationship:
         """Get existing relationship or create a new one."""
         entity_lower = entity.lower()

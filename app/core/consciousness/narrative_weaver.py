@@ -98,7 +98,7 @@ class NarrativeWeaver:
         self.core_narrative: str = ""  # The overall story
         
         self._load_narrative()
-        logger.info("📖 Narrative Weaver initialized - the story continues")
+        logger.debug("📖 Narrative Weaver initialized - the story continues")
     
     def _load_narrative(self) -> None:
         """Load narrative state from S3."""
@@ -112,9 +112,9 @@ class NarrativeWeaver:
             self.themes = data.get("themes", {})
             self.core_narrative = data.get("core_narrative", "")
             
-            logger.info(f"📖 Loaded narrative with {len(self.landmarks)} landmarks, {len(self.character_arcs)} arcs")
+            logger.debug("📖 Loaded narrative with %s landmarks, %s arcs", len(self.landmarks), len(self.character_arcs))
         except s3.exceptions.NoSuchKey:
-            logger.info("📖 No existing narrative. Beginning the story.")
+            logger.debug("📖 No existing narrative. Beginning the story.")
             self._initialize_narrative()
         except Exception as e:
             logger.warning(f"📖 Error loading narrative: {e}")

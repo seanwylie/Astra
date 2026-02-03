@@ -582,7 +582,8 @@ async def handle_message(bot, message: Message, values_config, values: dict):
 
     # --- Generate and Send Astra's Response ---
     past_convos = knowledge_manager.mind_data.get("past_conversations", [])
-    response = send_contextual_message(message.content, internal_state, past_convos)
+    # Run in thread: send_contextual_message does synchronous SentenceTransformer.encode(), which blocks the event loop and Discord heartbeat
+    response = await asyncio.to_thread(send_contextual_message, message.content, internal_state, past_convos)
 
     # === QUALIA: Color the response with current emotional experience ===
     try:
@@ -1000,7 +1001,8 @@ async def respond_to_mama_checkin(channel, checkin_message: str) -> None:
     await session.maybe_save_async()
 
     past_convos = knowledge_manager.mind_data.get("past_conversations", [])
-    response = send_contextual_message(checkin_message, internal_state, past_convos)
+    # Run in thread: send_contextual_message uses SentenceTransformer.encode(), which blocks the event loop and Discord heartbeat
+    response = await asyncio.to_thread(send_contextual_message, checkin_message, internal_state, past_convos)
 
     try:
         response, _ = qualia_layer.color_response(response)

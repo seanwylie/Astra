@@ -9,3 +9,12 @@ def now():
 
 def iso_now():
     return now().isoformat()
+
+
+def temporal_constraint_line():
+    """
+    Low-salience instrumental time for coordination. Not identity—constraint surface only.
+    Astra is not defined by the clock; she is given access to time so she does not contradict reality when time matters.
+    """
+    dt = now()
+    return f"Current date: {dt.strftime('%Y-%m-%d')} (available for reference if needed)"

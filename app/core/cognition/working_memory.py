@@ -88,7 +88,7 @@ class WorkingMemory:
         self.last_conversation_id: Optional[str] = None
         self.last_updated: float = 0
         self._load_state()
-        logger.info("🧠 Working Memory initialized - maintaining reasoning state")
+        logger.debug("🧠 Working Memory initialized - maintaining reasoning state")
     
     def _load_state(self) -> None:
         """Load working memory state from S3."""
@@ -112,7 +112,7 @@ class WorkingMemory:
             
             logger.debug(f"🧠 Loaded working memory: {len(self.hypotheses)} hypotheses, {len(self.pending_questions)} questions")
         except s3.exceptions.NoSuchKey:
-            logger.info("🧠 No working memory found. Starting fresh.")
+            logger.debug("🧠 No working memory found. Starting fresh.")
         except Exception as e:
             logger.warning(f"🧠 Error loading working memory: {e}")
     

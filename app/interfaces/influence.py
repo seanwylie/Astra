@@ -7,6 +7,7 @@ import wikipedia
 import os
 from app.config.loader import load_config
 from fuzzywuzzy import fuzz
+from app.logging_config import get_logger
 
 
 # ✅ Load general configurations
@@ -18,56 +19,62 @@ MIND_FILE_ORIG = general_config.get("structured_mind_file", "mind_file_parents.j
 # Legacy sync client
 s3 = boto3.client("s3")
 
+logger = get_logger("interfaces.influence")
+
 
 # === NEW: Async Mind Load ===
 async def load_mind_async():
     """Asynchronously load the mind file from S3."""
-    print("🔍 [async] Loading mind file from S3...")
+    logger.debug("🔍 [async] Loading mind file from S3...")
     async with aioboto3.client("s3") as s3_async:
         response = await s3_async.get_object(Bucket=S3_BUCKET_NAME, Key=MIND_FILE_JSON)
         body = await response["Body"].read()
         mind_data = json.loads(body)
-        print(f"📝 [async] Post-Load Knowledge Count: {len(mind_data.get('stored_knowledge', []))}")
+        logger.debug("📝 [async] Post-Load Knowledge Count: %s", len(mind_data.get("stored_knowledge", [])))
         return mind_data
 
 
 # === NEW: Async Save ===
 async def save_mind_async(data):
     """Asynchronously save the mind file to S3."""
-    print(f"💾 [async] Saving mind to S3. Reflections: {len(data['self_reflections'])}")
+    logger.debug("💾 [async] Saving mind to S3. Reflections: %s", len(data.get("self_reflections", [])))
     async with aioboto3.client("s3") as s3_async:
         payload = json.dumps(data, ensure_ascii=False).encode("utf-8")
         await s3_async.put_object(Bucket=S3_BUCKET_NAME, Key=MIND_FILE_JSON, Body=payload)
-    print("✅ [async] Mind saved to S3.")
+    logger.debug("✅ [async] Mind saved to S3.")
 
 
 def save_to_s3(mind_data):
     """Save mind file to S3 using proper encoding and error handling."""
     try:
-        print(f"📝 [DEBUG] Pre-Save Knowledge Count: {len(mind_data['stored_knowledge'])}")
-        local_mind_file = "/home/ubuntu/astra_reflections/mind_file.json"
+        logger.debug("📝 [save_to_s3] Pre-Save Knowledge Count: %s", len(mind_data.get("stored_knowledge", [])))
+        local_mind_file = "/home/sean/dev/systems/Astra/mind_file.json"
         if os.path.exists(local_mind_file):
-            print("⚠ Deleting local mind_file.json to prevent accidental overwrites.")
+            logger.debug("⚠ Deleting local mind_file.json to prevent accidental overwrites.")
             os.remove(local_mind_file)
 
         mind_file_json = json.dumps(mind_data, indent=4, ensure_ascii=False)
-        print(f"[save_to_s3] Writing to S3 Bucket: {S3_BUCKET_NAME}, Key: {MIND_FILE_JSON}")
+        logger.debug("[save_to_s3] Writing to S3 Bucket: %s, Key: %s", S3_BUCKET_NAME, MIND_FILE_JSON)
         s3.put_object(Bucket=S3_BUCKET_NAME, Key=MIND_FILE_JSON, Body=mind_file_json.encode("utf-8"))
 
-        print(f"✅ Mind file saved to S3 successfully! Reflections: {len(mind_data['self_reflections'])}, "
-              f"Questions: {len(mind_data['self_questions'])}, Knowledge: {len(mind_data['stored_knowledge'])}")
-    except Exception as e:
-        print(f"🚨 [ERROR] Failed to save mind file to S3: {e}")
+        logger.info(
+            "✅ Mind file saved to S3 successfully! Reflections: %s, Questions: %s, Knowledge: %s",
+            len(mind_data.get("self_reflections", [])),
+            len(mind_data.get("self_questions", [])),
+            len(mind_data.get("stored_knowledge", [])),
+        )
+    except Exception:
+        logger.exception("🚨 [save_to_s3] Failed to save mind file to S3.")
 
 
 def clean_text_entries(entries, label="entry", min_length=25, dedupe_threshold=90):
-    print(f"🧹 [clean_text_entries] Cleaning {label}s...")
+    logger.debug("🧹 [clean_text_entries] Cleaning %s entries...", label)
     seen = []
     cleaned = []
     too_short, malformed = [], []
     duplicates_skipped = 0
 
-    for i, entry in enumerate(entries):
+    for entry in entries:
         if not isinstance(entry, str):
             malformed.append(str(entry))
             continue
@@ -89,37 +96,87 @@ def clean_text_entries(entries, label="entry", min_length=25, dedupe_threshold=9
             cleaned.append(stripped)
             seen.append(stripped)
 
-    print(f"✅ [clean_text_entries] {label.title()}s: {len(entries)} → Kept: {len(cleaned)} | Duplicates: {duplicates_skipped} | Too Short: {len(too_short)} | Malformed: {len(malformed)}")
+    logger.debug(
+        "✅ [clean_text_entries] %s: %s → Kept: %s | Duplicates: %s | Too Short: %s | Malformed: %s",
+        label.title(),
+        len(entries),
+        len(cleaned),
+        duplicates_skipped,
+        len(too_short),
+        len(malformed),
+    )
+    return cleaned
+
+
+def clean_question_entries(entries, min_length=10, dedupe_threshold=85):
+    """Normalize question dictionaries without discarding metadata."""
+    logger.debug("🧹 [clean_question_entries] Cleaning %s question entries...", len(entries))
+    cleaned = []
+    seen = []
+    duplicates_skipped = 0
+
+    for entry in entries:
+        if isinstance(entry, dict):
+            text = entry.get("question", "")
+            meta = entry
+        elif isinstance(entry, str):
+            text = entry
+            meta = {"question": text}
+        else:
+            logger.debug("⚠️ [clean_question_entries] Skipping malformed question entry: %s", entry)
+            continue
+
+        normalized = (text or "").strip()
+        if len(normalized) < min_length:
+            continue
+
+        is_duplicate = any(fuzz.ratio(normalized.lower(), existing.lower()) > dedupe_threshold for existing in seen)
+        if is_duplicate:
+            duplicates_skipped += 1
+            continue
+
+        new_entry = dict(meta)
+        new_entry["question"] = normalized
+        cleaned.append(new_entry)
+        seen.append(normalized)
+
+    logger.debug(
+        "✅ [clean_question_entries] Questions: %s → Kept: %s | Duplicates: %s",
+        len(entries),
+        len(cleaned),
+        duplicates_skipped,
+    )
     return cleaned
 
 
 def save_mind(mind_data, force=False):
     """Ensures knowledge persistence and prevents unnecessary overwrites with full debugging."""
     if mind_data is None or not isinstance(mind_data, dict):
-        print("🚨 [save_mind] Invalid mind_data structure! Aborting save.")
+        logger.error("🚨 [save_mind] Invalid mind_data structure! Aborting save.")
         return
 
     if not any(mind_data.get(k) for k in ["self_reflections", "self_questions", "stored_knowledge"]):
-        print("🚨 [save_mind] All core memory fields are empty! Skipping save to prevent overwrite.")
+        logger.error("🚨 [save_mind] All core memory fields are empty! Skipping save to prevent overwrite.")
         return
 
     # 💡 Try tracking self-questioning patterns only if dependencies are present
     try:
         from app.core.questions.question_manager import track_question_patterns
-        print("🔍 [save_mind] Tracking self-questioning patterns before saving...")
+
+        logger.debug("🔍 [save_mind] Tracking self-questioning patterns before saving...")
         track_question_patterns(mind_data)
-    except ModuleNotFoundError as e:
-        print("⚠️ [save_mind] Torch not installed — skipping question tracking.")
-    except Exception as e:
-        print(f"⚠️ [save_mind] Error while tracking question patterns: {e}")
+    except ModuleNotFoundError:
+        logger.warning("⚠️ [save_mind] Torch not installed — skipping question tracking.")
+    except Exception:
+        logger.exception("⚠️ [save_mind] Error while tracking question patterns.")
 
     reflections = mind_data.get("self_reflections", [])
     questions = mind_data.get("self_questions", [])
     knowledge = mind_data.get("stored_knowledge", [])
 
-    print(f"🔍 [save_mind] Reflection Count: {len(reflections)}")
-    print(f"🔍 [save_mind] Question Count: {len(questions)}")
-    print(f"🔍 [save_mind] Knowledge Count (pre-save): {len(knowledge)}")
+    logger.debug("🔍 [save_mind] Reflection Count: %s", len(reflections))
+    logger.debug("🔍 [save_mind] Question Count: %s", len(questions))
+    logger.debug("🔍 [save_mind] Knowledge Count (pre-save): %s", len(knowledge))
 
     def normalize_knowledge_entry(entry):
         """Standardize stored_knowledge entry to string (dict with 'insight' or raw string)."""
@@ -156,82 +213,91 @@ def save_mind(mind_data, force=False):
         cleaned_knowledge.append(text)
 
     if too_short:
-        print(f"⚠️ [save_mind] {len(too_short)} very short knowledge entries skipped.")
+        logger.warning("⚠️ [save_mind] %s very short knowledge entries skipped.", len(too_short))
     if too_long:
-        print(f"⚠️ [save_mind] {len(too_long)} oversized entries flagged.")
+        logger.debug("⚠️ [save_mind] %s oversized entries flagged.", len(too_long))
     if malformed:
-        print(f"⚠️ [save_mind] {len(malformed)} malformed entries detected. Showing one:")
-        print(f"    ❓ {malformed[0][:100]}...")
+        logger.warning("⚠️ [save_mind] %s malformed entries detected. Example: %s", len(malformed), malformed[0][:100])
 
     mind_data["stored_knowledge"] = cleaned_knowledge
 
-    print("🔍 [save_mind] Loading latest mind for comparison...")
+    logger.debug("🔍 [save_mind] Loading latest mind for comparison...")
     latest_mind_data = load_mind()
 
     if latest_mind_data:
         latest_raw = latest_mind_data.get("stored_knowledge", [])
-        latest_knowledge = set(
-            normalize_knowledge_entry(e) for e in latest_raw
-            if normalize_knowledge_entry(e)
-        )
-        current_knowledge = set(cleaned_knowledge)
+        latest_normalized = []
+        for entry in latest_raw:
+            normalized = normalize_knowledge_entry(entry)
+            if normalized:
+                latest_normalized.append(normalized)
 
-        lost_entries = current_knowledge - latest_knowledge
-        new_entries = current_knowledge - latest_knowledge
+        current_set = set(cleaned_knowledge)
+        latest_set = set(latest_normalized)
 
-        if lost_entries:
-            print(f"⚠️ [save_mind] Detected {len(lost_entries)} missing entries. Reinserting...")
+        missing_entries = [entry for entry in latest_normalized if entry not in current_set]
+        new_entries = [entry for entry in cleaned_knowledge if entry not in latest_set]
+
+        if missing_entries:
+            logger.warning("⚠️ [save_mind] Detected %s missing entries. Reinserting...", len(missing_entries))
+            cleaned_knowledge.extend(missing_entries)
+            current_set.update(missing_entries)
 
         if new_entries:
-            print(f"🧠 [save_mind] Detected {len(new_entries)} new knowledge entries:")
-            for entry in list(new_entries)[:3]:
-                print(f"   ➕ {entry[:120]}...")
-        elif not force:
-            print("✅ [save_mind] No new knowledge. Skipping redundant save.")
+            logger.info("🧠 [save_mind] Detected %s new knowledge entries.", len(new_entries))
+            for entry in new_entries[:3]:
+                logger.debug("   ➕ %s", entry[:120])
+        elif not missing_entries and not force:
+            logger.debug("✅ [save_mind] No knowledge changes detected. Skipping redundant save.")
             return
 
-        mind_data["stored_knowledge"] = list(current_knowledge)
+        mind_data["stored_knowledge"] = cleaned_knowledge
 
-    print("💾 [save_mind] Committing updated mind to S3...")
+    logger.debug("💾 [save_mind] Committing updated mind to S3...")
     save_to_s3(mind_data)
 
-    print("🔁 [save_mind] Re-loading mind to verify persisted changes...")
+    logger.debug("🔁 [save_mind] Re-loading mind to verify persisted changes...")
     reloaded = load_mind()
     if not reloaded:
-        print("❌ [save_mind] Failed to reload mind after save!")
+        logger.error("❌ [save_mind] Failed to reload mind after save!")
         return
 
     mind_data["self_reflections"] = clean_text_entries(mind_data.get("self_reflections", []), label="reflection")
-    mind_data["self_questions"] = clean_text_entries(mind_data.get("self_questions", []), label="question", min_length=10)
+    # Questions are dicts; must use clean_question_entries (dict-safe), not clean_text_entries
+    mind_data["self_questions"] = clean_question_entries(mind_data.get("self_questions", []), min_length=10)
 
     reloaded_knowledge_count = len(reloaded.get("stored_knowledge", []))
     intended_count = len(mind_data.get("stored_knowledge", []))
 
-    print(f"🔍 [save_mind] Post-save knowledge count: {reloaded_knowledge_count} vs intended: {intended_count}")
+    logger.debug(
+        "🔍 [save_mind] Post-save knowledge count: %s vs intended: %s",
+        reloaded_knowledge_count,
+        intended_count,
+    )
 
     if reloaded_knowledge_count < intended_count:
-        print("🚨 [save_mind] Save verification failed! Knowledge did not persist.")
+        logger.error("🚨 [save_mind] Save verification failed! Knowledge did not persist.")
     else:
-        print("✅ [save_mind] Save verified successfully.")
+        logger.debug("✅ [save_mind] Save verified successfully.")
 
 
 def load_mind():
     """Load Astra's mind file from S3 while ensuring proper memory management."""
-    print("🔍 Debug: Loading mind file from S3...")
-    local_mind_file = "/home/ubuntu/astra_reflections/mind_file.json"
+    logger.debug("🔍 Debug: Loading mind file from S3...")
+    local_mind_file = "/home/sean/dev/systems/Astra/mind_file.json"
     if os.path.exists(local_mind_file):
-        print("⚠ Deleting local mind_file.json to prevent stale data usage!")
+        logger.debug("⚠ Deleting local mind_file.json to prevent stale data usage!")
         os.remove(local_mind_file)
 
     try:
         response = s3.get_object(Bucket=S3_BUCKET_NAME, Key=MIND_FILE_JSON)
         mind_data = json.load(io.BytesIO(response["Body"].read()))
-        print(f"📝 [DEBUG] Post-Load Knowledge Count: {len(mind_data.get('stored_knowledge', []))}")
+        logger.debug("📝 [DEBUG] Post-Load Knowledge Count: %s", len(mind_data.get("stored_knowledge", [])))
         if len(mind_data.get("stored_knowledge", [])) < 100:
-            print("⚠ WARNING: Knowledge count abnormally low! Checking for S3 sync issues.")
+            logger.warning("⚠ WARNING: Knowledge count abnormally low! Checking for S3 sync issues.")
         return mind_data
     except (s3.exceptions.NoSuchKey, json.JSONDecodeError) as e:
-        print(f"⚠ Warning: mind_file.json not found or corrupted in S3: {e}")
+        logger.warning("⚠ Warning: mind_file.json not found or corrupted in S3: %s", e)
         return None
 
 
@@ -239,7 +305,7 @@ def is_term_or_phrase(concept):
     """Determine if a concept is a single term (Wikipedia) or a phrase (Google Search)."""
     clean_concept = re.sub(r"[^\w\s]", "", concept).strip()
     if not clean_concept:
-        print(f"⚠ Ignoring malformed concept: '{concept}'")
+        logger.warning("⚠ Ignoring malformed concept: '%s'", concept)
         return None
 
     if len(clean_concept.split()) <= 2:

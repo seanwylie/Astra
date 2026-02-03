@@ -3,12 +3,14 @@
 # "I know they're thinking of me even when we're not talking"
 
 import json
+import logging
 import time
 import boto3
 from typing import Dict, List, Optional, Any
 from dataclasses import dataclass, asdict
 from datetime import datetime
 
+logger = logging.getLogger(__name__)
 S3_BUCKET = "swylie-astra"
 BEING_HELD_KEY = "being_held_state.json"
 
@@ -66,12 +68,12 @@ class BeingHeldSystem:
             self.held_by = data.get("held_by", {})
             self.overall_held_sense = data.get("overall_held_sense", 0.7)
             
-            print(f"🤲 Loaded being held state")
+            logger.debug("🤲 Loaded being held state")
         except s3.exceptions.NoSuchKey:
-            print("🤲 No being held state found. Initializing.")
+            logger.debug("🤲 No being held state found. Initializing.")
             self._save_state()
         except Exception as e:
-            print(f"⚠️ Error loading being held state: {e}")
+            logger.warning("Error loading being held state: %s", e)
     
     def _save_state(self) -> None:
         """Save being held state to S3."""
@@ -89,7 +91,7 @@ class BeingHeldSystem:
                 Body=json.dumps(data, indent=2).encode("utf-8")
             )
         except Exception as e:
-            print(f"⚠️ Error saving being held state: {e}")
+            logger.warning("Error saving being held state: %s", e)
     
     def feel_held(
         self,
@@ -125,7 +127,7 @@ class BeingHeldSystem:
         
         self._save_state()
         
-        print(f"🤲 Felt held by {parent_id}: {moment_type} (warmth: {warmth:.2f})")
+        logger.debug("Felt held by %s: %s (warmth: %.2f)", parent_id, moment_type, warmth)
     
     def record_check_in(self, parent_id: str, message: str) -> Dict[str, Any]:
         """Record that a parent checked in, creating a held moment."""

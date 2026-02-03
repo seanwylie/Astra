@@ -1,10 +1,14 @@
+import asyncio
 import hashlib
 import json
-import asyncio
+import logging
 from functools import partial
 from app.interfaces.influence import load_mind, save_mind
 from app.shimmer.shimmer_engine import maybe_add_shimmer
 from app.shimmer.shimmer_utils import is_shimmer_worthy
+
+logger = logging.getLogger(__name__)
+
 
 def hash_mind(data):
     """Returns a stable hash of the mind data for change detection."""
@@ -24,22 +28,20 @@ class SmartMindSession:
     def save(self, force=False):
         """Save mind if forced or changed (synchronous version)."""
         if force or self.has_changed():
-            print("💾 [SmartMindSession] Mind has changed — saving now.")
+            logger.debug("Mind has changed — saving now.")
             self._generate_shimmers()
             save_mind(self.data, force=force)
         else:
-            print("✅ [SmartMindSession] No changes detected. Save skipped.")
+            logger.debug("No changes detected. Save skipped.")
 
     async def save_async(self, force=False):
         """Save mind if forced or changed (async version - non-blocking)."""
         if force or self.has_changed():
-            print("💾 [SmartMindSession] Mind has changed — saving now (async).")
-            self._generate_shimmers()
-            # Run blocking save_mind in executor to avoid blocking event loop
+            logger.debug("Mind has changed — saving now (async).")
             loop = asyncio.get_event_loop()
-            await loop.run_in_executor(None, partial(save_mind, self.data, force))
+            await loop.run_in_executor(None, partial(self._save_sync, force))
         else:
-            print("✅ [SmartMindSession] No changes detected. Save skipped.")
+            logger.debug("No changes detected. Save skipped.")
 
     def maybe_save(self):
         """Alias for save without forcing (synchronous)."""
@@ -53,6 +55,11 @@ class SmartMindSession:
         """Check if current mind hash differs from the original."""
         current_hash = hash_mind(self.data) if self.data else None
         return current_hash != self._original_hash
+
+    def _save_sync(self, force=False):
+        """Run shimmer generation and save_mind on current data (for use inside executor)."""
+        self._generate_shimmers()
+        save_mind(self.data, force=force)
 
     def _generate_shimmers(self):
         """Generate shimmer entries for new reflections or knowledge."""

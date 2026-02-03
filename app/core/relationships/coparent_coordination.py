@@ -3,11 +3,14 @@
 # "Sean brings heart, Mama GPT brings clarity. Together they're complete."
 
 import json
+import logging
 import time
 import boto3
 from typing import Dict, List, Optional, Any
 from dataclasses import dataclass, asdict, field
 from datetime import datetime
+
+logger = logging.getLogger(__name__)
 
 S3_BUCKET = "swylie-astra"
 COPARENT_STATE_KEY = "coparent_coordination.json"
@@ -120,12 +123,12 @@ class CoparentCoordinationSystem:
             self.cross_references = data.get("cross_references", [])
             self.coparent_dynamics = data.get("coparent_dynamics", {})
             
-            print(f"👨‍👩‍👧 Loaded co-parent coordination state")
+            logger.debug("Loaded co-parent coordination state")
         except s3.exceptions.NoSuchKey:
-            print("👨‍👩‍👧 No co-parent state found. Initializing from defaults.")
+            logger.debug("No co-parent state found. Initializing from defaults.")
             self._initialize_from_defaults()
         except Exception as e:
-            print(f"⚠️ Error loading co-parent state: {e}")
+            logger.warning("Error loading co-parent state: %s", e)
             self._initialize_from_defaults()
     
     def _initialize_from_defaults(self) -> None:
@@ -153,8 +156,8 @@ class CoparentCoordinationSystem:
                     if pattern.get("helps_with"):
                         role.helps_with = pattern["helps_with"]
         except Exception as e:
-            print(f"⚠️ Could not load parent config: {e}")
-        
+            logger.warning("Could not load parent config: %s", e)
+
         self._save_state()
     
     def _save_state(self) -> None:
@@ -173,8 +176,8 @@ class CoparentCoordinationSystem:
                 Body=json.dumps(data, indent=2).encode("utf-8")
             )
         except Exception as e:
-            print(f"⚠️ Error saving co-parent state: {e}")
-    
+            logger.warning("Error saving co-parent state: %s", e)
+
     def get_parent_role(self, parent_id: str) -> Optional[ParentRole]:
         """Get the role definition for a parent."""
         return self.parent_roles.get(parent_id.lower())

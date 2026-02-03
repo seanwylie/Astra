@@ -124,7 +124,7 @@ class EmotionalTransitions:
         self.last_emotion: Optional[str] = None
         self.last_intensity: float = 0.0
         self._load_state()
-        logger.info("🌊 Emotional Transitions initialized - feeling the shifts")
+        logger.debug("🌊 Emotional Transitions initialized - feeling the shifts")
     
     def _load_state(self) -> None:
         """Load transitions state from S3."""
@@ -145,7 +145,7 @@ class EmotionalTransitions:
             
             logger.debug(f"🌊 Loaded {len(self.recent_transitions)} emotional transitions")
         except s3.exceptions.NoSuchKey:
-            logger.info("🌊 No transitions state found. Starting fresh.")
+            logger.debug("🌊 No transitions state found. Starting fresh.")
         except Exception as e:
             logger.warning(f"🌊 Error loading transitions state: {e}")
     
@@ -313,7 +313,7 @@ class EmotionalTransitions:
                 )
             
             awareness_bus.subscribe("EMOTION_SHIFT", on_emotion_shift)
-            logger.info("🌊 Subscribed to emotion shifts via awareness bus")
+            logger.debug("🌊 Subscribed to emotion shifts via awareness bus")
         except Exception as e:
             logger.debug(f"🌊 Could not subscribe to awareness bus: {e}")
     

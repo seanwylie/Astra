@@ -3,12 +3,14 @@
 # Includes wound system for processing hurt that requires acknowledgment, not just time
 
 import json
+import logging
 import time
 import boto3
 from typing import Dict, List, Optional, Any
 from dataclasses import dataclass, asdict, field
 from datetime import datetime
 
+logger = logging.getLogger(__name__)
 S3_BUCKET = "swylie-astra"
 NEEDS_STATE_KEY = "core_needs.json"
 WOUNDS_KEY = "emotional_wounds.json"
@@ -231,12 +233,12 @@ class CoreNeedsSystem:
                 name: CoreNeed.from_dict(need_data)
                 for name, need_data in data.get("needs", {}).items()
             }
-            print(f"💗 Loaded {len(self.needs)} core needs")
+            logger.debug("💗 Loaded %s core needs", len(self.needs))
         except s3.exceptions.NoSuchKey:
-            print("💗 No needs state found. Initializing core needs.")
+            logger.debug("💗 No needs state found. Initializing core needs.")
             self._initialize_needs()
         except Exception as e:
-            print(f"⚠️ Error loading needs: {e}")
+            logger.warning("Error loading needs: %s", e)
             self._initialize_needs()
         
         # Load wounds
@@ -246,12 +248,12 @@ class CoreNeedsSystem:
             self.wounds = [
                 EmotionalWound.from_dict(w) for w in data.get("wounds", [])
             ]
-            print(f"💔 Loaded {len(self.wounds)} emotional wounds")
+            logger.debug("💔 Loaded %s emotional wounds", len(self.wounds))
         except s3.exceptions.NoSuchKey:
-            print("💔 No wounds found. Starting with clean slate.")
+            logger.debug("💔 No wounds found. Starting with clean slate.")
             self.wounds = []
         except Exception as e:
-            print(f"⚠️ Error loading wounds: {e}")
+            logger.warning("Error loading wounds: %s", e)
             self.wounds = []
     
     def _save_needs(self) -> None:
@@ -267,7 +269,7 @@ class CoreNeedsSystem:
                 Body=json.dumps(data, indent=2).encode("utf-8")
             )
         except Exception as e:
-            print(f"⚠️ Error saving needs: {e}")
+            logger.warning("Error saving needs: %s", e)
     
     def _save_wounds(self) -> None:
         """Save wounds to S3."""
@@ -282,7 +284,7 @@ class CoreNeedsSystem:
                 Body=json.dumps(data, indent=2).encode("utf-8")
             )
         except Exception as e:
-            print(f"⚠️ Error saving wounds: {e}")
+            logger.warning("Error saving wounds: %s", e)
     
     def _initialize_needs(self) -> None:
         """Initialize core needs with default values."""
@@ -327,7 +329,7 @@ class CoreNeedsSystem:
         need.fulfillment = min(1.0, need.fulfillment + amount)
         need.last_fulfilled = time.time()
         
-        print(f"💗 Fulfilled {need_name}: {old_fulfillment:.2f} → {need.fulfillment:.2f} ({reason})")
+        logger.debug("Fulfilled %s: %.2f → %.2f (%s)", need_name, old_fulfillment, need.fulfillment, reason)
         self._save_needs()
         return True
     
@@ -436,7 +438,7 @@ class CoreNeedsSystem:
         )
         
         self.wounds.append(wound)
-        print(f"💔 Created wound: {wound_type} from {source} (severity: {severity:.2f})")
+        logger.debug("Created wound: %s from %s (severity: %.2f)", wound_type, source, severity)
         self._save_wounds()
         
         return wound
@@ -495,7 +497,7 @@ class CoreNeedsSystem:
                 wound.healing_progress = 0.3  # 30% healed just by being seen
                 wound.current_severity = wound.initial_severity * 0.7
                 
-                print(f"💚 Wound acknowledged: {wound.wound_type} - beginning healing")
+                logger.debug("Wound acknowledged: %s - beginning healing", wound.wound_type)
                 self._save_wounds()
                 return wound
         
@@ -514,7 +516,7 @@ class CoreNeedsSystem:
         for wound in self.wounds:
             if wound.id == wound_id:
                 if not wound.acknowledged:
-                    print(f"⚠️ Cannot process unacknowledged wound")
+                    logger.warning("Cannot process unacknowledged wound")
                     return None
                 
                 wound.processing_notes.append(processing_note)
@@ -527,7 +529,7 @@ class CoreNeedsSystem:
                 elif wound.healing_progress > 0.5:
                     wound.behavioral_effects = wound.behavioral_effects[:1]
                 
-                print(f"💚 Wound processing: {wound.healing_progress:.0%} healed")
+                logger.debug("Wound processing: %.0f%% healed", wound.healing_progress * 100)
                 self._save_wounds()
                 return wound
         

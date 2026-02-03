@@ -9,12 +9,15 @@ and registers their commands via docstring-based auto-registration.
 Keeps `main.py` minimal and future-proof.
 """
 
+import logging
 import os
 import asyncio
 import importlib.util
 from discord.ext import commands
 from app.commands import help_commands
 from app.commands.utils.command_utils import auto_register_commands
+
+logger = logging.getLogger(__name__)
 
 
 def register_all_commands(bot: commands.Bot):
@@ -29,8 +32,7 @@ def register_all_commands(bot: commands.Bot):
         bot (commands.Bot): The Discord bot to attach commands to.
     """
     commands_dir = os.path.dirname(__file__)
-    
-    print(f"🔧 Loading commands from: {commands_dir}")
+    logger.debug("Loading commands from: %s", commands_dir)
 
     for filename in os.listdir(commands_dir):
         full_path = os.path.join(commands_dir, filename)
@@ -51,7 +53,7 @@ def register_all_commands(bot: commands.Bot):
 
             if filename == "help_commands.py":
                 module.register_commands(bot)
-                print(f"✅ Registered help commands from {filename}")
+                logger.debug("Registered help commands from %s", filename)
             else:
                 # Look for Cog classes in the module
                 cog_registered = False
@@ -95,16 +97,16 @@ def register_all_commands(bot: commands.Bot):
                                     
                             except Exception as manual_e:
                                 # Method 3: Last resort - just add commands without cog binding
-                                print(f"⚠️ Manual cog registration failed for {attr_name}: {manual_e}")
+                                logger.warning("Manual cog registration failed for %s: %s", attr_name, manual_e)
                                 for command in cog_instance.get_commands():
                                     bot.add_command(command)
-                        print(f"✅ Registered Cog {attr_name} from {filename}")
+                        logger.debug("Registered Cog %s from %s", attr_name, filename)
                         cog_registered = True
                 
                 # Fallback to old auto-registration for non-Cog commands
                 if not cog_registered:
                     auto_register_commands(bot, module, full_path)
-                    print(f"✅ Auto-registered commands from {filename}")
-                
+                    logger.debug("Auto-registered commands from %s", filename)
+
         except Exception as e:
-            print(f"⚠️ Failed to load {filename}: {e}")
+            logger.warning("Failed to load %s: %s", filename, e)
