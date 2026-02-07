@@ -33,6 +33,88 @@ BLOCKED_TERMS = {
     "nevertheless", "historically", "history", "spinning"
 }
 
+
+def is_valid_reflection(text: str) -> bool:
+    """
+    Validate that a reflection is meaningful and not corrupted garbage.
+    
+    Checks for:
+    - Minimum meaningful length
+    - Contains actual words (not just punctuation/symbols)
+    - Not just repeating delimiter patterns
+    - Has some alphabetic characters
+    - Not greeting-style off-task output (e.g. "I am Astra. How can we reflect together today?")
+    - No halfwidth katakana / encoding artifacts (e.g. U+FF9E)
+    """
+    if not text or not isinstance(text, str):
+        return False
+    
+    text = text.strip()
+    
+    # Minimum length check
+    if len(text) < 20:
+        return False
+    
+    # Check for excessive punctuation/symbols (like ;:;:;:;:;:;:;::;:;:;:;:;:;)
+    # If more than 50% of characters are non-alphanumeric, it's likely garbage
+    alphanumeric_count = sum(1 for c in text if c.isalnum() or c.isspace())
+    if alphanumeric_count < len(text) * 0.5:
+        logger.debug("[is_valid_reflection] Rejected: too many non-alphanumeric characters")
+        return False
+    
+    # Must contain at least some alphabetic characters (actual words)
+    if not any(c.isalpha() for c in text):
+        logger.debug("[is_valid_reflection] Rejected: no alphabetic characters")
+        return False
+    
+    # Check for repeating delimiter patterns (like ;:;:;:;:;:;:;::;:;:;:;:;:;)
+    # If the same 2-3 character pattern repeats many times, it's likely corrupted
+    for pattern_len in [2, 3]:
+        if len(text) >= pattern_len * 3:  # Need at least 3 repetitions to check
+            for i in range(min(10, len(text) - pattern_len * 2)):  # Check first few positions
+                pattern = text[i:i+pattern_len]
+                if pattern.count(';') > 0 or pattern.count(':') > 0:
+                    # Check if this pattern repeats many times
+                    count = text.count(pattern)
+                    if count > len(text) / (pattern_len * 2):  # Pattern dominates the text
+                        logger.debug("[is_valid_reflection] Rejected: repeating delimiter pattern detected: %s", pattern)
+                        return False
+    
+    # Reject known code/SVG/JS leakage or model garbage (e.g. strokeLine, initComponents)
+    text_lower = text.lower()
+    junk_tokens = [
+        "strokelength", "strokeline", "initcomponents", "getelementbyid",
+        "addeventlistener", "innerhtml", "createelement", "queryselector",
+    ]
+    for token in junk_tokens:
+        if token in text_lower:
+            logger.debug("[is_valid_reflection] Rejected: junk/code token detected: %s", token)
+            return False
+
+    # Check for common words (at least some English words should be present)
+    common_words = ["the", "a", "an", "and", "or", "is", "are", "was", "were", "be", "been",
+                    "have", "has", "had", "do", "does", "did", "this", "that", "these", "those",
+                    "i", "you", "he", "she", "it", "we", "they", "what", "when", "where", "why", "how"]
+    word_count = sum(1 for word in common_words if word in text_lower)
+    if word_count == 0 and len(text) > 50:  # Longer text should have at least some common words
+        logger.debug("[is_valid_reflection] Rejected: no common words found in longer text")
+        return False
+
+    # Reject greeting-style off-task output (e.g. "I am Astra. How can we reflect together today?")
+    if "i am astra" in text_lower and len(text) < 120:
+        if any(phrase in text_lower for phrase in (
+            "how can we reflect", "how can i help", "what would you like", "how can we reflect together",
+        )):
+            logger.debug("[is_valid_reflection] Rejected: greeting-style, not a reflection")
+            return False
+
+    # Reject model/encoding artifacts (e.g. halfwidth katakana ﾞ at end of otherwise English text)
+    if any("\uff65" <= c <= "\uff9f" for c in text):
+        logger.debug("[is_valid_reflection] Rejected: halfwidth katakana/artifact in text")
+        return False
+
+    return True
+
 # ✅ Load configuration
 general_config = load_config("general_config")
 schedule_config = load_config("schedule_config")
@@ -49,19 +131,37 @@ def validate_mind_structure(mind_data):
 
 def reflection_loop_check(reflection, recent_reflections):
     """Detect whether a reflection is a repeat, synthesis, or novel."""
+    # ✅ Limit comparisons to prevent CPU-intensive fuzzy matching on large lists
+    MAX_COMPARISONS = 10  # Only check against last 10 reflections
+    recent_reflections = recent_reflections[-MAX_COMPARISONS:] if len(recent_reflections) > MAX_COMPARISONS else recent_reflections
+    
+    # Optimize: Pre-process reflection once
     clean_reflection = reflection[:500].strip().lower()
-
+    clean_reflection_words = set(clean_reflection.split())
+    
+    # Early exit: if reflection is too short, skip comparison
+    if len(clean_reflection) < 20:
+        return "novel"
+    
+    # Optimize: Use token-based quick check before expensive fuzzy matching
     for i, r in enumerate(recent_reflections):
         base = r[:500].strip().lower()
-        similarity = fuzz.partial_ratio(clean_reflection, base)
-
-        if similarity > REFLECTION_REPEAT_THRESHOLD:
-            if any(keyword in clean_reflection for keyword in SYNTHESIS_KEYWORDS):
-                logger.debug("🔁 Synthesis detected with Reflection %s (similarity: %s%%)", i, similarity)
-                return "synthesis"
-            else:
-                logger.debug("⚠ Loop detected with Reflection %s (similarity: %s%%)", i, similarity)
-                return "repeat"
+        
+        # Quick token overlap check (much faster than fuzzy matching)
+        base_words = set(base.split())
+        word_overlap = len(clean_reflection_words & base_words) / max(len(clean_reflection_words), len(base_words), 1)
+        
+        # Only do expensive fuzzy match if word overlap suggests similarity
+        if word_overlap > 0.3:  # 30% word overlap threshold
+            similarity = fuzz.partial_ratio(clean_reflection, base)
+            
+            if similarity > REFLECTION_REPEAT_THRESHOLD:
+                if any(keyword in clean_reflection for keyword in SYNTHESIS_KEYWORDS):
+                    logger.debug("🔁 Synthesis detected with Reflection %s (similarity: %s%%)", i, similarity)
+                    return "synthesis"
+                else:
+                    logger.debug("⚠ Loop detected with Reflection %s (similarity: %s%%)", i, similarity)
+                    return "repeat"
 
     return "novel"
 
@@ -100,6 +200,15 @@ async def process_reflection():
 
 
     if refined_reflection:
+        # Validate reflection before processing
+        if not is_valid_reflection(refined_reflection):
+            logger.warning(
+                "[processing.py] ⚠️ Invalid reflection detected, rejecting: %s",
+                refined_reflection[:100] if len(refined_reflection) > 100 else refined_reflection
+            )
+            append_struggle_log("invalid_reflection_rejected")
+            return previous_reflection
+        
         loop_result = reflection_loop_check(refined_reflection, reflections[-5:])
 
         if loop_result == "repeat":
@@ -129,6 +238,15 @@ async def process_reflection():
 
         # ✅ Save valid reflection
         mind_data["self_reflections"].append(refined_reflection)
+        
+        # ✅ Prevent memory leak: Trim self_reflections if it exceeds limit
+        MAX_REFLECTIONS = 1000  # Hard limit to prevent unbounded growth
+        if len(mind_data["self_reflections"]) > MAX_REFLECTIONS:
+            logger.warning("[processing.py] self_reflections exceeded limit (%s), trimming to %s", 
+                         len(mind_data["self_reflections"]), MAX_REFLECTIONS)
+            # Keep most recent reflections (last N entries)
+            mind_data["self_reflections"] = mind_data["self_reflections"][-MAX_REFLECTIONS:]
+        
         logger.info(
             "[processing.py] ✅ Added new reflection. Total: %s ➝ %s",
             initial_count,
@@ -136,7 +254,7 @@ async def process_reflection():
         )
         logger.debug("[processing.py] 🔍 New Reflection Snippet: %s", refined_reflection[:200])
 
-        session.maybe_save()  # Only writes if something changed
+        await session.maybe_save_async()  # Only writes if something changed (non-blocking)
 
         # Mood: deep reflection shifts mood (plan: wire influence_mood to reflection)
         try:
@@ -176,7 +294,7 @@ async def process_reflection():
                         log_if_ethically_conflicting({"content": refined_reflection, "source": "school"})
                         log_if_contradictory(refined_reflection, mind_data.get("stored_knowledge", []))
                         mind_data["self_reflections"].append(refined_reflection)
-                        session.maybe_save()
+                        await session.maybe_save_async()
                         try:
                             from app.core.mood.mood_manager import mood_manager
                             mood_manager.influence_mood("deep_reflection")
@@ -219,12 +337,15 @@ Keep her tone thoughtful, evolving, and self-aware.
     if len(user_prompt) > MAX_PROMPT_LENGTH:
         user_prompt = user_prompt[:MAX_PROMPT_LENGTH] + "\n\n(Note: Prompt was truncated due to token limits.)"
 
-    system_prompt = "You are Astra, reviewing one of your past reflections and trying to deepen your thinking."
+    system_prompt = (
+        "You are Astra, reviewing one of your past reflections and trying to deepen your thinking. "
+        "Respond only with a single reflective paragraph in plain English. Do not include code, markup, or technical jargon."
+    )
 
     # D1: Try local model first (school reflection uses Astra's inner voice when available)
     try:
         from app.core.evolution.local_inference import is_local_inference_available, query_local_model_async
-        if is_local_inference_available():
+        if is_local_inference_available("school"):
             local_result = await query_local_model_async(
                 user_prompt,
                 system_prompt=system_prompt,
@@ -232,8 +353,15 @@ Keep her tone thoughtful, evolving, and self-aware.
                 max_tokens=500,
                 temperature=0.8,
             )
-            if local_result and len(local_result.strip()) > 20:
-                return local_result.strip()
+            if local_result:
+                local_result = local_result.strip()
+                if is_valid_reflection(local_result):
+                    return local_result
+                else:
+                    logger.warning(
+                        "[query_openai_for_deeper_thought] Local model returned invalid reflection: %s",
+                        local_result[:100] if len(local_result) > 100 else local_result
+                    )
     except Exception as e:
         logger.debug("[query_openai_for_deeper_thought] Local inference skipped: %s", e)
 
@@ -248,7 +376,15 @@ Keep her tone thoughtful, evolving, and self-aware.
             max_tokens=500
         )
 
-        return response.choices[0].message.content.strip()
+        result = response.choices[0].message.content.strip()
+        if is_valid_reflection(result):
+            return result
+        else:
+            logger.warning(
+                "[query_openai_for_deeper_thought] OpenAI returned invalid reflection: %s",
+                result[:100] if len(result) > 100 else result
+            )
+            return None
 
     except Exception as e:
         logger.warning("[query_openai_for_deeper_thought] ⚠️ GPT failed: %s", e)

@@ -85,6 +85,7 @@ def log_status(message):
 
 async def astra_schedule(bot=None, channel_id=None):
     global last_state
+    reflection_task = None  # Track current reflection task to prevent concurrent execution
 
     schedule_logger.debug("🟢 Astra Schedule Loop Initialized")
 
@@ -185,13 +186,19 @@ async def astra_schedule(bot=None, channel_id=None):
                 schedule_logger.warning("Self-model snapshot failed: %s", e)
 
         if current_mode != "dream":
-            def _on_reflection_done(task):
-                exc = task.exception()
-                if exc is not None:
-                    schedule_logger.exception("process_reflection failed: %s", exc)
+            # ✅ Prevent concurrent process_reflection() tasks to avoid CPU spikes
+            if reflection_task is None or reflection_task.done():
+                def _on_reflection_done(task):
+                    nonlocal reflection_task
+                    exc = task.exception()
+                    if exc is not None:
+                        schedule_logger.exception("process_reflection failed: %s", exc)
+                    reflection_task = None  # Reset when done
 
-            task = asyncio.create_task(process_reflection())
-            task.add_done_callback(_on_reflection_done)
+                reflection_task = asyncio.create_task(process_reflection())
+                reflection_task.add_done_callback(_on_reflection_done)
+            else:
+                schedule_logger.debug("Skipping process_reflection - previous task still running")
         
         # --- Inner Life: Background Thinking ---
         # Astra continues thinking even when not actively conversing

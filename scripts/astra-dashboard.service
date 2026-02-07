@@ -9,8 +9,14 @@ WorkingDirectory=__ASTRA_PROJECT_ROOT__
 Environment=PYTHONPATH=__ASTRA_PROJECT_ROOT__
 EnvironmentFile=-__ASTRA_PROJECT_ROOT__/.env
 ExecStart=__ASTRA_PROJECT_ROOT__/.venv/bin/streamlit run app/dashboard/app.py --server.port 8502 --server.headless true --server.address 0.0.0.0
-Restart=always
+Restart=on-failure
 RestartSec=10
+# Prevent infinite restart loops
+StartLimitIntervalSec=300
+StartLimitBurst=5
+# Memory limits to prevent OOM kills
+MemoryMax=2G
+MemoryHigh=1.5G
 StandardOutput=journal
 StandardError=journal
 

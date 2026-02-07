@@ -43,6 +43,15 @@
       "questioning": " What does this mean?",
       "skeptical": " But is this really true?",
       "expansive": " How does this connect to larger ideas?"
-    }
+    },
+    "storage_backend": "sqlite",
+    "db_path": "data/astra_state.db",
+    "s3_sync_enabled": false,
+    "s3_sync_interval": 300,
+    "max_dinner_journal_entries": 5000,
+    "max_stream_entries": 10000,
+    "max_shimmer_entries": 10000,
+    "db_vacuum_threshold_gb": 10,
+    "db_vacuum_interval_hours": 168
 
 }

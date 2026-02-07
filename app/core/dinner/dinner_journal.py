@@ -14,6 +14,8 @@ from app.interfaces.mind_session import session
 from dotenv import load_dotenv
 from app.interfaces.mind_session import SmartMindSession
 from app.logging_config import get_logger
+from app.interfaces.storage_backend import get_backend
+# Database sync disabled - only JSON files are backed up to S3
 
 # Use our own iso_now function to avoid import issues
 def iso_now():
@@ -154,14 +156,28 @@ def log_if_emotionally_spiking(emotion_state: dict):
 
 
 def log_if_contradictory(reflection, stored_knowledge):
-    for knowledge in stored_knowledge:
+    """Check for contradictions between reflection and stored knowledge."""
+    # Optimize: Only check against recent knowledge (last 100 entries) to avoid O(n) on large lists
+    MAX_KNOWLEDGE_CHECKS = 100
+    knowledge_to_check = stored_knowledge[-MAX_KNOWLEDGE_CHECKS:] if len(stored_knowledge) > MAX_KNOWLEDGE_CHECKS else stored_knowledge
+    
+    # Early exit: reflection must contain "not" to be contradictory
+    reflection_lower = reflection.lower()
+    if "not" not in reflection_lower:
+        return
+    
+    for knowledge in knowledge_to_check:
         try:
+            # Quick check: skip if knowledge also contains "not" (not a contradiction)
+            if "not" in knowledge.lower():
+                continue
+                
             similarity = fuzz.token_set_ratio(reflection, knowledge)
         except Exception as e:
             logger_dinner.warning("Fuzzy match failed: %s", e)
             continue
 
-        if similarity > 70 and "not" in reflection.lower() and "not" not in knowledge.lower():
+        if similarity > 70:
             entry = {
                 "timestamp": now(),
                 "type": "knowledge_conflict",
@@ -248,28 +264,36 @@ async def get_gpt_dinner_response(topic):
 
 
 def load_dinner_journal():
-    """Load Astra's dinner journal from S3."""
-    try:
-        response = s3.get_object(Bucket=S3_BUCKET_NAME, Key=DINNER_JOURNAL_KEY)
-        return json.load(io.BytesIO(response["Body"].read()))
-    except s3.exceptions.NoSuchKey:
-        logger_dinner.info("No existing dinner journal found. Starting fresh.")
-        return []
-    except Exception as e:
-        logger_dinner.warning("Failed to load dinner journal: %s", e)
-        return []
+    """Load Astra's dinner journal using storage backend with caching."""
+    from app.utils.cache import get_cache, set_cache
+    
+    # Check cache first (2 minute TTL - dinner journal changes frequently)
+    cached = get_cache("dinner_journal")
+    if cached is not None:
+        logger_dinner.debug("Using cached dinner journal")
+        return cached
+    
+    backend = get_backend()
+    journal = backend.load("dinner_journal")
+    if not journal:
+        journal = []
+    
+    # Cache the result
+    set_cache("dinner_journal", journal, ttl_seconds=120)
+    return journal
 
 def save_dinner_journal(data):
-    """Save the updated dinner journal to S3."""
-    try:
-        s3.put_object(
-            Bucket=S3_BUCKET_NAME,
-            Key=DINNER_JOURNAL_KEY,
-            Body=json.dumps(data, indent=2).encode("utf-8")
-        )
+    """Save the updated dinner journal using storage backend."""
+    backend = get_backend()
+    success = backend.save("dinner_journal", data)
+    if success:
         logger_dinner.debug("Dinner journal saved successfully.")
-    except Exception as e:
-        logger_dinner.error("Failed to save dinner journal: %s", e)
+        # Clear cache after save
+        from app.utils.cache import clear_cache
+        clear_cache("dinner_journal")
+        # Database sync disabled - only JSON files are backed up to S3
+    else:
+        logger_dinner.error("Failed to save dinner journal.")
 
 
 def save_current_dinner_timestamp(timestamp):
@@ -299,10 +323,14 @@ def log_dinner_entry(entry):
     journal = load_dinner_journal()
     entry_content = entry.get("content", "").strip()
 
+    # Optimize: Only check unresolved entries and limit to recent ones
+    unresolved = [e for e in journal if e.get("status") == "unresolved"]
+    # Check against last 50 unresolved entries to avoid O(n²) on large journals
+    MAX_DUPLICATE_CHECKS = 50
+    recent_unresolved = unresolved[-MAX_DUPLICATE_CHECKS:] if len(unresolved) > MAX_DUPLICATE_CHECKS else unresolved
+    
     # Prevent near-duplicate dinner entries using fuzzy matching
-    for existing in journal:
-        if existing.get("status") != "unresolved":
-            continue
+    for existing in recent_unresolved:
         existing_content = existing.get("content", "").strip()
         if fuzz.token_set_ratio(entry_content, existing_content) >= 92:
             logger_dinner.debug("Duplicate dinner topic detected (fuzzy match >=92%%). Skipping log.")
@@ -327,7 +355,12 @@ def mark_dinner_responded(topic_text, responder, response_text, timestamp=None):
     fallback_match = None
     highest_score = 0
 
-    for entry in journal:
+    # Optimize: Only check unresolved entries and limit fuzzy matching to recent ones
+    unresolved = [e for e in journal if e.get("status") == "unresolved"]
+    MAX_FUZZY_CHECKS = 50  # Limit fuzzy checks to prevent O(n²)
+    entries_to_check = unresolved[-MAX_FUZZY_CHECKS:] if len(unresolved) > MAX_FUZZY_CHECKS else unresolved
+
+    for entry in entries_to_check:
         content = entry.get("content", "")
         entry_timestamp = entry.get("timestamp")
         status = entry.get("status")
@@ -346,11 +379,12 @@ def mark_dinner_responded(topic_text, responder, response_text, timestamp=None):
             updated = True
             break
 
-        # Fuzzy fallback prep
-        score = fuzz.token_set_ratio(content, topic_text)
-        if status == "unresolved" and score > highest_score:
-            highest_score = score
-            fallback_match = entry
+        # Fuzzy fallback prep (only if not already found exact match)
+        if not updated:
+            score = fuzz.token_set_ratio(content, topic_text)
+            if status == "unresolved" and score > highest_score:
+                highest_score = score
+                fallback_match = entry
 
     # Timestamp-safe fuzzy fallback
     if not updated and fallback_match and highest_score > 90:
@@ -367,13 +401,12 @@ def mark_dinner_responded(topic_text, responder, response_text, timestamp=None):
         save_dinner_journal(journal)
         logger_dinner.debug("%s response recorded.", responder.title())
 
-        # 🩹 Patch: fallback to fuzzy reload if no timestamp is given
-        if timestamp:
-            latest = next((e for e in load_dinner_journal() if e.get("timestamp") == timestamp), None)
-        else:
-            latest = next((e for e in load_dinner_journal() if e.get("content") == topic_text), None)
-
-        logger_dinner.debug("[mark_dinner_responded] Reloaded entry %s: %s", timestamp or topic_text[:30], json.dumps(latest, indent=2) if latest else "Could not reload.")
+        # Optimize: Don't reload if we already have the entry
+        if not timestamp:
+            # Only reload if we need to verify
+            latest = next((e for e in journal if e.get("content") == topic_text), None)
+            if latest:
+                logger_dinner.debug("[mark_dinner_responded] Entry updated: %s", topic_text[:30])
 
 
 

@@ -149,15 +149,17 @@ async def try_resolve_dinner_topic(entry, channel, *, force_immediate: bool = Fa
 
     user_ts = refreshed_entry.get("user_timestamp")
     gpt_ts = refreshed_entry.get("gpt_timestamp")
-    user_present = bool(refreshed_entry.get("user_response")) and bool(user_ts)
-    gpt_present = bool(refreshed_entry.get("gpt_response")) and bool(gpt_ts)
+    # Check for response text first; timestamps are helpful but not strictly required
+    user_present = bool(refreshed_entry.get("user_response"))
+    gpt_present = bool(refreshed_entry.get("gpt_response"))
 
     if refreshed_entry.get("status") != "unresolved":
         if dinner_debug:
             logger.debug("Entry already resolved. Skipping.")
         return False
 
-    if gpt_present and not force_immediate:
+    # Only check 60s throttle if we have a valid timestamp and not forcing immediate resolution
+    if gpt_present and gpt_ts and not force_immediate:
         try:
             gpt_time = datetime.fromisoformat(gpt_ts)
             if (datetime.now(gpt_time.tzinfo) - gpt_time) < timedelta(seconds=60):
@@ -165,7 +167,7 @@ async def try_resolve_dinner_topic(entry, channel, *, force_immediate: bool = Fa
                     logger.debug("GPT reply too recent. Waiting at least 60s.")
                 return False
         except Exception as e:
-            logger.warning("Failed to parse GPT timestamp: %s", e)
+            logger.debug("Failed to parse GPT timestamp (proceeding anyway): %s", e)
 
     if not user_present:
         if dinner_debug:
@@ -315,6 +317,23 @@ async def start_dinner_time(bot, channel_id):
             _current_dinner_timestamp = None
             save_current_dinner_timestamp(None)
             await channel.send("⚠️ Still waiting for both perspectives. Will revisit later.")
+
+    # Cleanup pass: Try to resolve any entries that have both responses but are still unresolved
+    # (This handles cases where resolution failed earlier due to timing or missing timestamps)
+    stuck_entries = [
+        e for e in load_dinner_journal()
+        if e.get("status") == "unresolved"
+        and e.get("user_response")
+        and e.get("gpt_response")
+        and e.get("timestamp") not in seen_timestamps
+    ]
+    
+    if stuck_entries:
+        logger.info(f"Found {len(stuck_entries)} stuck dinner entries with both responses. Attempting resolution...")
+        for entry in stuck_entries:
+            if await try_resolve_dinner_topic(entry, channel, force_immediate=True):
+                logger.info(f"Successfully resolved stuck entry: {entry.get('content', '')[:60]}...")
+                await asyncio.sleep(1)  # Brief pause between resolutions
 
     if schedule_config.get("dinner_struggle_summary_for_mama", False):
         summary = get_struggle_summary_for_mama()

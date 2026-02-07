@@ -1,33 +1,79 @@
 import json
 import logging
 import random
+import asyncio
 from pathlib import Path
 from fuzzywuzzy import fuzz  # or from rapidfuzz import fuzz
 from datetime import datetime
+from app.interfaces.storage_backend import get_backend
+from app.config.loader import load_config
 
 logger = logging.getLogger(__name__)
 
 FUZZY_MATCH_THRESHOLD = 92
 SHIMMER_PATH = Path(__file__).parent / "shimmer.json"
 
+def _load_shimmers_sync():
+    """Synchronous version of load_shimmers - runs in executor."""
+    config = load_config("general_config")
+    if config.get("storage_backend") == "sqlite":
+        backend = get_backend()
+        shimmers = backend.load("shimmer")
+        # Convert from list of dicts to expected format
+        if isinstance(shimmers, list):
+            return shimmers
+        return []
+    else:
+        # Fallback to JSON file
+        try:
+            with open(SHIMMER_PATH, 'r', encoding='utf-8') as f:
+                data = json.load(f)
+                return data.get("shimmers", [])
+        except FileNotFoundError:
+            return []
+        except Exception as e:
+            logger.warning("Error loading shimmers: %s", e)
+            return []
+
 def load_shimmers():
-    try:
-        with open(SHIMMER_PATH, 'r', encoding='utf-8') as f:
-            data = json.load(f)
-            return data.get("shimmers", [])
-    except FileNotFoundError:
-        return []
-    except Exception as e:
-        logger.warning("Error loading shimmers: %s", e)
-        return []
+    """Load shimmers using storage backend (synchronous wrapper for backwards compatibility)."""
+    return _load_shimmers_sync()
+
+async def load_shimmers_async():
+    """Load shimmers using storage backend (async version - non-blocking)."""
+    loop = asyncio.get_event_loop()
+    return await loop.run_in_executor(None, _load_shimmers_sync)
+
+def _save_shimmers_sync(shimmers):
+    """Synchronous version of save_shimmers - runs in executor."""
+    config = load_config("general_config")
+    if config.get("storage_backend") == "sqlite":
+        backend = get_backend()
+        success = backend.save("shimmer", shimmers)
+        if success:
+            logger.debug("Shimmers saved to SQLite.")
+        else:
+            logger.error("Failed to save shimmers to SQLite.")
+        return success
+    else:
+        # Fallback to JSON file
+        try:
+            with open(SHIMMER_PATH, 'w', encoding='utf-8') as f:
+                json.dump({"shimmers": shimmers}, f, indent=2, ensure_ascii=False)
+            logger.debug("Shimmer file saved.")
+            return True
+        except Exception as e:
+            logger.error("Failed to save shimmer: %s", e)
+            return False
 
 def save_shimmers(shimmers):
-    try:
-        with open(SHIMMER_PATH, 'w', encoding='utf-8') as f:
-            json.dump({"shimmers": shimmers}, f, indent=2, ensure_ascii=False)
-        logger.debug("Shimmer file saved.")
-    except Exception as e:
-        logger.error("Failed to save shimmer: %s", e)
+    """Save shimmers using storage backend (synchronous wrapper for backwards compatibility)."""
+    return _save_shimmers_sync(shimmers)
+
+async def save_shimmers_async(shimmers):
+    """Save shimmers using storage backend (async version - non-blocking)."""
+    loop = asyncio.get_event_loop()
+    return await loop.run_in_executor(None, _save_shimmers_sync, shimmers)
 
 def add_shimmer(author, quote, context, tags=None):
     if not author or not context:
@@ -70,7 +116,7 @@ def add_shimmer(author, quote, context, tags=None):
 
 def maybe_add_shimmer(author, quote, context="", tags=None, similarity_threshold=92):
     """
-    Adds a shimmer if it's novel and meaningful enough.
+    Adds a shimmer if it's novel and meaningful enough (synchronous version).
     Returns True if added, False if skipped.
     """
     quote = (str(quote).strip() if quote is not None else "") or ""
@@ -104,6 +150,45 @@ def maybe_add_shimmer(author, quote, context="", tags=None, similarity_threshold
 
     shimmers.append(new_shimmer)
     save_shimmers(shimmers)
+    logger.debug("maybe_add_shimmer: Shimmer added.")
+    return True
+
+async def maybe_add_shimmer_async(author, quote, context="", tags=None, similarity_threshold=92):
+    """
+    Adds a shimmer if it's novel and meaningful enough (async version - non-blocking).
+    Returns True if added, False if skipped.
+    """
+    quote = (str(quote).strip() if quote is not None else "") or ""
+    if not quote or len(quote.split()) < 5:
+        logger.debug("Shimmer skipped: too short or empty.")
+        return False
+
+    tags = tags or []
+    shimmers = await load_shimmers_async()
+
+    for existing in shimmers:
+        existing_quote = existing.get("quote")
+        existing_str = (str(existing_quote).strip() if existing_quote is not None else "") or ""
+        if not existing_str:
+            continue
+        similarity = fuzz.token_set_ratio(existing_str, quote)
+        if similarity >= similarity_threshold:
+            if similarity >= 100:
+                logger.debug("Exact duplicate shimmer already stored. Skipping.")
+            else:
+                logger.debug("Duplicate or similar shimmer exists (match %s%%). Skipping.", similarity)
+            return False
+
+    new_shimmer = {
+        "author": author.strip(),
+        "quote": quote,
+        "context": context.strip(),
+        "tags": tags,
+        "timestamp": datetime.utcnow().isoformat()
+    }
+
+    shimmers.append(new_shimmer)
+    await save_shimmers_async(shimmers)
     logger.debug("maybe_add_shimmer: Shimmer added.")
     return True
 

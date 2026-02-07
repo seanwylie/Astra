@@ -36,12 +36,21 @@ def can_answer_question(question: str, mind_data: dict) -> bool:
     question_clean = question.strip().lower()
     if len(question_clean) < 5:
         return False
-    for q in mind_data.get("self_questions", []):
-        if isinstance(q, dict):
-            if not q.get("unresolved", True) and q.get("answer"):
-                q_text = (q.get("question") or "").strip().lower()
-                if q_text and fuzz.ratio(question_clean[:200], q_text[:200]) >= 70:
-                    return True
-        # legacy string entries are treated as unresolved
+    
+    # Optimize: Only check answered questions (skip unresolved ones)
+    self_questions = mind_data.get("self_questions", [])
+    answered_questions = [
+        q for q in self_questions 
+        if isinstance(q, dict) and not q.get("unresolved", True) and q.get("answer")
+    ]
+    
+    # Optimize: Limit checks to recent answered questions
+    MAX_ANSWERED_CHECKS = 50
+    recent_answered = answered_questions[-MAX_ANSWERED_CHECKS:] if len(answered_questions) > MAX_ANSWERED_CHECKS else answered_questions
+    
+    for q in recent_answered:
+        q_text = (q.get("question") or "").strip().lower()
+        if q_text and fuzz.ratio(question_clean[:200], q_text[:200]) >= 70:
+            return True
     return False
 

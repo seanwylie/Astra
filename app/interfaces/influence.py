@@ -10,6 +10,7 @@ from app.config.loader import load_config
 from app.exceptions import InfluenceError
 from fuzzywuzzy import fuzz
 from app.logging_config import get_logger
+from app.interfaces.storage_backend import get_backend
 
 
 # ✅ Load general configurations (paths overridable via ASTRA_MIND_FILE, ASTRA_LOG_FILE, etc.)
@@ -58,31 +59,33 @@ async def save_mind_async(data):
 
 
 def save_to_s3(mind_data):
-    """Save mind file to S3 using proper encoding and error handling."""
-    try:
-        logger.debug("📝 [save_to_s3] Pre-Save Knowledge Count: %s", len(mind_data.get("stored_knowledge", [])))
-        local_mind_file = _local_mind_file_path()
-        if local_mind_file and os.path.exists(local_mind_file):
-            logger.debug("⚠ Deleting local mind file to prevent accidental overwrites.")
-            os.remove(local_mind_file)
-
-        mind_file_json = json.dumps(mind_data, indent=4, ensure_ascii=False)
-        logger.debug("[save_to_s3] Writing to S3 Bucket: %s, Key: %s", S3_BUCKET_NAME, MIND_FILE_JSON)
-        s3.put_object(Bucket=S3_BUCKET_NAME, Key=MIND_FILE_JSON, Body=mind_file_json.encode("utf-8"))
-
+    """Save mind file using storage backend (legacy function name maintained for compatibility)."""
+    backend = get_backend()
+    
+    # Convert mind_data to key-value format for storage
+    mind_data_dict = {}
+    for key in ["self_reflections", "self_questions", "stored_knowledge", "identity", "last_mood", "curiosity_level"]:
+        if key in mind_data:
+            mind_data_dict[key] = mind_data[key]
+    
+    success = backend.save("mind_file", mind_data_dict)
+    if success:
         logger.info(
-            "✅ Mind file saved to S3 successfully! Reflections: %s, Questions: %s, Knowledge: %s",
+            "✅ Mind file saved successfully! Reflections: %s, Questions: %s, Knowledge: %s",
             len(mind_data.get("self_reflections", [])),
             len(mind_data.get("self_questions", [])),
             len(mind_data.get("stored_knowledge", [])),
         )
-    except Exception as e:
-        logger.exception("🚨 [save_to_s3] Failed to save mind file to S3.")
-        raise InfluenceError("Failed to save mind file to S3") from e
+        # Database sync disabled - only JSON files are backed up to S3
+    else:
+        logger.error("🚨 [save_to_s3] Failed to save mind file.")
+        raise InfluenceError("Failed to save mind file")
 
 
 def clean_text_entries(entries, label="entry", min_length=25, dedupe_threshold=90):
     logger.debug("🧹 [clean_text_entries] Cleaning %s entries...", label)
+    # Optimize: Use set for O(1) lookup instead of list
+    seen_lower = set()
     seen = []
     cleaned = []
     too_short, malformed = [], []
@@ -98,8 +101,18 @@ def clean_text_entries(entries, label="entry", min_length=25, dedupe_threshold=9
             too_short.append(stripped)
             continue
 
+        # Optimize: Quick exact match check first
+        stripped_lower = stripped.lower()
+        if stripped_lower in seen_lower:
+            duplicates_skipped += 1
+            continue
+
+        # Optimize: Only do fuzzy matching against recent entries
+        MAX_FUZZY_CHECKS = 100  # Limit fuzzy checks to prevent O(n²)
+        recent_seen = seen[-MAX_FUZZY_CHECKS:] if len(seen) > MAX_FUZZY_CHECKS else seen
+        
         is_duplicate = False
-        for seen_entry in seen:
+        for seen_entry in recent_seen:
             similarity = fuzz.ratio(stripped[:400], seen_entry[:400])
             if similarity > dedupe_threshold:
                 is_duplicate = True
@@ -109,6 +122,7 @@ def clean_text_entries(entries, label="entry", min_length=25, dedupe_threshold=9
         if not is_duplicate:
             cleaned.append(stripped)
             seen.append(stripped)
+            seen_lower.add(stripped_lower)
 
     logger.debug(
         "✅ [clean_text_entries] %s: %s → Kept: %s | Duplicates: %s | Too Short: %s | Malformed: %s",
@@ -233,6 +247,14 @@ def save_mind(mind_data, force=False):
     if malformed:
         logger.warning("⚠️ [save_mind] %s malformed entries detected. Example: %s", len(malformed), malformed[0][:100])
 
+    # ✅ Prevent memory leak: Trim stored_knowledge if it exceeds limit
+    MAX_STORED_KNOWLEDGE = 5000  # Hard limit to prevent OOM
+    if len(cleaned_knowledge) > MAX_STORED_KNOWLEDGE:
+        logger.warning("⚠️ [save_mind] stored_knowledge exceeded limit (%s), trimming to %s", 
+                     len(cleaned_knowledge), MAX_STORED_KNOWLEDGE)
+        # Keep most recent knowledge (last N entries)
+        cleaned_knowledge = cleaned_knowledge[-MAX_STORED_KNOWLEDGE:]
+    
     mind_data["stored_knowledge"] = cleaned_knowledge
 
     logger.debug("🔍 [save_mind] Loading latest mind for comparison...")
@@ -259,6 +281,9 @@ def save_mind(mind_data, force=False):
             logger.warning("⚠️ [save_mind] Detected %s missing entries. Reinserting...", len(missing_entries))
             cleaned_knowledge.extend(missing_entries)
             current_set.update(missing_entries)
+            # Trim again after reinserting to prevent exceeding limit
+            if len(cleaned_knowledge) > MAX_STORED_KNOWLEDGE:
+                cleaned_knowledge = cleaned_knowledge[-MAX_STORED_KNOWLEDGE:]
 
         if new_entries:
             logger.info("🧠 [save_mind] Detected %s new knowledge entries.", len(new_entries))
@@ -270,8 +295,48 @@ def save_mind(mind_data, force=False):
 
         mind_data["stored_knowledge"] = cleaned_knowledge
 
-    logger.debug("💾 [save_mind] Committing updated mind to S3...")
-    save_to_s3(mind_data)
+    logger.debug("💾 [save_mind] Committing updated mind...")
+    backend = get_backend()
+    
+    # Convert mind_data to key-value format for storage
+    mind_data_dict = {}
+    for key in ["self_reflections", "self_questions", "stored_knowledge", "identity", "last_mood", "curiosity_level"]:
+        if key in mind_data:
+            mind_data_dict[key] = mind_data[key]
+    
+    success = backend.save("mind_file", mind_data_dict)
+    if not success:
+        logger.error("❌ [save_mind] Failed to save mind file")
+        return
+    
+    # Clear cache after save to ensure fresh data on next load
+    from app.utils.cache import clear_cache
+    clear_cache("mind_file")
+    
+    # Backup mind_file.json to S3 (not the database file)
+    try:
+        import boto3
+        from app.config.loader import load_config
+        config = load_config("general_config")
+        s3_bucket = config.get("s3_bucket", "swylie-astra")
+        s3_client = boto3.client("s3")
+        
+        # Convert mind_data_dict back to full mind_data structure for JSON backup
+        json_data = mind_data.copy() if mind_data else {}
+        # Ensure all keys are present
+        for key in ["self_reflections", "self_questions", "stored_knowledge", "identity", "last_mood", "curiosity_level"]:
+            if key not in json_data and key in mind_data_dict:
+                json_data[key] = mind_data_dict[key]
+        
+        payload = json.dumps(json_data, ensure_ascii=False, indent=2).encode("utf-8")
+        s3_client.put_object(
+            Bucket=s3_bucket,
+            Key=MIND_FILE_JSON,
+            Body=payload
+        )
+        logger.debug("✅ [save_mind] mind_file.json backed up to S3")
+    except Exception as e:
+        logger.warning("⚠️ [save_mind] Failed to backup mind_file.json to S3: %s", e)
 
     logger.debug("🔁 [save_mind] Re-loading mind to verify persisted changes...")
     try:
@@ -284,6 +349,14 @@ def save_mind(mind_data, force=False):
         return
 
     mind_data["self_reflections"] = clean_text_entries(mind_data.get("self_reflections", []), label="reflection")
+    
+    # ✅ Prevent memory leak: Trim self_reflections if it exceeds limit
+    MAX_REFLECTIONS = 1000  # Hard limit to prevent unbounded growth
+    if len(mind_data["self_reflections"]) > MAX_REFLECTIONS:
+        logger.warning("⚠️ [save_mind] self_reflections exceeded limit (%s), trimming to %s", 
+                     len(mind_data["self_reflections"]), MAX_REFLECTIONS)
+        mind_data["self_reflections"] = mind_data["self_reflections"][-MAX_REFLECTIONS:]
+    
     # Questions are dicts; must use clean_question_entries (dict-safe), not clean_text_entries
     mind_data["self_questions"] = clean_question_entries(mind_data.get("self_questions", []), min_length=10)
 
@@ -303,26 +376,48 @@ def save_mind(mind_data, force=False):
 
 
 def load_mind():
-    """Load Astra's mind file from S3 while ensuring proper memory management."""
-    logger.debug("🔍 Debug: Loading mind file from S3...")
+    """Load Astra's mind file using storage backend with caching."""
+    from app.utils.cache import get_cache, set_cache
+    
+    # Check cache first (5 minute TTL)
+    cached = get_cache("mind_file")
+    if cached is not None:
+        logger.debug("📝 [load_mind] Using cached mind file")
+        return cached
+    
+    logger.debug("🔍 Debug: Loading mind file...")
     local_mind_file = _local_mind_file_path()
     if local_mind_file and os.path.exists(local_mind_file):
         logger.debug("⚠ Deleting local mind file to prevent stale data usage.")
         os.remove(local_mind_file)
 
     try:
-        response = s3.get_object(Bucket=S3_BUCKET_NAME, Key=MIND_FILE_JSON)
-        mind_data = json.load(io.BytesIO(response["Body"].read()))
+        backend = get_backend()
+        mind_data_dict = backend.load("mind_file")
+        
+        # Convert from key-value dict to mind_data structure
+        mind_data = {}
+        for key, value in mind_data_dict.items():
+            mind_data[key] = value
+        
+        # Ensure required keys exist
+        if "self_reflections" not in mind_data:
+            mind_data["self_reflections"] = []
+        if "self_questions" not in mind_data:
+            mind_data["self_questions"] = []
+        if "stored_knowledge" not in mind_data:
+            mind_data["stored_knowledge"] = []
+        
         logger.debug("📝 [DEBUG] Post-Load Knowledge Count: %s", len(mind_data.get("stored_knowledge", [])))
         if len(mind_data.get("stored_knowledge", [])) < 100:
-            logger.warning("⚠ WARNING: Knowledge count abnormally low! Checking for S3 sync issues.")
+            logger.warning("⚠ WARNING: Knowledge count abnormally low! Checking for sync issues.")
+        
+        # Cache the result (5 minute TTL)
+        set_cache("mind_file", mind_data, ttl_seconds=300)
         return mind_data
-    except (s3.exceptions.NoSuchKey, json.JSONDecodeError) as e:
-        logger.warning("⚠ Warning: mind_file.json not found or corrupted in S3: %s", e)
-        raise InfluenceError("Failed to load mind file from S3") from e
     except Exception as e:
-        logger.exception("Failed to load mind file from S3")
-        raise InfluenceError("Failed to load mind file from S3") from e
+        logger.exception("Failed to load mind file")
+        raise InfluenceError("Failed to load mind file") from e
 
 
 def is_term_or_phrase(concept):

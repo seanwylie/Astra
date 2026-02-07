@@ -146,6 +146,8 @@ venv.bak/
 # Other
 *.sqlite3
 *.db
+*.db-wal
+*.db-shm
 *.pkl
 *.h5
 *.ckpt

@@ -72,6 +72,9 @@ def setup_logging(
     # Reduce noise from HTTP clients (every request was INFO; response bodies can appear as [N blob data])
     for _name in ("httpx", "httpcore", "openai"):
         logging.getLogger(_name).setLevel(logging.WARNING)
+    # Suppress verbose/binary output from embedding models (encode progress can appear as [N blob data] in journald)
+    for _name in ("sentence_transformers", "SentenceTransformer", "torch"):
+        logging.getLogger(_name).setLevel(logging.WARNING)
 
 
 def get_logger(name: str) -> logging.Logger:

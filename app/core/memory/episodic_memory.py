@@ -101,12 +101,40 @@ class EpisodicMemory:
         self._load_episodes()
     
     def _load_episodes(self) -> None:
-        """Load episodic memories from S3."""
+        """Load episodic memories from S3 with lazy loading optimization."""
         try:
+            # Optimize: Check cache first
+            from app.utils.cache import get_cache, set_cache
+            cached = get_cache("episodic_memory")
+            if cached is not None:
+                self.episodes = cached["episodes"]
+                self.episode_index = cached["episode_index"]
+                logger.debug("Loaded %s episodic memories from cache", len(self.episodes))
+                return
+            
             response = s3.get_object(Bucket=S3_BUCKET, Key=EPISODIC_MEMORY_KEY)
             data = json.load(response["Body"])
-            self.episodes = [Episode.from_dict(e) for e in data.get("episodes", [])]
+            episodes_list = data.get("episodes", [])
+            
+            # Optimize: Only load most recent/salient episodes initially
+            # Sort by timestamp (most recent first) and take top N
+            if len(episodes_list) > self.MAX_EPISODES:
+                # Sort by timestamp if available, otherwise keep as-is
+                try:
+                    episodes_list.sort(key=lambda e: e.get("timestamp", 0), reverse=True)
+                except (TypeError, KeyError):
+                    pass  # If sorting fails, keep original order
+                episodes_list = episodes_list[:self.MAX_EPISODES]
+            
+            self.episodes = [Episode.from_dict(e) for e in episodes_list]
             self.episode_index = {e.id: e for e in self.episodes}
+            
+            # Cache the result (10 minute TTL)
+            set_cache("episodic_memory", {
+                "episodes": self.episodes,
+                "episode_index": self.episode_index
+            }, ttl_seconds=600)
+            
             logger.debug("Loaded %s episodic memories", len(self.episodes))
         except s3.exceptions.NoSuchKey:
             logger.debug("No episodic memory found. Starting fresh.")
@@ -137,6 +165,10 @@ class EpisodicMemory:
                 Key=EPISODIC_MEMORY_KEY,
                 Body=json.dumps(data, indent=2).encode("utf-8")
             )
+            
+            # Clear cache after save
+            from app.utils.cache import clear_cache
+            clear_cache("episodic_memory")
         except Exception as e:
             logger.warning("Error saving episodic memory: %s", e)
 
@@ -183,9 +215,13 @@ class EpisodicMemory:
         episode.linked_episodes = [e.id for e in related[:5]]  # Max 5 links
         
         # Also update the related episodes to link back
+        MAX_LINKS_PER_EPISODE = 10  # Prevent unbounded growth
         for related_ep in related[:5]:
             if episode.id not in related_ep.linked_episodes:
                 related_ep.linked_episodes.append(episode.id)
+                # Trim if exceeds max links to prevent memory leak
+                if len(related_ep.linked_episodes) > MAX_LINKS_PER_EPISODE:
+                    related_ep.linked_episodes = related_ep.linked_episodes[-MAX_LINKS_PER_EPISODE:]
         
         self.episodes.append(episode)
         self.episode_index[episode.id] = episode
@@ -199,9 +235,13 @@ class EpisodicMemory:
         if not self.episodes:
             return []
         
+        # Optimize: Only check against recent episodes (last 200) to avoid O(n²) on large memory
+        MAX_RELATED_CHECKS = 200
+        episodes_to_check = self.episodes[-MAX_RELATED_CHECKS:] if len(self.episodes) > MAX_RELATED_CHECKS else self.episodes
+        
         scored: List[Tuple[Episode, float]] = []
         
-        for existing in self.episodes:
+        for existing in episodes_to_check:
             if existing.id == episode.id:
                 continue
             
@@ -249,10 +289,12 @@ class EpisodicMemory:
         Recall episodes matching the given criteria.
         Recalled episodes get a salience boost.
         """
-        matches = self.episodes.copy()
+        # Optimize: Use shallow copy instead of deep copy
+        matches = list(self.episodes)
         
         if person:
-            matches = [e for e in matches if person.lower() in [p.lower() for p in e.people_involved]]
+            person_lower = person.lower()
+            matches = [e for e in matches if any(person_lower == p.lower() for p in e.people_involved)]
         
         if topic:
             topic_lower = topic.lower()

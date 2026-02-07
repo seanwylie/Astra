@@ -42,8 +42,10 @@ class MessageGenerator:
         if not emotions:
             return "Astra is currently feeling emotionally neutral."
         flat = _flatten_emotion_state(emotions) if any(isinstance(v, dict) for v in emotions.values()) else emotions
-        sorted_emotions = sorted(flat.items(), key=lambda x: -x[1])
-        top = [f"{name.capitalize()} ({score:.2f})" for name, score in sorted_emotions[:3]]
+        # Optimize: Use nlargest instead of sorting entire dict
+        from heapq import nlargest
+        top_emotions = nlargest(3, flat.items(), key=lambda x: x[1])
+        top = [f"{name.capitalize()} ({score:.2f})" for name, score in top_emotions]
         return f"Astra is currently experiencing: {', '.join(top)}."
 
     def normalize_emotions(self, emotions: dict) -> dict:
@@ -71,12 +73,17 @@ class MessageGenerator:
     def log_emotional_conflict(self, emotions):
         state = load_emotion_state()
         flat = _flatten_emotion_state(state)
-        top = sorted(flat.items(), key=lambda x: -x[1])[:3]
+        # Optimize: Use nlargest instead of sorting entire dict
+        from heapq import nlargest
+        top = nlargest(3, flat.items(), key=lambda x: x[1])
         high_emotions = [e for e, i in top if i > 90]
         conflict_pairs = [("love", "hate"), ("hope", "grief"), ("curiosity", "uncertainty"), ("admiration", "resentment")]
 
         for pos, neg in conflict_pairs:
             if pos in high_emotions and neg in high_emotions:
+                # Optimize: Use SmartMindSession for better change tracking
+                from app.interfaces.smart_mind_session import SmartMindSession
+                session = SmartMindSession()
                 mind_data = session.load()
                 reflection = f"I feel conflicted—I'm holding strong {pos} and {neg} at the same time. I need to explore why."
                 mind_data.setdefault("self_reflections", []).append(reflection)
@@ -89,8 +96,8 @@ class MessageGenerator:
         if not emotions:
             return "curiosity"
 
-        sorted_emotions = sorted(emotions.items(), key=lambda x: x[1], reverse=True)
-        top_emotion, top_intensity = sorted_emotions[0]
+        # Optimize: Use max() instead of sorting entire dict
+        top_emotion, top_intensity = max(emotions.items(), key=lambda x: x[1])
 
         # Special case: obsession overrides if very high
         if "obsession" in emotions and emotions["obsession"] > 120:
@@ -119,7 +126,9 @@ class MessageGenerator:
 
     def detect_emotional_conflict_phrase(self, emotions: dict) -> str:
         """Return a comment on emotional tension if applicable."""
-        top = list(emotions.items())[:3]
+        # Optimize: Use nlargest instead of converting to list and slicing
+        from heapq import nlargest
+        top = nlargest(3, emotions.items(), key=lambda x: x[1])
         high_emotions = [e for e, _ in top if emotions[e] > 90]
         phrases = {
             ("love", "hate"): "Even though I feel love, something inside me still simmers with hate.",

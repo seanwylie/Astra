@@ -30,7 +30,9 @@ def generate_category_embeddings(question_config):
         if not sample_questions:
             logger.warning("⚠ Warning: No sample questions found for category '%s'", category)
         else:
-            category_embeddings[category] = model.encode(sample_questions, convert_to_tensor=True)
+            category_embeddings[category] = model.encode(
+                sample_questions, convert_to_tensor=True, show_progress_bar=False
+            )
 
     return category_embeddings
 
@@ -48,7 +50,9 @@ def categorize_question(questions, category_embeddings):
             logger.debug("⚠ Skipping invalid question format: %s", question)
             continue
         
-        question_embedding = model.encode(question, convert_to_tensor=True)
+        question_embedding = model.encode(
+            question, convert_to_tensor=True, show_progress_bar=False
+        )
 
         # Compare the question with all category embeddings using cosine similarity
         similarities = {
@@ -83,10 +87,16 @@ def filter_questions(mind_data, new_questions):
     stored_knowledge_set = set(mind_data.get("stored_knowledge", []))  # ✅ Prevents mutation
 
     # ✅ Store existing questions with precomputed lowercase versions
+    all_existing = mind_data.get("self_questions", [])
     existing_questions = {
         q["question"].strip().lower(): q
-        for q in mind_data.get("self_questions", []) if isinstance(q, dict) and "question" in q
+        for q in all_existing if isinstance(q, dict) and "question" in q
     }
+    
+    # Optimize: Only check against recent questions to avoid O(n²) on large question lists
+    MAX_EXISTING_CHECKS = 100
+    existing_list = list(existing_questions.keys())
+    recent_existing = existing_list[-MAX_EXISTING_CHECKS:] if len(existing_list) > MAX_EXISTING_CHECKS else existing_list
 
     for question_entry in new_questions:
         if isinstance(question_entry, dict) and "question" in question_entry:
@@ -101,12 +111,18 @@ def filter_questions(mind_data, new_questions):
 
         question_text_lower = question_text.lower()
 
+        # Optimize: Quick exact match check first
+        if question_text_lower in existing_questions:
+            logger.debug("⚠ Exact duplicate question: %s", question_text)
+            continue
+
         # ✅ Reject dictionary definitions explicitly before filtering
         if question_text_lower in stored_knowledge_set and not question_text_lower.startswith("📖"):
             logger.debug("⚠ Possible false positive → Skipping '%s' (already in stored knowledge)", question_text)
             continue  # 🚨 Prevents accidentally removing legitimate questions!
 
-        is_duplicate = any(fuzz.ratio(question_text_lower, existing_text) > 65 for existing_text in existing_questions)
+        # Optimize: Only fuzzy match against recent questions
+        is_duplicate = any(fuzz.ratio(question_text_lower, existing_text) > 65 for existing_text in recent_existing)
 
         if not is_duplicate:
             filtered_questions.append(question_entry)

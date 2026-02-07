@@ -9,6 +9,8 @@ import boto3
 from datetime import datetime
 from typing import Dict, List, Optional, Any
 from app.config.loader import load_config
+from app.interfaces.storage_backend import get_backend
+# Database sync disabled - only JSON files are backed up to S3
 
 logger = logging.getLogger(__name__)
 
@@ -35,12 +37,38 @@ class ParentRelationshipManager:
         self._load_state()
     
     def _load_state(self) -> None:
-        """Load parent relationship state from S3."""
+        """Load parent relationship state using storage backend with caching."""
         try:
-            response = s3.get_object(Bucket=S3_BUCKET, Key=PARENT_STATE_KEY)
-            self.state = json.load(response["Body"])
-            logger.debug("Loaded parent relationship state")
-        except s3.exceptions.NoSuchKey:
+            # Optimize: Check cache first
+            from app.utils.cache import get_cache, set_cache
+            cached = get_cache("parent_relationships")
+            if cached is not None:
+                self.state = cached
+                logger.debug("Loaded parent relationship state from cache")
+                return
+            
+            backend = get_backend()
+            state_data = backend.load("parent_relationships")
+            
+            if state_data:
+                # Optimize: Check if it's the expected format directly
+                if isinstance(state_data, dict) and "parents" in state_data:
+                    self.state = state_data
+                    logger.debug("Loaded parent relationship state")
+                    # Cache the result (5 minute TTL)
+                    set_cache("parent_relationships", self.state, ttl_seconds=300)
+                    return
+                # Fallback to S3 JSON only if SQLite format is unexpected
+                elif isinstance(state_data, dict) and "parent_id" in str(state_data):
+                    try:
+                        response = s3.get_object(Bucket=S3_BUCKET, Key=PARENT_STATE_KEY)
+                        self.state = json.load(response["Body"])
+                        logger.debug("Loaded parent relationship state from JSON fallback")
+                        set_cache("parent_relationships", self.state, ttl_seconds=300)
+                        return
+                    except Exception:
+                        pass
+            
             logger.debug("No parent relationship state found. Initializing from config.")
             self._initialize_from_config()
         except Exception as e:
@@ -66,14 +94,24 @@ class ParentRelationshipManager:
         self._save_state()
     
     def _save_state(self) -> None:
-        """Save parent relationship state to S3."""
+        """Save parent relationship state using storage backend."""
         try:
             self.state["last_updated"] = time.time()
-            s3.put_object(
-                Bucket=S3_BUCKET,
-                Key=PARENT_STATE_KEY,
-                Body=json.dumps(self.state, indent=2).encode("utf-8")
-            )
+            backend = get_backend()
+            # Parent relationships need special handling - store as JSON in data column
+            # For now, use JSON backend fallback until schema is fully updated
+            try:
+                s3.put_object(
+                    Bucket=S3_BUCKET,
+                    Key=PARENT_STATE_KEY,
+                    Body=json.dumps(self.state, indent=2).encode("utf-8")
+                )
+                logger.debug("Parent relationship state saved to S3")
+                # Clear cache after save
+                from app.utils.cache import clear_cache
+                clear_cache("parent_relationships")
+            except Exception as e:
+                logger.warning("Error saving parent state: %s", e)
         except Exception as e:
             logger.warning("Error saving parent state: %s", e)
 

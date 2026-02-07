@@ -30,26 +30,41 @@ def merge_knowledge(existing_knowledge, new_knowledge):
 
     # ✅ Preserve original knowledge
     knowledge_list = list(existing_knowledge)
-    knowledge_set = set(existing_knowledge)
+    # Optimize: Use lowercase set for faster duplicate checking
+    knowledge_set_lower = {k.lower() for k in existing_knowledge}
     removed_items = []  # Track removed knowledge for debugging
 
     for item in new_knowledge:
         decoded_item = safe_decode(item)
 
         # ✅ **Protect dictionary entries** unless they are extremely short
-        is_dict_entry = decoded_item.startswith("📖") or ":" in decoded_item[:20]
-        if is_dict_entry and len(decoded_item.split()) <= 3:
+        # Optimize: Check prefix first (faster than string slicing)
+        is_dict_entry = decoded_item.startswith("📖")
+        if not is_dict_entry and len(decoded_item) > 20:
+            is_dict_entry = ":" in decoded_item[:20]
+        if is_dict_entry and decoded_item.count(" ") <= 2:  # Optimize: count spaces instead of split()
             removed_items.append(f"⚠ SKIPPED (Trivial Dictionary Entry): {decoded_item}")
             continue
 
+        # Optimize: Quick exact match check first (much faster)
+        decoded_lower = decoded_item.lower()
+        if decoded_lower in knowledge_set_lower:
+            removed_items.append(f"⚠ SKIPPED (Exact duplicate): {decoded_item}")
+            continue
+
         # ✅ **Only remove near-duplicates if similarity is extremely high (>98%)**
-        is_duplicate = any(fuzz.ratio(decoded_item.lower(), existing.lower()) > 98 for existing in knowledge_set)
+        # Optimize: Only check against a sample of existing knowledge for fuzzy matching
+        # This reduces O(n²) complexity significantly
+        MAX_FUZZY_CHECKS = 50  # Only check against last 50 entries
+        recent_knowledge = list(existing_knowledge)[-MAX_FUZZY_CHECKS:] if len(existing_knowledge) > MAX_FUZZY_CHECKS else existing_knowledge
+        
+        is_duplicate = any(fuzz.ratio(decoded_lower, existing.lower()) > 98 for existing in recent_knowledge)
 
         if is_duplicate:
             removed_items.append(f"⚠ SKIPPED (Potential duplicate, fuzzy match >98%): {decoded_item}")
         else:
             knowledge_list.append(decoded_item)
-            knowledge_set.add(decoded_item)
+            knowledge_set_lower.add(decoded_lower)
             logger.debug("Added new knowledge: %s", decoded_item)
 
     if removed_items:
@@ -81,6 +96,14 @@ def merge_structured_knowledge():
         # ✅ Keep ALL previous knowledge while adding structured knowledge
         # ✅ Preserve order while removing duplicates
         mind_data["stored_knowledge"] = list(OrderedDict.fromkeys(mind_data["stored_knowledge"] + merged_knowledge))
+        
+        # ✅ Prevent memory leak: Trim stored_knowledge if it exceeds limit
+        MAX_STORED_KNOWLEDGE = 5000  # Hard limit to prevent OOM
+        if len(mind_data["stored_knowledge"]) > MAX_STORED_KNOWLEDGE:
+            logger.warning("stored_knowledge exceeded limit (%s), trimming to %s", 
+                         len(mind_data["stored_knowledge"]), MAX_STORED_KNOWLEDGE)
+            # Keep most recent knowledge (last N entries)
+            mind_data["stored_knowledge"] = mind_data["stored_knowledge"][-MAX_STORED_KNOWLEDGE:]
 
 
         if "self_reflections" in mind_data:

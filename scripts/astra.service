@@ -8,8 +8,18 @@ Type=simple
 WorkingDirectory=__ASTRA_PROJECT_ROOT__
 EnvironmentFile=__ASTRA_PROJECT_ROOT__/.env
 ExecStart=__ASTRA_PROJECT_ROOT__/.venv/bin/python -u -m app.main
-Restart=always
+Restart=on-failure
 RestartSec=10
+# Prevent infinite restart loops
+StartLimitIntervalSec=300
+StartLimitBurst=5
+# Memory limits to prevent OOM kills (adjust based on your system)
+# Increased due to large database (41GB) - needs cleanup but allowing more headroom for now
+# 2GB = 2097152K, 4GB = 4194304K, 6GB = 6291456K
+MemoryMax=6G
+MemoryHigh=5G
+# Note: OnOOMKill is not a valid systemd option - removed
+# OOM kills will trigger Restart=on-failure behavior
 StandardOutput=journal
 StandardError=journal
 

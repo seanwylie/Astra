@@ -99,19 +99,43 @@ class StreamOfConsciousness:
         self._load_stream()
     
     def _load_stream(self) -> None:
-        """Load stream of consciousness from S3."""
+        """Load stream of consciousness from S3 with caching."""
         try:
+            # Optimize: Check cache first
+            from app.utils.cache import get_cache, set_cache
+            cached = get_cache("stream_of_consciousness")
+            if cached is not None:
+                self.thoughts = cached["thoughts"]
+                self.pending_insights = cached.get("pending_insights", [])
+                logger.debug("Loaded %s thoughts from cache", len(self.thoughts))
+                return
+            
             response = s3.get_object(Bucket=S3_BUCKET, Key=STREAM_KEY)
             data = json.load(response["Body"])
-            self.thoughts = [Thought.from_dict(t) for t in data.get("thoughts", [])]
+            thoughts_list = data.get("thoughts", [])
+            
+            # Optimize: Only load most recent thoughts if over limit
+            if len(thoughts_list) > self.MAX_STREAM_LENGTH:
+                thoughts_list = thoughts_list[-self.MAX_STREAM_LENGTH:]
+            
+            self.thoughts = [Thought.from_dict(t) for t in thoughts_list]
             self.pending_insights = data.get("pending_insights", [])
+            
+            # Cache the result (5 minute TTL)
+            set_cache("stream_of_consciousness", {
+                "thoughts": self.thoughts,
+                "pending_insights": self.pending_insights
+            }, ttl_seconds=300)
+            
             logger.debug("Loaded %s thoughts from stream", len(self.thoughts))
         except s3.exceptions.NoSuchKey:
             logger.debug("No stream of consciousness found. Starting fresh.")
             self.thoughts = []
+            self.pending_insights = []
         except Exception as e:
             logger.warning("Error loading stream: %s", e)
             self.thoughts = []
+            self.pending_insights = []
     
     def _save_stream(self) -> None:
         """Save stream of consciousness to S3."""
@@ -131,6 +155,10 @@ class StreamOfConsciousness:
                 Key=STREAM_KEY,
                 Body=json.dumps(data, indent=2).encode("utf-8")
             )
+            
+            # Clear cache after save
+            from app.utils.cache import clear_cache
+            clear_cache("stream_of_consciousness")
         except Exception as e:
             logger.warning("Error saving stream: %s", e)
 

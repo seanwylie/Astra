@@ -14,12 +14,21 @@ question_config = load_config("question_config")
 def generate_questions(reflection: str, mind_data: dict) -> tuple:
     """Generates structured questions based on Astra's reflection while ensuring variety & avoiding redundancy."""
     
-    debug_log("Loading")
-    fresh_mind_data = session.load()
-    stored_knowledge = fresh_mind_data.get("stored_knowledge", [])
-    unresolved_questions = fresh_mind_data.get("unresolved_questions", [])
+    # Optimize: Use passed mind_data instead of redundant session.load()
+    # Only load if mind_data is empty or missing required keys
+    if not mind_data or not mind_data.get("stored_knowledge"):
+        debug_log("Loading")
+        fresh_mind_data = session.load()
+        stored_knowledge = fresh_mind_data.get("stored_knowledge", [])
+        unresolved_questions = fresh_mind_data.get("unresolved_questions", [])
+    else:
+        stored_knowledge = mind_data.get("stored_knowledge", [])
+        unresolved_questions = mind_data.get("unresolved_questions", [])
 
-    print(f"🔍 Loaded fresh mind data. Stored Knowledge: {len(stored_knowledge)}, Unresolved Questions: {len(unresolved_questions)}")
+    logger.debug(
+        "Loaded fresh mind data. Stored Knowledge: %s, Unresolved Questions: %s",
+        len(stored_knowledge), len(unresolved_questions)
+    )
 
     unresolved_limit = 1000
     if len(unresolved_questions) >= unresolved_limit:

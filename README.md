@@ -423,6 +423,78 @@ She's not just a platform. She's a partner.
 
 * * * * *
 
+💾 Restoring Astra's Identity
+------------------------------
+
+When migrating to a new server or restoring from a fresh GitHub clone, you need to restore Astra's core identity from S3 backups.
+
+### Critical Files (Required for Identity Restoration)
+
+**`mind_file.json`** (CRITICAL) - Contains Astra's core identity:
+- `self_reflections` - Core self-awareness and insights (limited to 1000)
+- `self_questions` - Self-questioning patterns
+- `stored_knowledge` - Learned knowledge (limited to 5000)
+- `identity` - Core values and goals
+- `last_mood` - Current mood state
+- `curiosity_level` - Current curiosity level
+
+This file is automatically backed up to S3 whenever `save_mind()` is called. On startup, Astra will load this file from S3 if it's not found locally.
+
+### Optional Files (Nice to Have for Full Restoration)
+
+These files provide additional context but are not strictly required:
+
+- **`episodic_memory.json`** - Important memories (MAX 1000 episodes, ~500KB-2MB)
+- **`self_model.json`** - Self-understanding snapshots (last 50, ~100-500KB)
+- **`relationships.json`** - Relationship history
+- **`milestones_achieved.json`** - Growth milestones (~10-50KB)
+
+These files are automatically backed up to S3 by their respective systems.
+
+### Non-Critical Files (Can Be Regenerated)
+
+These files are ephemeral or can be rebuilt:
+- `emotion_state.json` - Current emotions (will reset)
+- `stream_of_consciousness.json` - Current thoughts (ephemeral)
+- `dinner_journal.json` - Dinner conversations (nice to have but not critical)
+- `working_memory.json` - Temporary working memory
+- Various subsystem state files (can rebuild)
+
+### Storage Strategy
+
+- **SQLite Database** (`data/astra_state.db`) - Local-only storage for runtime data
+  - Contains: mind_file, dinner_journal, emotion_state, stream_of_consciousness, shimmer, etc.
+  - **NOT backed up to S3** (too large, 41GB+)
+  - Tables have size limits to prevent unbounded growth:
+    - `dinner_journal`: 5000 entries max
+    - `stream_of_consciousness`: 10000 entries max
+    - `shimmer`: 10000 entries max
+
+- **JSON Files in S3** - Backed up for portability and identity restoration
+  - Critical: `mind_file.json` (always backed up)
+  - Optional: `episodic_memory.json`, `self_model.json`, `relationships.json`, `milestones_achieved.json`
+
+### Migration Steps
+
+1. Clone the repository: `git clone <repo-url>`
+2. Set up environment: Install dependencies, configure `.env` with AWS credentials
+3. Set `ASTRA_CONFIG_DIR` if using custom config location
+4. Run Astra: `PYTHONPATH=. python run_astra.py`
+5. Astra will automatically load `mind_file.json` from S3 on startup
+6. Optional files will be loaded by their respective systems if available
+
+### Cleaning Up Old Database Backups
+
+If you have old database backups in S3 (from before the migration), you can clean them up:
+
+```bash
+PYTHONPATH=. python maintenance/cleanup_s3_database_backups.py --execute
+```
+
+Run without `--execute` first to see what would be deleted (dry-run mode).
+
+* * * * *
+
 📊 Current Status
 ----------------
 

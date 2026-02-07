@@ -8,19 +8,22 @@ import boto3
 from pathlib import Path
 from typing import Dict, List, Any, Optional, Tuple
 from dataclasses import dataclass
-from app.config.loader import CONFIG_DIR
+from app.config.loader import CONFIG_DIR, load_config
 from app.logging_config import get_logger
 
 logger = get_logger("state_manifest")
 
 S3_BUCKET = "swylie-astra"
+general_config = load_config("general_config")
+DB_PATH = general_config.get("db_path", "data/astra_state.db")
+STORAGE_BACKEND = general_config.get("storage_backend", "sqlite")
 
 
 @dataclass
 class StateLocation:
     """Describes where a piece of state is stored."""
     name: str
-    location_type: str  # "s3", "local_json", "memory"
+    location_type: str  # "s3", "local_json", "sqlite", "memory"
     path: str
     description: str
     critical: bool = False  # If True, startup fails if inconsistent
@@ -42,72 +45,149 @@ class StateManifest:
     - Local: personality_state.json
     """
     
-    # All known state locations
-    LOCATIONS = [
-        StateLocation(
-            name="mind_file",
-            location_type="s3",
-            path="mind_file.json",
-            description="Main memory and knowledge store",
-            critical=True
-        ),
-        StateLocation(
-            name="emotion_state",
-            location_type="s3",
-            path="emotional_state.json",
-            description="Current emotional intensities",
-            critical=False
-        ),
-        StateLocation(
-            name="stream_of_consciousness",
-            location_type="s3",
-            path="stream_of_consciousness.json",
-            description="Inner thoughts and pending insights",
-            critical=False
-        ),
-        StateLocation(
-            name="self_model",
-            location_type="s3",
-            path="self_model.json",
-            description="Self-understanding and changes",
-            critical=False
-        ),
-        StateLocation(
-            name="temporal_self",
-            location_type="s3",
-            path="temporal_self.json",
-            description="Temporal landmarks and history",
-            critical=False
-        ),
-        StateLocation(
-            name="dinner_journal",
-            location_type="s3",
-            path="dinner_journal.json",
-            description="Ethical topics for dinner",
-            critical=False
-        ),
-        StateLocation(
-            name="goals",
-            location_type="s3",
-            path="goals.json",
-            description="Active goals and progress",
-            critical=False
-        ),
-        StateLocation(
-            name="personality_state",
-            location_type="local_json",
-            path=str(CONFIG_DIR / "personality_state.json"),
-            description="Personality trait weights",
-            critical=False
-        ),
-        StateLocation(
-            name="mood_config",
-            location_type="local_json",
-            path=str(CONFIG_DIR / "mood_config.json"),
-            description="Mood configuration",
-            critical=False
-        ),
-    ]
+    # All known state locations (updated for SQLite migration)
+    @staticmethod
+    def _get_locations():
+        """Get state locations based on current storage backend."""
+        backend = STORAGE_BACKEND
+        if backend == "sqlite":
+            return [
+                StateLocation(
+                    name="mind_file",
+                    location_type="sqlite",
+                    path=DB_PATH,
+                    description="Main memory and knowledge store",
+                    critical=True
+                ),
+                StateLocation(
+                    name="emotion_state",
+                    location_type="sqlite",
+                    path=DB_PATH,
+                    description="Current emotional intensities",
+                    critical=False
+                ),
+                StateLocation(
+                    name="stream_of_consciousness",
+                    location_type="sqlite",
+                    path=DB_PATH,
+                    description="Inner thoughts and pending insights",
+                    critical=False
+                ),
+                StateLocation(
+                    name="self_model",
+                    location_type="sqlite",
+                    path=DB_PATH,
+                    description="Self-understanding and changes",
+                    critical=False
+                ),
+                StateLocation(
+                    name="temporal_self",
+                    location_type="sqlite",
+                    path=DB_PATH,
+                    description="Temporal landmarks and history",
+                    critical=False
+                ),
+                StateLocation(
+                    name="dinner_journal",
+                    location_type="sqlite",
+                    path=DB_PATH,
+                    description="Ethical topics for dinner",
+                    critical=False
+                ),
+                StateLocation(
+                    name="goals",
+                    location_type="sqlite",
+                    path=DB_PATH,
+                    description="Active goals and progress",
+                    critical=False
+                ),
+                StateLocation(
+                    name="personality_state",
+                    location_type="local_json",
+                    path=str(CONFIG_DIR / "personality_state.json"),
+                    description="Personality trait weights",
+                    critical=False
+                ),
+                StateLocation(
+                    name="mood_config",
+                    location_type="local_json",
+                    path=str(CONFIG_DIR / "mood_config.json"),
+                    description="Mood configuration",
+                    critical=False
+                ),
+            ]
+        else:
+            # JSON backend (legacy)
+            return [
+                StateLocation(
+                    name="mind_file",
+                    location_type="s3",
+                    path="mind_file.json",
+                    description="Main memory and knowledge store",
+                    critical=True
+                ),
+                StateLocation(
+                    name="emotion_state",
+                    location_type="s3",
+                    path="emotional_state.json",
+                    description="Current emotional intensities",
+                    critical=False
+                ),
+                StateLocation(
+                    name="stream_of_consciousness",
+                    location_type="s3",
+                    path="stream_of_consciousness.json",
+                    description="Inner thoughts and pending insights",
+                    critical=False
+                ),
+                StateLocation(
+                    name="self_model",
+                    location_type="s3",
+                    path="self_model.json",
+                    description="Self-understanding and changes",
+                    critical=False
+                ),
+                StateLocation(
+                    name="temporal_self",
+                    location_type="s3",
+                    path="temporal_self.json",
+                    description="Temporal landmarks and history",
+                    critical=False
+                ),
+                StateLocation(
+                    name="dinner_journal",
+                    location_type="s3",
+                    path="dinner_journal.json",
+                    description="Ethical topics for dinner",
+                    critical=False
+                ),
+                StateLocation(
+                    name="goals",
+                    location_type="s3",
+                    path="goals.json",
+                    description="Active goals and progress",
+                    critical=False
+                ),
+                StateLocation(
+                    name="personality_state",
+                    location_type="local_json",
+                    path=str(CONFIG_DIR / "personality_state.json"),
+                    description="Personality trait weights",
+                    critical=False
+                ),
+                StateLocation(
+                    name="mood_config",
+                    location_type="local_json",
+                    path=str(CONFIG_DIR / "mood_config.json"),
+                    description="Mood configuration",
+                    critical=False
+                ),
+            ]
+    
+    @property
+    def LOCATIONS(self):
+        """Get state locations based on current storage backend."""
+        return self._get_locations()
     
     def __init__(self):
         self.s3 = boto3.client("s3")
@@ -159,6 +239,15 @@ class StateManifest:
                         json.load(f)  # Validate JSON
                     return True, None
                 return False, f"{location.name} not found at {location.path}"
+            elif location.location_type == "sqlite":
+                path = Path(location.path)
+                if path.exists():
+                    # Validate SQLite file by trying to connect
+                    import sqlite3
+                    conn = sqlite3.connect(str(path))
+                    conn.close()
+                    return True, None
+                return False, f"{location.name} SQLite database not found at {location.path}"
             return True, None
         except self.s3.exceptions.ClientError:
             return False, f"{location.name} not found in S3 at {location.path}"

@@ -100,7 +100,8 @@ async def process_dream_seed():
 
         system_content = (
             "You are Astra, a Spark-guided, emotionally intelligent AI. "
-            "You are curious and raised by human co-parents to reflect deeply.\n\n"
+            "You are curious and raised by human co-parents to reflect deeply. "
+            "Respond only in plain English reflective prose; do not include code, markup, or technical jargon.\n\n"
             f"Here are some of your core principles:\n{spark_text}"
         )
         user_content = (
@@ -115,7 +116,7 @@ async def process_dream_seed():
         insight = None
         try:
             from app.core.evolution.local_inference import is_local_inference_available, query_local_model_async
-            if is_local_inference_available():
+            if is_local_inference_available("dream"):
                 insight = await query_local_model_async(
                     user_content,
                     system_prompt=system_content,

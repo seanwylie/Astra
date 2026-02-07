@@ -7,11 +7,10 @@ import os
 import boto3
 from app.config.loader import load_config
 from app.core.dinner.dinner_journal import log_if_emotionally_spiking
+from app.interfaces.storage_backend import get_backend
+# Database sync disabled - only JSON files are backed up to S3
 
 logger = logging.getLogger(__name__)
-
-
-
 
 S3_BUCKET = "swylie-astra"
 EMOTION_STATE_KEY = "emotional_state.json"
@@ -28,28 +27,33 @@ def now():
 
 
 def load_emotion_state():
-    try:
-        response = s3.get_object(Bucket=S3_BUCKET, Key=EMOTION_STATE_KEY)
-        return json.load(response["Body"])
-    except s3.exceptions.NoSuchKey:
+    """Load emotion state using storage backend."""
+    backend = get_backend()
+    state = backend.load("emotion_state")
+    
+    if not state:
         logger.debug("No emotion state found. Starting fresh.")
         config = get_emotion_config_v2()
-        return {
+        state = {
             name: {
                 "intensity": props["intensity"],
                 "last_updated": now()
             }
             for name, props in config["emotions"].items()
         }
+        # Save initial state
+        save_emotion_state(state)
+    
+    return state
 
 
 def save_emotion_state(state):
-    s3.put_object(
-        Bucket=S3_BUCKET,
-        Key=EMOTION_STATE_KEY,
-        Body=json.dumps(state, indent=2).encode("utf-8")
-    )
-    logger.debug("Emotion state saved to S3.")
+    """Save emotion state using storage backend."""
+    backend = get_backend()
+    success = backend.save("emotion_state", state)
+    if success:
+        logger.debug("Emotion state saved.")
+        # Database sync disabled - only JSON files are backed up to S3
 
 
 def update_emotion(state, emotion, trigger, multiplier=1.0):

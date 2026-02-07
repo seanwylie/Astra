@@ -113,27 +113,32 @@ def self_answer_questions(mind_data: dict) -> list:
         else:
             continue
 
-    # Prioritize unresolved questions: score by relevance to recent knowledge/reflections and simplicity
-    unresolved = [q for q in new_questions if q.get("unresolved", True)]
-    if not unresolved:
-        to_try = []
-    else:
-        knowledge_recent = " ".join(
-            (k.get("insight", k) if isinstance(k, dict) else str(k) for k in mind_data.get("stored_knowledge", [])[-5:]
-        )).lower()
-        reflections_recent = " ".join(str(r)[:200] for r in mind_data.get("self_reflections", [])[-3:]).lower()
-        context_lower = (knowledge_recent + " " + reflections_recent).lower()
+        # Prioritize unresolved questions: score by relevance to recent knowledge/reflections and simplicity
+        unresolved = [q for q in new_questions if q.get("unresolved", True)]
+        if not unresolved:
+            to_try = []
+        else:
+            # Optimize: Limit context to recent entries only
+            stored_knowledge = mind_data.get("stored_knowledge", [])
+            knowledge_recent = " ".join(
+                (k.get("insight", k) if isinstance(k, dict) else str(k) for k in stored_knowledge[-5:]
+            )).lower()
+            reflections_recent = " ".join(str(r)[:200] for r in mind_data.get("self_reflections", [])[-3:]).lower()
+            context_lower = (knowledge_recent + " " + reflections_recent).lower()
 
-        def score_question(q):
-            text = _question_text(q.get("question")).lower()
-            if not text:
-                return 0
-            overlap = sum(1 for w in text.split() if len(w) >= 4 and w in context_lower)
-            simplicity = max(0, 50 - len(text) // 2)
-            return overlap * 2 + simplicity
+            def score_question(q):
+                text = _question_text(q.get("question")).lower()
+                if not text:
+                    return 0
+                # Optimize: Use set intersection for faster word matching
+                text_words = {w for w in text.split() if len(w) >= 4}
+                context_words = set(context_lower.split())
+                overlap = len(text_words & context_words)
+                simplicity = max(0, 50 - len(text) // 2)
+                return overlap * 2 + simplicity
 
-        unresolved_sorted = sorted(unresolved, key=score_question, reverse=True)
-        to_try = unresolved_sorted[:MAX_QUESTIONS_TO_ANSWER]
+            unresolved_sorted = sorted(unresolved, key=score_question, reverse=True)
+            to_try = unresolved_sorted[:MAX_QUESTIONS_TO_ANSWER]
     if not to_try:
         mind_data["self_questions"] = new_questions
         mind_data["unresolved_questions"] = [q for q in new_questions if q.get("unresolved", True)]

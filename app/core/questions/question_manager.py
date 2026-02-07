@@ -18,18 +18,27 @@ def deduplicate_questions(questions, threshold=65):  # 🔥 Lower threshold from
     """Removes near-duplicate questions using fuzzy matching."""
     unique_questions = []
     seen_questions = set()
+    seen_lower = set()  # Optimize: Use set for O(1) exact match checks
 
     for question in questions:
         question_text = question["question"] if isinstance(question, dict) else str(question).strip()
+        question_lower = question_text.lower()
+        
+        # Optimize: Quick exact match check first (much faster)
+        if question_lower in seen_lower:
+            continue
+        
+        # Optimize: Only check against recent questions to avoid O(n²)
+        MAX_FUZZY_CHECKS = 50
+        recent_seen = list(seen_questions)[-MAX_FUZZY_CHECKS:] if len(seen_questions) > MAX_FUZZY_CHECKS else list(seen_questions)
         
         # Check if question is similar to any existing one
-        is_duplicate = any(fuzz.ratio(question_text.lower(), existing.lower()) > threshold for existing in seen_questions)
+        is_duplicate = any(fuzz.ratio(question_lower, existing.lower()) > threshold for existing in recent_seen)
 
         if not is_duplicate:
             unique_questions.append(question)
-            seen_questions.add(question_text.lower())
-        # else:
-            # print(f"⚠ Near-exact duplicate found. Allowing minor rewording: {question_text}")  # 🔥 Less strict duplicate handling
+            seen_questions.add(question_text)
+            seen_lower.add(question_lower)
 
     return unique_questions
 

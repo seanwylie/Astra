@@ -38,7 +38,9 @@ class MoodManager:
 
     def save_mood_state(self):
         """Save Astra's mood, mood score, curiosity level, and mood history to memory."""
-        debug_log("Loading")  
+        # Optimize: Use SmartMindSession to avoid redundant loads
+        from app.interfaces.smart_mind_session import SmartMindSession
+        session = SmartMindSession()
         mind_data = session.load()
         mind_data["last_mood"] = self.current_mood
         mind_data["mood_score"] = self.mood_score
@@ -47,15 +49,19 @@ class MoodManager:
         mind_data["mood_influences"] = self.mood_config["mood_influences"]  # ✅ Persist mood influences
         mind_data["moods"] = self.mood_config["moods"]  # ✅ Persist moods and curiosity factors
         mind_data["last_modification"] = self.last_modification  # ✅ Persist modification timestamps
-        debug_log("Saving")
         session.maybe_save()
 
     def start_mood_thread(self):
         """Runs mood updates periodically in the background."""
         def mood_loop():
             while True:
-                time.sleep(600)  # ✅ Check every 10 minutes
-                self.update_mood()
+                try:
+                    time.sleep(600)  # ✅ Check every 10 minutes
+                    self.update_mood()
+                except Exception as e:
+                    logger.exception("Error in mood loop thread: %s", e)
+                    # Continue the loop even if update_mood fails
+                    time.sleep(60)  # Wait a bit before retrying
         
         thread = threading.Thread(target=mood_loop, daemon=True)
         thread.start()
@@ -96,12 +102,8 @@ class MoodManager:
             self.last_modification[event_type] = time.time()
             logger.debug("Modified mood influence: %s → %s", event_type, new_value)
 
-            debug_log("Loading")  
-            mind_data = session.load()
-            mind_data["mood_influences"] = self.mood_config["mood_influences"]
-            mind_data["last_modification"] = self.last_modification
-            debug_log("Saving")
-            session.maybe_save()
+            # Optimize: Use save_mood_state instead of redundant load/save
+            self.save_mood_state()
             logger.debug("Mood influences saved and will persist across restarts.")
         else:
             logger.warning("Unknown mood influence '%s', modification skipped.", event_type)
@@ -112,23 +114,6 @@ class MoodManager:
             return  # Enforce cooldown unless forced
 
         previous_mood = self.current_mood
-
-        # ✅ Load Astra's full memory before modifying mood
-        debug_log("Loading")  
-        mind_data = session.load()
-
-        # ✅ Preserve existing data while updating mood-related values
-        mind_data["mood_score"] = self.mood_score
-        mind_data["last_mood"] = self.current_mood
-
-        debug_log("Saving")
-        session.maybe_save()  # ✅ Save without wiping data!
-
-        # ✅ Load and merge without overwriting
-        debug_log("Loading")  
-        new_mind_data = session.load()
-        self.mood_score = max(min(new_mind_data.get("mood_score", self.mood_score), 2.0), -2.0)
-        self.current_mood = new_mind_data.get("last_mood", self.current_mood)
 
         logger.debug("Checking mood update with score %s", self.mood_score)
 
@@ -167,9 +152,8 @@ class MoodManager:
 
         self.last_mood_update = time.time()
 
-        # ✅ Save full mind file again to ensure no data loss
-        debug_log("Saving")
-        session.maybe_save()
+        # ✅ Save mood state once (optimized: removed redundant loads)
+        self.save_mood_state()
 
 
 
@@ -191,12 +175,8 @@ class MoodManager:
             self.last_modification[mood] = time.time()
             logger.debug("Modified curiosity factor for %s: %s", mood, new_value)
 
-            debug_log("Loading")  
-            mind_data = session.load()
-            mind_data["moods"] = self.mood_config["moods"]
-            mind_data["last_modification"] = self.last_modification
-            debug_log("Saving")
-            session.maybe_save()
+            # Optimize: Use save_mood_state instead of redundant load/save
+            self.save_mood_state()
             logger.debug("Curiosity factors saved and will persist across restarts.")
         else:
             logger.warning("Unknown mood '%s', modification skipped.", mood)
