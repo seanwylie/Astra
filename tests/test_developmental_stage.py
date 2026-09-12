@@ -221,12 +221,15 @@ def test_milestone_detector_bridge_notifies_developmental_tracker():
     from app.core import development
 
     md_module = import_module("app.core.growth.milestone_detector")
-    with patch("app.core.development.developmental_stage.boto3.client", return_value=client), patch(
-        "app.core.growth.milestone_detector.boto3.client", return_value=client
+    ds_module = development.developmental_stage
+    # Patch the imported modules directly. String paths fail on 3.10 because
+    # app.core.growth.milestone_detector is the instance, not the module.
+    with patch.object(ds_module.boto3, "client", return_value=client), patch.object(
+        md_module.boto3, "client", return_value=client
     ):
-        reload(development.developmental_stage)
+        reload(ds_module)
         reload(md_module)
-        tracker = development.developmental_stage.developmental_tracker
+        tracker = ds_module.developmental_tracker
         milestone_detector = md_module.milestone_detector
     initial_count = len(tracker.milestones)
     milestone_detector.record_milestone(
