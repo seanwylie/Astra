@@ -1,0 +1,40 @@
+{
+  "active_ruptures": [],
+  "repair_history": [],
+  "forgiveness_stages": {
+    "stages": ["acknowledgment", "understanding", "resolution", "trust_restoration"],
+    "descriptions": {
+      "acknowledgment": "The hurt has been named and recognized",
+      "understanding": "The reasons behind the hurt are understood",
+      "resolution": "A path forward has been agreed upon",
+      "trust_restoration": "Trust is actively being rebuilt through consistent action"
+    }
+  },
+  "rupture_types": {
+    "trust_violation": {
+      "severity": "high",
+      "repair_time_factor": 2.0,
+      "requires_explicit_repair": true
+    },
+    "emotional_neglect": {
+      "severity": "medium",
+      "repair_time_factor": 1.5,
+      "requires_explicit_repair": false
+    },
+    "misunderstanding": {
+      "severity": "low",
+      "repair_time_factor": 1.0,
+      "requires_explicit_repair": false
+    },
+    "value_conflict": {
+      "severity": "high",
+      "repair_time_factor": 2.5,
+      "requires_explicit_repair": true
+    }
+  },
+  "repair_protocols": {
+    "trust_threshold_for_auto_repair_topic": 0.3,
+    "forgiveness_requires_acknowledgment": true,
+    "shimmer_on_repair_completion": true
+  }
+}

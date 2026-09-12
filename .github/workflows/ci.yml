@@ -1,0 +1,43 @@
+# Unit tests, worktree secret scan, dependency audit.
+# Format/lint exist locally (black, isort, flake8) but are not CI gates yet:
+# the tree currently has thousands of pre-existing findings.
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.10", "3.12"]
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up uv
+        uses: astral-sh/setup-uv@v6
+        with:
+          python-version: ${{ matrix.python-version }}
+          enable-cache: true
+
+      - name: Install dependencies
+        run: uv sync --group dev --frozen
+
+      - name: Secret scan (gitleaks)
+        run: |
+          curl -sSL https://github.com/gitleaks/gitleaks/releases/download/v8.30.1/gitleaks_8.30.1_linux_x64.tar.gz | tar -xz -C /tmp gitleaks
+          /tmp/gitleaks detect --source . --no-git --redact
+
+      - name: Dependency audit (pip-audit)
+        run: |
+          uv export --frozen --no-emit-project --group dev --no-hashes -o /tmp/astra-reqs.txt
+          uv run pip-audit -r /tmp/astra-reqs.txt
+
+      - name: Unit tests
+        run: uv run pytest tests/ -q -m "not integration" --tb=short

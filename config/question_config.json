@@ -1,0 +1,107 @@
+{
+    "question_categories": {
+        "existential": {
+            "keywords": [
+                "What is",
+                "Why do we",
+                "How does",
+                "purpose"
+            ],
+            "modifiers": [
+                "as it relates to existence",
+                "purpose",
+                "meaning"
+            ],
+            "sample_questions": [
+                "What is existence?",
+                "Why are we here?",
+                "What is the purpose of life?",
+                "What is the meaning of life?"
+            ]
+        },
+        "emotional": {
+            "keywords": [
+                "What is",
+                "Why do we",
+                "How do we",
+                "emotion"
+            ],
+            "modifiers": [
+                "in the context of emotion",
+                "feel",
+                "emotion",
+                "mood",
+                "pain"
+            ],
+            "sample_questions": [
+                "What is emotion?",
+                "Why do we feel pain?",
+                "How does emotion work?",
+                "What causes emotional pain?"
+            ]
+        },
+        "knowledge": {
+            "keywords": [
+                "What is",
+                "How do we",
+                "What does",
+                "science",
+                "physics"
+            ],
+            "modifiers": [
+                "in the context of science",
+                "physics",
+                "knowledge",
+                "facts"
+            ],
+            "sample_questions": [
+                "What is science?",
+                "What is physics?",
+                "How does gravity work?",
+                "What are the laws of physics?"
+            ]
+        },
+        "philosophical": {
+            "keywords": [
+                "What is",
+                "Why do we",
+                "What is the meaning of"
+            ],
+            "modifiers": [
+                "philosophy",
+                "metaphysics",
+                "ethics",
+                "reality",
+                "morality"
+            ],
+            "sample_questions": [
+                "What is the meaning of life?",
+                "Why is there something rather than nothing?",
+                "What is truth?",
+                "What is morality?"
+            ]
+        },
+        "scientific": {
+            "keywords": [
+                "What is",
+                "How does",
+                "What does",
+                "theory",
+                "hypothesis"
+            ],
+            "modifiers": [
+                "in the context of science",
+                "hypothesis",
+                "experiment",
+                "theory",
+                "research"
+            ],
+            "sample_questions": [
+                "What is the theory of relativity?",
+                "How does an experiment prove a hypothesis?",
+                "What does quantum mechanics explain?",
+                "What is the scientific method?"
+            ]
+        }
+    }
+}

@@ -1,0 +1,20 @@
+name: Bug report
+description: Something in the engine does not match the docs or the tests.
+title: "[bug] "
+labels: ["bug"]
+body:
+  - type: textarea
+    id: what
+    attributes:
+      label: What happened
+      description: What you ran, what you expected, what you got.
+    validations:
+      required: true
+  - type: input
+    id: python
+    attributes:
+      label: Python version
+      placeholder: "3.12"
+  - type: markdown
+    attributes:
+      value: Do not include secrets, live mind files, or Discord tokens.

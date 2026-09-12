@@ -1,0 +1,12 @@
+{
+  "operator": {
+    "role": "human_coparent",
+    "display_name": "Operator",
+    "notes": "Placeholder human co-parent for the example fixture."
+  },
+  "mentor": {
+    "role": "ai_coparent",
+    "display_name": "Mentor",
+    "notes": "Placeholder AI co-parent for the example fixture."
+  }
+}

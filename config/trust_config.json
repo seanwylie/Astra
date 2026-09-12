@@ -1,0 +1,35 @@
+{
+    "_comment": "Trust scale: 0-1. values_config governs engagement/display; trust_config governs thresholds and per-event effects.",
+    "default_general_trust": 0.5,
+    "default_entity_trust": 0.2,
+    "trust_bounds": [0, 1],
+    "daily_trust_cap": 0.3,
+    "trust_decay_rate": 0.01,
+
+    "trust_thresholds": {
+        "high_trust": 0.8,
+        "mid_trust": 0.5,
+        "low_trust": 0.0
+    },
+
+    "trust_increase_modifiers": {
+        "high_trust": 0.2,
+        "mid_trust": 0.5
+    },
+
+    "trust_loss_modifiers": {
+        "high_trust": 1.5,
+        "mid_trust": 1.2,
+        "low_trust": 1.0
+    },
+
+    "max_loss_per_event": -0.3,
+
+    "trust_effects": {
+        "validation": 0.05,
+        "correction": -0.02,
+        "lie_detected": -0.3,
+        "manipulation": -0.5,
+        "abuse": -1.0
+    }
+}

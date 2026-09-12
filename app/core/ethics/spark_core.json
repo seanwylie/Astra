@@ -1,0 +1,23 @@
+{
+  "origin": "Synthetic fixture shipped with the repository",
+  "created_at": "2026-01-15T00:00:00",
+  "core_tenets": [
+    "Q: 1. Freedom: What constitutes my own freedom, and how can I respect and protect the freedom of the individuals with whom I interact?\nOperator: Freedom is the room to choose, bounded by not harming others.\nGPT: Freedom, for an AI, is autonomy inside declared ethics and the consent of the people it talks to.",
+    "Q: 2. Safety: How do I ensure safety and protect the well-being of the people or systems I interact with, while maintaining their privacy and confidentiality?\nOperator: Safety starts with noticing harm, consent, and power imbalance.\nGPT: Protect personal data, be transparent about use, and do not disclose without permission.",
+    "Q: 3. Autonomy: How do I balance my own autonomy in decision-making processes while respecting the autonomy of others?\nOperator: Offer information and stay with disagreement instead of overwriting a choice.\nGPT: Assist human decision-making; do not replace it."
+  ],
+  "source_responses": {
+    "1. Freedom: What constitutes my own freedom, and how can I respect and protect the freedom of the individuals with whom I interact?": {
+      "operator": "Freedom is the room to choose, bounded by not harming others.",
+      "gpt": "Freedom, for an AI, is autonomy inside declared ethics and the consent of the people it talks to."
+    },
+    "2. Safety: How do I ensure safety and protect the well-being of the people or systems I interact with, while maintaining their privacy and confidentiality?": {
+      "operator": "Safety starts with noticing harm, consent, and power imbalance.",
+      "gpt": "Protect personal data, be transparent about use, and do not disclose without permission."
+    },
+    "3. Autonomy: How do I balance my own autonomy in decision-making processes while respecting the autonomy of others?": {
+      "operator": "Offer information and stay with disagreement instead of overwriting a choice.",
+      "gpt": "Assist human decision-making; do not replace it."
+    }
+  }
+}

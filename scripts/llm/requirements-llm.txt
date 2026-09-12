@@ -1,0 +1,7 @@
+# Optional: Unsloth fine-tuning (install when using train_astra_unsloth.py)
+# pip install -r scripts/llm/requirements-llm.txt
+unsloth
+trl
+transformers
+torch
+datasets

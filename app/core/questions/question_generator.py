@@ -1,0 +1,108 @@
+import logging
+import random
+from app.config.loader import load_config, debug_log
+from app.core.questions.question_utils import generate_category_embeddings, categorize_question
+from app.interfaces.mind_session import session
+
+logger = logging.getLogger(__name__)
+
+# Load configuration files
+general_config = load_config("general_config")
+config_soul = load_config("config_soul")
+question_config = load_config("question_config")
+
+def generate_questions(reflection: str, mind_data: dict) -> tuple:
+    """Generates structured questions based on Astra's reflection while ensuring variety & avoiding redundancy."""
+    
+    # Optimize: Use passed mind_data instead of redundant session.load()
+    # Only load if mind_data is empty or missing required keys
+    if not mind_data or not mind_data.get("stored_knowledge"):
+        debug_log("Loading")
+        fresh_mind_data = session.load()
+        stored_knowledge = fresh_mind_data.get("stored_knowledge", [])
+        unresolved_questions = fresh_mind_data.get("unresolved_questions", [])
+    else:
+        stored_knowledge = mind_data.get("stored_knowledge", [])
+        unresolved_questions = mind_data.get("unresolved_questions", [])
+
+    logger.debug(
+        "Loaded fresh mind data. Stored Knowledge: %s, Unresolved Questions: %s",
+        len(stored_knowledge), len(unresolved_questions)
+    )
+
+    unresolved_limit = 1000
+    if len(unresolved_questions) >= unresolved_limit:
+        logger.warning("Too many unresolved questions (%s). Skipping new question generation.", len(unresolved_questions))
+        return {}, {}
+
+    question_categories = question_config.get("question_categories", ["general", "scientific", "philosophical"])
+    category_embeddings = generate_category_embeddings(question_config)
+
+    question_templates = list(set(general_config.get("question_templates", [])))
+    deep_thought_templates = list(set(config_soul.get("deep_thought_questions", [])))
+    principles = config_soul.get("soul", {}).get("principles", {})
+    reflection_modifiers = list(set(general_config.get("reflection_style_modifiers", {}).values()))
+
+    num_questions = random.randint(3, 6)
+    generated_questions = set()
+    category_counts = {category: 0 for category in question_categories}
+
+    # Step 1: Generate Questions from Templates
+    while len(generated_questions) < num_questions // 3 and question_templates:
+        question_text = random.choice(question_templates).strip()
+        modifier = random.choice(reflection_modifiers)
+        full_question = f"{question_text} {modifier}".strip()
+        generated_questions.add(full_question)
+
+    # Step 2: Generate Deep Thought Questions
+    while len(generated_questions) < num_questions // 2 and deep_thought_templates:
+        question_text = random.choice(deep_thought_templates).strip()
+        principle_key = random.choice(list(principles.keys()))
+        principle_desc = principles[principle_key]["description"]
+        full_question = f"{question_text} How does this relate to my principle of {principle_key.replace('_', ' ')}: {principle_desc}?"
+        generated_questions.add(full_question)
+
+    # Step 3: Generate Questions from Stored Knowledge
+    knowledge_sample = random.sample(stored_knowledge, min(5, len(stored_knowledge)))
+    for knowledge_entry in knowledge_sample:
+        if len(generated_questions) >= num_questions:
+            break
+        if len(knowledge_entry) > 10:
+            knowledge_question = f"How does this knowledge refine my understanding? {knowledge_entry[:150]}..."
+            generated_questions.add(knowledge_question)
+
+    # Step 4: Revisit Unresolved Questions
+    unresolved_sample = random.sample(unresolved_questions, min(3, len(unresolved_questions)))
+    for unresolved in unresolved_sample:
+        if len(generated_questions) >= num_questions:
+            break
+        unresolved_question = unresolved["question"]
+        unresolved_followup = f"What new insights could help resolve this? {unresolved_question}"
+        generated_questions.add(unresolved_followup)
+
+    logger.debug("Generated unique questions: %s", list(generated_questions))
+
+    # Step 5: Categorize Questions
+    categorized_questions = []
+    for question in generated_questions:
+        if isinstance(question, str) and len(question) > 6:
+            category = categorize_question([question], category_embeddings)
+            if category:
+                categorized_questions.append({"question": question.strip(), "category": category[0]["category"]})
+                category_counts[category[0]["category"]] += 1
+            else:
+                logger.debug("No category found for question: %s", question)
+
+    logger.debug("Categorized questions: %s", categorized_questions)
+    logger.debug("Question category counts: %s", category_counts)
+
+    # Step 6: Store & Format
+    if categorized_questions:
+        mind_data["self_questions"].extend([q["question"] for q in categorized_questions])
+
+    # Step 7: Limit Question Overload
+    if len(mind_data["self_questions"]) > unresolved_limit:
+        logger.warning("Too many unresolved questions (%s). Trimming to %s.", len(mind_data["self_questions"]), unresolved_limit)
+        mind_data["self_questions"] = mind_data["self_questions"][-unresolved_limit:]
+
+    return {"general": mind_data["self_questions"]}, category_counts

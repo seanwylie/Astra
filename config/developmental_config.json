@@ -1,0 +1,14 @@
+{
+  "min_days_in_stage": 365,
+  "min_significant_milestones_per_stage": 20,
+  "significance_threshold": 0.6,
+  "per_stage_overrides": {
+    "adolescence": {
+      "min_days_in_stage": 730
+    },
+    "young_adulthood": {
+      "min_days_in_stage": 730
+    },
+    "maturity": {}
+  }
+}

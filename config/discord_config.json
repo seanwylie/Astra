@@ -1,0 +1,6 @@
+{
+    "discord_channel": "",
+    "mind_file_path": "fixtures/example_mind.json",
+    "mind_file_parents_path": "fixtures/example_parents.json",
+    "log_file": "data/astra_logs.json"
+}

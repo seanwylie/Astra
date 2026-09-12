@@ -1,0 +1,4 @@
+title = "Astra"
+
+[extend]
+useDefault = true

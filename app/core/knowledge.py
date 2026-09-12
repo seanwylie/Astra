@@ -1,0 +1,213 @@
+import logging
+import requests
+from app.interfaces.mind_session import SmartMindSession
+import re
+import time
+import openai
+from fuzzywuzzy import fuzz
+from app.config.loader import load_config
+from app.interfaces.influence import load_mind, save_mind
+from app.config.loader import debug_log
+from app.interfaces.mind_session import session
+
+logger = logging.getLogger(__name__)
+
+
+class KnowledgeManager:
+    COMMON_WORDS = {
+        "the", "a", "and", "is", "in", "with", "to", "from", "for", "on", "as", "it",
+        "by", "this", "of", "that", "which", "at", "does", "relate", "how", "what"
+    }
+    IGNORE_TERMS = {"deeper thought", "🔍 reflection", "🔍 deeper thought"}
+
+    def __init__(self):
+        """Initialize Astra's knowledge system with memory and external lookup sources."""
+        logger.debug("Loading knowledge settings...")
+        self.config = load_config("lookup_config")
+        debug_log("Loading")  
+        # MEMORY LEAK FIX: Don't store entire mind_data, only load what we need
+        # Store references instead of full copy to reduce memory footprint
+        self._mind_session = None  # Lazy load when needed
+        self._past_conversations_limit = 100  # Limit conversation history
+        # Initialize cache
+        self._stored_knowledge_cache = None
+        self._stored_knowledge_cache_time = 0
+        self._cache_ttl = 300  # 5 minute cache TTL
+
+    def store_conversation(self, message):
+        """Stores past conversations so Astra can reference them later."""
+        # MEMORY LEAK FIX: Load mind_data only when needed, don't store it
+        session = SmartMindSession()
+        mind_data = session.load()
+        mind_data.setdefault("past_conversations", [])
+        mind_data["past_conversations"].append(message)
+        # Enforce limit
+        mind_data["past_conversations"] = mind_data["past_conversations"][-self._past_conversations_limit:]
+        session.data = mind_data
+        session.maybe_save()
+        # Invalidate cache
+        self._stored_knowledge_cache = None
+
+    def should_lookup_concept(self, concept, force=False):
+        """Determine if Astra should look up a concept based on meaningful stored knowledge."""
+        concept_lower = concept.lower().strip()
+
+        if force:
+            logger.debug("Force lookup enabled for '%s', overriding existing checks.", concept)
+            return True  
+
+        if concept_lower in self.COMMON_WORDS or len(concept_lower) < 3:
+            logger.debug("Ignoring '%s', too generic.", concept)
+            return False  
+
+        # MEMORY LEAK FIX: Use cached stored_knowledge instead of full mind_data
+        stored_knowledge = self._get_stored_knowledge()
+        
+        # Optimize: Limit checks to recent knowledge
+        MAX_KNOWLEDGE_CHECKS = 100
+        recent_knowledge = stored_knowledge[-MAX_KNOWLEDGE_CHECKS:] if len(stored_knowledge) > MAX_KNOWLEDGE_CHECKS else stored_knowledge
+        
+        # ✅ Check existing definitions
+        for entry in recent_knowledge:
+            if concept_lower in entry.lower() and entry.count(" ") > 4:  # Optimize: count spaces instead of split
+                return False  
+
+        # ✅ Fuzzy Matching (last resort, avoid false positives)
+        for entry in recent_knowledge:
+            similarity = fuzz.partial_ratio(concept_lower, entry.lower())
+            if similarity > 92:
+                return False  
+
+        logger.debug("Concept '%s' not found in meaningful form, proceeding with lookup.", concept)
+        return True  
+
+    def lookup_dictionary_definition(self, word):
+        """Fetch definitions using the dictionary API."""
+        clean_word = re.sub(r'[^\w\s]', '', word).strip()
+        try:
+            response = requests.get(f"{self.config['lookup_api']['dictionary']}{clean_word}")
+            if response.status_code == 200:
+                data = response.json()
+                return f"🔹 {clean_word}: {data[0]['meanings'][0]['definitions'][0]['definition']}"
+        except Exception as e:
+            logger.debug("Dictionary lookup failed for '%s': %s", clean_word, e)
+        return None
+
+    def retrieve_external_knowledge(self, search_terms, force=False):
+        """Fetch knowledge from external sources and update stored knowledge."""
+        new_knowledge = []
+        print(f"🔍 Debug: Attempting to retrieve knowledge for {search_terms}")
+
+        for concept in search_terms:
+            if not self.should_lookup_concept(concept, force=force):
+                print(f"⚠ Skipping lookup for '{concept}', already known.")
+                continue
+
+            logger.debug("Looking up: %s", concept)
+            dictionary_info = self.lookup_dictionary_definition(concept)
+
+            if dictionary_info:
+                new_knowledge.append(f"📖 {concept}: {dictionary_info}")
+                logger.debug("Dictionary found: %s", dictionary_info)
+            else:
+                logger.debug("Searching deeper for: %s", concept)
+                new_knowledge.append(self.query_openai_for_reasoning(concept))
+
+        # ✅ If no new knowledge was retrieved, exit early
+        if not new_knowledge:
+            logger.debug("No new knowledge retrieved. Skipping save.")
+            return False  
+
+        # MEMORY LEAK FIX: Load mind_data only when needed
+        session = SmartMindSession()
+        mind_data = session.load()
+        stored_knowledge = mind_data.get("stored_knowledge", [])
+        pre_save_count = len(stored_knowledge)
+        
+        # ✅ Store new knowledge
+        for entry in new_knowledge:
+            if entry and entry not in stored_knowledge:  
+                stored_knowledge.append(entry)
+
+        logger.debug("Before saving, knowledge count: %s -> %s", pre_save_count, len(stored_knowledge))
+
+        # ✅ Save and verify
+        mind_data["stored_knowledge"] = stored_knowledge
+        session.data = mind_data
+        session.maybe_save()
+        time.sleep(0.5)  
+
+        # Invalidate cache
+        self._stored_knowledge_cache = None
+        reloaded_mind = session.load()
+        self._stored_knowledge_cache = reloaded_mind.get("stored_knowledge", [])
+        self._stored_knowledge_cache_time = time.time()
+
+        return True  
+
+    def query_openai_for_reasoning(self, concept):
+        """Use OpenAI to generate a deeper understanding of a concept."""
+        # MEMORY LEAK FIX: Use cached stored_knowledge
+        stored_knowledge = self._get_stored_knowledge()
+        past_references = [entry for entry in stored_knowledge if concept in entry.lower()]
+        past_references_text = "\n".join(past_references[-3:]) if past_references else "None"
+
+        prompt = f"""
+        Astra is an AI who expands on knowledge by reasoning from prior conversations.
+        She does NOT introduce external sources, only **thinks about what she knows**.
+
+        **Concept:** {concept}
+        **What Astra already knows:**
+        {past_references_text}
+
+        **How should Astra explain this concept in a way that deepens her understanding?**
+        """
+
+        response = openai.OpenAI().chat.completions.create(
+            model="gpt-4",
+            messages=[{"role": "system", "content": prompt}],
+            max_tokens=200,
+            temperature=0.8  
+        )
+
+        if response.choices and len(response.choices) > 0:
+            return response.choices[0].message.content.strip()
+        else:
+            return f"🤔 I need more data to form a strong understanding of '{concept}'."
+
+    def extract_unknown_terms(self, reflection):
+        """Extract meaningful unknown concepts while filtering out noise."""
+        logger.debug("Reflection type: %s, length: %s", type(reflection), len(reflection) if isinstance(reflection, str) else "N/A")
+
+        if isinstance(reflection, list):
+            reflection = " ".join(reflection[-5:])  
+
+        if not isinstance(reflection, str):
+            return []
+
+        if len(reflection) > 5000:
+            logger.warning("Reflection is too long (%s chars); trimming.", len(reflection))
+            reflection = reflection[:5000]
+
+        phrase_pattern = r'\b(?:[A-Z][a-z]+(?:\s+[A-Z][a-z]+)*)\b'
+        found_phrases = set(re.findall(phrase_pattern, reflection))
+
+        words = set(re.findall(r'\b\w+\b', reflection))
+        filtered_words = {word.lower() for word in words if len(word) > 2 and word.lower() not in self.COMMON_WORDS}
+
+        final_terms = (found_phrases | filtered_words) - self.IGNORE_TERMS
+        # MEMORY LEAK FIX: Use cached stored_knowledge
+        stored_knowledge = self._get_stored_knowledge()
+        # Optimize: Use set for O(1) lookup
+        stored_knowledge_lower = {entry.lower() for entry in stored_knowledge}
+        unknown_terms = [term for term in final_terms if term.lower() not in stored_knowledge_lower]
+
+        logger.debug("Final unknown concepts after filtering: %s", unknown_terms)
+
+        if unknown_terms:
+            logger.debug("Attempting external knowledge lookup.")
+            self.retrieve_external_knowledge(unknown_terms)
+
+        return unknown_terms
+
+knowledge_manager = KnowledgeManager()
