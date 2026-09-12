@@ -217,12 +217,13 @@ def test_milestone_detector_bridge_notifies_developmental_tracker():
 
     client.get_object = get_object
 
+    from importlib import reload, import_module
+    from app.core import development
+
+    md_module = import_module("app.core.growth.milestone_detector")
     with patch("app.core.development.developmental_stage.boto3.client", return_value=client), patch(
         "app.core.growth.milestone_detector.boto3.client", return_value=client
     ):
-        from importlib import reload, import_module
-        from app.core import development
-        md_module = import_module("app.core.growth.milestone_detector")
         reload(development.developmental_stage)
         reload(md_module)
         tracker = development.developmental_stage.developmental_tracker
