@@ -2,3 +2,9 @@ title = "Astra"
 
 [extend]
 useDefault = true
+
+# Local and CI installs land under .venv. Those trees are not product source.
+[allowlist]
+paths = [
+  '''\.venv/''',
+]
