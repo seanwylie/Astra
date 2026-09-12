@@ -35,9 +35,7 @@ jobs:
         run: uv sync --group dev --frozen
 
       - name: Dependency audit (pip-audit)
-        run: |
-          uv export --frozen --no-emit-project --group dev --no-hashes -o /tmp/astra-reqs.txt
-          uv run pip-audit -r /tmp/astra-reqs.txt
+        run: uv run pip-audit
 
       - name: Unit tests
         run: uv run pytest tests/ -q -m "not integration" --tb=short
