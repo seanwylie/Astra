@@ -33,9 +33,9 @@ embeddings = [
 ]
 
 [project.urls]
-Homepage = "https://github.com/seanwylie/Astra"
-Repository = "https://github.com/seanwylie/Astra"
-Issues = "https://github.com/seanwylie/Astra/issues"
+Homepage = "https://github.com/seanwylie/astra"
+Repository = "https://github.com/seanwylie/astra"
+Issues = "https://github.com/seanwylie/astra/issues"
 
 [dependency-groups]
 dev = [

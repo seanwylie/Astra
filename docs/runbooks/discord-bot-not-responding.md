@@ -4,14 +4,14 @@ When Astra's Discord bot stops responding to messages or commands, use this runb
 
 ## 1. Verify bot token and permissions
 
-- **Discord token**: The bot uses a token from config or environment (e.g. `DISCORD_BOT_TOKEN` or from a config file). Ensure the token is valid and not revoked in the Discord Developer Portal.
+- **Discord token**: The bot reads `TOKEN` from the environment (see `.env.example`). Ensure the token is valid and not revoked in the Discord Developer Portal.
 - **Bot permissions**: In the Discord server, the bot needs at least: Read Message History, Send Messages, Read Messages/View Channels (and any required for your slash commands or intents). Check Server Settings, Integrations, then your bot Permissions.
 - **Intents**: If the bot uses privileged intents (e.g. message content, members), ensure they are enabled in the Developer Portal (Bot, Privileged Gateway Intents) and that the app requests them when creating the client.
 
 ## 2. Check ASTRA_CONFIG_DIR and config
 
 - **ASTRA_CONFIG_DIR**: Must point to the directory containing your config JSON files. If unset or wrong, the app may fail to load Discord config or start the bot. Example: `export ASTRA_CONFIG_DIR=/path/to/config`
-- **Discord-related config**: Look for a config file that holds the bot token and any Discord-specific settings. Confirm the token and channel IDs (if used) are correct.
+- **Discord-related config**: Channel ID comes from `DISCORD_CHANNEL_ID` or `config/discord_config.json`. The bot token is `TOKEN` in the environment, not a JSON field.
 
 ## 3. Check logs for exceptions
 

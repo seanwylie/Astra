@@ -5,7 +5,7 @@
 Please report privately, so a fix can exist before details are public.
 
 Use GitHub's private vulnerability reporting:
-**[open a draft advisory](https://github.com/seanwylie/Astra/security/advisories/new)**. That
+**[open a draft advisory](https://github.com/seanwylie/astra/security/advisories/new)**. That
 route is preferred over email; there is no published address for this project.
 
 The draft-advisory form only works when

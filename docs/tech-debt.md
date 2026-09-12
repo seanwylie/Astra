@@ -13,7 +13,7 @@ A lightweight list of known technical debt items from the post-Phase 3 audit. It
 
 ## Quality and tooling
 
-- **No automated cycle detection**: Import cycles are not checked in CI. Run `scripts/check_import_cycles.py` periodically; Phase 4 findings are in docs/audits/import-cycles-phase4.md (3 cycles found, including one large core cycle).
+- **No automated cycle detection**: Import cycles are not checked in CI. Run `scripts/check_import_cycles.py` periodically.
 - **mypy non-blocking**: Mypy runs in CI with `|| true`; type errors do not fail the build. Consider fixing critical errors and turning mypy into a gate.
 - **No coverage gate**: Coverage is reported in CI but not enforced. Optional: set a minimum coverage threshold.
 

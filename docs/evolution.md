@@ -2,7 +2,8 @@
 
 How Astra can evolve: corpus export, local inference, Astra-grown tools, and code change proposals.
 
-**Full model update runbook (export → train → merge → deploy):** see **[docs/astra_model_update_guide.md](astra_model_update_guide.md)** for the step-by-step from corpus export through Unsloth training, weight merge, server transfer, Ollama ingestion, and personality layering.
+Export, local inference, and training steps are in this document. A
+separate Unsloth/server-transfer runbook is not part of this tree.
 
 ## Phase A: What’s done vs remaining
 
@@ -101,7 +102,7 @@ When a local model (e.g. Ollama) is available, Astra can use it for reflection/d
 
 To use a **trained** model: train or import your model into Ollama (or your stack), then set `OLLAMA_MODEL` to that model name. No code change needed.
 
-**Stabilizing Ollama:** If the local model returns junk (e.g. code/SVG fragments) or you need to force OpenAI for specific features, see **[docs/debugging/ollama_flakiness_analysis.md](debugging/ollama_flakiness_analysis.md)** for output validation, the stabilization checklist, and disable options: env vars `OLLAMA_DISABLED`, `OLLAMA_DISABLE_FOR_SCHOOL`, `OLLAMA_DISABLE_FOR_DREAM`, and config `local_inference_disabled_for` in `general_config.json`.
+**Stabilizing Ollama:** If the local model returns junk (e.g. code/SVG fragments) or you need to force OpenAI for specific features, disable it with env vars `OLLAMA_DISABLED`, `OLLAMA_DISABLE_FOR_SCHOOL`, `OLLAMA_DISABLE_FOR_DREAM`, or config `local_inference_disabled_for` in `general_config.json`.
 
 ## 3. Training the local model (Phase A3)
 
